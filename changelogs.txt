@@ -94,3 +94,4 @@ Version 0.5
   > Faille kamas avec un signe négatif.
   > Bug après un reboot qui supprime tout les modes marchands.
 - Revue des failles/bugs sur les hotels de ventes.
+- Revue des failles/bugs sur les dialogues.
