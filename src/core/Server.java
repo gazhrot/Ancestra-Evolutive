@@ -42,7 +42,6 @@ public class Server {
 	//database
 	private String host, user, pass;
 	private String databaseName;
-	private int dbCommit;
 	
 	//network
 	private boolean ipLoopBack;
@@ -116,7 +115,6 @@ public class Server {
 			this.user = configFile.getString("database.user");
 			this.pass = configFile.getString("database.password");
 			this.databaseName = configFile.getString("database.databaseName");
-			this.dbCommit = configFile.getInt("database.commit");
 			
 			//network
 			this.ip = configFile.getString("network.ip");
@@ -566,10 +564,6 @@ public class Server {
 	
 	public ArrayList<Integer> getCollectorMaps() {
 		return collectorMaps;
-	}
-
-	public int getDbCommit() {
-		return dbCommit;
 	}
 
 	public int getMaxIdleTime() {
