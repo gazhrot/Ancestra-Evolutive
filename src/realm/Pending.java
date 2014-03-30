@@ -1,6 +1,6 @@
 package realm;
 
-import objects.Compte;
+import client.Account;
 import tool.time.waiter.Waiter;
 
 import common.SocketManager;
@@ -11,7 +11,7 @@ public class Pending {
      TODO : Gestion du paquet Af + position dans la file d'attente.
     */
 	private static Waiter waiter = new Waiter(); //très laid mais ce putin de Pending est à refaire !
-    public static void PendingSystem(final Compte C)
+    public static void PendingSystem(final Account C)
     {
         if(C == null) return;
         if(C._position <= 1)

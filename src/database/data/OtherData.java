@@ -6,9 +6,10 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.concurrent.locks.ReentrantLock;
 
+import client.Player;
+
 import objects.Objet;
 import objects.Objet.ObjTemplate;
-import objects.Personnage;
 
 import common.Constants;
 import common.Couple;
@@ -136,7 +137,7 @@ public class OtherData extends AbstractDAO<Object>{
 	
 	public void reloadLiveActions() {
 		/* Variables représentant les champs de la base */
-		Personnage perso;
+		Player perso;
 		int action, nombre, id;
 		String sortie, couleur = "DF0101";
 									
@@ -310,10 +311,21 @@ public class OtherData extends AbstractDAO<Object>{
 		}
 	}
 	
+	public void loadMarchand() {
+		try {
+			ResultSet result = getData("SELECT * FROM `personnages` WHERE `seeSeller`='1';");
+			while (result.next())
+				World.data.addSeller(result.getInt("guid"), result.getShort("map"));
+			closeResultSet(result);
+		} catch (Exception e) {
+			Console.instance.writeln("LoadZaaps: "+e.getMessage());
+		}
+	}
+	
 	public String getNaturalStats(int id) {
 		String stats = null;
 		try {
-			ResultSet result = getData("SELECT statsTemplate from `item_template` WHERE `id`='"+id+"';");
+			ResultSet result = getData("SELECT statsTemplate FROM `item_template` WHERE `id`='"+id+"';");
 			if(result.next())
 				stats = result.getString("statsTemplate");
 		} catch (Exception e) {

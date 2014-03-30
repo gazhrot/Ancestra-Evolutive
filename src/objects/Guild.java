@@ -5,11 +5,13 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.Map.Entry;
 
-import objects.Personnage.Stats;
 import objects.Sort.SortStats;
 
 import org.joda.time.LocalDate;
 import org.joda.time.Days;
+
+import client.Player;
+import client.Player.Stats;
 import common.World;
 import common.Constants;
 
@@ -130,7 +132,7 @@ public class Guild {
 			return Days.daysBetween(lastCo,now).getDays()*24;
 		}
 
-		public Personnage getPerso()
+		public Player getPerso()
 		{
 			return World.data.getPersonnage(_guid);
 		}
@@ -235,7 +237,7 @@ public class Guild {
 		}
 	}
 
-	public Guild(Personnage owner,String name,String emblem)
+	public Guild(Player owner,String name,String emblem)
 	{
 		_id = World.data.getNextHighestGuildID();
 		_name = name;
@@ -280,7 +282,7 @@ public class Guild {
 		_members.put(guid,GM);
 		return GM;
 	}
-	public GuildMember addNewMember(Personnage p)
+	public GuildMember addNewMember(Player p)
 	{
 		GuildMember GM = new GuildMember(p.get_GUID(),this,p.get_name(),p.get_lvl(),p.get_gfxID(),0,0,(byte) 0,0,p.get_align(),p.get_compte().getLastConnectionDate());
 		_members.put(p.get_GUID(),GM);
@@ -374,9 +376,9 @@ public class Guild {
 		}
 		return str.toString();
 	}
-	public ArrayList<Personnage> getMembers()
+	public ArrayList<Player> getMembers()
 	{
-		ArrayList<Personnage> a = new ArrayList<Personnage>();
+		ArrayList<Player> a = new ArrayList<Player>();
 		for(GuildMember GM : _members.values())a.add(GM.getPerso());
 		return a;
 	}
@@ -387,7 +389,7 @@ public class Guild {
 	{
 		return _members.get(guid);
 	}
-	public void removeMember(Personnage perso)
+	public void removeMember(Player perso)
 	{
 		House h = House.get_HouseByPerso(perso);//On prend ça maison
 		if(h != null)

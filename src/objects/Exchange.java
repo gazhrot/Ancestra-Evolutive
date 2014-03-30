@@ -2,6 +2,8 @@ package objects;
 
 import java.util.ArrayList;
 
+import client.Player;
+
 
 import common.Couple;
 import common.SocketManager;
@@ -9,8 +11,8 @@ import common.World;
 
 public class Exchange
 {
-	private Personnage perso1;
-	private Personnage perso2;
+	private Player perso1;
+	private Player perso2;
 	private long kamas1 = 0;
 	private long kamas2 = 0;
 	private ArrayList<Couple<Integer,Integer>> items1 = new ArrayList<Couple<Integer,Integer>>();
@@ -18,7 +20,7 @@ public class Exchange
 	private boolean ok1;
 	private boolean ok2;
 	
-	public Exchange(Personnage p1, Personnage p2)
+	public Exchange(Player p1, Player p2)
 	{
 		perso1 = p1;
 		perso2 = p2;

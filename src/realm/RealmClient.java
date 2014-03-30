@@ -1,10 +1,10 @@
 package realm;
 
-import objects.Compte;
 
 import org.apache.mina.core.session.IoSession;
 
 import client.Client;
+import client.Account;
 
 import common.Constants;
 import common.SocketManager;
@@ -18,7 +18,7 @@ public class RealmClient implements Client{
 	private int _packetNum = 0;
 	private String _accountName;
 	private String _hashPass;
-	private Compte _compte;
+	private Account _compte;
 	private IoSession session;
 	
 	public RealmClient(IoSession session) {
@@ -49,7 +49,7 @@ public class RealmClient implements Client{
 				}
 				_hashPass = packet;
 				
-				if(Compte.COMPTE_LOGIN(_accountName,_hashPass,get_hashKey()))
+				if(Account.COMPTE_LOGIN(_accountName,_hashPass,get_hashKey()))
 				{
 					_compte = World.data.getCompteByName(_accountName);
 					

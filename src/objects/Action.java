@@ -1,10 +1,11 @@
 package objects;
 
+import client.Player;
+import client.Player.traque;
 import game.GameClient;
 import objects.Monstre.MobGroup;
 import objects.NPC_tmpl.NPC_question;
 import objects.Objet.ObjTemplate;
-import objects.Personnage.traque;
 import objects.job.Job.StatsMetier;
 
 import common.ConditionParser;
@@ -30,7 +31,7 @@ public class Action {
 	}
 
 
-	public void apply(Personnage perso, Personnage target, int itemID, int cellid)
+	public void apply(Player perso, Player target, int itemID, int cellid)
 	{
 		if(perso == null)return;
 		if(!cond.equalsIgnoreCase("") && !cond.equalsIgnoreCase("-1")&& !ConditionParser.validConditions(perso,cond))
@@ -320,12 +321,12 @@ public class Action {
 		    case 13: //Reset Carac
 		        try
 		        {
-		          perso.get_baseStats().addOneStat(125, -perso._baseStats.getEffect(125));
-		          perso.get_baseStats().addOneStat(124, -perso._baseStats.getEffect(124));
-		          perso.get_baseStats().addOneStat(118, -perso._baseStats.getEffect(118));
-		          perso.get_baseStats().addOneStat(123, -perso._baseStats.getEffect(123));
-		          perso.get_baseStats().addOneStat(119, -perso._baseStats.getEffect(119));
-		          perso.get_baseStats().addOneStat(126, -perso._baseStats.getEffect(126));
+		          perso.get_baseStats().addOneStat(125, -perso.get_baseStats().getEffect(125));
+		          perso.get_baseStats().addOneStat(124, -perso.get_baseStats().getEffect(124));
+		          perso.get_baseStats().addOneStat(118, -perso.get_baseStats().getEffect(118));
+		          perso.get_baseStats().addOneStat(123, -perso.get_baseStats().getEffect(123));
+		          perso.get_baseStats().addOneStat(119, -perso.get_baseStats().getEffect(119));
+		          perso.get_baseStats().addOneStat(126, -perso.get_baseStats().getEffect(126));
 		          perso.addCapital((perso.get_lvl() - 1) * 5 - perso.get_capital());
 
 		          SocketManager.GAME_SEND_STATS_PACKET(perso);
@@ -511,14 +512,14 @@ public class Action {
 				}
 				if(perso.get_traque().get_time() < System.currentTimeMillis() - 600000 || perso.get_traque().get_time() == 0)
 				{
-					Personnage tempP = null;
+					Player tempP = null;
 					int tmp = 15;
 					int diff = 0;
 					for(byte b = 0; b < 100; b++)
 					{
 					if(b == Server.config.getGameServer().getClients().size())break;
 					GameClient GT = Server.config.getGameServer().getClients().get((int)b);
-					Personnage P = GT.getPerso();
+					Player P = GT.getPerso();
 					if(P == null || P == perso)continue;
 					if(P.get_compte().get_curIP().compareTo(perso.get_compte().get_curIP()) == 0)continue;
 					//SI pas sériane ni neutre et si alignement opposé
@@ -592,7 +593,7 @@ public class Action {
 				{
 					break;	
 				}
-				Personnage cible = World.data.getPersoByName(perr);
+				Player cible = World.data.getPersoByName(perr);
 				if(cible==null)break;
 				if(!cible.isOnline())
 				{
@@ -634,7 +635,7 @@ public class Action {
 				}else
 				{
 					perso.set_kamas(perso.get_kamas()-50000);
-					Personnage wife = World.data.getPersonnage(perso.getWife());
+					Player wife = World.data.getPersonnage(perso.getWife());
 					wife.Divorce();
 					perso.Divorce();
 				}

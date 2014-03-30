@@ -9,12 +9,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import objects.Personnage;
 import realm.RealmServer;
 import tool.command.Command;
 import tool.command.CommandAccess;
 import tool.time.restricter.RestrictLevel;
 import tool.time.restricter.TimeRestricter;
+
+import client.Player;
 
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
@@ -93,6 +94,12 @@ public class Server {
 	//hdv
 	private ArrayList<Integer> noInHdv = new ArrayList<>();
 	
+	//marchand
+	private ArrayList<Integer> marchandMaps = new ArrayList<>();
+	
+	//collector
+	private ArrayList<Integer> collectorMaps = new ArrayList<>();
+	
 	//Config
 	private Config configFile = ConfigFactory.parseFile(new File("config.conf"));
 	
@@ -164,8 +171,18 @@ public class Server {
 			for(String s: maps.split(","))
 				this.noInHdv.add(Integer.parseInt(s));
 			
-			this.arenaTime = configFile.getInt("arena.time");
+			//marchand
+			maps = configFile.getString("marchand.maps");
+			maps = maps.contains(",") ? maps : maps+",";
+			for(String s: maps.split(","))
+				this.marchandMaps.add(Integer.parseInt(s));
 			
+			//collector
+			maps = configFile.getString("collector.maps");
+			maps = maps.contains(",") ? maps : maps+",";
+			for(String s: maps.split(","))
+				this.collectorMaps.add(Integer.parseInt(s));
+		
 			//initialisation de commandes
 			this.initializeCommands();
 		} catch(Exception e) {
@@ -176,7 +193,7 @@ public class Server {
 	
 	public void initializeCommands() {
 		//totalité des commandes
-		Map<String, Command<Personnage>> playerCommands = new HashMap<>();
+		Map<String, Command<Player>> playerCommands = new HashMap<>();
 		Map<String, Command<Console>> consoleCommands = new HashMap<>();
 		
 		/**
@@ -188,19 +205,19 @@ public class Server {
 			String name = configFile.getString("commands.players.teleport.savePos.name");
 			
 			//création de la commande
-			Command<Personnage> command = new Command<Personnage>(name) {
+			Command<Player> command = new Command<Player>(name) {
 				
 				@Override
-				public void action(Personnage player) {
+				public void action(Player player) {
 					player.warpToSavePos();
 				}
 				
 			};
 			
 			//ajout de condition
-			command.addAccess(new CommandAccess<Personnage>() {
+			command.addAccess(new CommandAccess<Player>() {
 				@Override
-				public boolean authorizes(Personnage player) {
+				public boolean authorizes(Player player) {
 					return player.get_fight() == null;
 				}
 				
@@ -221,10 +238,10 @@ public class Server {
 			String name = configFile.getString("commands.players.save.playerSave.name");
 			
 			//création de la commande
-			Command<Personnage> command = new Command<Personnage>(name) {
+			Command<Player> command = new Command<Player>(name) {
 				
 				@Override
-				public void action(Personnage player) {
+				public void action(Player player) {
 					player.save();
 				}
 				
@@ -247,10 +264,10 @@ public class Server {
 			String name = configFile.getString("commands.players.informations.serverInfos.name");
 			
 			//création de la commande
-			Command<Personnage> command = new Command<Personnage>(name) {
+			Command<Player> command = new Command<Player>(name) {
 				
 				@Override
-				public void action(Personnage player) {
+				public void action(Player player) {
 					player.sendText(Constants.serverInfos());
 				}
 				
@@ -265,12 +282,12 @@ public class Server {
 			String name = configFile.getString("commands.players.list.commandList.name");
 			
 			//création de la commande
-			Command<Personnage> command = new Command<Personnage>(name) {
+			Command<Player> command = new Command<Player>(name) {
 				
 				@Override
-				public void action(Personnage player) {
+				public void action(Player player) {
 					StringBuilder commands = new StringBuilder("<b>Liste des commandes disponibles: </b>");
-					for(Command<Personnage> command: World.data.getPlayerCommands().values())
+					for(Command<Player> command: World.data.getPlayerCommands().values())
 						commands.append(command.getName()).append(", ");
 					player.sendText(commands.toString().substring(0,
 							commands.toString().length()-2));
@@ -539,16 +556,24 @@ public class Server {
 		return arenaTime;
 	}
 
+	public ArrayList<Integer> getNoInHdv() {
+		return noInHdv;
+	}
+	
+	public ArrayList<Integer> getMarchandMaps() {
+		return marchandMaps;
+	}
+	
+	public ArrayList<Integer> getCollectorMaps() {
+		return collectorMaps;
+	}
+
 	public int getDbCommit() {
 		return dbCommit;
 	}
 
 	public int getMaxIdleTime() {
 		return maxIdleTime;
-	}
-
-	public ArrayList<Integer> getNoInHdv() {
-		return noInHdv;
 	}
 
 	public boolean isSocketUseCompactData() {

@@ -4,7 +4,8 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
-import objects.Personnage;
+import client.Player;
+
 
 
 public class TimeRestricter {
@@ -26,7 +27,7 @@ public class TimeRestricter {
 		this.activeErrorMessage = true;
 	}
 	
-	public boolean authorizes(Personnage player) {
+	public boolean authorizes(Player player) {
 		ClientInstance instance = find(player);
 		
 		if (instance.isBlocked()) {
@@ -49,7 +50,7 @@ public class TimeRestricter {
 		}
 	}
 	
-	private boolean blocked(Personnage player, ClientInstance instance) {
+	private boolean blocked(Player player, ClientInstance instance) {
 		if(activeErrorMessage) {
 			long time = TimeUnit.MINUTES.convert(instance.getRemainingTime(), TimeUnit.MILLISECONDS) + 1;
 			player.sendText("Vous devez encore attendre <b>"+time+"</b> minutes.");
@@ -57,7 +58,7 @@ public class TimeRestricter {
 		return false;
 	}
 	
-	private ClientInstance find(Personnage player) {
+	private ClientInstance find(Player player) {
 		ClientInstance result = players.get(player.get_GUID());
 		switch(this.level) {
 			case ACCOUNT:
@@ -102,7 +103,7 @@ class ClientInstance {
 	private long blockTime;
 	private TimeRestricter restricter;
 	
-	public ClientInstance(Personnage player, TimeRestricter restricter) {
+	public ClientInstance(Player player, TimeRestricter restricter) {
 		this.player = player.get_GUID();
 		this.account = player.get_compte().get_GUID();
 		this.ip = player.get_compte().get_curIP();

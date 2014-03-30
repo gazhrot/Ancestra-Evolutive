@@ -4,6 +4,9 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.Map.Entry;
 
+import client.Account;
+import client.Player;
+
 import common.Constants;
 import common.SocketManager;
 import common.World;
@@ -141,7 +144,7 @@ public class House
 		return null;
 	}
 	
-	public static void LoadHouse(Personnage P, int newMapID)//Affichage des maison + Blason
+	public static void LoadHouse(Player P, int newMapID)//Affichage des maison + Blason
 	{
 		
 		for(Entry<Integer, House> house : World.data.getHouses().entrySet())
@@ -152,7 +155,7 @@ public class House
 				packet.append("P").append(house.getValue().get_id()).append("|");
 				if(house.getValue().get_owner_id() > 0)
 				{
-					Compte C = World.data.getCompte(house.getValue().get_owner_id());
+					Account C = World.data.getCompte(house.getValue().get_owner_id());
 					if(C == null)//Ne devrait pas arriver
 					{
 						packet.append("undefined;");
@@ -216,7 +219,7 @@ public class House
 		}
 	}
 
-	public void HopIn(Personnage P)//Entrer dans la maison
+	public void HopIn(Player P)//Entrer dans la maison
 	{
 		// En gros si il fait quelque chose :)
 		if(P.get_fight() != null ||
@@ -247,7 +250,7 @@ public class House
 		}
 	}
 	
-	public static void OpenHouse(Personnage P, String packet, boolean isHome)//Ouvrir une maison ;o
+	public static void OpenHouse(Player P, String packet, boolean isHome)//Ouvrir une maison ;o
 	{
 		
 		House h = P.getInHouse();
@@ -262,14 +265,14 @@ public class House
 		}
 	}
 	
-	public void BuyIt(Personnage P)//Acheter une maison
+	public void BuyIt(Player P)//Acheter une maison
 	{
 		House h = P.getInHouse();
 		String str = "CK"+h.get_id()+"|"+h.get_sale();//ID + Prix
 		SocketManager.GAME_SEND_hOUSE(P, str);
 	}
 
-	public static void HouseAchat(Personnage P)//Acheter une maison
+	public static void HouseAchat(Player P)//Acheter une maison
 	{
 		House h = P.getInHouse();
 
@@ -300,7 +303,7 @@ public class House
 		//Ajoute des kamas dans la banque du vendeur
 		if(h.get_owner_id() > 0)
 		{
-			Compte Seller = World.data.getCompte(h.get_owner_id());
+			Account Seller = World.data.getCompte(h.get_owner_id());
 			long newbankkamas = Seller.getBankKamas()+h.get_sale()+tKamas;
 			Seller.setBankKamas(newbankkamas);
 			//Petit message pour le prévenir si il est on?
@@ -321,13 +324,13 @@ public class House
 		World.database.getHouseData().update(P, h);
 
 		//Rafraichir la map après l'achat
-		for(Personnage z:P.get_curCarte().getPersos())
+		for(Player z:P.get_curCarte().getPersos())
 		{
 			LoadHouse(z, z.get_curCarte().get_id());
 		}
 	}
 	
-	public void SellIt(Personnage P)//Vendre une maison
+	public void SellIt(Player P)//Vendre une maison
 	{
 		House h = P.getInHouse();
 		if(isHouse(P, h))
@@ -341,7 +344,7 @@ public class House
 		}
 	}
 	
-	public static void SellPrice(Personnage P, String packet)//Vendre une maison
+	public static void SellPrice(Player P, String packet)//Vendre une maison
 	{
 		House h = P.getInHouse();
 		int price = Integer.parseInt(packet);	
@@ -354,7 +357,7 @@ public class House
 			World.database.getHouseData().update(h, price);
 
 			//Rafraichir la map après la mise en vente
-			for(Personnage z:P.get_curCarte().getPersos())
+			for(Player z:P.get_curCarte().getPersos())
 			{
 				LoadHouse(z, z.get_curCarte().get_id());
 			}
@@ -366,28 +369,28 @@ public class House
 		}
 	}
 
-	public boolean isHouse(Personnage P, House h)//Savoir si c'est sa maison
+	public boolean isHouse(Player P, House h)//Savoir si c'est sa maison
 	{
 		if(h.get_owner_id() == P.getAccID()) return true;
 		else return false;
 	}
 	
-	public static void closeCode(Personnage P)
+	public static void closeCode(Player P)
 	{
 		SocketManager.GAME_SEND_KODE(P, "V");
 	}
 	
-	public static void closeBuy(Personnage P)
+	public static void closeBuy(Player P)
 	{
 		SocketManager.GAME_SEND_hOUSE(P, "V");
 	}
 	
-	public void Lock(Personnage P) 
+	public void Lock(Player P) 
 	{
 		SocketManager.GAME_SEND_KODE(P, "CK1|8");
 	}
 	
-	public static void LockHouse(Personnage P, String packet) 
+	public static void LockHouse(Player P, String packet) 
 	{
 		House h = P.getInHouse();
 		if(h.isHouse(P, h))
@@ -402,7 +405,7 @@ public class House
 		}
 	}
 	
-	public static String parseHouseToGuild(Personnage P)
+	public static String parseHouseToGuild(Player P)
 	{
 		boolean isFirst = true;
 		StringBuilder packet = new StringBuilder();
@@ -424,7 +427,7 @@ public class House
 			return packet.toString();
 	}
 	
-	public static boolean AlreadyHaveHouse(Personnage P)
+	public static boolean AlreadyHaveHouse(Player P)
 	{
 		for(Entry<Integer, House> house : World.data.getHouses().entrySet())
 		{
@@ -436,7 +439,7 @@ public class House
 		return false;
 	}
 	
-	public static void parseHG(Personnage P, String packet)
+	public static void parseHG(Player P, String packet)
 	{
 		House h = P.getInHouse();
 		
@@ -537,19 +540,19 @@ public class House
 		}
 	}
 	
-	public static void Leave(Personnage P, String packet)
+	public static void Leave(Player P, String packet)
 	{
 		House h = P.getInHouse();
 		if(!h.isHouse(P, h)) return;
 		int Pguid = Integer.parseInt(packet);
-		Personnage Target = World.data.getPersonnage(Pguid);
+		Player Target = World.data.getPersonnage(Pguid);
 		if(Target == null || !Target.isOnline() || Target.get_fight() != null || Target.get_curCarte().get_id() != P.get_curCarte().get_id()) return;
 		Target.teleport(h.get_map_id(), h.get_cell_id());
 		SocketManager.GAME_SEND_Im_PACKET(Target, "018;"+P.get_name());
 	}
 	
 	
-	public static House get_HouseByPerso(Personnage P)//Connaitre la MAPID + CELLID de sa maison
+	public static House get_HouseByPerso(Player P)//Connaitre la MAPID + CELLID de sa maison
 	{
 		for(Entry<Integer, House> house : World.data.getHouses().entrySet())
 		{

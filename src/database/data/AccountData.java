@@ -5,14 +5,15 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.concurrent.locks.ReentrantLock;
 
-import objects.Compte;
+import client.Account;
+
 
 import common.World;
 
 import core.Console;
 import database.AbstractDAO;
 
-public class AccountData extends AbstractDAO<Compte>{
+public class AccountData extends AbstractDAO<Account>{
 	
 	public AccountData(Connection connection, ReentrantLock locker) {
 		super(connection, locker);
@@ -20,19 +21,19 @@ public class AccountData extends AbstractDAO<Compte>{
 	}
 
 	@Override
-	public boolean create(Compte obj) {
+	public boolean create(Account obj) {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
-	public boolean delete(Compte obj) {
+	public boolean delete(Account obj) {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
-	public boolean update(Compte obj) {
+	public boolean update(Account obj) {
 		try {
 			String baseQuery = "UPDATE accounts SET " +
 								"`bankKamas` = ?,"+
@@ -67,14 +68,14 @@ public class AccountData extends AbstractDAO<Compte>{
 	}
 
 	@Override
-	public Compte load(int id) {
-		Compte account = null;
+	public Account load(int id) {
+		Account account = null;
 		try {
 			String query = "SELECT * FROM accounts WHERE guid = "+id;
 			ResultSet result = super.getData(query);
 			
 			if(result.next()) {
-				account = new Compte(
+				account = new Account(
 						result.getInt("guid"),
 						result.getString("account").toLowerCase(),
 						result.getString("pass"),
@@ -104,13 +105,13 @@ public class AccountData extends AbstractDAO<Compte>{
 		return account;
 	}
 	
-	public Compte loadByName(String name) {
+	public Account loadByName(String name) {
 		try {
 			String query = "SELECT * FROM accounts WHERE account = '"+name+"'";
 			ResultSet result = super.getData(query);
 			
 			if(result.next()) {
-				Compte account = new Compte(
+				Account account = new Account(
 						result.getInt("guid"),
 						result.getString("account").toLowerCase(),
 						result.getString("pass"),
@@ -151,7 +152,7 @@ public class AccountData extends AbstractDAO<Compte>{
 		super.execute(baseQuery);
 	}
 	
-	public void updateState(Compte account, boolean online) { 
+	public void updateState(Account account, boolean online) { 
 		int state = online ? 1 : 0;
 		String baseQuery = "UPDATE accounts SET logged = "+state+" WHERE account = '"+account.get_name()+"';";
 		execute(baseQuery);

@@ -6,8 +6,9 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.concurrent.locks.ReentrantLock;
 
+import client.Player;
+
 import objects.House;
-import objects.Personnage;
 import objects.Trunk;
 
 import common.World;
@@ -64,7 +65,7 @@ public class HouseData extends AbstractDAO<House>{
 		return false;
 	}
 	
-	public boolean update(Personnage player, House house) {
+	public boolean update(Player player, House house) {
 		try {
 			String query = "UPDATE `houses` SET `sale`='0', " +
 					"`owner_id`= "+player.getAccID()+", `guild_id`='0', `access`='0'," +
@@ -120,7 +121,7 @@ public class HouseData extends AbstractDAO<House>{
 		return false;
 	}
 	
-	public boolean update(Personnage player, House house, String packet) {
+	public boolean update(Player player, House house, String packet) {
 		try {
 			String query = "UPDATE `houses` SET `key`=? WHERE `id`=? AND owner_id=?;";
 			PreparedStatement statement = connection.prepareStatement(query);

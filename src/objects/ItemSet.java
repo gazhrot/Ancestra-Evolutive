@@ -2,8 +2,9 @@ package objects;
 
 import java.util.ArrayList;
 
+import client.Player.Stats;
+
 import objects.Objet.ObjTemplate;
-import objects.Personnage.Stats;
 
 import common.World;
 

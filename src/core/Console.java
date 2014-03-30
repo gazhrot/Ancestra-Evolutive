@@ -3,7 +3,8 @@ package core;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 
-import objects.Personnage;
+import client.Player;
+
 import tool.command.CommandParser;
 
 public class Console extends Thread{
@@ -50,8 +51,8 @@ public class Console extends Thread{
 	}
 	
 	public void print(String string, Object t) {
-		if(t instanceof Personnage)
-			((Personnage)t).sendText(string);
+		if(t instanceof Player)
+			((Player)t).sendText(string);
 		else if (t instanceof Console)
 			write(string);
 	}

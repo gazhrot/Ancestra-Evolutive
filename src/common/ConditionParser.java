@@ -2,7 +2,8 @@ package common;
 
 
 
-import objects.Personnage;
+
+import client.Player;
 
 import com.singularsys.jep.Jep;
 import com.singularsys.jep.JepException;
@@ -13,7 +14,7 @@ import core.Log;
 
 public class ConditionParser
 {
-	public static boolean validConditions(Personnage perso,String req)
+	public static boolean validConditions(Player perso,String req)
 	{
 		if(req == null || req.equals(""))return true;
 		if(req.contains("BI"))return false;
@@ -72,7 +73,7 @@ public class ConditionParser
 		return true;
 	}
 	
-	public static String havePO(String cond,Personnage perso)//On remplace les PO par leurs valeurs si possession de l'item
+	public static String havePO(String cond,Player perso)//On remplace les PO par leurs valeurs si possession de l'item
 	{
 		boolean Jump = false;
 		boolean ContainsPO = false;
@@ -271,7 +272,7 @@ public class ConditionParser
 		return copyCond;
 	}
 	
-	public static String canPN(String cond,Personnage perso)//On remplace le PN par 1 et si le nom correspond == 1 sinon == 0
+	public static String canPN(String cond,Player perso)//On remplace le PN par 1 et si le nom correspond == 1 sinon == 0
 	{
 		String copyCond = "";
 		for(String cur : cond.split("=="))

@@ -5,7 +5,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.concurrent.locks.ReentrantLock;
 
-import objects.Personnage;
+import client.Player;
+
 import objects.Trunk;
 
 import common.World;
@@ -50,7 +51,7 @@ public class TrunkData extends AbstractDAO<Trunk>{
 		return false;
 	}
 
-	public boolean update(Personnage player, Trunk trunk, String packet) {
+	public boolean update(Player player, Trunk trunk, String packet) {
 		try {
 			String query = "UPDATE `coffres` SET `key`=? WHERE `id`=? AND owner_id=?;";
 			PreparedStatement statement = connection.prepareStatement(query);

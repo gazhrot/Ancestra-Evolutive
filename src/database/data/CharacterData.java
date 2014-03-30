@@ -6,9 +6,10 @@ import java.sql.ResultSet;
 import java.util.TreeMap;
 import java.util.concurrent.locks.ReentrantLock;
 
-import objects.Compte;
+import client.Account;
+import client.Player;
+
 import objects.Objet;
-import objects.Personnage;
 
 import common.Constants;
 import common.World;
@@ -16,7 +17,7 @@ import common.World;
 import core.Console;
 import database.AbstractDAO;
 
-public class CharacterData extends AbstractDAO<Personnage>{
+public class CharacterData extends AbstractDAO<Player>{
 
 	public CharacterData(Connection connection, ReentrantLock locker) {
 		super(connection, locker);
@@ -24,7 +25,7 @@ public class CharacterData extends AbstractDAO<Personnage>{
 	}
 
 	@Override
-	public boolean create(Personnage obj) {
+	public boolean create(Player obj) {
 		String baseQuery = "INSERT INTO personnages( `guid` ," +
 				" `name` , `sexe` , `class` , `color1` , `color2` , `color3` , `kamas` ," +
 				" `spellboost` , `capital` , `energy` , `level` , `xp` , `size` , `gfx` ," +
@@ -63,7 +64,7 @@ public class CharacterData extends AbstractDAO<Personnage>{
 	}
 
 	@Override
-	public boolean delete(Personnage obj) {
+	public boolean delete(Player obj) {
 		try {
 			String baseQuery = "DELETE FROM personnages WHERE guid = "+obj.get_GUID();
 			execute(baseQuery);
@@ -89,7 +90,7 @@ public class CharacterData extends AbstractDAO<Personnage>{
 	}
 
 	@Override
-	public boolean update(Personnage obj)  {
+	public boolean update(Player obj)  {
 		try {
 			String baseQuery = "UPDATE `personnages` SET `kamas`= ?,`spellboost`= ?,"+
 							"`capital`= ?, `energy`= ?, `level`= ?, `xp`= ?, `size` = ?," +
@@ -157,7 +158,7 @@ public class CharacterData extends AbstractDAO<Personnage>{
 		return false;
 	}
 	
-	public boolean updateItems(Personnage obj) {
+	public boolean updateItems(Player obj) {
 		try {
 			for(Objet item: obj.getItems().values()) {
 				World.database.getItemData().update(item);
@@ -179,8 +180,8 @@ public class CharacterData extends AbstractDAO<Personnage>{
 	}
 
 	@Override
-	public Personnage load(int id) {
-		Personnage player = null;
+	public Player load(int id) {
+		Player player = null;
 		try {
 			ResultSet result = getData("SELECT * FROM personnages WHERE guid = "+id);
 			
@@ -193,7 +194,7 @@ public class CharacterData extends AbstractDAO<Personnage>{
 				stats.put(Constants.STATS_ADD_CHAN, result.getInt("chance"));
 				stats.put(Constants.STATS_ADD_AGIL, result.getInt("agilite"));
 				
-				player = new Personnage(
+				player = new Player(
 						result.getInt("guid"),
 						result.getString("name"),
 						result.getInt("sexe"),
@@ -245,8 +246,8 @@ public class CharacterData extends AbstractDAO<Personnage>{
 		return player;
 	}
 	
-	public Personnage loadByAccount(Compte obj) {
-		Personnage player = null;
+	public Player loadByAccount(Account obj) {
+		Player player = null;
 		try {
 			ResultSet result = getData("SELECT * FROM personnages WHERE account = "+obj.get_GUID());
 			while(result.next()) {
@@ -258,7 +259,7 @@ public class CharacterData extends AbstractDAO<Personnage>{
 				stats.put(Constants.STATS_ADD_CHAN, result.getInt("chance"));
 				stats.put(Constants.STATS_ADD_AGIL, result.getInt("agilite"));
 				
-				player = new Personnage(
+				player = new Player(
 						result.getInt("guid"),
 						result.getString("name"),
 						result.getInt("sexe"),

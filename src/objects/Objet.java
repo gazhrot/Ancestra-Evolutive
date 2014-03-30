@@ -5,7 +5,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
-import objects.Personnage.Stats;
+import client.Player;
+import client.Player.Stats;
+
 import objects.job.Job;
 
 import common.Constants;
@@ -214,7 +216,7 @@ public class Objet {
 			return (this.ID+";"+StrTemplate);
 		}
 
-		public void applyAction(Personnage perso, Personnage target, int objID, short cellid)
+		public void applyAction(Player perso, Player target, int objID, short cellid)
 		{
 			for(Action a : onUseActions)a.apply(perso, target, objID, cellid);
 		}
@@ -241,7 +243,7 @@ public class Objet {
 	protected int quantity = 1;
 	protected int position = Constants.ITEM_POS_NO_EQUIPED;
 	protected int guid;
-	private Personnage.Stats Stats = new Stats();
+	private Player.Stats Stats = new Stats();
 	private ArrayList<SpellEffect> Effects = new ArrayList<SpellEffect>();
 	private Map<Integer,String> txtStats = new TreeMap<Integer,String>();
 	
@@ -333,7 +335,7 @@ public class Objet {
 		this.Effects = effects;
 	}
 	
-	public Personnage.Stats getStats() {
+	public Player.Stats getStats() {
 		return Stats;
 	}
 

@@ -15,11 +15,13 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
+import client.Account;
+import client.Player;
+
 import objects.Animations;
 import objects.Area;
 import objects.Carte;
 import objects.Carte.MountPark;
-import objects.Compte;
 import objects.Dragodinde;
 import objects.ExpLevel;
 import objects.Guild;
@@ -36,7 +38,6 @@ import objects.Objet;
 import objects.Objet.ObjTemplate;
 import objects.job.Job;
 import objects.Percepteur;
-import objects.Personnage;
 import objects.PierreAme;
 import objects.Sort;
 import objects.SubArea;
@@ -58,8 +59,8 @@ public class World {
 	public static Database database = new Database();
 	
 	
-	private Map<Integer, Compte> accounts = new HashMap<>();
-	private Map<Integer, Personnage> players = new HashMap<>();
+	private Map<Integer, Account> accounts = new HashMap<>();
+	private Map<Integer, Player> players = new HashMap<>();
 	private Map<Short, Carte> maps = new HashMap<>();
 	private Map<Integer, Objet> objects = new HashMap<>();
 	private Map<Integer, ExpLevel> expLevels = new HashMap<>();
@@ -80,14 +81,14 @@ public class World {
 	private Map<Integer, Guild> guilds = new HashMap<>();
 	private Map<Integer, HDV> hdvs = new HashMap<>();
 	private Map<Integer, Map<Integer, ArrayList<HdvEntry>>> hdvItems = new HashMap<>();
-	private Map<Integer, Personnage> married = new HashMap<>();
+	private Map<Integer, Player> married = new HashMap<>();
 	private Map<Integer, Animations> animations = new HashMap<>();
 	private Map<Short, Carte.MountPark> mountParks = new HashMap<>();
 	private Map<Integer, Trunk> trunks = new HashMap<>();
 	private Map<Integer, Percepteur> collectors = new ConcurrentHashMap<>();
 	private Map<Integer, House> houses = new HashMap<>();
 	private Map<Short, Collection<Integer>> sellers = new HashMap<>();
-	private Map<String, Command<Personnage>> playerCommands = new HashMap<>();
+	private Map<String, Command<Player>> playerCommands = new HashMap<>();
 	private Map<String, Command<Console>> consoleCommands = new HashMap<>();
 	private ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 	private Connection connection;
@@ -166,7 +167,7 @@ public class World {
 		expLevels.put(lvl, exp);
 	}
 
-	public Compte getCompte(int guid) {
+	public Account getCompte(int guid) {
 		return accounts.get(guid);
 	}
 
@@ -209,10 +210,10 @@ public class World {
 			maps.remove(map.get_id());
 	}
 
-	public Compte getCompteByName(String name) {
-		Compte account = null;
+	public Account getCompteByName(String name) {
+		Account account = null;
 		
-		for(Compte acc: accounts.values())
+		for(Account acc: accounts.values())
 			if(acc.get_name().equalsIgnoreCase(name))
 				account = acc;
 		
@@ -221,28 +222,28 @@ public class World {
 		return account;
 	}
 
-	public Personnage getPersonnage(int guid) {
+	public Player getPersonnage(int guid) {
 		return players.get(guid);
 	}
 
-	public void addAccount(Compte compte) {
+	public void addAccount(Account compte) {
 		accounts.put(compte.get_GUID(), compte);
 	}
 
-	public void addPersonnage(Personnage perso) {
+	public void addPersonnage(Player perso) {
 		players.put(perso.get_GUID(), perso);
 	}
 
-	public Personnage getPersoByName(String name) {
-		ArrayList<Personnage> Ps = new ArrayList<Personnage>();
+	public Player getPersoByName(String name) {
+		ArrayList<Player> Ps = new ArrayList<Player>();
 		Ps.addAll(players.values());
-		for (Personnage P : Ps)
+		for (Player P : Ps)
 			if (P.get_name().equalsIgnoreCase(name))
 				return P;
 		return null;
 	}
 
-	public void deletePerso(Personnage perso) {
+	public void deletePerso(Player perso) {
 		if (perso.get_guild() != null) {
 			if (perso.get_guild().getMembers().size() <= 1)// Il est tout seul
 															// dans la guilde :
@@ -257,8 +258,8 @@ public class World {
 																// est meneur
 			{
 				int curMaxRight = 0;
-				Personnage Meneur = null;
-				for (Personnage newMeneur : perso.get_guild().getMembers()) {
+				Player Meneur = null;
+				for (Player newMeneur : perso.get_guild().getMembers()) {
 					if (newMeneur == perso)
 						continue;
 					if (newMeneur.getGuildMember().getRights() < curMaxRight) {
@@ -335,9 +336,9 @@ public class World {
 		return monster;
 	}
 
-	public List<Personnage> getOnlinePersos() {
-		List<Personnage> online = new ArrayList<Personnage>();
-		for (Entry<Integer, Personnage> perso : players.entrySet()) {
+	public List<Player> getOnlinePersos() {
+		List<Player> online = new ArrayList<Player>();
+		for (Entry<Integer, Player> perso : players.entrySet()) {
 			if (perso.getValue().isOnline()
 					&& perso.getValue().get_compte().getGameClient() != null) {
 				if (perso.getValue().get_compte().getGameClient() != null) {
@@ -390,7 +391,7 @@ public class World {
 		saveWorker.execute(new Runnable() {
 			public void run() {
 				GameClient _out = null;
-				Personnage saver = saverID != -1 ? getPersonnage(saverID)
+				Player saver = saverID != -1 ? getPersonnage(saverID)
 						: null;
 				if (saver != null)
 					_out = saver.get_compte().getGameClient();
@@ -403,7 +404,7 @@ public class World {
 					Server.config.setSaving(true);
 
 					Log.addToLog("Sauvegarde des personnages...");
-					for (Personnage perso : players.values()) {
+					for (Player perso : players.values()) {
 						if (!perso.isOnline())
 							continue;
 						database.getCharacterData().update(perso);
@@ -556,8 +557,8 @@ public class World {
 		return -1;
 	}
 
-	public Compte getCompteByPseudo(String p) {
-		for (Compte C : accounts.values())
+	public Account getCompteByPseudo(String p) {
+		for (Account C : accounts.values())
 			if (C.get_pseudo().equals(p))
 				return C;
 		return null;
@@ -639,10 +640,10 @@ public class World {
 		return expLevels.get(_lvl + 1).guilde;
 	}
 
-	public void ReassignAccountToChar(Compte C) {
+	public void ReassignAccountToChar(Account C) {
 		C.get_persos().clear();
 		database.getCharacterData().loadByAccount(C);
-		for (Personnage P : players.values()) {
+		for (Player P : players.values()) {
 			if (P.getAccID() == C.get_GUID()) {
 				P.setAccount(C);
 			}
@@ -687,14 +688,14 @@ public class World {
 	}
 
 	public boolean ipIsUsed(String ip) {
-		for (Compte c : accounts.values())
+		for (Account c : accounts.values())
 			if (c.get_curIP().compareTo(ip) == 0)
 				return true;
 		return false;
 	}
 
 	public void unloadPerso(int g) {
-		Personnage toRem = players.get(g);
+		Player toRem = players.get(g);
 		if (!toRem.getItems().isEmpty()) {
 			for (Entry<Integer, Objet> curObj : toRem.getItems().entrySet()) {
 				objects.remove(curObj.getKey());
@@ -704,11 +705,24 @@ public class World {
 		// players.remove(g);
 	}
 
-	public boolean isArenaMap(int mapID) {
-		for (int curID : Server.config.getArenaMaps()) {
-			if (curID == mapID)
+	public boolean isArenaMap(int id) {
+		for (int curId : Server.config.getArenaMaps())
+			if (curId == id)
 				return true;
-		}
+		return false;
+	}
+	
+	public boolean isMarchandMap(int id) {
+		for (int curId : Server.config.getMarchandMaps())
+			if (curId == id)
+				return true;
+		return false;
+	}
+	
+	public boolean isCollectorMap(int id) {
+		for (int curId : Server.config.getCollectorMaps())
+			if (curId == id)
+				return true;
 		return false;
 	}
 
@@ -824,12 +838,12 @@ public class World {
 		return templateObjects.values();
 	}
 
-	public Personnage getMarried(int ordre) {
+	public Player getMarried(int ordre) {
 		return married.get(ordre);
 	}
 
-	public void AddMarried(int ordre, Personnage perso) {
-		Personnage Perso = married.get(ordre);
+	public void AddMarried(int ordre, Player perso) {
+		Player Perso = married.get(ordre);
 		if (Perso != null) {
 			if (perso.get_GUID() == Perso.get_GUID()) // Si c'est le meme
 														// joueur...
@@ -848,9 +862,9 @@ public class World {
 		}
 	}
 
-	public void PriestRequest(Personnage perso, Carte carte, int IdPretre) {
-		Personnage Homme = married.get(0);
-		Personnage Femme = married.get(1);
+	public void PriestRequest(Player perso, Carte carte, int IdPretre) {
+		Player Homme = married.get(0);
+		Player Femme = married.get(1);
 		if (Homme.getWife() != 0) {
 			SocketManager.GAME_SEND_MESSAGE_TO_MAP(carte, Homme.get_name()
 					+ " est deja marier!", Server.config.getMotdColor());
@@ -872,7 +886,7 @@ public class World {
 				IdPretre);
 	}
 
-	public void Wedding(Personnage Homme, Personnage Femme, int isOK) {
+	public void Wedding(Player Homme, Player Femme, int isOK) {
 		if (isOK > 0) {
 			SocketManager.GAME_SEND_cMK_PACKET_TO_MAP(Homme.get_curCarte(), "",
 					-1, "Prêtre", "Je déclare " + Homme.get_name() + " et "
@@ -990,17 +1004,17 @@ public class World {
 		return i;
 	}
 
-	public void addSeller(Personnage p) {
-		if (sellers.get(p.get_curCarte().get_id()) == null) {
-			ArrayList<Integer> PersoID = new ArrayList<Integer>();
-			PersoID.add(p.get_GUID());
-			sellers.put(p.get_curCarte().get_id(), PersoID);
+	public void addSeller(int id, short map) {
+		if (sellers.get(map) == null) {
+			ArrayList<Integer> players = new ArrayList<Integer>();
+			players.add(id);
+			sellers.put(map, players);
 		} else {
-			ArrayList<Integer> PersoID = new ArrayList<Integer>();
-			PersoID.addAll(sellers.get(p.get_curCarte().get_id()));
-			PersoID.add(p.get_GUID());
-			sellers.remove(p.get_curCarte().get_id());
-			sellers.put(p.get_curCarte().get_id(), PersoID);
+			ArrayList<Integer> players = new ArrayList<Integer>();
+			players.addAll(sellers.get(map));
+			players.add(id);
+			sellers.remove(map);
+			sellers.put(map, players);
 		}
 	}
 
@@ -1012,7 +1026,7 @@ public class World {
 		sellers.get(mapID).remove(pID);
 	}
 
-	public Map<String, Command<Personnage>> getPlayerCommands() {
+	public Map<String, Command<Player>> getPlayerCommands() {
 		return playerCommands;
 	}
 
@@ -1032,7 +1046,7 @@ public class World {
 		this.connection = connection;
 	}
 	
-	public Map<Integer, Personnage> getPlayers() {
+	public Map<Integer, Player> getPlayers() {
 		return this.players;
 	}
 
@@ -1040,7 +1054,7 @@ public class World {
 		return iaWorker;
 	}
 	
-	public Map<Integer, Compte> getAccounts() {
+	public Map<Integer, Account> getAccounts() {
 		return this.accounts;
 	}
 }

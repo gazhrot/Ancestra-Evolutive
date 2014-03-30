@@ -4,6 +4,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
+import client.Player;
+
 
 import common.SocketManager;
 import common.World;
@@ -291,7 +293,7 @@ public class Percepteur
 		return i;
 	}
 	
-	public static void parseAttaque(Personnage perso, int guildID)
+	public static void parseAttaque(Player perso, int guildID)
 	{
 		for(Entry<Integer, Percepteur> perco :  World.data.getPercos().entrySet()) 
 		{
@@ -302,7 +304,7 @@ public class Percepteur
 		}
 	}
 	
-	public static void parseDefense(Personnage perso, int guildID)
+	public static void parseDefense(Player perso, int guildID)
 	{
 		for(Entry<Integer, Percepteur> perco :  World.data.getPercos().entrySet()) 
 		{
@@ -391,7 +393,7 @@ public class Percepteur
 	}
 	
 	
-	public void removeFromPercepteur(Personnage P, int guid, int qua)
+	public void removeFromPercepteur(Player P, int guid, int qua)
 	{
 		Objet PercoObj = World.data.getObjet(guid);
 		Objet PersoObj = P.getSimilarItem(PercoObj);
@@ -518,7 +520,7 @@ public class Percepteur
 			{
 				Percepteur collector = perco.getValue();
 				World.data.getPercos().remove(perco.getKey());
-				for(Personnage p : World.data.getCarte((short) perco.getValue().get_mapID()).getPersos())
+				for(Player p : World.data.getCarte((short) perco.getValue().get_mapID()).getPersos())
 				{
 					SocketManager.GAME_SEND_ERASE_ON_MAP_TO_MAP(p.get_curCarte(), perco.getValue().getGuid());//Suppression visuelle
 				}

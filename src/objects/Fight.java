@@ -17,11 +17,13 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import javax.swing.Timer;
 
+import client.Player;
+import client.Player.Group;
+
 import objects.Carte.Case;
 import objects.Monstre.MobGrade;
 import objects.Monstre.MobGroup;
 import objects.Objet.ObjTemplate;
-import objects.Personnage.Group;
 import objects.Sort.SortStats;
 import tool.time.waiter.Waiter;
 
@@ -44,7 +46,7 @@ public class Fight
 	private Map<Integer,Fighter> _team0 = new ConcurrentHashMap<>();
 	private Map<Integer,Fighter> _team1 = new ConcurrentHashMap<>();
 	private Map<Integer,Fighter> deadList = new ConcurrentHashMap<>();
-	private Map<Integer,Personnage> _spec  = new ConcurrentHashMap<>();
+	private Map<Integer,Player> _spec  = new ConcurrentHashMap<>();
 	private Carte _map, _mapOld;
 	private Fighter _init0, _init1;
 	private ArrayList<Case> _start0 = new ArrayList<Case>(), _start1 = new ArrayList<Case>();
@@ -96,7 +98,7 @@ public class Fight
 	    return new Timer (1000, action);
 	 }
 	
-	public Fight(int type, int id,Carte map, Personnage init1, Personnage init2, boolean init2Protected)
+	public Fight(int type, int id,Carte map, Player init1, Player init2, boolean init2Protected)
 	{
 		_type = type; //0: Défie (4: Pvm) 1:PVP (5:Perco)
 		_id = id;
@@ -184,7 +186,7 @@ public class Fight
 		set_state(Constants.FIGHT_STATE_PLACE);
 	}
 	
-	public Fight(int id,Carte map,Personnage init1, MobGroup group)
+	public Fight(int id,Carte map,Player init1, MobGroup group)
 	{
 		_mobGroup = group;
 		_type = Constants.FIGHT_TYPE_PVM; //(0: Défie) 4: Pvm (1:PVP) (5:Perco)
@@ -272,7 +274,7 @@ public class Fight
 		set_state(Constants.FIGHT_STATE_PLACE);
 	}
 
-	public Fight(int id, Carte map, Personnage perso, Percepteur perco) 
+	public Fight(int id, Carte map, Player perso, Percepteur perco) 
 	{	
 		set_guildID(perco.get_guildID());
 		perco.set_inFight((byte)1);
@@ -360,7 +362,7 @@ public class Fight
 		set_state(Constants.FIGHT_STATE_PLACE);
 		
 		//On actualise la guilde+Message d'attaque FIXME
-		for(Personnage z : World.data.getGuild(_guildID).getMembers())
+		for(Player z : World.data.getGuild(_guildID).getMembers())
 		{
 			if(z == null) continue;
 			if(z.isOnline())
@@ -420,7 +422,7 @@ public class Fight
 		
 		if(teams - 4 >= 0)
 		{
-			for(Entry<Integer,Personnage> entry : _spec.entrySet())
+			for(Entry<Integer,Player> entry : _spec.entrySet())
 			{
 				fighters.add(new Fighter(Fight.this,entry.getValue()));
 			}
@@ -444,7 +446,7 @@ public class Fight
 		return fighters;
 	}
 	
-	public synchronized void changePlace(Personnage perso,int cell)
+	public synchronized void changePlace(Player perso,int cell)
 	{
 		Fighter fighter = getFighterByPerso(perso);
 		int team = getTeamID(perso.get_GUID()) -1;
@@ -518,7 +520,7 @@ public class Fight
 		{
 			_perco.set_inFight((byte)2);
 			//On actualise la guilde+Message d'attaque FIXME
-			for(Personnage z : World.data.getGuild(_guildID).getMembers())
+			for(Player z : World.data.getGuild(_guildID).getMembers())
 			{
 				if(z == null) continue;
 				if(z.isOnline())
@@ -561,7 +563,7 @@ public class Fight
 		if(Server.config.isDebug()) Log.addToLog("Debut du combat");
 		for(Fighter F : getFighters(3))
 		{
-			Personnage perso = F.getPersonnage();
+			Player perso = F.getPersonnage();
 			if(perso == null)continue;
 			if(perso.isOnMount())
 				SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(Fight.this, 3, 950, perso.get_GUID()+"", perso.get_GUID()+","+Constants.ETAT_CHEVAUCHANT+",1");
@@ -824,7 +826,7 @@ public class Fight
 		}while(_ordreJeu.size() != getFighters(3).size());
 	}
 
-	public void joinFight(Personnage perso, int guid)
+	public void joinFight(Player perso, int guid)
 	{	
 		Fighter current_Join = null;
 		if(_team0.containsKey(guid))
@@ -959,7 +961,7 @@ public class Fight
 		SocketManager.GAME_SEND_MAP_FIGHT_GMS_PACKETS(Fight.this,_map,perso);
 		if(_perco != null)
 		{
-			for(Personnage z : World.data.getGuild(_guildID).getMembers())
+			for(Player z : World.data.getGuild(_guildID).getMembers())
 			{
 				if(z.isOnline())
 				{
@@ -970,7 +972,7 @@ public class Fight
 		}
 	}
 	
-	public void joinPercepteurFight(final Personnage perso, int guid, final int percoID) {	
+	public void joinPercepteurFight(final Player perso, int guid, final int percoID) {	
 		perso.getWaiter().addNext(new Runnable() {
 			public void run() {
 				Fighter current_Join = null;
@@ -1245,7 +1247,7 @@ public class Fight
         return true;
     }
 
-	public void onGK(Personnage perso) //TODO AAHH
+	public void onGK(Player perso) //TODO AAHH
 	{
 		if(get_curAction().equals("")|| _ordreJeu.get(_curPlayer).getGUID() != perso.get_GUID() || _state!= Constants.FIGHT_STATE_ACTIVE)return;
 		if(Server.config.isDebug()) Log.addToLog("("+_curPlayer+")Fin du deplacement de Fighter ID= "+perso.get_GUID());
@@ -1267,7 +1269,7 @@ public class Fight
 			endTurn();
 	}
 
-	public void playerPass(Personnage _perso)
+	public void playerPass(Player _perso)
 	{
 		Fighter f = getFighterByPerso(_perso);
 		if(f == null)return;
@@ -1363,7 +1365,7 @@ public class Fight
 		}
 		
 		Fighter f = _ordreJeu.get(_curPlayer);
-		Personnage perso = fighter.getPersonnage();
+		Player perso = fighter.getPersonnage();
 		//Si le sort n'est pas existant
 		if(spell == null)
 		{
@@ -1486,7 +1488,7 @@ public class Fight
         	TEAM2.addAll(_team0.values());
         }
         //Traque
-        Personnage curp = null; 
+        Player curp = null; 
         for(Fighter F : TEAM1)
         {
         	if(F.isInvocation())continue;
@@ -1742,7 +1744,7 @@ public class Fight
 	        			if(i.getPersonnage().getDeshonor() > 0) winD = -1;
 	    			}
         		}
-        		Personnage P = i.getPersonnage();
+        		Player P = i.getPersonnage();
         		if(P.get_honor()+winH<0)winH = -P.get_honor();
         		P.addHonor(winH);
         		P.setDeshonor(P.getDeshonor()+winD);
@@ -1815,7 +1817,7 @@ public class Fight
         			}
     			}
         		
-        		Personnage P = i.getPersonnage();
+        		Player P = i.getPersonnage();
         		if(P.get_honor()+winH<0)winH = -P.get_honor();
         		P.addHonor(winH);
         		if(P.getDeshonor()-winD<0) winD = 0;
@@ -1932,7 +1934,7 @@ public class Fight
 			
 			for(Entry<Integer, Fighter> entry : _team0.entrySet())//Team mob sauf en défie/aggro
 			{
-				Personnage perso = entry.getValue().getPersonnage();
+				Player perso = entry.getValue().getPersonnage();
 				if(perso == null)continue;
 				perso.set_duelID(-1);
 				perso.set_ready(false);
@@ -1944,7 +1946,7 @@ public class Fight
 				case Constants.FIGHT_TYPE_AGRESSION://Aggro
 					for(Entry<Integer, Fighter> entry : _team1.entrySet())
 					{
-						Personnage perso = entry.getValue().getPersonnage();
+						Player perso = entry.getValue().getPersonnage();
 						if(perso == null)continue;
 						perso.set_duelID(-1);
 						perso.set_ready(false);
@@ -1957,7 +1959,7 @@ public class Fight
 			}
 			
 			//on vire les spec du combat
-			for(Personnage perso: _spec.values())
+			for(Player perso: _spec.values())
 			{
 				//on remet le perso sur la map
 				perso.get_curCarte().addPlayer(perso);
@@ -1992,7 +1994,7 @@ public class Fight
 						if(F._Perco != null)
 						{
 							//On actualise la guilde+Message d'attaque FIXME
-							for(Personnage z : World.data.getGuild(_guildID).getMembers())
+							for(Player z : World.data.getGuild(_guildID).getMembers())
 							{
 								if(z == null) continue;
 								if(z.isOnline())
@@ -2003,7 +2005,7 @@ public class Fight
 							}
 							F._Perco.set_inFight((byte)0);
 							F._Perco.set_inFightID((byte)-1);
-							for(Personnage z : World.data.getCarte((short)F._Perco.get_mapID()).getPersos())
+							for(Player z : World.data.getCarte((short)F._Perco.get_mapID()).getPersos())
 							{
 								if(z == null) continue;
 								SocketManager.GAME_SEND_MAP_PERCO_GMS_PACKETS(z.get_compte().getGameClient(), z.get_curCarte());
@@ -2040,7 +2042,7 @@ public class Fight
 							_perco.DelPerco(F._Perco.getGuid());
 							World.database.getCollectorData().delete(F._Perco);
 							//On actualise la guilde+Message d'attaque FIXME
-							for(Personnage z : World.data.getGuild(_guildID).getMembers())
+							for(Player z : World.data.getGuild(_guildID).getMembers())
 							{
 								if(z == null) continue;
 								if(z.isOnline())
@@ -2231,7 +2233,7 @@ public class Fight
 		return -1;
 	}
 
-	public void tryCaC(Personnage perso, int cellID)
+	public void tryCaC(Player perso, int cellID)
 	{
 		Fighter caster = getFighterByPerso(perso);
 		
@@ -2336,7 +2338,7 @@ public class Fight
 		}
 	}
 	
-	public Fighter getFighterByPerso(Personnage perso)
+	public Fighter getFighterByPerso(Player perso)
 	{
 		Fighter fighter = null;
 		if(_team0.get(perso.get_GUID()) != null)
@@ -2357,7 +2359,7 @@ public class Fight
 		set_curFighterPM(_ordreJeu.get(_curPlayer).getTotalStats().getEffect(Constants.STATS_ADD_PM) - _curFighterUsedPM);
 	}
 
-	public void leftFight(Personnage perso, Personnage target)
+	public void leftFight(Player perso, Player target)
 	{
 		if(perso == null)return;
 		Fighter F = Fight.this.getFighterByPerso(perso);
@@ -2405,7 +2407,7 @@ public class Fight
 							F.setLeft(true);
 							SocketManager.GAME_SEND_ERASE_ON_MAP_TO_MAP(_map, F.getGUID());
 								
-							Personnage P = F.getPersonnage();
+							Player P = F.getPersonnage();
 							P.set_duelID(-1);
 							P.set_ready(false);
 							P.fullPDV();
@@ -2493,7 +2495,7 @@ public class Fight
 								if(Server.config.isDebug()) Console.instance.println("EXULSION DE : "+T.getPersonnage().get_name());
 								SocketManager.GAME_SEND_ON_FIGHTER_KICK(Fight.this, T.getPersonnage().get_GUID(), getTeamID(T.getGUID()));
 								if(_type == Constants.FIGHT_TYPE_AGRESSION || _type == Constants.FIGHT_TYPE_CHALLENGE || _type == Constants.FIGHT_TYPE_PVT) SocketManager.GAME_SEND_ON_FIGHTER_KICK(Fight.this, T.getPersonnage().get_GUID(), getOtherTeamID(T.getGUID()));
-								Personnage P = T.getPersonnage();
+								Player P = T.getPersonnage();
 								P.set_duelID(-1);
 								P.set_ready(false);
 								P.fullPDV();
@@ -2522,7 +2524,7 @@ public class Fight
 									T.get_cell().removeFighter(T);
 									_team1.remove(T.getGUID());
 								}
-								for(Personnage z : get_mapOld().getPersos()) FightStateAddFlag(Fight.this.get_mapOld(), z);
+								for(Player z : get_mapOld().getPersos()) FightStateAddFlag(Fight.this.get_mapOld(), z);
 							}
 						}else if(T == null)//Il leave de son plein gré donc (T = null)
 						{
@@ -2546,7 +2548,7 @@ public class Fight
 							{
 								for(Fighter f : Fight.this.getFighters(F.getTeam2()))
 								{
-									Personnage P = f.getPersonnage();
+									Player P = f.getPersonnage();
 									P.set_duelID(-1);
 									P.set_ready(false);
 									P.fullPDV();
@@ -2617,7 +2619,7 @@ public class Fight
 									for(Fighter f : Fight.this.getFighters(F.getOtherTeam()))
 									{
 										if(f.getPersonnage() == null) continue;
-										Personnage P = f.getPersonnage();
+										Player P = f.getPersonnage();
 										P.set_duelID(-1);
 										P.set_ready(false);
 										P.fullPDV();
@@ -2639,7 +2641,7 @@ public class Fight
 								if(_type == Constants.FIGHT_TYPE_PVT)
 								{
 									//On actualise la guilde+Message d'attaque FIXME
-									for(Personnage z : World.data.getGuild(_guildID).getMembers())
+									for(Player z : World.data.getGuild(_guildID).getMembers())
 									{
 										if(z == null) continue;
 										if(z.isOnline())
@@ -2650,7 +2652,7 @@ public class Fight
 									}
 									_perco.set_inFight((byte)0);
 									_perco.set_inFightID((byte)-1);
-									for(Personnage z : World.data.getCarte((short)_perco.get_mapID()).getPersos())
+									for(Player z : World.data.getCarte((short)_perco.get_mapID()).getPersos())
 									{
 										if(z == null) continue;
 										SocketManager.GAME_SEND_MAP_PERCO_GMS_PACKETS(z.get_compte().getGameClient(), z.get_curCarte());
@@ -2672,7 +2674,7 @@ public class Fight
 							{
 								SocketManager.GAME_SEND_ON_FIGHTER_KICK(Fight.this, F.getPersonnage().get_GUID(), getTeamID(F.getGUID()));
 								if(_type == Constants.FIGHT_TYPE_AGRESSION || _type == Constants.FIGHT_TYPE_CHALLENGE || _type == Constants.FIGHT_TYPE_PVT) SocketManager.GAME_SEND_ON_FIGHTER_KICK(Fight.this, F.getPersonnage().get_GUID(), getOtherTeamID(F.getGUID()));
-								Personnage P = F.getPersonnage();
+								Player P = F.getPersonnage();
 								P.set_duelID(-1);
 								P.set_ready(false);
 								P.fullPDV();
@@ -2734,7 +2736,7 @@ public class Fight
 									F.get_cell().removeFighter(F);
 									_team1.remove(F.getGUID());
 								}
-								for(Personnage z : get_mapOld().getPersos()) FightStateAddFlag(Fight.this.get_mapOld(), z);
+								for(Player z : get_mapOld().getPersos()) FightStateAddFlag(Fight.this.get_mapOld(), z);
 							}
 						}
 					}else
@@ -2872,14 +2874,14 @@ public class Fight
 			if(e.getValue().getPersonnage() != null && e.getValue().getPersonnage().get_compte().getGameClient() != null)
 				PWs.add(e.getValue().getPersonnage().get_compte().getGameClient());
 		}
-		for(Entry<Integer,Personnage> e : _spec.entrySet())
+		for(Entry<Integer,Player> e : _spec.entrySet())
 		{
 			PWs.add(e.getValue().get_compte().getGameClient());
 		}
 		SocketManager.GAME_SEND_FIGHT_SHOW_CASE(PWs, guid, cellID);
 	}
 
-	public void joinAsSpect(Personnage p)
+	public void joinAsSpect(Player p)
 	{
 		if(!specOk  || _state != Constants.FIGHT_STATE_ACTIVE)
 		{
@@ -2987,7 +2989,7 @@ public class Fight
 		return false;
 	}
 	
-	public static void FightStateAddFlag(Carte _map, Personnage P)
+	public static void FightStateAddFlag(Carte _map, Player P)
 	{
 		for(Entry<Integer, Fight> fight : _map.get_fights().entrySet())
 		{

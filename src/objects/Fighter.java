@@ -5,9 +5,11 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.Map.Entry;
 
+import client.Player;
+import client.Player.Stats;
+
 import objects.Carte.Case;
 import objects.Monstre.MobGrade;
-import objects.Personnage.Stats;
 import objects.Sort.SortStats;
 
 import common.Constants;
@@ -26,9 +28,9 @@ public class Fighter
 	private Fight _fight;
 	private int _type = 0; // 1 : Personnage, 2 : Mob, 5 : Perco
 	private MobGrade _mob = null;
-	private Personnage _perso = null;
+	private Player _perso = null;
 	Percepteur _Perco = null;
-	Personnage _double = null;
+	Player _double = null;
 	private int _team = -2;
 	private Case _cell;
 	private Case fakeCell; //cell before spell cast (hide mode)
@@ -66,7 +68,7 @@ public class Fighter
 		_gfxID = getDefaultGfx();
 	}
 	
-	public Fighter(Fight f, Personnage perso)
+	public Fighter(Fight f, Player perso)
 	{
 		_fight = f;
 		if(perso._isClone)
@@ -188,7 +190,7 @@ public class Fighter
 		_hasLeft = hasLeft;
 	}
 
-	public Personnage getPersonnage()
+	public Player getPersonnage()
 	{
 		if(_type == 1)
 			return _perso;

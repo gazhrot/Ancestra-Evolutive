@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicReference;
 
+import client.Player;
+
 import objects.Carte;
 import objects.Fight;
 import objects.Fighter;
@@ -12,7 +14,6 @@ import objects.Guild;
 import objects.Guild.GuildMember;
 import objects.Objet;
 import objects.Percepteur;
-import objects.Personnage;
 import objects.SpellEffect;
 import core.Console;
 import core.Server;
@@ -71,7 +72,7 @@ public class Formulas {
 		return chance;
 	}
 
-	public static int calculFinalHeal(Personnage caster,int jet)
+	public static int calculFinalHeal(Player caster,int jet)
 	{
 		int statC = caster.getTotalStats().getEffect(Constants.STATS_ADD_INTE);
 		int soins = caster.getTotalStats().getEffect(Constants.STATS_ADD_SOIN);
@@ -797,7 +798,7 @@ public class Formulas {
 		return toReturn;
 	}
 	
-	public static int totalCaptChance(int pierreChance, Personnage p)
+	public static int totalCaptChance(int pierreChance, Player p)
 	{
 		int sortChance = 0;
 

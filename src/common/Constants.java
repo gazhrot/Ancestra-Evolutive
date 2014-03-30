@@ -5,15 +5,16 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.TreeMap;
 
+import client.Player;
+import client.Player.Stats;
+
 import core.Server;
 import core.Log;
 import enums.EmulatorInfos;
 
 
 import objects.Fighter;
-import objects.Personnage;
 import objects.Objet.ObjTemplate;
-import objects.Personnage.Stats;
 import objects.Sort.SortStats;
 import objects.job.Job.JobAction;
 
@@ -1276,7 +1277,7 @@ public class Constants
 		return false;
 	}
 	
-	public static void onLevelUpSpells(Personnage perso,int lvl)
+	public static void onLevelUpSpells(Player perso,int lvl)
 	{
 		switch(perso.get_classe())
 		{
@@ -2849,7 +2850,7 @@ public class Constants
 		return -1;
 	}
 	
-	public static void applyPlotIOAction(Personnage perso,int mID, int cID)
+	public static void applyPlotIOAction(Player perso,int mID, int cID)
 	{
 		//Gère les differentes actions des "bornes" (IO des émotes)
 		switch(mID)
@@ -2872,7 +2873,7 @@ public class Constants
 		}
 	}
 	
-	public static int getNearCellidUnused(Personnage _perso)
+	public static int getNearCellidUnused(Player _perso)
 	{
 		int cellFront = 0;
 		int cellBack = 0;

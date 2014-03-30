@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import client.Player;
+
 import objects.Carte.Case;
 import objects.Monstre.MobGrade;
 import objects.Sort.SortStats;
@@ -1612,7 +1614,7 @@ public class SpellEffect
 		{
 			int cell = this.cell.getID();
 			int id = fight.getNextLowerFighterGuid();
-			Personnage Clone = Personnage.ClonePerso(caster.getPersonnage(), id);
+			Player Clone = Player.ClonePerso(caster.getPersonnage(), id);
 			Fighter F = new Fighter(fight,Clone);
 			F.setTeam(caster.getTeam());
 			F.setInvocator(caster);

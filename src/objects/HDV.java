@@ -6,6 +6,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import client.Account;
+import client.Player;
+
 import common.Couple;
 import common.SocketManager;
 import common.World;
@@ -343,6 +346,7 @@ public class HDV {
 		private Objet _obj;
 		private int _ligneID;
 		private int _owner;
+		private boolean purchased = false;
 		
 		public HdvEntry(int price, byte amount, int owner, Objet obj)
 		{
@@ -425,6 +429,14 @@ public class HDV {
 			if(autre < celuiCi )
 				return 1;
 			return 0;
+		}
+
+		public boolean isPurchased() {
+			return purchased;
+		}
+		
+		public void setPurchased(boolean purchased) {
+			this.purchased = purchased;
 		}
 	}
 	
@@ -543,7 +555,7 @@ public class HDV {
 		return toReturn;
 	}
 	
-	public synchronized boolean buyItem(int ligneID,byte amount, int price, Personnage newOwner)
+	public synchronized boolean buyItem(int ligneID,byte amount, int price, Player newOwner)
 	{
 		boolean toReturn = true;
 		
@@ -556,11 +568,15 @@ public class HDV {
 			
 			HdvEntry toBuy = ligne.doYouHave(amount, price);
 			
+			if(toBuy.isPurchased())
+				return false;
+			toBuy.setPurchased(true);
+			
 			newOwner.addKamas(price * -1);//Retire l'argent à l'acheteur (prix et taxe de vente)
 			
 			if(toBuy.getOwner() != -1)
 			{
-				Compte C = World.data.getCompte(toBuy.getOwner());
+				Account C = World.data.getCompte(toBuy.getOwner());
 				if(C != null)
 				{
 					C.setBankKamas(C.getBankKamas()+toBuy.getPrice());//Ajoute l'argent au vendeur

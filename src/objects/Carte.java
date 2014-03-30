@@ -11,6 +11,8 @@ import java.util.TreeMap;
 
 import javax.swing.Timer;
 
+import client.Player;
+
 import objects.Monstre.MobGrade;
 import objects.Monstre.MobGroup;
 import objects.NPC_tmpl.NPC;
@@ -202,7 +204,7 @@ public class Carte {
 					mp.getValue().set_guild(null);
 					mp.getValue().set_price(3000000);
 					World.database.getMountparkData().update(mp.getValue());
-					for(Personnage p : mp.getValue().get_map().getPersos())
+					for(Player p : mp.getValue().get_map().getPersos())
 					{
 						SocketManager.GAME_SEND_Rp_PACKET(p, mp.getValue());
 					}
@@ -308,7 +310,7 @@ public class Carte {
 	public static class Case
 	{
 		private int _id;
-		private Map<Integer, Personnage>	_persos;		//= new TreeMap<Integer, Personnage>();
+		private Map<Integer, Player>	_persos;		//= new TreeMap<Integer, Personnage>();
 		private Map<Integer, Fighter> 		_fighters;	//= new TreeMap<Integer, Fighter>();
 		private boolean _Walkable = true;
 		private boolean _LoS = true;
@@ -950,7 +952,7 @@ public class Carte {
 			_onCellStop.add(new Action(id,args,cond));
 		}
 		
-		public void applyOnCellStopActions(Personnage perso)
+		public void applyOnCellStopActions(Player perso)
 		{
 			if(_onCellStop == null) return;
 			
@@ -959,9 +961,9 @@ public class Carte {
 				act.apply(perso, null, -1, -1);
 			}
 		}
-		public void addPerso(Personnage perso)
+		public void addPerso(Player perso)
 		{
-			if(_persos == null) _persos = new TreeMap<Integer, Personnage>();
+			if(_persos == null) _persos = new TreeMap<Integer, Player>();
 			_persos.put(perso.get_GUID(),perso);
 			
 		}
@@ -1000,9 +1002,9 @@ public class Carte {
 			_persos.remove(_guid);
 			if(_persos.isEmpty()) _persos = null;
 		}
-		public Map<Integer, Personnage> getPersos()
+		public Map<Integer, Player> getPersos()
 		{
-			if(_persos == null) return new TreeMap<Integer, Personnage>();
+			if(_persos == null) return new TreeMap<Integer, Player>();
 			return _persos;
 		}
 		public Map<Integer, Fighter> getFighters()
@@ -1020,7 +1022,7 @@ public class Carte {
 			return null;
 		}
 
-		public void startAction(Personnage perso, GameAction GA)
+		public void startAction(Player perso, GameAction GA)
 		{
 			int actionID = -1;
 			short CcellID = -1;
@@ -1199,7 +1201,7 @@ public class Carte {
 				break;
 			}
 		}
-		public void finishAction(Personnage perso, GameAction GA)
+		public void finishAction(Player perso, GameAction GA)
 		{
 			int actionID = -1;
 			try
@@ -1344,7 +1346,7 @@ public class Carte {
 		}
 	}
 
-	public void applyEndFightAction(int type,Personnage perso)
+	public void applyEndFightAction(int type,Player perso)
 	{
 		if(_endFightAction.get(type) == null)return;
 		for(Action A : _endFightAction.get(type))A.apply(perso, null, -1, -1);
@@ -1492,10 +1494,10 @@ public class Carte {
 		return _cases.get(id);
 	}
 	
-	public ArrayList<Personnage> getPersos()
+	public ArrayList<Player> getPersos()
 	{
-		ArrayList<Personnage> persos = new ArrayList<Personnage>();
-		for(Case c : _cases.values())for(Personnage entry : c.getPersos().values())persos.add(entry);
+		ArrayList<Player> persos = new ArrayList<Player>();
+		for(Case c : _cases.values())for(Player entry : c.getPersos().values())persos.add(entry);
 		return persos;
 	}
 	public short get_id() {
@@ -1522,7 +1524,7 @@ public class Carte {
 		return _placesStr;
 	}
 
-	public void addPlayer(Personnage perso)
+	public void addPlayer(Player perso)
 	{
 		SocketManager.GAME_SEND_ADD_PLAYER_TO_MAP(this,perso);
 		perso.get_curCell().addPerso(perso);
@@ -1531,7 +1533,7 @@ public class Carte {
 	public String getGMsPackets()
 	{
 		StringBuilder packet = new StringBuilder();
-		for(Case cell : _cases.values())for(Personnage perso : cell.getPersos().values())packet.append("GM|+").append(perso.parseToGM()).append('\u0000');
+		for(Case cell : _cases.values())for(Player perso : cell.getPersos().values())packet.append("GM|+").append(perso.parseToGM()).append('\u0000');
 		return packet.toString();
 	}
 	public String getFightersGMsPackets()
@@ -1615,7 +1617,7 @@ public class Carte {
 		return _fights;
 	}
 
-	public Fight newFight(Personnage init1,Personnage init2,int type, boolean targetProtected)
+	public Fight newFight(Player init1,Player init2,int type, boolean targetProtected)
 	{
 		int id = 1;
 		if(!_fights.isEmpty())
@@ -1715,7 +1717,7 @@ public class Carte {
 		spawnGroup(Constants.ALIGNEMENT_BRAKMARIEN,1,true,-1);//Spawn du groupe de gardes brakmarien s'il y a
 	}
 	
-	public void onPlayerArriveOnCell(Personnage perso,int caseID)
+	public void onPlayerArriveOnCell(Player perso,int caseID)
 	{
 		if(_cases.get(caseID) == null)return;
 		Objet obj = _cases.get(caseID).getDroppedItem();
@@ -1747,7 +1749,7 @@ public class Carte {
 		}
 	}
 	
-	public void startFigthVersusMonstres(Personnage perso, MobGroup group)
+	public void startFigthVersusMonstres(Player perso, MobGroup group)
 	{
 		int id = 1;
 		if(!_fights.isEmpty())
@@ -1759,7 +1761,7 @@ public class Carte {
 		SocketManager.GAME_SEND_MAP_FIGHT_COUNT_TO_MAP(this);
 	}
 	
-	public void startFigthVersusPercepteur(Personnage perso, Percepteur perco)
+	public void startFigthVersusPercepteur(Player perso, Percepteur perco)
 	{
 		int id = 1;
 		if(!_fights.isEmpty())
@@ -1836,7 +1838,7 @@ public class Carte {
 		return _fights.get(id);
 	}
 
-	public void sendFloorItems(Personnage perso)
+	public void sendFloorItems(Player perso)
 	{
 		for(Case c : _cases.values())
 		{

@@ -9,10 +9,12 @@ import java.util.Map.Entry;
 
 import javax.swing.Timer;
 
+import client.Account;
+import client.Player;
+
 import objects.Action;
 import objects.Carte;
 import objects.Carte.MountPark;
-import objects.Compte;
 import objects.HDV.HdvEntry;
 import objects.ItemSet;
 import objects.Monstre.MobGroup;
@@ -22,15 +24,14 @@ import objects.NPC_tmpl.NPC_question;
 import objects.Objet;
 import objects.Objet.ObjTemplate;
 import objects.job.Job.StatsMetier;
-import objects.Personnage;
 import core.Console;
 import core.Log;
 import core.Server;
 
 
 public class Commands {
-	Compte _compte;
-	Personnage _perso;
+	Account _compte;
+	Player _perso;
 	GameClient _out;
 	//Sauvegarde
 	private boolean _TimerStart = false;
@@ -53,7 +54,7 @@ public class Commands {
 	        	}
 	        	if(Time <= 0)
 	        	{
-	        		for(Personnage perso : World.data.getOnlinePersos())
+	        		for(Player perso : World.data.getOnlinePersos())
 	        		{
 	        			perso.get_compte().getGameClient().kick();
 	        		}
@@ -65,7 +66,7 @@ public class Commands {
 	    return new Timer (60000, action);//60000
 	}
 	
-	public Commands(Personnage perso)
+	public Commands(Player perso)
 	{
 		this._compte = perso.get_compte();
 		this._perso = perso;
@@ -171,7 +172,7 @@ public class Commands {
 				+			"Liste des joueurs en ligne:";
 			SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out, mess);
 			for(GameClient client: Server.config.getGameServer().getClients().values()) {
-				Personnage P = client.getPerso();
+				Player P = client.getPerso();
 				if(P == null)continue;
 				mess = P.get_name()+"("+P.get_GUID()+") ";
 				
@@ -266,7 +267,7 @@ public class Commands {
 		}else
 		if(command.equalsIgnoreCase("CREATEGUILD"))
 		{
-			Personnage perso = _perso;
+			Player perso = _perso;
 			if(infos.length >1)
 			{
 				perso = World.data.getPersoByName(infos[1]);
@@ -297,7 +298,7 @@ public class Commands {
 		}else
 		if(command.equalsIgnoreCase("TOOGLEAGGRO"))
 		{
-			Personnage perso = _perso;
+			Player perso = _perso;
 			
 			String name = null;
 			try
@@ -334,7 +335,7 @@ public class Commands {
 		}else
 		if(command.equalsIgnoreCase("DEMORPH"))
 		{
-			Personnage target = _perso;
+			Player target = _perso;
 			if(infos.length > 1)//Si un nom de perso est spécifié
 			{
 				target = World.data.getPersoByName(infos[1]);
@@ -355,7 +356,7 @@ public class Commands {
 		else
 		if(command.equalsIgnoreCase("GONAME") || command.equalsIgnoreCase("JOIN"))
 		{
-			Personnage P = World.data.getPersoByName(infos[1]);
+			Player P = World.data.getPersoByName(infos[1]);
 			if(P == null)
 			{
 				String str = "Le personnage n'existe pas";
@@ -365,7 +366,7 @@ public class Commands {
 			short mapID = P.get_curCarte().get_id();
 			int cellID = P.get_curCell().getID();
 			
-			Personnage target = _perso;
+			Player target = _perso;
 			if(infos.length > 2)//Si un nom de perso est spécifié
 			{
 				target = World.data.getPersoByName(infos[2]);
@@ -388,7 +389,7 @@ public class Commands {
 		}else
 		if(command.equalsIgnoreCase("NAMEGO"))
 		{
-			Personnage target = World.data.getPersoByName(infos[1]);
+			Player target = World.data.getPersoByName(infos[1]);
 			if(target == null)
 			{
 				String str = "Le personnage n'existe pas";
@@ -401,7 +402,7 @@ public class Commands {
 				SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out,str);
 				return;
 			}
-			Personnage P = _perso;
+			Player P = _perso;
 			if(infos.length > 2)//Si un nom de perso est spécifié
 			{
 				P = World.data.getPersoByName(infos[2]);
@@ -453,7 +454,7 @@ public class Commands {
 				SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out,str);
 				return;
 			}
-			Personnage target = _perso;
+			Player target = _perso;
 			if(infos.length > 3)//Si un nom de perso est spécifié
 			{
 				target = World.data.getPersoByName(infos[3]);
@@ -494,7 +495,7 @@ public class Commands {
 				SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out,str);
 				return;
 			}
-			Personnage target = _perso;
+			Player target = _perso;
 			if(infos.length > 5)//Si un nom de perso est spécifié
 			{
 				target = World.data.getPersoByName(infos[5]);
@@ -526,7 +527,7 @@ public class Commands {
 			}
 			int type = -100;
 			String args = "",cond = "";
-			Personnage perso = _perso;
+			Player perso = _perso;
 			try
 			{
 				perso = World.data.getPersoByName(infos[1]);
@@ -561,7 +562,7 @@ public class Commands {
 		
 		if(command.equalsIgnoreCase("MUTE"))
 		{
-			Personnage perso = _perso;
+			Player perso = _perso;
 			String name = null;
 			try
 			{
@@ -602,7 +603,7 @@ public class Commands {
 		}else
 		if(command.equalsIgnoreCase("UNMUTE"))
 		{
-			Personnage perso = _perso;
+			Player perso = _perso;
 			
 			String name = null;
 			try
@@ -630,7 +631,7 @@ public class Commands {
 		}else
 		if(command.equalsIgnoreCase("KICK"))
 		{
-			Personnage perso = _perso;
+			Player perso = _perso;
 			String name = null;
 			try
 			{
@@ -668,7 +669,7 @@ public class Commands {
 				SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out,str);
 				return;
 			}
-			Personnage target = _perso;
+			Player target = _perso;
 			if(infos.length > 2)//Si un nom de perso est spécifié
 			{
 				target = World.data.getPersoByName(infos[2]);
@@ -697,7 +698,7 @@ public class Commands {
 				SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out,str);
 				return;
 			}
-			Personnage target = _perso;
+			Player target = _perso;
 			if(infos.length > 2)//Si un nom de perso est spécifié
 			{
 				target = World.data.getPersoByName(infos[2]);
@@ -727,7 +728,7 @@ public class Commands {
 				SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out,str);
 				return;
 			}
-			Personnage target = _perso;
+			Player target = _perso;
 			if(infos.length > 2)//Si un nom de perso est spécifié
 			{
 				target = World.data.getPersoByName(infos[2]);
@@ -770,7 +771,7 @@ public class Commands {
 			{
 				honor = Integer.parseInt(infos[1]);
 			}catch(Exception e){};
-			Personnage target = _perso;
+			Player target = _perso;
 			if(infos.length > 2)//Si un nom de perso est spécifié
 			{
 				target = World.data.getPersoByName(infos[2]);
@@ -807,7 +808,7 @@ public class Commands {
 				SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out,str);
 				return;
 			}
-				Personnage target = _perso;
+				Player target = _perso;
 			if(infos.length > 3)//Si un nom de perso est spécifié
 			{
 				target = World.data.getPersoByName(infos[3]);
@@ -844,7 +845,7 @@ public class Commands {
 				SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out,str);
 				return;
 			}
-			Personnage target = _perso;
+			Player target = _perso;
 			if(infos.length > 2)//Si un nom de perso est spécifié
 			{
 				target = World.data.getPersoByName(infos[2]);
@@ -874,7 +875,7 @@ public class Commands {
 				SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out,str);
 				return;
 			}
-			Personnage target = _perso;
+			Player target = _perso;
 			if(infos.length > 2)//Si un nom de perso est spécifié
 			{
 				target = World.data.getPersoByName(infos[2]);
@@ -903,7 +904,7 @@ public class Commands {
 				SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out,str);
 				return;
 			}
-			Personnage target = _perso;
+			Player target = _perso;
 			if(infos.length > 2)//Si un nom de perso est spécifié
 			{
 				target = World.data.getPersoByName(infos[2]);
@@ -933,7 +934,7 @@ public class Commands {
 				SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out,str);
 				return;
 			}
-			Personnage target = _perso;
+			Player target = _perso;
 			if(infos.length > 2)//Si un nom de perso est spécifié
 			{
 				target = World.data.getPersoByName(infos[2]);
@@ -1019,7 +1020,7 @@ public class Commands {
 				count = Integer.parseInt(infos[1]);
 				if(count < 1)	count = 1;
 				if(count > World.data.getExpLevelSize())	count = World.data.getExpLevelSize();
-				Personnage perso = _perso;
+				Player perso = _perso;
 				if(infos.length == 3)//Si le nom du perso est spécifié
 				{
 					String name = infos[2];
@@ -1056,7 +1057,7 @@ public class Commands {
 				count = Integer.parseInt(infos[1]);
 				if(count < 0)	count = 0;
 				if(count > 100)	count = 100;
-				Personnage perso = _perso;
+				Player perso = _perso;
 				if(infos.length == 3)//Si le nom du perso est spécifié
 				{
 					String name = infos[2];
@@ -1089,7 +1090,7 @@ public class Commands {
 			};
 			if(count == 0)return;
 			
-			Personnage perso = _perso;
+			Player perso = _perso;
 			if(infos.length == 3)//Si le nom du perso est spécifié
 			{
 				String name = infos[2];
@@ -1169,7 +1170,7 @@ public class Commands {
 		}else
 		if (command.equalsIgnoreCase("TITLE"))
 		{
-			Personnage target = null; 
+			Player target = null; 
 			byte TitleID = 0;
 			try
 			{
@@ -1257,7 +1258,7 @@ public class Commands {
 		}else
 		if(command.equalsIgnoreCase("BAN"))
 		{
-			Personnage P = World.data.getPersoByName(infos[1]);
+			Player P = World.data.getPersoByName(infos[1]);
 			if(P == null)
 			{
 				SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out, "Personnage non trouve");
@@ -1277,7 +1278,7 @@ public class Commands {
 		}else
 		if(command.equalsIgnoreCase("UNBAN"))
 		{
-			Personnage P = World.data.getPersoByName(infos[1]);
+			Player P = World.data.getPersoByName(infos[1]);
 			if(P == null)
 			{
 				SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out, "Personnage non trouve");
@@ -1608,7 +1609,7 @@ public class Commands {
 				SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out,str);
 				return;
 			}
-			Personnage target = _perso;
+			Player target = _perso;
 			if(infos.length > 2)//Si un nom de perso est spécifié
 			{
 				target = World.data.getPersoByName(infos[2]);
@@ -1660,7 +1661,7 @@ public class Commands {
 			SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out, "Serveur bloque au GmLevel : "+GmAccess);
 			if(KickPlayer > 0)
 			{
-				for(Personnage z : World.data.getOnlinePersos()) 
+				for(Player z : World.data.getOnlinePersos()) 
 				{
 					if(z.get_compte().get_gmLvl() < GmAccess)
 						z.get_compte().getGameClient().closeSocket();
@@ -1670,7 +1671,7 @@ public class Commands {
 		}else
 		if(command.equalsIgnoreCase("BANIP"))
 		{
-			Personnage P = null;
+			Player P = null;
 			try
 			{
 				P = World.data.getPersoByName(infos[1]);

@@ -3,7 +3,8 @@ package tool.command;
 import java.util.HashMap;
 import java.util.Map;
 
-import objects.Personnage;
+import client.Player;
+
 import tool.time.restricter.TimeRestricter;
 
 
@@ -38,8 +39,8 @@ public abstract class Command<T>{
 	
 	public void execute(T t) {
 		if(this.commandGroupAccess.authorizes(t)) {
-			if(t instanceof Personnage && 
-					this.restricter != null && !this.restricter.authorizes((Personnage)t))
+			if(t instanceof Player && 
+					this.restricter != null && !this.restricter.authorizes((Player)t))
 				return;
 			this.action(t);
 			Console.instance.print(this.successMessages.toString(), t);

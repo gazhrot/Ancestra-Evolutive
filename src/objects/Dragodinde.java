@@ -3,10 +3,11 @@ package objects;
 import java.util.ArrayList;
 import java.util.Map.Entry;
 
+import client.Player.Stats;
+
 import common.Constants;
 import common.World;
 
-import objects.Personnage.Stats;
 
 public class Dragodinde {
 

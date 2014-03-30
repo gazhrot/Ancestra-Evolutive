@@ -8,8 +8,9 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.TreeMap;
 
+import client.Player.Stats;
+
 import objects.Carte.Case;
-import objects.Personnage.Stats;
 import objects.Sort.SortStats;
 
 import common.Constants;

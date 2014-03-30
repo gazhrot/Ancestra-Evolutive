@@ -3,7 +3,8 @@ package tool.command;
 import java.util.Deque;
 import java.util.LinkedList;
 
-import objects.Personnage;
+import client.Player;
+
 
 import common.World;
 
@@ -33,8 +34,8 @@ public class CommandParser {
 			return; 
 		}
 		
-		if(t instanceof Personnage) {
-			Command<Personnage> command = World.data.getPlayerCommands().get(name);
+		if(t instanceof Player) {
+			Command<Player> command = World.data.getPlayerCommands().get(name);
 			
 			if(command == null) {
 				Console.instance.print("Commande non reconnue", t);
@@ -46,20 +47,20 @@ public class CommandParser {
 				for(String param: parameters)
 					params.addLast(param);
 				
-				Parameter<Personnage> lastParameter = null;
+				Parameter<Player> lastParameter = null;
 				
 				while(params.isEmpty()) {
-					Parameter<Personnage> temporary = command.getParameters().get(params.pop());
+					Parameter<Player> temporary = command.getParameters().get(params.pop());
 					if(temporary == null) {
 						if(lastParameter != null)
-							lastParameter.action((Personnage)t);
+							lastParameter.action((Player)t);
 						else
-							command.execute((Personnage)t);
+							command.execute((Player)t);
 					} else
 						lastParameter = temporary;
 				}
 			} else 
-				command.execute((Personnage)t);
+				command.execute((Player)t);
 		} 
 		else if (t instanceof Console) {
 			Command<Console> command = World.data.getConsoleCommands().get(name);

@@ -14,7 +14,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import objects.Compte;
 
 import org.apache.mina.core.service.IoAcceptor;
 import org.apache.mina.core.session.IoSession;
@@ -23,6 +22,8 @@ import org.apache.mina.filter.codec.textline.LineDelimiter;
 import org.apache.mina.filter.codec.textline.TextLineCodecFactory;
 import org.apache.mina.transport.socket.nio.NioProcessor;
 import org.apache.mina.transport.socket.nio.NioSocketAcceptor;
+
+import client.Account;
 
 import common.World;
 
@@ -33,7 +34,7 @@ import core.Server;
 public class GameServer {
 
 	private Map<Long, GameClient> clients = new HashMap<>();
-	private ArrayList<Compte> waitingClients = new ArrayList<Compte>();
+	private ArrayList<Account> waitingClients = new ArrayList<Account>();
 	private long startTime;
 	private int maxConnections = 0;
 	private IoAcceptor acceptor;
@@ -137,18 +138,18 @@ public class GameServer {
 		if(clients.size() > maxConnections)maxConnections = clients.size();
 	}
 
-	public synchronized Compte getWaitingCompte(int guid) {
+	public synchronized Account getWaitingCompte(int guid) {
 		for (int i = 0; i < waitingClients.size(); i++) 
 			if(waitingClients.get(i).get_GUID() == guid)
 				return waitingClients.get(i);
 		return null;
 	}
 	
-	public synchronized void delWaitingCompte(Compte _compte) {
+	public synchronized void delWaitingCompte(Account _compte) {
 		waitingClients.remove(_compte);
 	}
 	
-	public synchronized void addWaitingCompte(Compte _compte) {
+	public synchronized void addWaitingCompte(Account _compte) {
 		waitingClients.add(_compte);
 	}
 	
