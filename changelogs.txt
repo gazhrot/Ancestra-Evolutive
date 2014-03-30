@@ -86,3 +86,11 @@ Version 0.4
 - Revue de l'idle time (innactivité). Géré directement depuis Mina (sessionIdle).
 - Création d'une interface Client, extends à GameClient & RealmClient -> évite les doublons dans le SocketManager.
 - Correction du record de joueurs connectés.
+
+Version 0.5
+
+- Ajout total du mode marchand.
+- Revue des failles/bugs du mode marchand.
+  > Faille kamas avec un signe négatif.
+  > Bug après un reboot qui supprime tout les modes marchands.
+- Revue des failles/bugs sur les hotels de ventes.
