@@ -90,9 +90,14 @@ Version 0.4
 Version 0.5
 
 - Ajout total du mode marchand.
+- Revue de la faille cadeau.
+- Revue des failles échanges.
+- Revue des failles percepteurs.
 - Revue des failles/bugs du mode marchand.
   > Faille kamas avec un signe négatif.
   > Bug après un reboot qui supprime tout les modes marchands.
+  > Duplication d'item/kamas via l'achat d'objet.
 - Revue des failles/bugs sur les hotels de ventes.
+  > Reprise d'un objet déjà vendu : duplication d'item.
 - Revue des failles/bugs sur les dialogues.
 - Correction du charegement de la config.

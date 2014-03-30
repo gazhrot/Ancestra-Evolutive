@@ -2691,25 +2691,28 @@ public class GameClient implements Client {
             Player seller = World.data.getPersonnage(_perso.get_isTradingWith());
             if (seller != null) 
             {
-            	int itemID = 0;
-            	int qua = 0;
-            	int price = 0;
-            	try
-        		{
+            	int itemID = 0, qua = 0, price = 0;
+            	try {
             		itemID = Integer.valueOf(infos[0]);
             		qua = Integer.valueOf(infos[1]);
-        		}catch(Exception e){return;}
+        		} catch(Exception e) { return; }
         		
-                if (!seller.getStoreItems().containsKey(itemID) || qua <= 0) 
-                {
+                if (!seller.getStoreItems().containsKey(itemID) || qua <= 0) {
                     SocketManager.GAME_SEND_BUY_ERROR_PACKET(this);
                     return;
                 }
-                price = seller.getStoreItems().get(itemID);
+               
                 Objet itemStore = World.data.getObjet(itemID);
-                if(itemStore == null) return;
+                if(itemStore == null) 
+                	return;
+                if(qua > itemStore.getQuantity()) 
+                	qua = itemStore.getQuantity();
                 
-                if(qua > itemStore.getQuantity()) qua = itemStore.getQuantity();
+                int price1 = seller.getStoreItems().get(itemID);
+                price = seller.getStoreItems().get(itemID)*qua;
+                
+                if(price > _perso.get_kamas())
+                	return;
                 if(qua == itemStore.getQuantity())
                 {
                 	seller.getStoreItems().remove(itemStore.getGuid());
@@ -2719,16 +2722,16 @@ public class GameClient implements Client {
                 	seller.getStoreItems().remove(itemStore.getGuid());
                 	itemStore.setQuantity(itemStore.getQuantity()-qua);
                 	World.database.getItemData().update(itemStore);
-                	seller.addStoreItem(itemStore.getGuid(), price);
+                	seller.addStoreItem(itemStore.getGuid(), price1);
                 	
                 	Objet clone = Objet.getCloneObjet(itemStore, qua);
                     World.database.getItemData().update(clone);
                     _perso.addObjet(clone, true);
                 }
 	            //remove kamas
-	            _perso.addKamas(-price * qua);
+	            _perso.addKamas(-price);
 	            //add seller kamas
-	            seller.addKamas(price * qua);
+	            seller.addKamas(price);
 	            seller.save();
 	            //send packets
 	            SocketManager.GAME_SEND_STATS_PACKET(_perso);
