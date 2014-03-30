@@ -1862,8 +1862,12 @@ public class GameClient implements Client {
 	private void Dialog_response(String packet)
 	{
 		String[] infos = packet.substring(2).split("\\|");
-		try
-		{
+		try {
+			if(_perso.get_isTalkingWith() == 0)
+				return;
+			NPC npc = _perso.get_curCarte().getNPC(_perso.get_isTalkingWith());
+			if( npc == null)
+				return;
 			int qID = Integer.parseInt(infos[0]);
 			int rID = Integer.parseInt(infos[1]);
 			NPC_question quest = World.data.getNPCQuestion(qID);
