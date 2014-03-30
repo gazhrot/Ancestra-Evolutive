@@ -163,6 +163,7 @@ public class SocketManager {
 		send(_out,packet);
 		if(Server.config.isDebug())
 			Log.addToSockLog("Conn: Send>>"+packet);
+		
 	}
 	
 	public static void GAME_SEND_HELLOGAME_PACKET(Client out)

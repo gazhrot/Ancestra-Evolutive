@@ -22,7 +22,7 @@ public class Main {
 		//creation de la console
 		Console console = new Console();
 		Console.instance = console;
-		
+	
 		//demarrage de l'emualteur
 		console.writeln(EmulatorInfos.SOFT_NAME.toString());
 		console.writeln("\n ~ Initialisation des variables : config.conf");
@@ -35,6 +35,8 @@ public class Main {
 			Main.closeServers();
 			System.exit(0);
 		}
+		
+		
 		
 		console.writeln(" > Creation du monde");
 		int time = World.data.initialize();
@@ -51,8 +53,7 @@ public class Main {
 		RealmServer realmServer = new RealmServer();
 		realmServer.initialize();
 		Server.config.setRealmServer(realmServer);
-		
-		
+			
 		//serveur lance
 		console.writeln(" > Lancement du serveur termine : "+ time +" ms");
 		console.writeln(" > HELP pour la liste de commandes");
