@@ -95,3 +95,4 @@ Version 0.5
   > Bug après un reboot qui supprime tout les modes marchands.
 - Revue des failles/bugs sur les hotels de ventes.
 - Revue des failles/bugs sur les dialogues.
+- Correction du charegement de la config.
