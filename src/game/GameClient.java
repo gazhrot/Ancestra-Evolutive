@@ -28,7 +28,7 @@ import objects.Objet.ObjTemplate;
 import objects.Percepteur;
 import objects.Sort.SortStats;
 import objects.Trunk;
-import objects.job.Job.StatsMetier;
+import objects.job.JobStat;
 
 import org.apache.mina.core.session.IoSession;
 
@@ -1784,7 +1784,7 @@ public class GameClient implements Client {
 			if(pos == Constants.ITEM_POS_ARME && _perso.getObjetByPos(Constants.ITEM_POS_ARME) != null)
 			{
 				int ID = _perso.getObjetByPos(Constants.ITEM_POS_ARME).getTemplate().getID();
-				for(Entry<Integer,StatsMetier> e : _perso.getMetiers().entrySet())
+				for(Entry<Integer, JobStat> e : _perso.getMetiers().entrySet())
 				{
 					if(e.getValue().getTemplate().isValidTool(ID))
 						SocketManager.GAME_SEND_OT_PACKET(this,e.getValue().getTemplate().getId());
@@ -2451,12 +2451,15 @@ public class GameClient implements Client {
 			}else
 			if(packet.charAt(2) == 'R')
 			{
-				try
-				{
+				try {
 					int c = Integer.parseInt(packet.substring(3));
-					_perso.getCurJobAction().repeat(c,_perso);
-				}catch(Exception e){};
-			}
+					_perso.getCurJobAction().getJobCraft().setAction(c, _perso);
+				}catch(Exception e) {};
+			}else
+			if(packet.charAt(2) == 'r')
+				if(_perso.getCurJobAction() != null)
+					if(_perso.getCurJobAction().getJobCraft() != null)
+						_perso.getCurJobAction().broken = true;
 			return;
 		}
 		//Banque

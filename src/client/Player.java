@@ -34,8 +34,9 @@ import objects.Carte.MountPark;
 import objects.Guild.GuildMember;
 import objects.Sort.SortStats;
 import objects.job.Job;
-import objects.job.Job.JobAction;
-import objects.job.Job.StatsMetier;
+import objects.job.JobAction;
+import objects.job.JobConstant;
+import objects.job.JobStat;
 import tool.time.waiter.Waiter;
 
 import common.Constants;
@@ -109,8 +110,9 @@ public class Player {
 	//Invitation
 	private int _inviting = 0;
 	//Job
-	private JobAction _curJobAction;
-	private Map<Integer,StatsMetier> _metiers = new TreeMap<Integer,StatsMetier>();
+	private boolean doAction;	
+	private JobAction curJobAction;
+	private Map<Integer, JobStat> _metiers = new TreeMap<Integer, JobStat>();
 	//Enclos
 	private MountPark _inMountPark;
 	//Monture
@@ -626,7 +628,7 @@ public class Player {
 					int jobID = Integer.parseInt(infos[0]);
 					long xp = Long.parseLong(infos[1]);
 					Job m = World.data.getMetier(jobID);
-					StatsMetier SM = _metiers.get(learnJob(m));
+					JobStat SM = _metiers.get(learnJob(m));
 					SM.addXp(this, xp);
 				}catch(Exception e){e.getStackTrace();}
 			}
@@ -1181,7 +1183,7 @@ public class Player {
 		//envoie des données de métier
 		if(_metiers.size() >0)
 		{
-			ArrayList<StatsMetier> list = new ArrayList<StatsMetier>();
+			ArrayList<JobStat> list = new ArrayList<JobStat>();
 			list.addAll(_metiers.values());
 			//packet JS
 			SocketManager.GAME_SEND_JS_PACKET(this, list);
@@ -1192,7 +1194,7 @@ public class Player {
 			Objet obj = getObjetByPos(Constants.ITEM_POS_ARME);
 			if(obj != null)
 			{
-				for(StatsMetier sm : list)
+				for(JobStat sm : list)
 					if(sm.getTemplate().isValidTool(obj.getTemplate().getID()))
 						SocketManager.GAME_SEND_OT_PACKET(_compte.getGameClient(),sm.getTemplate().getId());
 			}
@@ -1563,7 +1565,7 @@ public class Player {
 	public int getMaxPod() {
 		int pods = getTotalStats().getEffect(Constants.STATS_ADD_PODS);
 		pods += getTotalStats().getEffect(Constants.STATS_ADD_FORC)*5;
-		for(StatsMetier SM : _metiers.values())
+		for(JobStat SM : _metiers.values())
 		{
 			pods += SM.get_lvl()*5;
 			if(SM.get_lvl() == 100) pods += 1000;
@@ -1571,8 +1573,6 @@ public class Player {
 		return pods;
 	}
 
-	
-	
 	public int get_PDV() {
 		return _PDV;
 	}
@@ -1976,7 +1976,7 @@ public class Player {
 
 	public int learnJob(Job m)
 	{
-		for(Entry<Integer,StatsMetier> entry : _metiers.entrySet())
+		for(Entry<Integer, JobStat> entry : _metiers.entrySet())
 		{
 			if(entry.getValue().getTemplate().getId() == m.getId())//Si le joueur a déjà le métier
 				return -1;
@@ -1985,7 +1985,7 @@ public class Player {
 		if(Msize == 6)//Si le joueur a déjà 6 métiers
 			return -1;
 		int pos = 0;
-		if(Constants.isMageJob(m.getId()))
+		if(JobConstant.isMageJob(m.getId()))
 		{
 			if(_metiers.get(5) == null) pos = 5;
 			if(_metiers.get(4) == null) pos = 4;
@@ -1997,12 +1997,12 @@ public class Player {
 			if(_metiers.get(0) == null) pos = 0;
 		}
 		
-		StatsMetier sm = new StatsMetier(pos,m,1,0);
+		JobStat sm = new JobStat(pos,m,1,0);
 		_metiers.put(pos, sm);//On apprend le métier lvl 1 avec 0 xp
 		if(_isOnline)
 		{
 			//on créer la listes des statsMetier a envoyer (Seulement celle ci)
-			ArrayList<StatsMetier> list = new ArrayList<StatsMetier>();
+			ArrayList<JobStat> list = new ArrayList<JobStat>();
 			list.add(sm);
 			
 			SocketManager.GAME_SEND_Im_PACKET(this, "02;"+m.getId());
@@ -2516,20 +2516,20 @@ public class Player {
 		}
 	}
 
-	public Map<Integer,StatsMetier> getMetiers()
+	public Map<Integer, JobStat> getMetiers()
 	{
 		return _metiers;
 	}
 
 	public void doJobAction(int actionID, InteractiveObject object, GameAction GA,Case cell)
 	{
-		StatsMetier SM = getMetierBySkill(actionID);
+		JobStat SM = getMetierBySkill(actionID);
 		if(SM == null)return;
 		SM.startAction(actionID,this, object,GA,cell);
 	}
 	public void finishJobAction(int actionID, InteractiveObject object, GameAction GA,Case cell)
 	{
-		StatsMetier SM = getMetierBySkill(actionID);
+		JobStat SM = getMetierBySkill(actionID);
 		if(SM == null)return;
 		SM.endAction(actionID,this, object,GA,cell);
 	}
@@ -2538,7 +2538,7 @@ public class Player {
 	{
 		StringBuilder str = new StringBuilder();
 		if(_metiers.isEmpty())return "";
-		for(StatsMetier SM : _metiers.values())
+		for(JobStat SM : _metiers.values())
 		{
 			if(str.length() >0)str.append(";");
 			str.append(SM.getTemplate().getId()).append(",").append(SM.getXp());
@@ -2550,7 +2550,7 @@ public class Player {
 	{
 		int i=0;
 
-		for(StatsMetier SM : _metiers.values())
+		for(JobStat SM : _metiers.values())
 		{
 			// Si c'est un métier 'basic' :
 			if(SM.getTemplate().getId() == 	2 || SM.getTemplate().getId() == 11 ||
@@ -2575,7 +2575,7 @@ public class Player {
 	{
 		int i=0;
 
-		for(StatsMetier SM : _metiers.values())
+		for(JobStat SM : _metiers.values())
 		{
 			// Si c'est une spécialisation 'FM' :
 			if(SM.getTemplate().getId() == 	43 || SM.getTemplate().getId() == 44 ||
@@ -2599,18 +2599,9 @@ public class Player {
 		_canAggro = canAggro;
 	}
 
-	public void setCurJobAction(JobAction JA)
+	public JobStat getMetierBySkill(int skID)
 	{
-		_curJobAction = JA;
-	}
-	public JobAction getCurJobAction()
-	{
-		return _curJobAction;
-	}
-
-	public StatsMetier getMetierBySkill(int skID)
-	{
-		for(StatsMetier SM : _metiers.values())
+		for(JobStat SM : _metiers.values())
 			if(SM.isValidMapAction(skID))return SM;
 		return null;
 	}
@@ -2657,9 +2648,11 @@ public class Player {
 		return str.toString();
 	}
 
-	public StatsMetier getMetierByID(int job)
+	public JobStat getMetierByID(int job)
 	{
-		for(StatsMetier SM : _metiers.values())if(SM.getTemplate().getId() == job)return SM;
+		for(JobStat SM : _metiers.values())
+			if(SM.getTemplate().getId() == job)
+				return SM;
 		return null;
 	}
 
@@ -2722,7 +2715,7 @@ public class Player {
 		_isInBank = false;
 		_inviting = 0;
 		_sitted = false;
-		_curJobAction = null;
+		this.curJobAction = null;
 		_isZaaping = false;
 		_inMountPark = null;
 		_onMount = false;
@@ -3718,5 +3711,20 @@ public class Player {
 
 	public void setNeedEndFightAction(boolean needEndFightAction) {
 		this.needEndFightAction = needEndFightAction;
+	}
+	
+	public void setDoAction(boolean doAction) {
+		 this.doAction = doAction;	
+	}
+	
+	public boolean getDoAction() {
+		return doAction;
+	}
+	
+	public void setCurJobAction(JobAction curJobAction) {
+		this.curJobAction = curJobAction;
+	}
+	public JobAction getCurJobAction() {
+		return curJobAction;
 	}
 }

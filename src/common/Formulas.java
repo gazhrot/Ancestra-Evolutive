@@ -20,7 +20,6 @@ import core.Server;
 
 public class Formulas {
 
-
 	public static int getRandomValue(int i1,int i2)
 	{
 		Random rand = new Random();
@@ -858,20 +857,6 @@ public class Formulas {
 		return total;
 	}
 	
-	public static int ChanceFM(int poidItemBase, int poidItemActual, int poidBaseJet, int poidActualJet, double poidRune, int Puis, double Coef)
-	{
-		int Chance = 0;
-		int a = (poidItemBase+poidBaseJet+(Puis*2));
-		int b = (int) (Math.sqrt(poidItemActual+poidActualJet+poidRune));
-		if(b <= 0) b = 1;
-		Chance = (int) Math.floor((a/b)*Coef);
-		
-		//DEBUG :
-		Console.instance.println("A : "+a);
-		Console.instance.println("B : "+b);
-		return Chance;
-	}
-	
 	public static int getTraqueXP(int lvl)
 	{
 		if(lvl < 50)return 10000 * Server.config.getRateXpPvm();
@@ -904,5 +889,96 @@ public class Formulas {
 		if(isAgression) returned *= (7/4);
 		if(isPerco) returned *= (3/2);
 		return returned;
+	}
+	
+	public static int calculXpWinCraft(int lvl,int numCase)
+	{
+		if(lvl == 100)
+			return 0;
+		switch(numCase)
+		{
+			case 1:
+				if(lvl<10)return 1;
+			return 0;
+			case 2:
+				if(lvl<60)return 10;
+			return 0;
+			case 3:
+				if(lvl>9 && lvl<80)return 25;
+			return 0;
+			case 4:
+				if(lvl > 19)return 50;
+			return 0;
+			case 5:
+				if(lvl > 39)return 100;
+			return 0;
+			case 6:
+				if(lvl > 59)return 250;
+			return 0;
+			case 7:
+				if(lvl > 79)return 500;
+			return 0;
+			case 8:
+				if(lvl > 99)return 1000;
+			return 0;
+		}
+		return 0;
+	}
+	
+	public static int calculXpLooseCraft(int lvl,int numCase)
+	{
+		if(lvl == 100)
+			return 0;
+		switch(numCase)
+		{
+			case 1:
+				if(lvl<10)return 1;
+			return 0;
+			case 2:
+				if(lvl<60)return 5;
+			return 0;
+			case 3:
+				if(lvl>9 && lvl<80)return 12;
+			return 0;
+			case 4:
+				if(lvl > 19)return 25;
+			return 0;
+			case 5:
+				if(lvl > 39)return 50;
+			return 0;
+			case 6:
+				if(lvl > 59)return 125;
+			return 0;
+			case 7:
+				if(lvl > 79)return 250;
+			return 0;
+			case 8:
+				if(lvl > 99)return 500;
+			return 0;
+		}
+		return 0;
+	}
+	
+	public static int calculChanceByElement(int lvlJob, int lvlObject, int lvlRune)
+	{
+		int K = 1;
+		if (lvlRune == 1)
+			K = 100;
+		else if (lvlRune == 25)
+			K = 175;
+		else if (lvlRune == 50)
+			K = 350;
+		return lvlJob * 100 / (K + lvlObject);
+	}
+	
+	public static int chanceFM(int WeightTotalBase, int currentWeithTotal, int currentWeightStats, int weight, int diff, float coef) 
+	{
+		float chance = 0.0F;
+		float a = ((WeightTotalBase + diff) * coef);
+		float b = (float) (Math.sqrt(currentWeithTotal + currentWeightStats) + weight);
+		if (b < 1.0)
+			b = 1.0F;
+		chance = a / b;
+		return (int) chance;
 	}
 }

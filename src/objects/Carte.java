@@ -16,6 +16,7 @@ import client.Player;
 import objects.Monstre.MobGrade;
 import objects.Monstre.MobGroup;
 import objects.NPC_tmpl.NPC;
+import objects.job.JobConstant;
 
 import common.ConditionParser;
 import common.Constants;
@@ -41,7 +42,7 @@ public class Carte {
 	private Map<Integer,MobGroup> 	_mobGroups 		= new TreeMap<Integer,MobGroup>();
 	private Map<Integer,MobGroup> 	_fixMobGroups 	= new TreeMap<Integer,MobGroup>();
 	private Map<Integer,NPC>		_npcs	 		= new TreeMap<Integer, NPC>();
-	int _nextObjectID = -1;
+	public int _nextObjectID = -1;
 	private byte _X = 0;
 	private byte _Y = 0;
 	private SubArea _subArea;
@@ -1032,7 +1033,7 @@ public class Carte {
 				CcellID = Short.parseShort(GA._args.split(";")[0]);
 			}catch(Exception e){e.printStackTrace();}
 			if(actionID == -1)return;
-			if(Constants.isJobAction(actionID))
+			if(JobConstant.isJobAction(actionID))
 			{
 				perso.doJobAction(actionID,_object,GA,this);
 				return;
@@ -1210,7 +1211,7 @@ public class Carte {
 			}catch(Exception e){}
 			if(actionID == -1)return;
 			
-			if(Constants.isJobAction(actionID))
+			if(JobConstant.isJobAction(actionID))
 			{
 				perso.finishJobAction(actionID,_object,GA,this);
 				return;
@@ -1627,6 +1628,16 @@ public class Carte {
 		_fights.put(id,f);
 		SocketManager.GAME_SEND_MAP_FIGHT_COUNT_TO_MAP(this);
 		return f;
+	}
+	
+	public void startFightVersusProtectors(Player perso, MobGroup group) {
+		if(!perso.canAggro())
+			return;
+		int id = 1;
+		if(!this._fights.isEmpty())
+			id = ((Integer)(this._fights.keySet().toArray()[this._fights.size()-1]))+1;
+		this._fights.put(id, new Fight(id, this, perso, group, Constants.FIGHT_TYPE_PVM));
+		SocketManager.GAME_SEND_MAP_FIGHT_COUNT_TO_MAP(this);
 	}
 	
 	public int getRandomFreeCellID()

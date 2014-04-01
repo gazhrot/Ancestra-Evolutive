@@ -815,4 +815,62 @@ public class Objet {
 		txtStats.clear();
 	}
 	
+	public String parseStringStatsEC_FM(Objet obj, double poid) 
+	{
+		String stats = "";
+		boolean first = false;
+		for (SpellEffect EH : obj.Effects) 
+		{
+			if (first)
+				stats += ",";
+			String[] infos = EH.getArgs().split(";");
+			try {
+				stats += Integer.toHexString(EH.getEffectID()) + "#" + infos[0] + "#" + infos[1] + "#0#" + infos[5];
+			}catch (Exception e) 
+			{
+				e.printStackTrace();
+				continue;
+			}
+			first = true;
+		}
+		for (Entry<Integer, Integer> entry : obj.Stats.getMap().entrySet()) 
+		{
+			int newstats = 0;
+			int statID = (entry.getKey());
+			int value = (entry.getValue());
+			if ((statID == 152) || (statID == 154) || (statID == 155) || (statID == 157) || (statID == 116)
+			|| (statID == 153)) 
+			{
+				float a = (float) (value * poid / 100.0D);
+				if (a < 1.0F)
+					a = 1.0F;
+				float chute = value + a;
+				newstats = (int) Math.floor(chute);
+				if (newstats > Job.getBaseMaxJet(obj.getTemplate().getID(), Integer.toHexString(entry.getKey()))) 
+					newstats = Job.getBaseMaxJet(obj.getTemplate().getID(), Integer.toHexString(entry.getKey()));
+				
+			}else 
+			{
+				if ((statID == 127) || (statID == 101))
+					continue;
+				float chute = (float) (value - value * poid / 100.0D);
+				newstats = (int) Math.floor(chute);
+			}
+			if (newstats < 1)
+				continue;
+			String jet = "0d0+" + newstats;
+			if (first)
+				stats += ",";
+			stats += Integer.toHexString(statID) + "#" + Integer.toHexString(newstats) + "#0#0#" + jet;
+			first = true;
+		}
+		for (Entry<Integer, String> entry : obj.txtStats.entrySet()) 
+		{
+			if (first)
+				stats += ",";
+			stats += Integer.toHexString((entry.getKey())) + "#0#0#0#" + entry.getValue();
+			first = true;
+		}
+		return stats;
+	}
 }

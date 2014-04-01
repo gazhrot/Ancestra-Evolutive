@@ -23,7 +23,7 @@ import objects.Objet;
 import objects.Objet.ObjTemplate;
 import objects.Percepteur;
 import objects.Trunk;
-import objects.job.Job.StatsMetier;
+import objects.job.JobStat;
 import client.Client;
 import client.Player;
 import client.Player.Group;
@@ -33,7 +33,6 @@ import core.Server;
 import enums.EmulatorInfos;
 import game.GameClient;
 import game.GameServer;
-
 
 public class SocketManager {
 	
@@ -1798,8 +1797,18 @@ public class SocketManager {
 		if(Server.config.isDebug())
 			Log.addToSockLog("Game: Send>>"+packet);
 	}
+	
+	public static void GAME_SEND_EXCHANGE_MOVE_OK_FM(Player out, char type, String signe, String s1)
+	{
+		String packet = "EmK" + type + signe;
+		if(!s1.equals(""))
+			packet += s1;
+		send(out,packet);
+		if(Server.config.isDebug())
+			Log.addToSockLog("Game: Send>>"+packet);		
+	}
 
-	public static void GAME_SEND_JX_PACKET(Player perso,ArrayList<StatsMetier> SMs)
+	/*public static void GAME_SEND_JX_PACKET(Player perso,ArrayList<StatsMetier> SMs)
 	{
 		StringBuilder packet = new StringBuilder();
 		packet.append("JX");
@@ -1831,7 +1840,48 @@ public class SocketManager {
 		send(perso,packet);
 		if(Server.config.isDebug())
 			Log.addToSockLog("Game: Send>>"+packet);
+	}*/
+	
+	public static void GAME_SEND_JX_PACKET(Player perso, ArrayList<JobStat> SMs)
+	{
+		StringBuilder packet = new StringBuilder();
+		packet.append("JX");
+		for(JobStat sm : SMs)
+			packet.append("|").append(sm.getTemplate().getId()).append(";").append(sm.get_lvl()).append(";").append(sm.getXpString(";")).append(";");
+		send(perso,packet.toString());	
+		if(Server.config.isDebug())
+			Log.addToSockLog("Game: Send>>"+packet.toString());
 	}
+	
+	public static void GAME_SEND_JO_PACKET(Player perso, ArrayList<JobStat> JobStats)
+	{
+		String packet = "";
+		for(JobStat SM : JobStats) {
+			packet = "JO"+ SM.getPosition() +"|"+ SM.getOptBinValue() +"|"+ SM.getSlotsPublic();
+			send(perso, packet);		
+		}
+		if(Server.config.isDebug())
+			Log.addToSockLog("Game: Send>> "+packet);
+	}
+	
+	public static void GAME_SEND_JO_PACKET(Player perso, JobStat SM)
+	{
+		String packet = "JO"+ SM.getPosition() +"|"+ SM.getOptBinValue() +"|"+ SM.getSlotsPublic();
+		send(perso,packet);
+		if(Server.config.isDebug())
+			Log.addToSockLog("Game: Send>>"+packet);
+	}
+	
+	public static void GAME_SEND_JS_PACKET(Player perso, ArrayList<JobStat> SMs)
+	{
+		String packet = "JS";
+		for(JobStat sm : SMs)
+			packet += sm.parseJS();
+		send(perso, packet);	
+		if(Server.config.isDebug())
+			Log.addToSockLog("Game: Send>> "+packet);
+	}
+	
 	
 	public static void GAME_SEND_EsK_PACKET(Player perso, String str)
 	{
@@ -2517,5 +2567,23 @@ public class SocketManager {
     	send(Personnage, "Eq1|1|" + Prix);
     	if(Server.config.isDebug())
     		Log.addToSockLog("Game: Send>> " + "Eq1|1|" + Prix);
+	}
+    //TODO: A revoir pour le fm..
+    public static void GAME_SEND_EXCHANGE_OTHER_MOVE_OK_FM(GameClient out,char type,String signe,String s1)
+	{
+		String packet = "EMK"+type+signe;
+		if(!s1.equals(""))
+			packet += s1;
+		send(out,packet);
+		if(Server.config.isDebug())
+        	Log.addToSockLog("Game: Send>>" + packet);
+	}
+    
+    public static void GAME_SEND_DELETE_STATS_ITEM_FM(Player perso, int id) 
+	{
+		String packet = "OR" + id;
+		send(perso, packet);
+		if(Server.config.isDebug())
+        	Log.addToSockLog("Game: Send>>" + packet);		
 	}
 }

@@ -274,6 +274,74 @@ public class Fight
 		set_state(Constants.FIGHT_STATE_PLACE);
 	}
 
+	public Fight(int id, Carte map, Player perso, MobGroup group, int type) 
+	{
+		_mobGroup = group;
+		_type = type; //(0: Défie) 4: Pvm (1:PVP) (5:Perco)
+		_id = id;
+		_map = map.getMapCopy();
+		set_mapOld(map);
+		_init0 = new Fighter(this,perso);
+		_team0.put(perso.get_GUID(), _init0);
+		for( java.util.Map.Entry<Integer, MobGrade> entry : group.getMobs().entrySet())
+		{
+			entry.getValue().setInFightID(entry.getKey());
+			Fighter mob = new Fighter(this,entry.getValue());
+			_team1.put(entry.getKey(), mob);
+		}
+		
+		SocketManager.GAME_SEND_FIGHT_GJK_PACKET_TO_FIGHT(this,1,2,0,1,0,45000, _type);
+		
+		//on desactive le timer de regen coté client
+		SocketManager.GAME_SEND_ILF_PACKET(perso, 0);
+		
+		set_turnTimer(TurnTimer(45000, null));
+		get_turnTimer().start();
+		
+	    _start0 =  CryptManager.parseStartCell(get_map(), 0);
+		_start1 =  CryptManager.parseStartCell(get_map(), 1);
+		SocketManager.GAME_SEND_FIGHT_PLACES_PACKET_TO_FIGHT(this,1,get_map().get_placesStr(),0);
+		_st1 = 0;
+		_st2 = 1;
+		SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(this, 3, 950, perso.get_GUID()+"", perso.get_GUID()+","+Constants.ETAT_PORTE+",0");
+		SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(this, 3, 950, perso.get_GUID()+"", perso.get_GUID()+","+Constants.ETAT_PORTEUR+",0");
+		
+		List< java.util.Map.Entry<Integer, Fighter>> e = new ArrayList< java.util.Map.Entry<Integer,Fighter>>();
+		e.addAll(_team1.entrySet());
+		for(java.util.Map.Entry<Integer,Fighter> entry : e)
+		{
+			Fighter f = entry.getValue();
+			Case cell = getRandomCell(_start1);
+			if(cell == null)
+			{
+				_team1.remove(f.getGUID());
+				continue;
+			}
+			
+			SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(this, 3, 950, f.getGUID()+"", f.getGUID()+","+Constants.ETAT_PORTE+",0");
+			SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(this, 3, 950, f.getGUID()+"", f.getGUID()+","+Constants.ETAT_PORTEUR+",0");
+			f.set_cell(cell);
+			f.get_cell().addFighter(f);
+			f.setTeam(1);
+			f.fullPDV();
+		}
+		_init0.set_cell(getRandomCell(_start0));
+		
+		_init0.getPersonnage().get_curCell().removePlayer(_init0.getPersonnage().get_GUID());
+		
+		_init0.get_cell().addFighter(_init0);
+		
+		_init0.getPersonnage().set_fight(this);
+		_init0.setTeam(0);
+		SocketManager.GAME_SEND_ERASE_ON_MAP_TO_MAP(_init0.getPersonnage().get_curCarte(), _init0.getGUID());
+		SocketManager.GAME_SEND_ERASE_ON_MAP_TO_MAP(_init0.getPersonnage().get_curCarte(), group.getID());
+		SocketManager.GAME_SEND_ADD_IN_TEAM_PACKET_TO_MAP(_init0.getPersonnage().get_curCarte(),_init0.getGUID(), _init0);
+		for(Fighter f : _team0.values())
+			SocketManager.GAME_SEND_ADD_IN_TEAM_PACKET_TO_MAP(_init0.getPersonnage().get_curCarte(), group.getID(), f);
+		SocketManager.GAME_SEND_MAP_FIGHT_GMS_PACKETS_TO_FIGHT(this,7,get_map());
+		set_state(Constants.FIGHT_STATE_PLACE);
+	}
+	
 	public Fight(int id, Carte map, Player perso, Percepteur perco) 
 	{	
 		set_guildID(perco.get_guildID());

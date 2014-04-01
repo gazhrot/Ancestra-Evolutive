@@ -23,11 +23,10 @@ import objects.NPC_tmpl.NPC;
 import objects.NPC_tmpl.NPC_question;
 import objects.Objet;
 import objects.Objet.ObjTemplate;
-import objects.job.Job.StatsMetier;
+import objects.job.JobStat;
 import core.Console;
 import core.Log;
 import core.Server;
-
 
 public class Commands {
 	Account _compte;
@@ -819,7 +818,7 @@ public class Commands {
 					return;
 				}
 			}
-			StatsMetier SM = target.getMetierByID(job);
+			JobStat SM = target.getMetierByID(job);
 			if(SM== null)
 			{
 				String str = "Le joueur ne connais pas le metier demande";

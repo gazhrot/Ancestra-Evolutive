@@ -6,7 +6,7 @@ import game.GameClient;
 import objects.Monstre.MobGroup;
 import objects.NPC_tmpl.NPC_question;
 import objects.Objet.ObjTemplate;
-import objects.job.Job.StatsMetier;
+import objects.job.JobStat;
 
 import common.ConditionParser;
 import common.Constants;
@@ -450,13 +450,12 @@ public class Action {
 				}catch(Exception e){Log.addToLog(e.getMessage());};
 			break;
 			case 23://UnlearnJob
-				try
-				{
+				try	{
 					int Job = Integer.parseInt(args);
 					if(Job < 1) return;
-					StatsMetier m = perso.getMetierByID(Job);
+					JobStat m = perso.getMetierByID(Job);
 					if(m == null) return;
-					perso.unlearnJob(m.getID());
+					perso.unlearnJob(m.getId());
 					SocketManager.GAME_SEND_STATS_PACKET(perso);
 					perso.save();
 				}catch(Exception e){Log.addToLog(e.getMessage());};
