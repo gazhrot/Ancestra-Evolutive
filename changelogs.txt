@@ -101,3 +101,9 @@ Version 0.5
   > Reprise d'un objet déjà vendu : duplication d'item.
 - Revue des failles/bugs sur les dialogues.
 - Correction du charegement de la config.
+- Correction de la totalité des problèmes liés aux métiers.
+  > Ajout de la distance de canne à péche.
+  > Ajout des protecteurs de ressources.
+  > Ajout de la séparation du craft et du joueur n'empéchant plus l'arrêt ou la discussion. Il est maintenant possible d'arrêté un craft, de parler, ..
+  > Correction de la possibilité de bugué les ressources.
+  > ...
