@@ -111,42 +111,39 @@ public class Pathfinding {
         if(fight != null && fight.isOccuped(dirCaseID))
         	return "no:";
         int lastPos = CurrentPos;
-        for (_nSteps = 1; _nSteps <= 64; _nSteps++)
+        
+        for(_nSteps = 1; _nSteps <= 64; _nSteps++)
         {
-        	if (GetCaseIDFromDirrection(lastPos, dir, map, fight!=null) == dirCaseID)
+        	if(GetCaseIDFromDirrection(lastPos, dir, map, fight!=null) == dirCaseID)
             {
-            	if(fight != null && fight.isOccuped(dirCaseID))return "stop:"+lastPos;
+            	if(fight != null && fight.isOccuped(dirCaseID))
+            		return "stop:"+lastPos;
             	
-            	if(map.getCase(dirCaseID).isWalkable(true))return "ok:";
-            	else
-            	{
+            	if(map.getCase(dirCaseID).isWalkable(true)) {
+            		return "ok:";
+            	}else {
             		_nSteps--;
             		return ("stop:"+lastPos);
             	}
+            }else {
+            	lastPos = GetCaseIDFromDirrection(lastPos, dir, map, fight!=null);
             }
-            else lastPos = GetCaseIDFromDirrection(lastPos, dir, map, fight!=null);
         	
+        	
+        	/** Cas de fight **/
             if(fight != null && fight.isOccuped(lastPos))
-            {
             	return "no:";
-           	}
             if(fight != null)
             {
 	            if(getEnemyFighterArround(lastPos, map, fight) != null)//Si ennemie proche
-	            {
 	            	return "stop:"+lastPos;
-	            }
-    			for(Piege p : fight.get_traps())
-    			{
+    			for(Piege p : fight.get_traps()) {
     				int dist = getDistanceBetween(map,p.get_cell().getID(),lastPos);
-    				if(dist <= p.get_size())
-    				{
-    					//on arrete le déplacement sur la 1ere case du piege
+    				if(dist <= p.get_size()) {//on arrete le déplacement sur la 1ere case du piege
     					return "stop:"+lastPos;
     				}
     			}
-            }
-            
+            }    
         }
         return "no:";
 	}

@@ -1,0 +1,20 @@
+Liste de chose à faire :
+
+- Les guildes :
+  > Quand on supprime un déconnecter cela ne marche pas.
+  > Tu avais aussi dit sur les rangs qu'il y a des problèmes.
+  > Créer une guilde avec une guildalogemme au temple des guildes.
+ 
+- Les obvijevans :
+  > Faire nourrir tout les X heures.
+ 
+- Les enclos :
+  > Par rapport au stock des dragodines dans les enclos et qu'elles soient sauvegarder au reboot.
+ 
+Les dragodines :
+  > L'inventaire des dragodindes, les items dedans lorsqu'il y a un reboot ils disparaissent je crois.
+  > La nourriture des dragodindes peut-être.
+ 
+Alignement :
+  > Quand on a pas de point d'honneur et que l'on peur une agression neutre est-ce que l'on passe bien en point de déshonneur ?
+  > Lorsque l'on a des points de déshonneur il est possible de changer d'alignement alors que normalement non.

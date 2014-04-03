@@ -18,6 +18,8 @@ import core.Console;
 
 public class GameClient implements Client {
 	
+	public boolean ok = false;
+	
 	private IoSession session;
 	private Account account;
 	private Player player;
@@ -82,12 +84,12 @@ public class GameClient implements Client {
 	
 	public void addAction(GameAction GA) {
 		this.getActions().put(GA.getId(), GA);
-		Console.instance.println("Ajout de la GameAction id = "+GA.getId());
-		Console.instance.println("Packet: "+GA.getPacket());
+		Console.instance.println("Game > Create action id : "+GA.getId());
+		Console.instance.println("Game > Packet : "+GA.getPacket());
 	}
 	
 	public void removeAction(GameAction GA) {
-		Console.instance.println("Supression de la GameAction id = "+GA.getId());
+		Console.instance.println("Game > Delete action id : "+GA.getId());
 		this.getActions().remove(GA.getId());
 	}
 	

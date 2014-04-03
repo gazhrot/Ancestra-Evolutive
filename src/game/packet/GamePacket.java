@@ -215,21 +215,19 @@ public class GamePacket {
 		private static void game_action(GameClient client, GameAction GA)
 		{
 			String packet = GA.getPacket().substring(5);
-			int cellID = -1;
-			int actionID = -1;
+			int cell = -1, action = -1;
 			
-			try
-			{
-				cellID = Integer.parseInt(packet.split(";")[0]);
-				actionID = Integer.parseInt(packet.split(";")[1]);
-			}catch(Exception e){}
+			try {
+				cell = Integer.parseInt(packet.split(";")[0]);
+				action = Integer.parseInt(packet.split(";")[1]);
+			} catch(Exception e) {}
 			//Si packet invalide, ou cellule introuvable
-			if(cellID == -1 || actionID == -1 || client.getPlayer() == null || client.getPlayer().get_curCarte() == null ||
-					client.getPlayer().get_curCarte().getCase(cellID) == null)
+			if(cell == -1 || action == -1 || client.getPlayer() == null || client.getPlayer().get_curCarte() == null ||
+					client.getPlayer().get_curCarte().getCase(cell) == null)
 				return;
-			GA.setArgs(cellID+";"+actionID);
+			client.ok = true;
+			GA.setArgs(cell+";"+action);
 			client.getPlayer().get_compte().getGameClient().addAction(GA);
-		//	client.getPlayer().startActionOnCell(GA);
 		}
 	
 		private static void game_tryCac(GameClient client, String packet)
@@ -348,17 +346,36 @@ public class GamePacket {
 					client.removeAction(GA);
 					return;
 				}
+				
 				AtomicReference<String> pathRef = new AtomicReference<String>(path);
-				int result = Pathfinding.isValidPath(client.getPlayer().get_curCarte(),client.getPlayer().get_curCell().getID(),pathRef, null);
+				int result = Pathfinding.isValidPath(client.getPlayer().get_curCarte(), client.getPlayer().get_curCell().getID(), pathRef, null);
+				
+				Case targetCell = client.getPlayer().get_curCarte().getCase(CryptManager.cellCode_To_ID(path.substring(path.length()-2)));
 				
 				//Si d�placement inutile
 				if(result == 0)
 				{
+					if(targetCell != null)
+					{
+						if(targetCell.getObject() != null)
+						{
+							if(targetCell.getObject().getID() == 1324) {
+								Constants.applyPlotIOAction(client.getPlayer(),client.getPlayer().get_curCarte().get_id(),targetCell.getID());
+							}else if(targetCell.getObject().getID() == 542) {
+								if(client.getPlayer()._isGhosts) client.getPlayer().set_Alive();
+							}
+							SocketManager.GAME_SEND_GA_PACKET(client, "", "0", "", "");					
+							client.removeAction(GA);
+							return;
+						}
+					}
 					SocketManager.GAME_SEND_GA_PACKET(client, "", "0", "", "");
 					client.removeAction(GA);
 					return;
 				}
-				if(result != -1000 && result < 0)result = -result;
+				
+				if(result != -1000 && result < 0)
+					result = -result;
 				
 				//On prend en compte le nouveau path
 				path = pathRef.get();

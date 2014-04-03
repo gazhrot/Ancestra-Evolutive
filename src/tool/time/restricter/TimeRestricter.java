@@ -6,9 +6,8 @@ import java.util.concurrent.TimeUnit;
 
 import client.Player;
 
-
-
 public class TimeRestricter {
+	
 	private RestrictLevel level;
 	private int countAuthorized;
 	private long interval, blockTime;
