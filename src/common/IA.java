@@ -445,7 +445,7 @@ public class IA implements Runnable{
 		}catch(Exception e){e.printStackTrace();};
 		//Création d'une GameAction
 		GameAction GA = new GameAction(0,1, "");
-		GA._args = pathstr;
+		GA.setArgs(pathstr);
 		boolean result = fight.fighterDeplace(F, GA);
 		return result;
 
@@ -732,7 +732,7 @@ public class IA implements Runnable{
 		}catch(Exception e){e.printStackTrace();};
 		//Création d'une GameAction
 		GameAction GA = new GameAction(0,1, "");
-		GA._args = pathstr;
+		GA.setArgs(pathstr);
 		try {
 			return fight.fighterDeplace(F, GA);
 		} catch (Exception e) {}
@@ -986,7 +986,7 @@ public class IA implements Runnable{
 		}catch(Exception e){e.printStackTrace();};
 		//Création d'une GameAction
 		GameAction GA = new GameAction(0,1, "");
-		GA._args = pathstr;
+		GA.setArgs(pathstr);
 		boolean result = fight.fighterDeplace(fighter, GA);
 		return result;
 		

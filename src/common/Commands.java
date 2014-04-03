@@ -171,7 +171,7 @@ public class Commands {
 				+			"Liste des joueurs en ligne:";
 			SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out, mess);
 			for(GameClient client: Server.config.getGameServer().getClients().values()) {
-				Player P = client.getPerso();
+				Player P = client.getPlayer();
 				if(P == null)continue;
 				mess = P.get_name()+"("+P.get_GUID()+") ";
 				

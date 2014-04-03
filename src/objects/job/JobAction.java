@@ -157,7 +157,7 @@ public class JobAction {
 		{
 			IO.setInteractive(false);
 			IO.setState(JobConstant.IOBJECT_STATE_EMPTYING);
-			SocketManager.GAME_SEND_GA_PACKET_TO_MAP(P.get_curCarte(),""+GA._id, 501, P.get_GUID()+"", cell.getID()+","+this.time);
+			SocketManager.GAME_SEND_GA_PACKET_TO_MAP(P.get_curCarte(),""+GA.getId(), 501, P.get_GUID()+"", cell.getID()+","+this.time);
 			SocketManager.GAME_SEND_GDF_PACKET_TO_MAP(P.get_curCarte(),cell);
 			this.startTime = System.currentTimeMillis()+this.time;//pour eviter le cheat
 		}else

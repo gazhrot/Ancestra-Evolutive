@@ -1157,7 +1157,7 @@ public class Fight
 
 	public boolean fighterDeplace(Fighter f, GameAction GA)
 	{
-		String path = GA._args;
+		String path = GA.getArgs();
 		if(path.equals(""))
 		{
 			if(Server.config.isDebug()) Log.addToLog("Echec du deplacement: chemin vide");
@@ -1195,13 +1195,13 @@ public class Fight
 				int rand = Formulas.getRandomValue(0, 99);
 				if(rand > chance)
 				{
-					SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(Fight.this, 7,GA._id, "104",_ordreJeu.get(_curPlayer).getGUID()+";", "");//Joueur taclé
+					SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(Fight.this, 7,GA.getId(), "104",_ordreJeu.get(_curPlayer).getGUID()+";", "");//Joueur taclé
 					int pertePA = get_curFighterPA()*chance/100;
 					
 					if(pertePA  < 0)pertePA = -pertePA;
 					if(get_curFighterPM() < 0)set_curFighterPM(0); // -_curFighterPM :: 0 c'est plus simple :)
-					SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(Fight.this, 7,GA._id,"129", f.getGUID()+"", f.getGUID()+",-"+get_curFighterPM());
-					SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(Fight.this, 7,GA._id,"102", f.getGUID()+"", f.getGUID()+",-"+pertePA);
+					SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(Fight.this, 7,GA.getId(),"129", f.getGUID()+"", f.getGUID()+",-"+get_curFighterPM());
+					SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(Fight.this, 7,GA.getId(),"102", f.getGUID()+"", f.getGUID()+",-"+pertePA);
 					
 					set_curFighterPM(0);
 					set_curFighterPA(get_curFighterPA() - pertePA);
@@ -1232,14 +1232,14 @@ public class Fight
 			//SocketManager.GAME_SEND_GAS_PACKET_TO_FIGHT(Fight.this,7,_ordreJeu.get(_curPlayer).getGUID());
         //Si le joueur n'est pas invisible
         if(!_ordreJeu.get(_curPlayer).isHide()) {
-	        SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(Fight.this, 7, GA._id, "1", _ordreJeu.get(_curPlayer).getGUID()+"", "a"+CryptManager.cellID_To_Code(f.get_fightCell(false).getID())+newPath);
+	        SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(Fight.this, 7, GA.getId(), "1", _ordreJeu.get(_curPlayer).getGUID()+"", "a"+CryptManager.cellID_To_Code(f.get_fightCell(false).getID())+newPath);
         } else//Si le joueur est planqué x)
         {
         	if(_ordreJeu.get(_curPlayer).getPersonnage() != null)
         	{
         		//On envoie le path qu'au joueur qui se déplace
         		GameClient out = _ordreJeu.get(_curPlayer).getPersonnage().get_compte().getGameClient();
-        		SocketManager.GAME_SEND_GA_PACKET(out,  GA._id+"", "1", _ordreJeu.get(_curPlayer).getGUID()+"", "a"+CryptManager.cellID_To_Code(f.get_fightCell(false).getID())+newPath);
+        		SocketManager.GAME_SEND_GA_PACKET(out,  GA.getId()+"", "1", _ordreJeu.get(_curPlayer).getGUID()+"", "a"+CryptManager.cellID_To_Code(f.get_fightCell(false).getID())+newPath);
         	}
         }
        

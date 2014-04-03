@@ -2081,8 +2081,8 @@ public class Player {
 		int action = -1;
 		try
 		{
-			cellID = Integer.parseInt(GA._args.split(";")[0]);
-			action = Integer.parseInt(GA._args.split(";")[1]);
+			cellID = Integer.parseInt(GA.getArgs().split(";")[0]);
+			action = Integer.parseInt(GA.getArgs().split(";")[1]);
 		}catch(Exception e){};
 		if(cellID == -1 || action == -1)return;
 		//Si case invalide
@@ -2096,7 +2096,7 @@ public class Player {
 		int cellID = -1;
 		try
 		{
-			cellID = Integer.parseInt(GA._args.split(";")[0]);
+			cellID = Integer.parseInt(GA.getArgs().split(";")[0]);
 		}catch(Exception e){};
 		if(cellID == -1)return;
 		_curCarte.getCase(cellID).finishAction(this,GA);

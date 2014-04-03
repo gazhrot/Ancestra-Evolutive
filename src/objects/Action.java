@@ -518,7 +518,7 @@ public class Action {
 					{
 					if(b == Server.config.getGameServer().getClients().size())break;
 					GameClient GT = Server.config.getGameServer().getClients().get((int)b);
-					Player P = GT.getPerso();
+					Player P = GT.getPlayer();
 					if(P == null || P == perso)continue;
 					if(P.get_compte().get_curIP().compareTo(perso.get_compte().get_curIP()) == 0)continue;
 					//SI pas sériane ni neutre et si alignement opposé

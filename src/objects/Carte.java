@@ -1029,8 +1029,8 @@ public class Carte {
 			short CcellID = -1;
 			try
 			{
-				actionID = Integer.parseInt(GA._args.split(";")[1]);
-				CcellID = Short.parseShort(GA._args.split(";")[0]);
+				actionID = Integer.parseInt(GA.getArgs().split(";")[1]);
+				CcellID = Short.parseShort(GA.getArgs().split(";")[0]);
 			}catch(Exception e){e.printStackTrace();}
 			if(actionID == -1)return;
 			if(JobConstant.isJobAction(actionID))
@@ -1051,7 +1051,7 @@ public class Carte {
 					if(_object.getState() != Constants.IOBJECT_STATE_FULL)return;//Si le puits est vide
 					_object.setState(Constants.IOBJECT_STATE_EMPTYING);
 					_object.setInteractive(false);
-					SocketManager.GAME_SEND_GA_PACKET_TO_MAP(perso.get_curCarte(),""+GA._id, 501, perso.get_GUID()+"", _id+","+_object.getUseDuration()+","+_object.getUnknowValue());
+					SocketManager.GAME_SEND_GA_PACKET_TO_MAP(perso.get_curCarte(),""+GA.getId(), 501, perso.get_GUID()+"", _id+","+_object.getUseDuration()+","+_object.getUnknowValue());
 					SocketManager.GAME_SEND_GDF_PACKET_TO_MAP(perso.get_curCarte(),this);
 				break;
 				case 114://Utiliser (zaap)
@@ -1207,7 +1207,7 @@ public class Carte {
 			int actionID = -1;
 			try
 			{
-				actionID = Integer.parseInt(GA._args.split(";")[1]);
+				actionID = Integer.parseInt(GA.getArgs().split(";")[1]);
 			}catch(Exception e){}
 			if(actionID == -1)return;
 			

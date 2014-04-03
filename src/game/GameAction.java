@@ -1,15 +1,47 @@
 package game;
 
-public class GameAction
-{   
-	public int _id;
-	public int _actionID;
-	public String _packet;
-	public String _args;
+public class GameAction {
 	
-	public GameAction(int aId, int aActionId,String aPacket) {
-		_id = aId;
-		_actionID = aActionId;
-		_packet = aPacket;
+	private int id;
+	private int action;
+	private String packet;
+	private String args;
+	
+	public GameAction(int id, int action, String packet) {
+		this.id = id;
+		this.action = action;
+		this.packet = packet;
+	}
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	public int getAction() {
+		return action;
+	}
+
+	public void setAction(int action) {
+		this.action = action;
+	}
+
+	public String getPacket() {
+		return packet;
+	}
+
+	public void setPacket(String packet) {
+		this.packet = packet;
+	}
+
+	public String getArgs() {
+		return args;
+	}
+
+	public void setArgs(String args) {
+		this.args = args;
 	}
 }
