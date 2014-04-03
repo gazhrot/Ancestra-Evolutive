@@ -107,3 +107,6 @@ Version 0.5
   > Ajout de la séparation du craft et du joueur n'empéchant plus l'arrêt ou la discussion. Il est maintenant possible d'arrêté un craft, de parler, ..
   > Correction de la possibilité de bugué les ressources.
   > ...
+- GameClient fragmenter en plusieurs morceaux pour chaque type de packet.
+- GameAction refait (convention & getter/setter).
+- Renommage de l'ensemble des "parsage" de packet au niveau des variables, .. Il en reste quelque un. 
