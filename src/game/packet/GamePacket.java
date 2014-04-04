@@ -20,51 +20,25 @@ import common.World;
 import core.Log;
 import game.GameAction;
 import game.GameClient;
+import game.packet.handler.Packet;
 
 public class GamePacket {
 
-	private static ReentrantLock locker = new ReentrantLock();
-	
-	public static void parseGamePacket(GameClient client, String packet) {
-		switch(packet.charAt(1))
-		{
-			case 'A':
-				if(client.getPlayer() != null)
-					parseGameActionPacket(client, packet);
-			break;
-			case 'C':
-				if(client.getPlayer() != null)
-					client.getPlayer().sendGameCreate();
-			break;
-			case 'f':
-				showCase(client, packet);
-			break;
-			case 'I':
-				information(client);
-			break;
-			case 'K':
-				actionAck(client, packet);
-			break;
-			case 'P'://PvP Toogle
-				client.getPlayer().toggleWings(packet.charAt(2));
-			break;
-			case 'p':
-				setPlayerPosition(client, packet);
-			break;
-			case 'Q':
-				leaveFight(client, packet);
-			break;
-			case 'R':
-				readyFight(client, packet);
-			break;
-			case 't':
-				if(client.getPlayer().get_fight() != null)
-					client.getPlayer().get_fight().playerPass(client.getPlayer());
-			break;
-		}
+	public static ReentrantLock locker = new ReentrantLock();
+
+	@Packet("GA")
+	public static void action(GameClient client, String packet) {
+		if(client.getPlayer() != null)
+			parseGameActionPacket(client, packet);
 	}
 	
-	private static void parseGameActionPacket(GameClient client, String packet)
+	@Packet("GC")
+	public static void gameCreate(GameClient client, String packet) {
+		if(client.getPlayer() != null)
+			client.getPlayer().sendGameCreate();
+	}
+	
+	public static void parseGameActionPacket(GameClient client, String packet)
 	{
 		int action, next = 0;
 		
@@ -133,7 +107,7 @@ public class GamePacket {
 		}	
 	}
 	
-		private static void house_action(GameClient client, String packet) {
+		public static void house_action(GameClient client, String packet) {
 			int action = Integer.parseInt(packet.substring(5));
 			House house = client.getPlayer().getInHouse();
 			if(house == null) 
@@ -153,7 +127,7 @@ public class GamePacket {
 			}
 		}
 		
-		private static void game_perco(GameClient client, String packet)
+		public static void game_perco(GameClient client, String packet)
 		{
 			try
 			{
@@ -181,7 +155,7 @@ public class GamePacket {
 			}catch(Exception e){};
 		}
 		
-		private static void game_aggro(GameClient client, String packet) {
+		public static void game_aggro(GameClient client, String packet) {
 			locker.lock();
 			try {
 				if(client.getPlayer() == null)return;
@@ -212,7 +186,7 @@ public class GamePacket {
 			}
 		}
 	
-		private static void game_action(GameClient client, GameAction GA)
+		public static void game_action(GameClient client, GameAction GA)
 		{
 			String packet = GA.getPacket().substring(5);
 			int cell = -1, action = -1;
@@ -230,7 +204,7 @@ public class GamePacket {
 			client.getPlayer().get_compte().getGameClient().addAction(GA);
 		}
 	
-		private static void game_tryCac(GameClient client, String packet)
+		public static void game_tryCac(GameClient client, String packet)
 		{
 			try
 			{
@@ -245,7 +219,7 @@ public class GamePacket {
 			}catch(Exception e){};
 		}
 	
-		private static void game_tryCastSpell(GameClient client, String packet)
+		public static void game_tryCastSpell(GameClient client, String packet)
 		{
 			try
 			{
@@ -261,7 +235,7 @@ public class GamePacket {
 			}catch(NumberFormatException e){return;};
 		}
 	
-		private static void game_join_fight(GameClient client, String packet)
+		public static void game_join_fight(GameClient client, String packet)
 		{
 			String[] infos = packet.substring(5).split(";");
 			if(infos.length == 1)
@@ -287,7 +261,7 @@ public class GamePacket {
 			}
 		}
 	
-		private static void game_accept_duel(GameClient client, String packet)
+		public static void game_accept_duel(GameClient client, String packet)
 		{
 			int guid = -1;
 			try{guid = Integer.parseInt(packet.substring(5));}catch(NumberFormatException e){return;};
@@ -299,7 +273,7 @@ public class GamePacket {
 			
 		}
 	
-		private static void game_cancel_duel(GameClient client, String packet)
+		public static void game_cancel_duel(GameClient client, String packet)
 		{
 			try
 			{
@@ -312,7 +286,7 @@ public class GamePacket {
 			}catch(NumberFormatException e){return;};
 		}
 	
-		private static void game_ask_duel(GameClient client, String packet)
+		public static void game_ask_duel(GameClient client, String packet)
 		{
 			if(client.getPlayer().get_curCarte().get_placesStr().equalsIgnoreCase("|"))
 			{
@@ -334,7 +308,7 @@ public class GamePacket {
 			}catch(NumberFormatException e){return;}
 		}
 	
-		private static void game_parseDeplacementPacket(GameClient client, GameAction GA)
+		public static void game_parseDeplacementPacket(GameClient client, GameAction GA)
 		{
 			String path = GA.getPacket().substring(5);
 			if(client.getPlayer().get_fight() == null)
@@ -400,8 +374,9 @@ public class GamePacket {
 				client.getPlayer().get_fight().fighterDeplace(F,GA);
 			}
 		}
-			
-	private static void showCase(GameClient client, String packet) {
+		
+	@Packet("Gf")		
+	public static void showCase(GameClient client, String packet) {
 		if(client.getPlayer() == null)
 			return;
 		if(client.getPlayer().get_fight() == null)
@@ -420,7 +395,8 @@ public class GamePacket {
 		client.getPlayer().get_fight().showCaseToTeam(client.getPlayer().get_GUID(),cellID);
 	}
 	
-	private static void information(GameClient client) {
+	@Packet("GI")
+	public static void information(GameClient client, String packet) {
 		if(client.getPlayer().get_fight() != null) {
 			//Only percepteur
 			SocketManager.GAME_SEND_MAP_GMS_PACKETS(client.getPlayer().get_curCarte(), client.getPlayer());
@@ -446,7 +422,8 @@ public class GamePacket {
 		client.getPlayer().get_curCarte().sendFloorItems(client.getPlayer());
 	}
 
-	private static void actionAck(GameClient client, String packet) {	
+	@Packet("GK")
+	public static void actionAck(GameClient client, String packet) {	
 		if(client.getPlayer().isNeedEndFightAction()) {
 			final GameClient needed = client;
 			client.getPlayer().getWaiter().addNext(new Runnable() {
@@ -535,7 +512,13 @@ public class GamePacket {
 		client.removeAction(GA);
 	}
 	
-	private static void setPlayerPosition(GameClient client, String packet) {
+	@Packet("GP")
+	public static void toogleWings(GameClient client, String packet) {
+		client.getPlayer().toggleWings(packet.charAt(2));
+	}
+	
+	@Packet("Gp")
+	public static void setPlayerPosition(GameClient client, String packet) {
 		if(client.getPlayer().get_fight() == null)
 			return;
 		
@@ -545,7 +528,8 @@ public class GamePacket {
 		} catch(NumberFormatException e) {return;}
 	}
 	
-	private static void leaveFight(GameClient client, String packet) {
+	@Packet("GQ")
+	public static void leaveFight(GameClient client, String packet) {
 		int id = -1;
 		if(!packet.substring(2).isEmpty()) {
 			try	{
@@ -567,8 +551,9 @@ public class GamePacket {
 			client.getPlayer().get_fight().leftFight(client.getPlayer(), null);
 		}
 	}
-
-	private static void readyFight(GameClient client, String packet) {
+	
+	@Packet("GR")
+	public static void readyFight(GameClient client, String packet) {
 		if(client.getPlayer().get_fight() == null)
 			return;
 		if(client.getPlayer().get_fight().get_state() != Constants.FIGHT_STATE_PLACE)
@@ -577,5 +562,11 @@ public class GamePacket {
 		client.getPlayer().set_ready(packet.substring(2).equalsIgnoreCase("1"));
 		client.getPlayer().get_fight().verifIfAllReady();
 		SocketManager.GAME_SEND_FIGHT_PLAYER_READY_TO_FIGHT(client.getPlayer().get_fight(),3,client.getPlayer().get_GUID(),packet.substring(2).equalsIgnoreCase("1"));
+	}
+	
+	@Packet("Gt")
+	public static void turnPass(GameClient client, String packet) {
+		if(client.getPlayer().get_fight() != null)
+			client.getPlayer().get_fight().playerPass(client.getPlayer());
 	}
 }

@@ -4,22 +4,12 @@ import common.SocketManager;
 
 import core.Console;
 import game.GameClient;
+import game.packet.handler.Packet;
 
 public class EnvironementPacket {
-
-	public static void parseEnvironementPacket(GameClient client, String packet) {
-		switch(packet.charAt(1))
-		{
-			case 'D'://Change direction
-				changeOrientation(client, packet);
-			break;
-			
-			case 'U'://Emote
-				emote(client, packet);
-			break;
-		}
-	}
-	private static void changeOrientation(GameClient client, String packet) {
+	
+	@Packet("eD")
+	public static void changeOrientation(GameClient client, String packet) {
 		try	{
 			if(client.getPlayer().get_fight() != null)
 				return;
@@ -30,7 +20,8 @@ public class EnvironementPacket {
 		} catch(NumberFormatException e) {return;}
 	}
 	
-	private static void emote(GameClient client, String packet) {
+	@Packet("eU")
+	public static void emote(GameClient client, String packet) {
 		int emote = -1;
 		
 		try	{

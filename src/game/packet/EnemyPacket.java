@@ -7,25 +7,12 @@ import common.SocketManager;
 import common.World;
 
 import game.GameClient;
+import game.packet.handler.Packet;
 
 public class EnemyPacket {
 
-	public static void parseEnemyPacket(GameClient client, String packet) {
-		switch(packet.charAt(1))
-		{
-			case 'A'://Ajouter
-				add(client, packet);
-			break;
-			case 'D'://Delete
-				delete(client, packet);
-			break;
-			case 'L'://Liste
-				SocketManager.GAME_SEND_ENEMY_LIST(client.getPlayer());
-			break;
-		}
-	}
-	
-	private static void add(GameClient client, String packet) {
+	@Packet("iA")
+	public static void add(GameClient client, String packet) {
 		if(client.getPlayer() == null)
 			return;
 		
@@ -69,7 +56,8 @@ public class EnemyPacket {
 		client.getAccount().addEnemy(packet, guid);
 	}
 
-	private static void delete(GameClient client, String packet) {
+	@Packet("iD")
+	public static void delete(GameClient client, String packet) {
 		if(client.getPlayer() == null)
 			return;
 		
@@ -111,5 +99,10 @@ public class EnemyPacket {
 			return;
 		}
 		client.getAccount().removeEnemy(guid);
+	}
+
+	@Packet("iL")
+	public static void list(GameClient client, String packet) {
+		SocketManager.GAME_SEND_ENEMY_LIST(client.getPlayer());
 	}
 }

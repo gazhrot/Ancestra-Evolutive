@@ -10,45 +10,25 @@ import common.World;
 import core.Log;
 import core.Server;
 import game.GameClient;
+import game.packet.handler.Packet;
 
 public class BasicPacket {
-
-	public static void parseBasicPacket(GameClient client, String packet) {
-		switch(packet.charAt(1))
-		{
-			case 'A':
-				console(client, packet);
-			break;
-			case 'D':
-				sendDate(client);
-			break;
-			case 'M':
-				chatMessage(client, packet);
-			break;
-			case 'W':
-				infosMessage(client, packet);
-			break;
-			case 'S':
-				client.getPlayer().emoticone(packet.substring(2));
-			break;
-			case 'Y':
-				state(client, packet);
-			break;
-		}
-	}
 	
-	private static void console(GameClient client, String packet) {
+	@Packet("BA")
+	public static void console(GameClient client, String packet) {
 		if(client.getCommand() == null) 
 			client.setCommand(new Commands(client.getPlayer()));
 		client.getCommand().consoleCommand(packet);
 	}
 	
-	private static void sendDate(GameClient client) {
+	@Packet("BD")
+	public static void sendDate(GameClient client, String packet) {
 		SocketManager.GAME_SEND_SERVER_DATE(client);
 		SocketManager.GAME_SEND_SERVER_HOUR(client);
 	}
-		
-	private static void chatMessage(GameClient client, String packet) {
+	
+	@Packet("BM")
+	public static void chatMessage(GameClient client, String packet) {
 		if(client.getPlayer().isMuted()) {
 			SocketManager.GAME_SEND_Im_PACKET(client.getPlayer(), "1124;"+client.getPlayer().get_compte()._muteTimer.getInitialDelay());
 			return;
@@ -185,7 +165,8 @@ public class BasicPacket {
 		}
 	}
 	
-	private static void infosMessage(GameClient client, String packet) {
+	@Packet("BW")
+	public static void infosMessage(GameClient client, String packet) {
 		packet = packet.substring(2);
 		Player T = World.data.getPersoByName(packet);
 		if(T == null) 
@@ -193,7 +174,13 @@ public class BasicPacket {
 		SocketManager.GAME_SEND_BWK(client.getPlayer(), T.get_compte().get_pseudo()+"|1|"+T.get_name()+"|-1");
 	}
 
-	private static void state(GameClient client, String packet) {
+	@Packet("BS")
+	public static void emoticone(GameClient client, String packet) {
+		client.getPlayer().emoticone(packet.substring(2));
+	}
+	
+	@Packet("BY")
+	public static void state(GameClient client, String packet) {
 		switch(packet.charAt(2))
 		{
 			case 'A': //Absent

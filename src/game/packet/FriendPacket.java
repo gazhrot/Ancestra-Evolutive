@@ -6,31 +6,12 @@ import common.SocketManager;
 import common.World;
 
 import game.GameClient;
+import game.packet.handler.Packet;
 
 public class FriendPacket {
 
-	public static void parseFriendPacket(GameClient client, String packet) {
-		switch(packet.charAt(1))
-		{
-			case 'A'://Ajouter
-				add(client, packet);
-			break;
-			case 'D'://Effacer un ami
-				delete(client, packet);
-			break;
-			case 'L'://Liste
-				SocketManager.GAME_SEND_FRIENDLIST_PACKET(client.getPlayer());
-			break;
-			case 'O':
-				setSee(client, packet);
-			break;
-			case 'J': //Wife
-				wife(client, packet);
-			break;
-		}
-	}
-
-	private static void add(GameClient client, String packet) {
+	@Packet("FA")
+	public static void add(GameClient client, String packet) {
 		if(client.getPlayer() == null)
 			return;
 		
@@ -73,7 +54,8 @@ public class FriendPacket {
 		client.getAccount().addFriend(guid);
 	}
 	
-	private static void delete(GameClient client, String packet) {
+	@Packet("FD")
+	public static void delete(GameClient client, String packet) {
 		if(client.getPlayer() == null)return;
 		int guid = -1;
 		switch(packet.charAt(2))
@@ -113,7 +95,13 @@ public class FriendPacket {
 		client.getAccount().removeFriend(guid);
 	}
 
-	private static void setSee(GameClient client, String packet) {
+	@Packet("FL")
+	public static void list(GameClient client, String packet) {
+		SocketManager.GAME_SEND_FRIENDLIST_PACKET(client.getPlayer());
+	}
+	
+	@Packet("FO")
+	public static void setSee(GameClient client, String packet) {
 		switch(packet.charAt(2))
 		{
 			case '-':
@@ -127,7 +115,8 @@ public class FriendPacket {
 		}
 	}
 	
-	private static void wife(GameClient client, String packet) {
+	@Packet("FJ")
+	public static void wife(GameClient client, String packet) {
 		Player player = World.data.getPersonnage(client.getPlayer().getWife());
 		
 		if(player == null) 

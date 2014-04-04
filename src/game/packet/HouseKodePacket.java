@@ -3,22 +3,17 @@ package game.packet;
 import objects.House;
 import objects.Trunk;
 import game.GameClient;
+import game.packet.handler.Packet;
 
 public class HouseKodePacket {
 
-	public static void parseHouseKodePacket(GameClient client, String packet) {
-		switch(packet.charAt(1))
-		{
-			case 'V'://Fermer fenetre du code
-				House.closeCode(client.getPlayer());
-			break;
-			case 'K'://Envoi du code
-				code(client, packet);
-			break;
-		}
+	@Packet("KV")
+	public static void close(GameClient client, String packet) {
+		House.closeCode(client.getPlayer());
 	}
 	
-	private static void code(GameClient client, String packet) {
+	@Packet("KK")
+	public static void code(GameClient client, String packet) {
 		switch(packet.charAt(2))
 		{
 			case '0'://Envoi du code

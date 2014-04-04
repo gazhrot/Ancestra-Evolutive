@@ -9,66 +9,12 @@ import common.World;
 
 import core.Server;
 import game.GameClient;
+import game.packet.handler.Packet;
 
 public class MountPacket {
-
-	public static void parseMountPacket(GameClient client, String packet) {
-		switch(packet.charAt(1))
-		{
-			case 'b'://Achat d'un enclos
-				buy(client, packet);
-			break;
-		
-			case 'd'://Demande Description
-				description(client, packet);
-			break;
-			
-			case 'n'://Change le nom
-				setName(client, packet.substring(2));
-			break;
-			
-			case 'r'://Monter sur la dinde
-				ride(client);
-			break;
-			case 's'://Vendre l'enclo
-				sell(client, packet);
-			break;
-			case 'v'://Fermeture panneau d'achat
-				SocketManager.GAME_SEND_R_PACKET(client.getPlayer(), "v");
-			break;
-			case 'x'://Change l'xp donner a la dinde
-				setXpGive(client, packet);
-			break;
-		}
-	}
 	
-	private static void sell(GameClient client, String packet) {
-		SocketManager.GAME_SEND_R_PACKET(client.getPlayer(), "v");//Fermeture du panneau
-		int price = Integer.parseInt(packet.substring(2));
-		MountPark mountPark = client.getPlayer().get_curCarte().getMountPark();
-		
-		if(!mountPark.getData().isEmpty()) {
-			SocketManager.GAME_SEND_MESSAGE(client.getPlayer(), "[ENCLO] Impossible de vendre un enclo plein.", Server.config.getMotdColor());
-			return;
-		}
-		if(mountPark.get_owner() == -1) {
-			SocketManager.GAME_SEND_Im_PACKET(client.getPlayer(), "194");
-			return;
-		}
-		if(mountPark.get_owner() != client.getPlayer().get_GUID()) {
-			SocketManager.GAME_SEND_Im_PACKET(client.getPlayer(), "195");
-			return;
-		}
-		
-		mountPark.set_price(price);
-		World.database.getMountparkData().update(mountPark);
-		client.getPlayer().save();
-		
-		for(Player z:client.getPlayer().get_curCarte().getPersos())
-			SocketManager.GAME_SEND_Rp_PACKET(z, mountPark);
-	}
-
-	private static void buy(GameClient client, String packet) {
+	@Packet("Rb")
+	public static void buy(GameClient client, String packet) {
 		SocketManager.GAME_SEND_R_PACKET(client.getPlayer(), "v");//Fermeture du panneau
 		MountPark mountPark = client.getPlayer().get_curCarte().getMountPark();
 		Player seller = World.data.getPersonnage(mountPark.get_owner());
@@ -122,25 +68,8 @@ public class MountPacket {
 			SocketManager.GAME_SEND_Rp_PACKET(z, mountPark);
 	}
 
-	private static void setName(GameClient client, String name) {
-		if(client.getPlayer().getMount() == null)
-			return;
-		
-		client.getPlayer().getMount().setName(name);
-		SocketManager.GAME_SEND_Rn_PACKET(client.getPlayer(), name);
-	}
-	
-	private static void ride(GameClient client)
-	{
-		if(client.getPlayer().get_lvl()<60 || client.getPlayer().getMount() == null || !client.getPlayer().getMount().isMountable() || client.getPlayer()._isGhosts) {
-			SocketManager.GAME_SEND_Re_PACKET(client.getPlayer(),"Er", null);
-			return;
-		}
-		
-		client.getPlayer().toogleOnMount();
-	}
-	
-	private static void description(GameClient client, String packet) {
+	@Packet("Rd")
+	public static void description(GameClient client, String packet) {
 		int id = -1;
 		try {
 			id = Integer.parseInt(packet.substring(2).split("\\|")[0]);
@@ -157,7 +86,61 @@ public class MountPacket {
 		SocketManager.GAME_SEND_MOUNT_DESCRIPTION_PACKET(client.getPlayer(), dragodinde);
 	}
 	
-	private static void setXpGive(GameClient client, String packet) {
+	@Packet("Rn")
+	public static void setName(GameClient client, String packet) {
+		if(client.getPlayer().getMount() == null)
+			return;
+		
+		String name = packet.substring(2);
+		client.getPlayer().getMount().setName(name);
+		SocketManager.GAME_SEND_Rn_PACKET(client.getPlayer(), name);
+	}
+	
+	@Packet("Rr")
+	public static void ride(GameClient client, String packet)
+	{
+		if(client.getPlayer().get_lvl()<60 || client.getPlayer().getMount() == null || !client.getPlayer().getMount().isMountable() || client.getPlayer()._isGhosts) {
+			SocketManager.GAME_SEND_Re_PACKET(client.getPlayer(),"Er", null);
+			return;
+		}
+		
+		client.getPlayer().toogleOnMount();
+	}
+	
+	@Packet("Rs")
+	public static void sell(GameClient client, String packet) {
+		SocketManager.GAME_SEND_R_PACKET(client.getPlayer(), "v");//Fermeture du panneau
+		int price = Integer.parseInt(packet.substring(2));
+		MountPark mountPark = client.getPlayer().get_curCarte().getMountPark();
+		
+		if(!mountPark.getData().isEmpty()) {
+			SocketManager.GAME_SEND_MESSAGE(client.getPlayer(), "[ENCLO] Impossible de vendre un enclo plein.", Server.config.getMotdColor());
+			return;
+		}
+		if(mountPark.get_owner() == -1) {
+			SocketManager.GAME_SEND_Im_PACKET(client.getPlayer(), "194");
+			return;
+		}
+		if(mountPark.get_owner() != client.getPlayer().get_GUID()) {
+			SocketManager.GAME_SEND_Im_PACKET(client.getPlayer(), "195");
+			return;
+		}
+		
+		mountPark.set_price(price);
+		World.database.getMountparkData().update(mountPark);
+		client.getPlayer().save();
+		
+		for(Player z:client.getPlayer().get_curCarte().getPersos())
+			SocketManager.GAME_SEND_Rp_PACKET(z, mountPark);
+	}
+
+	@Packet("Rv")
+	public static void closeBuySign(GameClient client, String packet) {
+		SocketManager.GAME_SEND_R_PACKET(client.getPlayer(), "v");
+	}
+	
+	@Packet("Rx")
+	public static void setXpGive(GameClient client, String packet) {
 		try	{
 			int xp = Integer.parseInt(packet.substring(2));
 			

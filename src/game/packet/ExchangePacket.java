@@ -21,52 +21,12 @@ import common.World;
 import core.Log;
 import core.Server;
 import game.GameClient;
+import game.packet.handler.Packet;
 
 public class ExchangePacket {
-
-	public static void parseExchangePacket(GameClient client, String packet) {
-		switch(packet.charAt(1))
-		{
-			case 'A'://Accepter demande d'ï¿½change
-				accept(client);
-			break;
-			case 'B'://Achat
-				buy(client, packet);
-			break;
-			case 'H'://Demande prix moyen + catï¿½gorie
-				bigStore(client, packet);
-			break;
-			case 'K'://Ok
-				ready(client);
-			break;
-			case 'L'://jobAction : Refaire le craft prï¿½cedent
-				putLastCraft(client);
-			break;
-			case 'M'://Move (Ajouter//retirer un objet a l'ï¿½change)
-				moveItemOrKmas(client, packet);
-			break;
-			case 'q'://Mode marchand (demande de la taxe)
-				askOfflineExchange(client);
-			break;
-			case 'Q'://Mode marchand (Si valider après la taxe)
-				offlineExchange(client);
-			break;			
-			case 'r'://Rides => Monture
-				mountpark(client, packet);
-			break;
-			case 'R'://liste d'achat NPC
-				request(client, packet);
-			break;
-			case 'S'://Vente
-				sell(client, packet);
-			break;
-			case 'V'://Fin de l'ï¿½change
-				finish(client);
-			break;
-		}
-	}
 	
-	private static void accept(GameClient client) {
+	@Packet("EA")
+	public static void accept(GameClient client, String packet) {
 		if(client.getPlayer().get_isTradingWith() == 0)
 			return;
 		
@@ -85,7 +45,8 @@ public class ExchangePacket {
 		target.set_isTradingWith(client.getPlayer().get_GUID());
 	}
 	
-	private static void buy(GameClient client, String packet) {
+	@Packet("EB")
+	public static void buy(GameClient client, String packet) {
 		String[] infos = packet.substring(2).split("\\|");
 		
         if(client.getPlayer().get_isTradingWith() > 0) {
@@ -142,7 +103,7 @@ public class ExchangePacket {
 	            	if(World.data.getSeller(seller.get_curCarte().get_id()) != null && World.data.getSeller(seller.get_curCarte().get_id()).contains(seller.get_GUID())) {
 	        			World.data.removeSeller(seller.get_GUID(), seller.get_curCarte().get_id());
 	        			SocketManager.GAME_SEND_ERASE_ON_MAP_TO_MAP(seller.get_curCarte(), seller.get_GUID());
-	        			finish(client);
+	        			finish(client, "");
 	        		}
 	            }
             }
@@ -192,7 +153,8 @@ public class ExchangePacket {
 		}
 	}
 	
-	private static void bigStore(GameClient client, String packet) {
+	@Packet("EH")
+	public static void bigStore(GameClient client, String packet) {
 		if(client.getPlayer().get_isTradingWith() > 0 || client.getPlayer().get_fight() != null || client.getPlayer().is_away())
 			return;
 		
@@ -237,7 +199,8 @@ public class ExchangePacket {
 		}
 	}
 	
-	private static void ready(GameClient client) {
+	@Packet("EK")
+	public static void ready(GameClient client, String packet) {
 		if(client.getPlayer().getCurJobAction() != null) {
 			if(!client.getPlayer().getCurJobAction().isCraft())
 				return;
@@ -248,12 +211,14 @@ public class ExchangePacket {
 		client.getPlayer().get_curExchange().toogleOK(client.getPlayer().get_GUID());
 	}
 	
-	private static void putLastCraft(GameClient client) {
+	@Packet("EL")
+	public static void putLastCraft(GameClient client, String packet) {
 		if(client.getPlayer().getCurJobAction() != null)
 			client.getPlayer().getCurJobAction().putLastCraftIngredients();
 	}
 	
-	private static void moveItemOrKmas(GameClient client, String packet) {
+	@Packet("EM")
+	public static void moveItemOrKmas(GameClient client, String packet) {
 		//Store
 		if(client.getPlayer().get_isTradingWith() == client.getPlayer().get_GUID())
 		{
@@ -669,7 +634,8 @@ public class ExchangePacket {
 		}
 	}
 	
-	private static void askOfflineExchange(GameClient client) {
+	@Packet("Eq")
+	public static void askOfflineExchange(GameClient client, String packet) {
 		if(client.getPlayer().get_isTradingWith() > 0 || client.getPlayer().get_fight() != null || client.getPlayer().is_away())
 			return;
         if(client.getPlayer().parseStoreItemsList().isEmpty()) {
@@ -698,7 +664,8 @@ public class ExchangePacket {
         SocketManager.GAME_SEND_Eq_PACKET(client.getPlayer(), Apayer);
 	}
 	
-	private static void offlineExchange(GameClient client) {
+	@Packet("EQ")
+	public static void offlineExchange(GameClient client, String packet) {
 		if(World.data.isMarchandMap(client.getPlayer().get_curCarte().get_id())) {
 			SocketManager.GAME_SEND_Im_PACKET(client.getPlayer(), "113");
 			return;
@@ -733,7 +700,8 @@ public class ExchangePacket {
         		SocketManager.GAME_SEND_MERCHANT_LIST(z, z.get_curCarte().get_id());
 	}
 	
-	private static void mountpark(GameClient client, String packet)
+	@Packet("Er")
+	public static void mountpark(GameClient client, String packet)
 	{
 		//Si dans un enclos
 		if(client.getPlayer().getInMountPark() != null)
@@ -867,7 +835,8 @@ public class ExchangePacket {
 		}
 	}
 
-	private static void request(GameClient client, String packet) {
+	@Packet("ER")
+	public static void request(GameClient client, String packet) {
 		if(packet.substring(2,4).equals("11"))//Ouverture HDV achat
 		{
 			if(client.getPlayer().get_isTradingWith() < 0)//Si dï¿½jï¿½ ouvert
@@ -1002,7 +971,8 @@ public class ExchangePacket {
 		}
 	}
 
-	private static void sell(GameClient client, String packet) {
+	@Packet("ES")
+	public static void sell(GameClient client, String packet) {
 		try {
 			String[] infos = packet.substring(2).split("\\|");
 			int guid = Integer.parseInt(infos[0]);
@@ -1022,7 +992,8 @@ public class ExchangePacket {
 		}
 	}
 
-	private static void finish(GameClient client)
+	@Packet("EV")
+	public static void finish(GameClient client, String packet)
 	{
 		if(client.getPlayer().get_isTradingWith() == 0 &&
 		   client.getPlayer().get_curExchange() == null &&

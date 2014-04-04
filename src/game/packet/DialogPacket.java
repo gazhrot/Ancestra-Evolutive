@@ -8,27 +8,12 @@ import common.SocketManager;
 import common.World;
 
 import game.GameClient;
+import game.packet.handler.Packet;
 
 public class DialogPacket {
-
-	public static void parseDialogPacket(GameClient client, String packet) {
-		switch(packet.charAt(1))
-		{
-			case 'C'://Demande de l'initQuestion
-				start(client, packet);
-			break;
-			
-			case 'R'://Reponse du joueur
-				answer(client, packet);
-			break;
-			
-			case 'V'://Fin du dialog
-				end(client);
-			break;
-		}
-	}
 	
-	private static void start(GameClient client, String packet) {
+	@Packet("DC")
+	public static void start(GameClient client, String packet) {
 		try	{
 			int npcID = Integer.parseInt(packet.substring(2).split((char)0x0A+"")[0]);
 			
@@ -51,7 +36,8 @@ public class DialogPacket {
 		} catch(NumberFormatException e) {}
 	}
 	
-	private static void answer(GameClient client, String packet) {
+	@Packet("DR")
+	public static void answer(GameClient client, String packet) {
 		try {
 			String[] infos = packet.substring(2).split("\\|");
 			if(client.getPlayer().get_isTalkingWith() == 0)
@@ -78,7 +64,8 @@ public class DialogPacket {
 		}
 	}
 
-	private static void end(GameClient client) {
+	@Packet("DV")
+	public static void end(GameClient client, String packet) {
 		SocketManager.GAME_SEND_END_DIALOG_PACKET(client);
 		if(client.getPlayer().get_isTalkingWith() != 0)
 			client.getPlayer().set_isTalkingWith(0);

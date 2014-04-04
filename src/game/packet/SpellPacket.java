@@ -8,25 +8,12 @@ import common.SocketManager;
 import core.Log;
 import core.Server;
 import game.GameClient;
+import game.packet.handler.Packet;
 
 public class SpellPacket {
-
-	public static void parseSpellPacket(GameClient client, String packet) {
-		switch(packet.charAt(1))
-		{
-			case 'B':
-				boost(client, packet);
-			break;
-			case 'F'://Oublie de sort
-				forget(client, packet);
-			break;
-			case'M':
-				add(client, packet);
-			break;
-		}
-	}
 	
-	private static void boost(GameClient client, String packet) {
+	@Packet("SB")
+	public static void boost(GameClient client, String packet) {
 		try	{
 			int id = Integer.parseInt(packet.substring(2));
 			Log.addToLog("Info: "+client.getPlayer().get_name()+": Tente BOOST sort id="+id);
@@ -46,7 +33,8 @@ public class SpellPacket {
 		}
 	}
 	
-	private static void forget(GameClient client, String packet) {
+	@Packet("SF")
+	public static void forget(GameClient client, String packet) {
 		if(!client.getPlayer().isForgetingSpell())
 			return;
 		
@@ -63,7 +51,8 @@ public class SpellPacket {
 		}
 	}
 	
-	private static void add(GameClient client, String packet) {
+	@Packet("SM")
+	public static void add(GameClient client, String packet) {
 		try	{
 			int id = Integer.parseInt(packet.substring(2).split("\\|")[0]);
 			int pos = Integer.parseInt(packet.substring(2).split("\\|")[1]);

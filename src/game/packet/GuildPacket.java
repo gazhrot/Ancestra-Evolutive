@@ -15,55 +15,12 @@ import common.World;
 import core.Log;
 import core.Server;
 import game.GameClient;
+import game.packet.handler.Packet;
 
 public class GuildPacket {
 
-	public static void parseGuildPacket(GameClient client, String packet) {
-		switch(packet.charAt(1))
-		{
-			case 'B'://Stats
-				boostStat(client, packet);
-			break;
-			case 'b'://Sorts
-				boostSpell(client, packet);
-			break;
-			case 'C'://Creation
-				create(client, packet);
-			break;
-			case 'f'://T�l�portation enclo de guilde
-				guild_enclo(client, packet.substring(2));
-			break;
-			case 'F'://Retirer percepteur
-				guild_remove_perco(client, packet.substring(2));
-			break;
-			case 'h'://T�l�portation maison de guilde
-				guild_house(client, packet.substring(2));
-			break;
-			case 'H'://Poser un percepteur
-				guild_add_perco(client);
-			break;
-			case 'I'://Infos
-				guild_infos(client, packet.charAt(2));
-			break;
-			case 'J'://Join
-				guild_join(client, packet.substring(2));
-			break;
-			case 'K'://Kick
-				guild_kick(client, packet.substring(2));
-			break;
-			case 'P'://Promote
-				guild_promote(client, packet.substring(2));
-			break;
-			case 'T'://attaque sur percepteur
-				joinFight(client, packet.substring(2));
-			break;
-			case 'V'://Ferme le panneau de cr�ation de guilde
-				close(client);
-			break;
-		}
-	}
-
-	private static void boostStat(GameClient client, String packet) {
+	@Packet("gB")
+	public static void boostStat(GameClient client, String packet) {
 		if(client.getPlayer().get_guild() == null)
 			return;
 		
@@ -116,7 +73,8 @@ public class GuildPacket {
 		SocketManager.GAME_SEND_gIB_PACKET(client.getPlayer(), client.getPlayer().get_guild().parsePercotoGuild());
 	}
 
-	private static void boostSpell(GameClient client, String packet) {
+	@Packet("gb")
+	public static void boostSpell(GameClient client, String packet) {
 		if(client.getPlayer().get_guild() == null)
 			return;
 		
@@ -140,7 +98,8 @@ public class GuildPacket {
 		}
 	}
 	
-	private static void create(GameClient client, String packet)
+	@Packet("gC")
+	public static void create(GameClient client, String packet)
 	{
 		if(client.getPlayer() == null)
 			return;
@@ -225,9 +184,42 @@ public class GuildPacket {
 		} catch(Exception e) {return;}
 	}
 	
-	private static void guild_remove_perco(GameClient client, String packet) 
+	@Packet("gf")
+	public static void goToMountpark(GameClient client, String packet)
 	{
-		if(client.getPlayer().get_guild() == null || client.getPlayer().get_fight() != null || client.getPlayer().is_away())return;
+		packet = packet.substring(2);
+		if(client.getPlayer().get_guild() == null)
+		{
+			SocketManager.GAME_SEND_Im_PACKET(client.getPlayer(), "1135");
+			return;
+		}
+		
+		if(client.getPlayer().get_fight() != null || client.getPlayer().is_away())return;
+		short MapID = Short.parseShort(packet);
+		MountPark MP = World.data.getCarte(MapID).getMountPark();
+		if(MP.get_guild().get_id() != client.getPlayer().get_guild().get_id())
+		{
+			SocketManager.GAME_SEND_Im_PACKET(client.getPlayer(), "1135");
+			return;
+		}
+		int CellID = World.data.getEncloCellIdByMapId(MapID);
+		if (client.getPlayer().hasItemTemplate(9035, 1))
+		{
+			client.getPlayer().removeByTemplateID(9035,1);
+			client.getPlayer().teleport(MapID, CellID);
+		}else
+		{
+			SocketManager.GAME_SEND_Im_PACKET(client.getPlayer(), "1159");
+			return;
+		}
+	}
+	
+	@Packet("gF")
+	public static void removeCollector(GameClient client, String packet) 
+	{
+		packet = packet.substring(2);
+		if(client.getPlayer().get_guild() == null || client.getPlayer().get_fight() != null || client.getPlayer().is_away())
+			return;
 		if(!client.getPlayer().getGuildMember().canDo(Constants.G_POSPERCO))return;//On peut le retirer si on a le droit de le poser
 		byte IDPerco = Byte.parseByte(packet);
 		Percepteur perco = World.data.getPerco(IDPerco);
@@ -249,7 +241,43 @@ public class GuildPacket {
 		}
 	}
 
-	private static void guild_add_perco(GameClient client) 
+	@Packet("gh")
+	public static void goToHouse(GameClient client, String packet)
+	{
+		packet = packet.substring(2);
+		if(client.getPlayer().get_guild() == null)
+		{
+			SocketManager.GAME_SEND_Im_PACKET(client.getPlayer(), "1135");
+			return;
+		}
+		
+		if(client.getPlayer().get_fight() != null || client.getPlayer().is_away())return;
+		int HouseID = Integer.parseInt(packet);
+		House h = World.data.getHouses().get(HouseID);
+		if(h == null) return;
+		if(client.getPlayer().get_guild().get_id() != h.get_guild_id()) 
+		{
+			SocketManager.GAME_SEND_Im_PACKET(client.getPlayer(), "1135");
+			return;
+		}
+		if(!h.canDo(Constants.H_GTELE))
+		{
+			SocketManager.GAME_SEND_Im_PACKET(client.getPlayer(), "1136");
+			return;
+		}
+		if (client.getPlayer().hasItemTemplate(8883, 1))
+		{
+			client.getPlayer().removeByTemplateID(8883,1);
+			client.getPlayer().teleport((short)h.get_mapid(), h.get_caseid());
+		}else
+		{
+			SocketManager.GAME_SEND_Im_PACKET(client.getPlayer(), "1137");
+			return;
+		}
+	}
+	
+	@Packet("gH")
+	public static void addCollector(GameClient client, String packet) 
 	{
 		if(client.getPlayer().get_guild() == null || client.getPlayer().get_fight() != null || client.getPlayer().is_away())return;
 		if(!client.getPlayer().getGuildMember().canDo(Constants.G_POSPERCO))return;//Pas le droit de le poser
@@ -293,69 +321,179 @@ public class GuildPacket {
 		}
 	}
 
-	private static void guild_enclo(GameClient client, String packet)
+	@Packet("gI")
+	public static void infos(GameClient client, String packet)
 	{
-		if(client.getPlayer().get_guild() == null)
-		{
-			SocketManager.GAME_SEND_Im_PACKET(client.getPlayer(), "1135");
-			return;
-		}
-		
-		if(client.getPlayer().get_fight() != null || client.getPlayer().is_away())return;
-		short MapID = Short.parseShort(packet);
-		MountPark MP = World.data.getCarte(MapID).getMountPark();
-		if(MP.get_guild().get_id() != client.getPlayer().get_guild().get_id())
-		{
-			SocketManager.GAME_SEND_Im_PACKET(client.getPlayer(), "1135");
-			return;
-		}
-		int CellID = World.data.getEncloCellIdByMapId(MapID);
-		if (client.getPlayer().hasItemTemplate(9035, 1))
-		{
-			client.getPlayer().removeByTemplateID(9035,1);
-			client.getPlayer().teleport(MapID, CellID);
-		}else
-		{
-			SocketManager.GAME_SEND_Im_PACKET(client.getPlayer(), "1159");
-			return;
+		switch(packet.charAt(2)) {
+			case 'B'://Perco
+				SocketManager.GAME_SEND_gIB_PACKET(client.getPlayer(), client.getPlayer().get_guild().parsePercotoGuild());
+			break;
+			case 'F'://Enclos
+				SocketManager.GAME_SEND_gIF_PACKET(client.getPlayer(), World.data.parseMPtoGuild(client.getPlayer().get_guild().get_id()));
+			break;
+			case 'G'://General
+				SocketManager.GAME_SEND_gIG_PACKET(client.getPlayer(), client.getPlayer().get_guild());
+			break;
+			case 'H'://House
+				SocketManager.GAME_SEND_gIH_PACKET(client.getPlayer(), House.parseHouseToGuild(client.getPlayer()));
+			break;
+			case 'M'://Members
+				SocketManager.GAME_SEND_gIM_PACKET(client.getPlayer(), client.getPlayer().get_guild(),'+');
+			break;
+			case 'T'://Perco
+				SocketManager.GAME_SEND_gITM_PACKET(client.getPlayer(), Percepteur.parsetoGuild(client.getPlayer().get_guild().get_id()));
+				Percepteur.parseAttaque(client.getPlayer(), client.getPlayer().get_guild().get_id());
+				Percepteur.parseDefense(client.getPlayer(), client.getPlayer().get_guild().get_id());
+			break;
 		}
 	}
 	
-	private static void guild_house(GameClient client, String packet)
+	@Packet("gJ")
+	public static void join(GameClient client, String packet)
 	{
-		if(client.getPlayer().get_guild() == null)
+		switch(packet.charAt(2))
 		{
-			SocketManager.GAME_SEND_Im_PACKET(client.getPlayer(), "1135");
-			return;
-		}
-		
-		if(client.getPlayer().get_fight() != null || client.getPlayer().is_away())return;
-		int HouseID = Integer.parseInt(packet);
-		House h = World.data.getHouses().get(HouseID);
-		if(h == null) return;
-		if(client.getPlayer().get_guild().get_id() != h.get_guild_id()) 
-		{
-			SocketManager.GAME_SEND_Im_PACKET(client.getPlayer(), "1135");
-			return;
-		}
-		if(!h.canDo(Constants.H_GTELE))
-		{
-			SocketManager.GAME_SEND_Im_PACKET(client.getPlayer(), "1136");
-			return;
-		}
-		if (client.getPlayer().hasItemTemplate(8883, 1))
-		{
-			client.getPlayer().removeByTemplateID(8883,1);
-			client.getPlayer().teleport((short)h.get_mapid(), h.get_caseid());
-		}else
-		{
-			SocketManager.GAME_SEND_Im_PACKET(client.getPlayer(), "1137");
-			return;
+			case 'R'://Nom perso
+				Player P = World.data.getPersoByName(packet.substring(1));
+				if(P == null || client.getPlayer().get_guild() == null)
+				{
+					SocketManager.GAME_SEND_gJ_PACKET(client.getPlayer(), "Eu");
+					return;
+				}
+				if(!P.isOnline())
+				{
+					SocketManager.GAME_SEND_gJ_PACKET(client.getPlayer(), "Eu");
+					return;
+				}
+				if(P.is_away())
+				{
+					SocketManager.GAME_SEND_gJ_PACKET(client.getPlayer(), "Eo");
+					return;
+				}
+				if(P.get_guild() != null)
+				{
+					SocketManager.GAME_SEND_gJ_PACKET(client.getPlayer(), "Ea");
+					return;
+				}
+				if(!client.getPlayer().getGuildMember().canDo(Constants.G_INVITE))
+				{
+					SocketManager.GAME_SEND_gJ_PACKET(client.getPlayer(), "Ed");
+					return;
+				}
+				if(client.getPlayer().get_guild().getMembers().size() >= (40+client.getPlayer().get_guild().get_lvl()))//Limite membres max
+				{
+					SocketManager.GAME_SEND_Im_PACKET(client.getPlayer(), "155;"+(40+client.getPlayer().get_guild().get_lvl()));
+					return;
+				}
+				
+				client.getPlayer().setInvitation(P.get_GUID());
+				P.setInvitation(client.getPlayer().get_GUID());
+	
+				SocketManager.GAME_SEND_gJ_PACKET(client.getPlayer(),"R"+packet.substring(1));
+				SocketManager.GAME_SEND_gJ_PACKET(P,"r"+client.getPlayer().get_GUID()+"|"+client.getPlayer().get_name()+"|"+client.getPlayer().get_guild().get_name());
+			break;
+			case 'E'://ou Refus
+				if(packet.substring(1).equalsIgnoreCase(client.getPlayer().getInvitation()+""))
+				{
+					Player p = World.data.getPersonnage(client.getPlayer().getInvitation());
+					if(p == null)return;//Pas cens� arriver
+					SocketManager.GAME_SEND_gJ_PACKET(p,"Ec");
+				}
+			break;
+			case 'K'://Accepte
+				if(packet.substring(1).equalsIgnoreCase(client.getPlayer().getInvitation()+""))
+				{
+					Player p = World.data.getPersonnage(client.getPlayer().getInvitation());
+					if(p == null)return;//Pas cens� arriver
+					Guild G = p.get_guild();
+					GuildMember GM = G.addNewMember(client.getPlayer());
+					World.database.getGuildMemberData().update(GM);
+					client.getPlayer().setGuildMember(GM);
+					client.getPlayer().setInvitation(-1);
+					p.setInvitation(-1);
+					//Packet
+					SocketManager.GAME_SEND_gJ_PACKET(p,"Ka"+client.getPlayer().get_name());
+					SocketManager.GAME_SEND_gS_PACKET(client.getPlayer(), GM);
+					SocketManager.GAME_SEND_gJ_PACKET(client.getPlayer(),"Kj");
+				}
+			break;
 		}
 	}
 	
-	private static void guild_promote(GameClient client, String packet)
+	@Packet("gK")
+	public static void kick(GameClient client, String packet)
 	{
+		String name = packet.substring(2);
+		if(client.getPlayer().get_guild() == null)return;
+		Player P = World.data.getPersoByName(name);
+		int guid = -1,guildId = -1;
+		Guild toRemGuild;
+		GuildMember toRemMember;
+		if(P == null)
+		{
+			int infos[] = World.database.getGuildMemberData().playerExistInGuild(name);
+			guid = infos[0];
+			guildId = infos[1];
+			if(guildId < 0 || guid < 0)return;
+			toRemGuild = World.data.getGuild(guildId);
+			toRemMember = toRemGuild.getMember(guid);
+		}
+		else
+		{
+			toRemGuild = P.get_guild();
+			if(toRemGuild == null)//La guilde du personnage n'est pas charger ?
+			{
+					toRemGuild = World.data.getGuild(client.getPlayer().get_guild().get_id());//On prend la guilde du perso qui l'�jecte
+			}
+			toRemMember = toRemGuild.getMember(P.get_GUID());
+			if(toRemMember == null) return;//Si le membre n'est pas dans la guilde.
+			if(toRemMember.getGuild().get_id() != client.getPlayer().get_guild().get_id()) return;//Si guilde diff�rente
+		}
+		//si pas la meme guilde
+		if(toRemGuild.get_id() != client.getPlayer().get_guild().get_id())
+		{
+			SocketManager.GAME_SEND_gK_PACKET(client.getPlayer(), "Ea");
+			return;
+		}
+		//S'il n'a pas le droit de kick, et que ce n'est pas lui m�me la cible
+		if(!client.getPlayer().getGuildMember().canDo(Constants.G_BAN) && client.getPlayer().getGuildMember().getGuid() != toRemMember.getGuid())
+		{
+			SocketManager.GAME_SEND_gK_PACKET(client.getPlayer(), "Ed");
+			return;
+		}
+		//Si diff�rent : Kick
+		if(client.getPlayer().getGuildMember().getGuid() != toRemMember.getGuid())
+		{
+			if(toRemMember.getRank() == 1) //S'il veut kicker le meneur
+				return;
+			
+			toRemGuild.removeMember(toRemMember.getPerso());
+			if(P != null)
+				P.setGuildMember(null);
+			
+			SocketManager.GAME_SEND_gK_PACKET(client.getPlayer(), "K"+client.getPlayer().get_name()+"|"+name);
+			if(P != null)
+				SocketManager.GAME_SEND_gK_PACKET(P, "K"+client.getPlayer().get_name());
+		}else//si quitter
+		{
+			Guild G = client.getPlayer().get_guild();
+			if(client.getPlayer().getGuildMember().getRank() == 1 && G.getMembers().size() > 1)	//Si le meneur veut quitter la guilde mais qu'il reste d'autre joueurs
+			{
+				//TODO : Envoyer le message qu'il doit mettre un autre membre meneur (Pas vraiment....)
+				return;
+			}
+			G.removeMember(client.getPlayer());
+			client.getPlayer().setGuildMember(null);
+			//S'il n'y a plus personne
+			if(G.getMembers().isEmpty())World.data.removeGuild(G.get_id());
+			SocketManager.GAME_SEND_gK_PACKET(client.getPlayer(), "K"+name+"|"+name);
+		}
+	}
+	
+	@Packet("gP")
+	public static void promote(GameClient client, String packet)
+	{
+		packet = packet.substring(2);
 		if(client.getPlayer().get_guild() == null)return;	//Si le personnage envoyeur n'a m�me pas de guilde
 		
 		String[] infos = packet.split("\\|");
@@ -449,173 +587,9 @@ public class GuildPacket {
 			SocketManager.GAME_SEND_gS_PACKET(p,p.getGuildMember());
 	}
 	
-	private static void guild_kick(GameClient client, String name)
-	{
-		if(client.getPlayer().get_guild() == null)return;
-		Player P = World.data.getPersoByName(name);
-		int guid = -1,guildId = -1;
-		Guild toRemGuild;
-		GuildMember toRemMember;
-		if(P == null)
-		{
-			int infos[] = World.database.getGuildMemberData().playerExistInGuild(name);
-			guid = infos[0];
-			guildId = infos[1];
-			if(guildId < 0 || guid < 0)return;
-			toRemGuild = World.data.getGuild(guildId);
-			toRemMember = toRemGuild.getMember(guid);
-		}
-		else
-		{
-			toRemGuild = P.get_guild();
-			if(toRemGuild == null)//La guilde du personnage n'est pas charger ?
-			{
-					toRemGuild = World.data.getGuild(client.getPlayer().get_guild().get_id());//On prend la guilde du perso qui l'�jecte
-			}
-			toRemMember = toRemGuild.getMember(P.get_GUID());
-			if(toRemMember == null) return;//Si le membre n'est pas dans la guilde.
-			if(toRemMember.getGuild().get_id() != client.getPlayer().get_guild().get_id()) return;//Si guilde diff�rente
-		}
-		//si pas la meme guilde
-		if(toRemGuild.get_id() != client.getPlayer().get_guild().get_id())
-		{
-			SocketManager.GAME_SEND_gK_PACKET(client.getPlayer(), "Ea");
-			return;
-		}
-		//S'il n'a pas le droit de kick, et que ce n'est pas lui m�me la cible
-		if(!client.getPlayer().getGuildMember().canDo(Constants.G_BAN) && client.getPlayer().getGuildMember().getGuid() != toRemMember.getGuid())
-		{
-			SocketManager.GAME_SEND_gK_PACKET(client.getPlayer(), "Ed");
-			return;
-		}
-		//Si diff�rent : Kick
-		if(client.getPlayer().getGuildMember().getGuid() != toRemMember.getGuid())
-		{
-			if(toRemMember.getRank() == 1) //S'il veut kicker le meneur
-				return;
-			
-			toRemGuild.removeMember(toRemMember.getPerso());
-			if(P != null)
-				P.setGuildMember(null);
-			
-			SocketManager.GAME_SEND_gK_PACKET(client.getPlayer(), "K"+client.getPlayer().get_name()+"|"+name);
-			if(P != null)
-				SocketManager.GAME_SEND_gK_PACKET(P, "K"+client.getPlayer().get_name());
-		}else//si quitter
-		{
-			Guild G = client.getPlayer().get_guild();
-			if(client.getPlayer().getGuildMember().getRank() == 1 && G.getMembers().size() > 1)	//Si le meneur veut quitter la guilde mais qu'il reste d'autre joueurs
-			{
-				//TODO : Envoyer le message qu'il doit mettre un autre membre meneur (Pas vraiment....)
-				return;
-			}
-			G.removeMember(client.getPlayer());
-			client.getPlayer().setGuildMember(null);
-			//S'il n'y a plus personne
-			if(G.getMembers().isEmpty())World.data.removeGuild(G.get_id());
-			SocketManager.GAME_SEND_gK_PACKET(client.getPlayer(), "K"+name+"|"+name);
-		}
-	}
-	
-	private static void guild_join(GameClient client, String packet)
-	{
-		switch(packet.charAt(0))
-		{
-		case 'R'://Nom perso
-			Player P = World.data.getPersoByName(packet.substring(1));
-			if(P == null || client.getPlayer().get_guild() == null)
-			{
-				SocketManager.GAME_SEND_gJ_PACKET(client.getPlayer(), "Eu");
-				return;
-			}
-			if(!P.isOnline())
-			{
-				SocketManager.GAME_SEND_gJ_PACKET(client.getPlayer(), "Eu");
-				return;
-			}
-			if(P.is_away())
-			{
-				SocketManager.GAME_SEND_gJ_PACKET(client.getPlayer(), "Eo");
-				return;
-			}
-			if(P.get_guild() != null)
-			{
-				SocketManager.GAME_SEND_gJ_PACKET(client.getPlayer(), "Ea");
-				return;
-			}
-			if(!client.getPlayer().getGuildMember().canDo(Constants.G_INVITE))
-			{
-				SocketManager.GAME_SEND_gJ_PACKET(client.getPlayer(), "Ed");
-				return;
-			}
-			if(client.getPlayer().get_guild().getMembers().size() >= (40+client.getPlayer().get_guild().get_lvl()))//Limite membres max
-			{
-				SocketManager.GAME_SEND_Im_PACKET(client.getPlayer(), "155;"+(40+client.getPlayer().get_guild().get_lvl()));
-				return;
-			}
-			
-			client.getPlayer().setInvitation(P.get_GUID());
-			P.setInvitation(client.getPlayer().get_GUID());
-
-			SocketManager.GAME_SEND_gJ_PACKET(client.getPlayer(),"R"+packet.substring(1));
-			SocketManager.GAME_SEND_gJ_PACKET(P,"r"+client.getPlayer().get_GUID()+"|"+client.getPlayer().get_name()+"|"+client.getPlayer().get_guild().get_name());
-		break;
-		case 'E'://ou Refus
-			if(packet.substring(1).equalsIgnoreCase(client.getPlayer().getInvitation()+""))
-			{
-				Player p = World.data.getPersonnage(client.getPlayer().getInvitation());
-				if(p == null)return;//Pas cens� arriver
-				SocketManager.GAME_SEND_gJ_PACKET(p,"Ec");
-			}
-		break;
-		case 'K'://Accepte
-			if(packet.substring(1).equalsIgnoreCase(client.getPlayer().getInvitation()+""))
-			{
-				Player p = World.data.getPersonnage(client.getPlayer().getInvitation());
-				if(p == null)return;//Pas cens� arriver
-				Guild G = p.get_guild();
-				GuildMember GM = G.addNewMember(client.getPlayer());
-				World.database.getGuildMemberData().update(GM);
-				client.getPlayer().setGuildMember(GM);
-				client.getPlayer().setInvitation(-1);
-				p.setInvitation(-1);
-				//Packet
-				SocketManager.GAME_SEND_gJ_PACKET(p,"Ka"+client.getPlayer().get_name());
-				SocketManager.GAME_SEND_gS_PACKET(client.getPlayer(), GM);
-				SocketManager.GAME_SEND_gJ_PACKET(client.getPlayer(),"Kj");
-			}
-		break;
-		}
-	}
-
-	private static void guild_infos(GameClient client, char c)
-	{
-		switch(c)
-		{
-		case 'B'://Perco
-			SocketManager.GAME_SEND_gIB_PACKET(client.getPlayer(), client.getPlayer().get_guild().parsePercotoGuild());
-		break;
-		case 'F'://Enclos
-			SocketManager.GAME_SEND_gIF_PACKET(client.getPlayer(), World.data.parseMPtoGuild(client.getPlayer().get_guild().get_id()));
-		break;
-		case 'G'://General
-			SocketManager.GAME_SEND_gIG_PACKET(client.getPlayer(), client.getPlayer().get_guild());
-		break;
-		case 'H'://House
-			SocketManager.GAME_SEND_gIH_PACKET(client.getPlayer(), House.parseHouseToGuild(client.getPlayer()));
-		break;
-		case 'M'://Members
-			SocketManager.GAME_SEND_gIM_PACKET(client.getPlayer(), client.getPlayer().get_guild(),'+');
-		break;
-		case 'T'://Perco
-			SocketManager.GAME_SEND_gITM_PACKET(client.getPlayer(), Percepteur.parsetoGuild(client.getPlayer().get_guild().get_id()));
-			Percepteur.parseAttaque(client.getPlayer(), client.getPlayer().get_guild().get_id());
-			Percepteur.parseDefense(client.getPlayer(), client.getPlayer().get_guild().get_id());
-		break;
-		}
-	}
-
-	private static void joinFight(GameClient client, String packet) {
+	@Packet("gT")
+	public static void joinFight(GameClient client, String packet) {
+		packet = packet.substring(2);
 		switch(packet.charAt(0))
 		{
 			case 'J'://Rejoindre
@@ -660,7 +634,8 @@ public class GuildPacket {
 		}
 	}
 	
-	private static void close(GameClient client) {
+	@Packet("gV")
+	public static void close(GameClient client, String packet) {
 		SocketManager.GAME_SEND_gV_PACKET(client.getPlayer());
 	}
 }

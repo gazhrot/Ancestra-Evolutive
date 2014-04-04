@@ -7,37 +7,12 @@ import common.SocketManager;
 import common.World;
 
 import game.GameClient;
+import game.packet.handler.Packet;
 
 public class GroupPacket {
-	
-	public static void parseGroupPacket(GameClient client, String packet) {
-		switch(packet.charAt(1))
-		{
-			case 'A'://Accepter invitation
-				accept(client, packet);
-			break;
-			case 'F'://Suivre membre du groupe PF+GUID
-				follow(client, packet);
-			break;
-			case 'G'://Suivez le tous PG+GUID
-				followAll(client, packet);
-			break;
-			case 'I'://inviation
-				invite(client, packet);
-			break;
-			case 'R'://Refuse
-				decline(client);
-			break;
-			case 'V'://Quitter
-				leave(client, packet);
-			break;
-			case 'W'://Localisation du groupe
-				group_locate(client);
-			break;
-		}
-	}
-
-	private static void accept(GameClient client, String packet) {
+		
+	@Packet("PA")
+	public static void accept(GameClient client, String packet) {
 		if(client.getPlayer() == null)
 			return;
 		if(client.getPlayer().getInvitation() == 0)
@@ -70,7 +45,8 @@ public class GroupPacket {
 		SocketManager.GAME_SEND_PR_PACKET(player);
 	}
 	
-	private static void follow(GameClient client, String packet) {
+	@Packet("PF")
+	public static void follow(GameClient client, String packet) {
 		Group group = client.getPlayer().getGroup();
 		
 		if(group == null)
@@ -106,7 +82,8 @@ public class GroupPacket {
 		}
 	}
 
-	private static void followAll(GameClient client, String packet) {
+	@Packet("PG")
+	public static void followAll(GameClient client, String packet) {
 		Group group = client.getPlayer().getGroup();
 		
 		if(group == null)
@@ -149,7 +126,8 @@ public class GroupPacket {
 		}
 	}
 
-	private static void invite(GameClient client, String packet) {
+	@Packet("PI")
+	public static void invite(GameClient client, String packet) {
 		if(client.getPlayer() == null)
 			return;
 		
@@ -177,7 +155,8 @@ public class GroupPacket {
 		SocketManager.GAME_SEND_GROUP_INVITATION(target.get_compte().getGameClient(), client.getPlayer().get_name(),name);
 	}
 
-	private static void decline(GameClient client) {
+	@Packet("PR")
+	public static void decline(GameClient client, String packet) {
 		if(client.getPlayer() == null)
 			return;
 		if(client.getPlayer().getInvitation() == 0)
@@ -195,7 +174,8 @@ public class GroupPacket {
 		SocketManager.GAME_SEND_PR_PACKET(player);
 	}
 	
-	private static void leave(GameClient client, String packet) {
+	@Packet("PV")
+	public static void leave(GameClient client, String packet) {
 		if(client.getPlayer() == null)
 			return;
 		
@@ -227,7 +207,8 @@ public class GroupPacket {
 		}
 	}
 	
-	private static void group_locate(GameClient client)
+	@Packet("PW")
+	public static void locate(GameClient client, String packet)
 	{
 		if(client.getPlayer() == null)
 			return;
@@ -246,6 +227,7 @@ public class GroupPacket {
 			str += GroupP.get_curCarte().getX()+";"+GroupP.get_curCarte().getY()+";"+GroupP.get_curCarte().get_id()+";2;"+GroupP.get_GUID()+";"+GroupP.get_name();
 			isFirst = false;
 		}
+		
 		SocketManager.GAME_SEND_IH_PACKET(client.getPlayer(), str);
 	}
 }

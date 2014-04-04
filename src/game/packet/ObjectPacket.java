@@ -13,28 +13,12 @@ import common.SocketManager;
 import common.World;
 
 import game.GameClient;
+import game.packet.handler.Packet;
 
 public class ObjectPacket {
-
-	public static void parseObjectPacket(GameClient client, String packet) {
-		switch(packet.charAt(1))
-		{
-			case 'd'://Supression d'un objet
-				delete(client, packet);
-			break;
-			case 'D'://Depose l'objet au sol
-				drop(client, packet);
-			break;
-			case 'M'://Bouger un objet (Equiper/d�s�quiper)
-				move(client, packet);
-			break;
-			case 'U'://Utiliser un objet (potions)
-				use(client, packet);
-			break;
-		}
-	}
 	
-	private static void delete(GameClient client, String packet)
+	@Packet("Od")
+	public static void delete(GameClient client, String packet)
 	{
 		String[] infos = packet.substring(2).split("\\|");
 		try
@@ -71,7 +55,8 @@ public class ObjectPacket {
 		}
 	}
 	
-	private static void drop(GameClient client, String packet)
+	@Packet("OD")
+	public static void drop(GameClient client, String packet)
 	{
 		int guid = -1;
 		int qua = -1;
@@ -121,7 +106,8 @@ public class ObjectPacket {
 		SocketManager.GAME_SEND_STATS_PACKET(client.getPlayer());
 	}
 
-	private static synchronized void move(GameClient client, String packet)
+	@Packet("OM")
+	public static synchronized void move(GameClient client, String packet)
 	{
 		String[] infos = packet.substring(2).split(""+(char)0x0A)[0].split("\\|");
 		try
@@ -274,7 +260,8 @@ public class ObjectPacket {
 		}
 	}
 	
-	private static void use(GameClient client, String packet)
+	@Packet("OU")
+	public static void use(GameClient client, String packet)
 	{
 		int guid = -1;
 		int targetGuid = -1;
