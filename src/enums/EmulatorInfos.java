@@ -2,7 +2,7 @@ package enums;
 
 public enum EmulatorInfos {
 	DEVELOPPER("John-r"),
-	RELEASE(0.5),
+	RELEASE(0.6),
 	CLIENT_RELESE("1.29.1"),
 	SOFT_NAME("Ancestra Evolutive v"+RELEASE.toDouble());
 	
