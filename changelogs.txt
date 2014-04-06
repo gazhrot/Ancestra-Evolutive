@@ -110,3 +110,4 @@ Version 0.5
 - GameClient fragmenter en plusieurs morceaux pour chaque type de packet.
 - GameAction refait (convention & getter/setter).
 - Renommage de l'ensemble des "parsage" de packet au niveau des variables, .. Il en reste quelque un. 
+- Ajout des maps & cellules de départ selon la classe.

@@ -1,6 +1,7 @@
 package common;
 
 import game.GameClient;
+import game.packet.PacketParser;
 
 import java.sql.Connection;
 import java.util.ArrayList;
@@ -91,6 +92,8 @@ public class World {
 	private Map<String, Command<Player>> playerCommands = new HashMap<>();
 	private Map<String, Command<Console>> consoleCommands = new HashMap<>();
 	private ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+	private Map<String, PacketParser> parsers = new HashMap<>();
+			
 	private Connection connection;
 	
 	private int nextHdvID;
@@ -1036,6 +1039,14 @@ public class World {
 
 	public ScheduledExecutorService getScheduler() {
 		return scheduler;
+	}
+	
+	public Map<String, PacketParser> getParsers() {
+		return parsers;
+	}
+
+	public void addParsers(String arg0, Object arg1) {
+		this.parsers.put(arg0, (PacketParser) arg1);
 	}
 
 	public Connection getConnection() {

@@ -1,0 +1,14 @@
+package game.packet.youpackage;
+
+import game.GameClient;
+import game.packet.handler.Packet;
+import game.packet.handler.PacketParser;
+
+@Packet("")
+public class yournameclass implements PacketParser {
+
+	@Override
+	public void parse(GameClient client, String packet) {
+		//yourfunction
+	}
+}

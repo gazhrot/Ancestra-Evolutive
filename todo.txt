@@ -3,7 +3,6 @@ Liste de chose à faire :
 - Les guildes :
   > Quand on supprime un déconnecter cela ne marche pas.
   > Tu avais aussi dit sur les rangs qu'il y a des problèmes.
-  > Créer une guilde avec une guildalogemme au temple des guildes.
  
 - Les obvijevans :
   > Faire nourrir tout les X heures.

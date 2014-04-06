@@ -31,10 +31,8 @@ public class Constants
 	{
 		String[] split = BAN_IP.split(",");
 		for(String ipsplit : split)
-		{
-			if(ip.compareTo(ipsplit) == 0) return true;
-		}
-		
+			if(ip.compareTo(ipsplit) == 0) 
+				return true;		
 		return false;
 	}
 	
@@ -403,17 +401,95 @@ public class Constants
 	
 	
 	//Methodes
-	public static short getStartMap(int classID)
+	public static short getStartMap(int id)
 	{
 		short pos = 10298;
-		switch(classID)
-		{
-			
+		switch(id) {
+			case Constants.CLASS_FECA:
+			pos =10300;
+			break;
+			case Constants.CLASS_OSAMODAS:
+			pos =10284;
+			break;
+			case Constants.CLASS_ENUTROF:
+			pos =10299;
+			break;
+			case Constants.CLASS_SRAM:
+			pos =10285;
+			break;
+			case Constants.CLASS_XELOR:
+			pos =10298;
+			break;
+			case Constants.CLASS_ECAFLIP:
+			pos =10276;
+			break;
+			case Constants.CLASS_ENIRIPSA:
+			pos =10283;
+			break;
+			case Constants.CLASS_IOP:
+			pos =10294;
+			break;
+			case Constants.CLASS_CRA:
+			pos =10292;
+			break;
+			case Constants.CLASS_SADIDA:
+			pos =10279;
+			break;
+			case Constants.CLASS_SACRIEUR:
+			pos =10296;
+			break;
+			case Constants.CLASS_PANDAWA:
+			pos =10289;
+			break;
 		}
 		if(Server.config.isCustomStartMap())
-		{
 			return Server.config.getStartMap();
+		return pos;
+	}
+	
+	public static int getStartCell(int id)
+	{
+		int pos = 314;
+		switch(id)	{
+			case Constants.CLASS_FECA:
+			pos = 323;
+			break;
+			case Constants.CLASS_OSAMODAS:
+			pos = 372;
+			break;
+			case Constants.CLASS_ENUTROF:
+			pos = 271;
+			break;
+			case Constants.CLASS_SRAM:
+			pos = 263;
+			break;
+			case Constants.CLASS_XELOR:
+			pos = 300;
+			break;
+			case Constants.CLASS_ECAFLIP:
+			pos = 296;
+			break;
+			case Constants.CLASS_ENIRIPSA:
+			pos = 299;
+			break;
+			case Constants.CLASS_IOP:
+			pos = 280;
+			break;
+			case Constants.CLASS_CRA:
+			pos = 284;
+			break;
+			case Constants.CLASS_SADIDA:
+			pos = 254;
+			break;
+			case Constants.CLASS_SACRIEUR:
+			pos = 243;
+			break;
+			case Constants.CLASS_PANDAWA:
+			pos = 236;
+			break;
 		}
+		if(Server.config.isCustomStartMap())
+			return Server.config.getStartCell();
 		return pos;
 	}
 
@@ -553,20 +629,6 @@ public class Constants
 			break;
 		}
 		return start;
-	}
-
-	public static int getStartCell(int classID)
-	{
-		int pos = 314;
-		switch(classID)
-		{
-			
-		}
-		if(Server.config.isCustomStartMap())
-		{
-			return Server.config.getStartCell();
-		}
-		return pos;
 	}
 	
 	public static int getBasePdv(int classID)

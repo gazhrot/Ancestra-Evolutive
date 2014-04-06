@@ -1,6 +1,6 @@
 package game;
 
-import game.packet.handler.PacketHandler;
+import game.packet.PacketHandler;
 
 import java.util.concurrent.TimeUnit;
 
