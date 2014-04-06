@@ -1,18 +1,42 @@
 package game.packet;
 
+import java.io.IOException;
+
 import game.GameClient;
 import common.Constants;
 import common.SocketManager;
 import common.World;
+import core.Server;
 
 public class PacketHandler {
 			
-	public static void parsePacket(GameClient client, String packet) { 
+	public static void parsePacket(GameClient client, String packet) throws ClassNotFoundException, InstantiationException, IllegalAccessException, IOException { 
 		if(!verify(client, packet))
 			return;
-
-		System.out.println("Parse : "+packet.subSequence(0, 2));
-		World.data.getParsers().get(packet.substring(0, 2)).parse(client, packet);
+		
+		/** Les plugins avant les packages. **/
+		String prefix = (String) packet.subSequence(0, 2);		
+		PacketParser parser = Server.config.getPluginPacket(prefix);
+		
+		if(parser == null) {
+			parser = World.data.getParsers().get(prefix);
+			if(parser != null)
+				parser.parse(client, packet);
+		}else {
+			parser.parse(client, packet);
+		}
+		
+		/** Les packages avant les plugins. **/
+		/*String prefix = (String) packet.subSequence(0, 2);		
+		PacketParser parser = World.data.getParsers().get(prefix);
+		
+		if(parser == null) {
+			parser = Server.config.getPluginPacket(prefix);
+			if(parser != null)
+				parser.parse(client, packet);
+		}else {
+			parser.parse(client, packet);
+		}*/
 	}
 
 	private static boolean verify(GameClient client, String packet) {

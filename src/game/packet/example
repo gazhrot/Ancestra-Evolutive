@@ -1,10 +1,10 @@
-package game.packet.youpackage;
+package game.packet.yourpackage;
 
 import game.GameClient;
 import game.packet.handler.Packet;
 import game.packet.handler.PacketParser;
 
-@Packet("")
+@Packet("your packet only 2 letters")
 public class yournameclass implements PacketParser {
 
 	@Override

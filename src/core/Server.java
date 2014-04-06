@@ -2,8 +2,10 @@ package core;
 
 import game.GameServer;
 import game.packet.Packet;
+import game.packet.PacketParser;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.lang.annotation.Annotation;
@@ -383,7 +385,6 @@ public class Server {
 		//ajout aux commmandes
 		consoleCommands.put("HELP", command);
 		
-		
 		//ajout des commandes dans les données du serveur
 		World.data.getPlayerCommands().putAll(playerCommands);
 		World.data.getConsoleCommands().putAll(consoleCommands);
@@ -403,6 +404,43 @@ public class Server {
 				}
 			}
 		}
+	}
+	
+	public PacketParser getPluginPacket(String packet) throws ClassNotFoundException, 
+			InstantiationException, IllegalAccessException, IOException {
+		FileFilter filter = new FileFilter() {
+			public boolean accept(File file) {
+				return file.getName().endsWith(".jar");
+			}
+		};
+		
+		File[] files = new File("./plugins/packets/").listFiles(filter);
+		
+		for(File file : files) {
+			JarFile jarFile = new JarFile(file); 
+			
+			ClassLoader loader = URLClassLoader.newInstance(
+			    new URL[] { file.toURI().toURL() },
+			    getClass().getClassLoader()
+			);
+		
+			Enumeration<JarEntry> enumeration = jarFile.entries();
+			
+			while(enumeration.hasMoreElements()) {
+				JarEntry jarEntry = enumeration.nextElement();
+				if(jarEntry.getName().endsWith(".class")) {
+					Class<?> localClass = loader.loadClass(jarEntry.getName()
+							.replaceAll(".class", "").replaceAll("/", "."));
+					Annotation annotation = localClass.getAnnotation(Packet.class); 
+					if(annotation instanceof Packet) {
+						 Packet name = (Packet) annotation;
+						 if(packet.equals(name.value()))
+							 return (PacketParser) localClass.newInstance();
+					}
+				}
+			}
+		}
+		return null;
 	}
 	
 	@SuppressWarnings("rawtypes")
