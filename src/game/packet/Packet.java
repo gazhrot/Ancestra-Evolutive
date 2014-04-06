@@ -1,4 +1,4 @@
-package game.packet;
+	package game.packet;
 
 import java.lang.annotation.*;
 

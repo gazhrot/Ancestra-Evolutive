@@ -1,5 +1,12 @@
 package game.packet.exchange;
 
+import client.Player;
+import objects.Objet;
+import objects.Objet.ObjTemplate;
+import common.SocketManager;
+import common.World;
+import core.Log;
+
 import game.GameClient;
 import game.packet.Packet;
 import game.packet.PacketParser;
@@ -9,7 +16,7 @@ public class Buy implements PacketParser {
 
 	@Override
 	public void parse(GameClient client, String packet) {
-		/*String[] infos = packet.substring(2).split("\\|");
+		String[] infos = packet.substring(2).split("\\|");
 		
         if(client.getPlayer().get_isTradingWith() > 0) {
             Player seller = World.data.getPersonnage(client.getPlayer().get_isTradingWith());
@@ -65,7 +72,7 @@ public class Buy implements PacketParser {
 	            	if(World.data.getSeller(seller.get_curCarte().get_id()) != null && World.data.getSeller(seller.get_curCarte().get_id()).contains(seller.get_GUID())) {
 	        			World.data.removeSeller(seller.get_GUID(), seller.get_curCarte().get_id());
 	        			SocketManager.GAME_SEND_ERASE_ON_MAP_TO_MAP(seller.get_curCarte(), seller.get_GUID());
-	        			Finish.parse(client, "");
+	        			World.data.getParsers().get("EV").parse(client, packet);
 	        		}
 	            }
             }
@@ -112,6 +119,6 @@ public class Buy implements PacketParser {
 			e.printStackTrace();
 			SocketManager.GAME_SEND_BUY_ERROR_PACKET(client);
 			return;
-		}*/
+		}
 	}
 }

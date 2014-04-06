@@ -11,6 +11,7 @@ public class PacketHandler {
 		if(!verify(client, packet))
 			return;
 
+		System.out.println("Parse : "+packet.subSequence(0, 2));
 		World.data.getParsers().get(packet.substring(0, 2)).parse(client, packet);
 	}
 
