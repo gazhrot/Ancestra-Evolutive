@@ -15,7 +15,7 @@ public class PacketHandler {
 			return;
 		
 		/** Les plugins avant les packages. **/
-		String prefix = (String) packet.subSequence(0, 2);		
+		String prefix = (String) packet.subSequence(0, 2);	
 		PacketParser parser = Server.config.getPluginPacket(prefix);
 		
 		if(parser == null) {
@@ -25,7 +25,7 @@ public class PacketHandler {
 		}else {
 			parser.parse(client, packet);
 		}
-		
+
 		/** Les packages avant les plugins. **/
 		/*String prefix = (String) packet.subSequence(0, 2);		
 		PacketParser parser = World.data.getParsers().get(prefix);

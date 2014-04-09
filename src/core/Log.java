@@ -73,7 +73,6 @@ public class Log {
 			Server.config.getPs().flush();
 			System.setErr(Server.config.getPs());
 			Log.Log_MJ = new BufferedWriter(new FileWriter("Gms_logs/"+date+"_GM.txt",true));
-			Server.config.setCanLog(true);
 			String str = "Lancement du serveur...\n";
 			Log.Log_GameSock.write(str);
 			Log.Log_Game.write(str);

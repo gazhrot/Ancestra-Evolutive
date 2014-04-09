@@ -10,7 +10,6 @@ import game.GameServer;
 public class Main {
 	
 	static {
-		//reboot
 		Runtime.getRuntime().addShutdownHook(new Thread() {
             public void run() {
                 closeServers();
@@ -62,19 +61,26 @@ public class Main {
 		console.initialize();
 	}
 
-	public synchronized static void closeServers() {
-		if(Server.config.isRunning()) {
-			Console.instance.writeln(" <> Fermeture du jeu <>");
-			
-			Server.config.setRunning(false);
-			Server.config.getRealmServer().close();
-			Server.config.getGameServer().close();
-			
-			World.data.saveData(-1);
-			World.database.getAccountData().updateState(false);
-			World.database.close();
-			
-			Console.instance.writeln(" <> Redemmarage <>");
-		}
+	public static void closeServers() {
+		World.data.getWorker().execute(new Runnable() {
+			public void run() {
+				if(Server.config.isRunning()) {
+					Console.instance.writeln(" <> Fermeture du jeu <>");
+					Server.config.setRunning(false);
+					Console.instance.writeln("Close RealmServer");
+					Server.config.getRealmServer().close();
+					Console.instance.writeln("CloseGameServer");
+					Server.config.getGameServer().close();
+					Console.instance.writeln("1");
+					World.data.saveData(-1);
+					Console.instance.writeln("1");
+					World.database.getAccountData().updateState(false);
+					Console.instance.writeln("1");
+					World.database.close();
+					Console.instance.writeln("1");
+					Console.instance.writeln(" <> Redemmarage <>");
+				}
+			}
+		});
 	}
 }

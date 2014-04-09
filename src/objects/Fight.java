@@ -731,7 +731,7 @@ public class Fight
 				return;
 			
 			IA ia = new IA(_ordreJeu.get(_curPlayer), Fight.this);
-			World.data.getIaWorker().execute(ia);
+			World.data.getWorker().execute(ia);
 		}
 		
 	}

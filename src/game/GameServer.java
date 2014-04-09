@@ -60,13 +60,20 @@ public class GameServer {
 	}
 	
 	public void close() {
-		 acceptor.unbind();
-		 
+		System.out.println("OS : "+System.getProperty("os.name").contains("Win"));
+		/*if(!System.getProperty("os.name").contains("Win")) {
+			acceptor.unbind();
+		}*/
+		System.out.print("Close session : ");
 		 for (IoSession session : acceptor.getManagedSessions().values())
 			 if (session.isConnected() || !session.isClosing()) 
 				 session.close(true);
-	     
-	     acceptor.dispose();
+		 System.out.println(" ok.");
+		 System.out.print("Unbind : ");
+		 this.acceptor.unbind();
+		 System.out.println(" ok.");
+		 this.acceptor.dispose();
+	     System.out.println("1");
 	}
 	
 	public static String getServerDate() {

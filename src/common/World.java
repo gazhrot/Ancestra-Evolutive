@@ -58,8 +58,7 @@ public class World {
 	 */
 	public static World data = new World();
 	public static Database database = new Database();
-	
-	
+
 	private Map<Integer, Account> accounts = new HashMap<>();
 	private Map<Integer, Player> players = new HashMap<>();
 	private Map<Short, Carte> maps = new HashMap<>();
@@ -103,8 +102,7 @@ public class World {
 	private byte gmAccess = 0; 
 	private int nextObjectID; 
 	
-	private ExecutorService saveWorker = Executors.newCachedThreadPool();
-	private ExecutorService iaWorker = Executors.newCachedThreadPool();
+	private ExecutorService worker = Executors.newCachedThreadPool();
 	
 	public int initialize() {
 		long startTime = System.currentTimeMillis();
@@ -391,7 +389,7 @@ public class World {
 	}
 
 	public void saveData(final int saverID) {
-		saveWorker.execute(new Runnable() {
+		worker.execute(new Runnable() {
 			public void run() {
 				GameClient _out = null;
 				Player saver = saverID != -1 ? getPersonnage(saverID)
@@ -1060,12 +1058,12 @@ public class World {
 	public Map<Integer, Player> getPlayers() {
 		return this.players;
 	}
-
-	public ExecutorService getIaWorker() {
-		return iaWorker;
-	}
 	
 	public Map<Integer, Account> getAccounts() {
 		return this.accounts;
+	}
+
+	public ExecutorService getWorker() {
+		return worker;
 	}
 }

@@ -118,7 +118,7 @@ public class Server {
 		try {
 			//console
 			this.debug = configFile.getBoolean("console.debug");
-			this.setCanLog(configFile.getBoolean("console.log"));
+			this.canLog = configFile.getBoolean("console.log");
 			
 			//database
 			this.host = configFile.getString("database.host");
@@ -392,18 +392,26 @@ public class Server {
 	
 	public void initialisePackets() throws ClassNotFoundException, SecurityException, 
 			IOException, InstantiationException, IllegalAccessException {
-		String i = "game.packet.";
-		String[] packages = {"account", "basic", "channel", "dialog", "enemy", "environement", "exchange", "fight", "friend", "game", "group", "guild", "house", "house.kode", "mount", "object", "spell", "waypoint"};
+		String path = Main.class.getResource(Main.class.getSimpleName() + ".class").getFile();
 		
-		for (String packge : packages) {
-			for (Class<?> clas : getClasses(i + packge)) {
-				Annotation annotation = clas.getAnnotation(Packet.class); 
-				if(annotation instanceof Packet) {
-					 Packet name = (Packet) annotation;
-					 World.data.addParsers(name.value(), clas.newInstance());
+		if(path.startsWith("/")) {
+			String i = "game.packet.";
+			String[] packages = {"account", "basic", "channel", "dialog", "enemy", "environement", "exchange", "fight", "friend", "game", "group", "guild", "house", "house.kode", "mount", "object", "spell", "waypoint"};
+			
+			for (String packge : packages) {
+				for (Class<?> clas : getClasses(i + packge)) {
+					Annotation annotation = clas.getAnnotation(Packet.class); 
+					if(annotation instanceof Packet) {
+						Packet name = (Packet) annotation;
+						World.data.addParsers(name.value(), clas.newInstance());
+					}
 				}
 			}
-		}
+	    }else {
+	    	path = ClassLoader.getSystemClassLoader().getResource(path).getFile().substring(6);	    	
+	    	File file = new File(path.substring(0, path.lastIndexOf('!')));
+	    	this.loadPacketsIntoThisJar(file);
+	    }
 	}
 	
 	public PacketParser getPluginPacket(String packet) throws ClassNotFoundException, 
@@ -413,9 +421,12 @@ public class Server {
 				return file.getName().endsWith(".jar");
 			}
 		};
-		
+
 		File[] files = new File("./plugins/packets/").listFiles(filter);
 		
+		if(files == null)
+			return null;
+
 		for(File file : files) {
 			JarFile jarFile = new JarFile(file); 
 			
@@ -423,9 +434,9 @@ public class Server {
 			    new URL[] { file.toURI().toURL() },
 			    getClass().getClassLoader()
 			);
-		
+
 			Enumeration<JarEntry> enumeration = jarFile.entries();
-			
+
 			while(enumeration.hasMoreElements()) {
 				JarEntry jarEntry = enumeration.nextElement();
 				if(jarEntry.getName().endsWith(".class")) {
@@ -440,6 +451,39 @@ public class Server {
 				}
 			}
 		}
+		
+		return null;
+	}
+	
+	public PacketParser loadPacketsIntoThisJar(File file) throws IOException, ClassNotFoundException, 
+			InstantiationException, IllegalAccessException {
+		if(file == null)
+			return null;
+
+		JarFile jarFile = new JarFile(new File(file.getPath())); 
+
+		ClassLoader loader = URLClassLoader.newInstance(
+		    new URL[] { file.toURI().toURL() },
+		    getClass().getClassLoader()
+		);
+
+		Enumeration<JarEntry> enumeration = jarFile.entries();
+
+		while(enumeration.hasMoreElements()) {
+			JarEntry jarEntry = enumeration.nextElement();
+			if(jarEntry.getName().endsWith(".class")) {
+				Class<?> localClass = loader.loadClass(jarEntry.getName()
+						.replaceAll(".class", "").replaceAll("/", "."));
+				Annotation annotation = localClass.getAnnotation(Packet.class); 
+				if(annotation instanceof Packet) {
+					 Packet name = (Packet) annotation;
+					 if(name.value() != null)
+						 if(!name.value().equals(""))
+							 World.data.addParsers(name.value(), localClass.newInstance());
+				}
+			}
+		}
+		
 		return null;
 	}
 	
@@ -699,10 +743,6 @@ public class Server {
 
 	public void setPs(PrintStream ps) {
 		this.ps = ps;
-	}
-
-	public void setCanLog(boolean canLog) {
-		this.canLog = canLog;
 	}
 
 	public String getGameServerIpCrypted() {
