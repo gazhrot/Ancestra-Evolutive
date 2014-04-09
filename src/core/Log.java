@@ -16,50 +16,6 @@ public class Log {
 	private static BufferedWriter Log_RealmSock;
 	private static BufferedWriter Log_Shop;
 
-	public synchronized static void addToSockLog(String str) {
-		if(Server.config.isCanLog()) {
-			try {
-				String date = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)+":"+Calendar.getInstance().get(+Calendar.MINUTE)+":"+Calendar.getInstance().get(Calendar.SECOND);
-				Log.Log_GameSock.write(date+": "+str);
-				Log.Log_GameSock.newLine();
-				Log.Log_GameSock.flush();
-			} catch (IOException e) {}//ne devrait pas avoir lieu
-		}
-	}
-
-	public synchronized static void addToLog(String str) {
-		if(Server.config.isCanLog()) {
-			try {
-				String date = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)+":"+Calendar.getInstance().get(+Calendar.MINUTE)+":"+Calendar.getInstance().get(Calendar.SECOND);
-				Log.Log_Game.write(date+": "+str);
-				Log.Log_Game.newLine();
-				Log.Log_Game.flush();
-			} catch (IOException e) {e.printStackTrace();}//ne devrait pas avoir lieu
-		}
-	}
-
-	public static void addToMjLog(String str)
-	{
-		if(!Server.config.isCanLog())return;
-		String date = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)+":"+Calendar.getInstance().get(+Calendar.MINUTE)+":"+Calendar.getInstance().get(Calendar.SECOND);
-		try {
-			Log.Log_MJ.write("["+date+"]"+str);
-			Log.Log_MJ.newLine();
-			Log.Log_MJ.flush();
-		} catch (IOException e) {}
-	}
-
-	public static void addToShopLog(String str)
-	{
-		if(!Server.config.isCanLog())return;
-		String date = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)+":"+Calendar.getInstance().get(+Calendar.MINUTE)+":"+Calendar.getInstance().get(Calendar.SECOND);
-		try {
-			Log.Log_Shop.write("["+date+"]"+str);
-			Log.Log_Shop.newLine();
-			Log.Log_Shop.flush();
-		} catch (IOException e) {}
-	}
-
 	public static void initLogs() {
 		try {
 			if(!Server.config.isCanLog())
@@ -90,42 +46,80 @@ public class Log {
 			Log.Log_Shop.flush();
 		}catch(IOException e) {
 			/*On créer les dossiers*/
-			Console.instance.println("Les fichiers de logs n'ont pas pu etre creer");
-			Console.instance.println("Creation des dossiers");
+			System.out.print("-> Creation des dossiers : ");
 			new File("Shop_logs").mkdir(); 
 			new File("Game_logs").mkdir(); 
 			new File("Realm_logs").mkdir(); 
 			new File("Gms_logs").mkdir(); 
 			new File("Error_logs").mkdir();
-			Console.instance.println(e.getMessage());
+			System.out.println(e.getMessage());
 			System.exit(1);
 		}
 	}
+	
+	public synchronized static void addToSockLog(String str) {
+		if(Server.config.isCanLog()) {
+			try {
+				String date = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)+":"+Calendar.getInstance().get(+Calendar.MINUTE)+":"+Calendar.getInstance().get(Calendar.SECOND);
+				Log.Log_GameSock.write("["+date+"] : "+str);
+				Log.Log_GameSock.newLine();
+				Log.Log_GameSock.flush();
+			} catch (IOException e) {}//ne devrait pas avoir lieu
+		}
+	}
 
-	public synchronized static void addToRealmLog(String str)
-	{
-		if(Server.config.isCanLog())
-		{
+	public synchronized static void addToLog(String str) {
+		if(Server.config.isCanLog()) {
+			try {
+				Log.Log_Game.write(str);
+				Log.Log_Game.newLine();
+				Log.Log_Game.flush();
+			} catch (IOException e) {e.printStackTrace();}//ne devrait pas avoir lieu
+		}
+	}
+
+	public static void addToMjLog(String str) {
+		if(!Server.config.isCanLog()) {
+			try {
+				String date = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)+":"+Calendar.getInstance().get(+Calendar.MINUTE)+":"+Calendar.getInstance().get(Calendar.SECOND);
+				Log.Log_MJ.write("["+date+"] : "+str);
+				Log.Log_MJ.newLine();
+				Log.Log_MJ.flush();
+			} catch (IOException e) {}
+		}
+	}
+
+	public static void addToShopLog(String str)	{
+		if(!Server.config.isCanLog()) {
+			try {
+				String date = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)+":"+Calendar.getInstance().get(+Calendar.MINUTE)+":"+Calendar.getInstance().get(Calendar.SECOND);
+				Log.Log_Shop.write("["+date+"] : "+str);
+				Log.Log_Shop.newLine();
+				Log.Log_Shop.flush();
+			} catch (IOException e) {}
+		}
+	}
+	
+
+	public synchronized static void addToRealmLog(String str) {
+		if(Server.config.isCanLog()) {
 			try {
 				String date = Calendar.HOUR_OF_DAY+":"+Calendar.MINUTE+":"+Calendar.SECOND;
-				Log_Realm.write(date+": "+str);
+				Log_Realm.write("["+date+"] : "+str);
 				Log_Realm.newLine();
 				Log_Realm.flush();
 			} catch (IOException e) {}//ne devrait pas avoir lieu
 		}
 	}
 
-	public synchronized static void addToRealmSockLog(String str)
-	{
-		if(Server.config.isCanLog())
-		{
+	public synchronized static void addToRealmSockLog(String str) {
+		if(Server.config.isCanLog()) {
 			try {
 				String date = Calendar.HOUR_OF_DAY+":"+Calendar.MINUTE+":"+Calendar.SECOND;
-				Log_RealmSock.write(date+": "+str);
+				Log_RealmSock.write("["+date+"] : "+str);
 				Log_RealmSock.newLine();
 				Log_RealmSock.flush();
 			} catch (IOException e) {}//ne devrait pas avoir lieu
 		}
 	}
-
 }

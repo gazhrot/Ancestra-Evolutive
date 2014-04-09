@@ -24,7 +24,7 @@ public class Main {
 	
 		//demarrage de l'emualteur
 		console.writeln(EmulatorInfos.SOFT_NAME.toString());
-		console.writeln("\n ~ Initialisation des variables : config.conf");
+		console.writeln(" ~ Initialisation des variables : config.conf");
 		Server.config.initialize();
 		console.writeln(" ~ Connexion a la base de donnees : "+Server.config.getHost());
 		

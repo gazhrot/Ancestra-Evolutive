@@ -167,32 +167,36 @@ public class Server {
 			
 			//arena
 			String maps = configFile.getString("arena.maps");
-			for(String s: maps.split(","))
-				this.arenaMaps.add(Integer.parseInt(s));
+			if(!maps.isEmpty())
+				for(String s: maps.split(","))
+					this.arenaMaps.add(Integer.parseInt(s));
 			
 			this.arenaTime = configFile.getInt("arena.time");
 		
 			//hdvs
 			String items = configFile.getString("hdvs.notInHdv");
-			for(String s: items.split(","))
-				this.noInHdv.add(Integer.parseInt(s));
+			if(!items.isEmpty())
+				for(String s: items.split(","))
+					this.noInHdv.add(Integer.parseInt(s));
 			
 			//marchand
 			maps = configFile.getString("marchand.maps");
-			for(String s: maps.split(","))
-				this.marchandMaps.add(Integer.parseInt(s));
+			if(!maps.isEmpty())
+				for(String s: maps.split(","))
+					this.marchandMaps.add(Integer.parseInt(s));
 			
 			//collector
 			maps = configFile.getString("collector.maps");
-			for(String s: maps.split(","))
-				this.collectorMaps.add(Integer.parseInt(s));
+			if(!maps.isEmpty())
+				for(String s: maps.split(","))
+					this.collectorMaps.add(Integer.parseInt(s));
 		
 			//initialisation des commandes
 			this.initializeCommands();
 			//initialisation des packets
 			this.initialisePackets();
 		} catch(Exception e) {
-			Console.instance.writeln(" <> Config illisible ou champs manquants: "+e.getMessage());
+			System.out.println(" <> Config illisible ou champs manquants: "+e.getMessage());
 			System.exit(1);
 		}
 	}
