@@ -118,3 +118,6 @@ Version 0.6
 - Changement du système de fonctionnement de packet.
   > Passage en interface.
   > Possibilité de création de plug-in.
+- Correction d'un problème de connection dû au plugin IDE/Console.
+- Correction des problèmes de NPC, Collector, .. dû au lazy load.
+- Réctification de certains code et de nombreux bugs.
