@@ -18,8 +18,6 @@ import core.Console;
 
 public class GameClient implements Client {
 	
-	public boolean ok = false;
-	
 	private IoSession session;
 	private Account account;
 	private Player player;

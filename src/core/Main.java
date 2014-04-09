@@ -33,9 +33,7 @@ public class Main {
 			console.writeln("> Redemarrage...");
 			Main.closeServers();
 			System.exit(0);
-		}
-		
-		
+		}		
 		
 		console.writeln(" > Creation du monde");
 		int time = World.data.initialize();

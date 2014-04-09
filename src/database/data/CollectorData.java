@@ -76,26 +76,26 @@ public class CollectorData extends AbstractDAO<Percepteur>{
 	public Percepteur load(int id) {
 		Percepteur collector = null;
 		try {
-			ResultSet RS = getData("SELECT * FROM percepteurs WHERE guid = "+id);
+			ResultSet result = getData("SELECT * FROM percepteurs WHERE guid = "+id);
 			
-			if(RS.next()) {
-				Carte map = World.data.getCarte(RS.getShort("mapid"));
+			if(result.next()) {
+				Carte map = World.data.getCarte(result.getShort("mapid"));
 				if(map == null) return null;
 				
 				collector = new Percepteur(
-								RS.getInt("guid"),
-								RS.getShort("mapid"),
-								RS.getInt("cellid"),
-								RS.getByte("orientation"),
-								RS.getInt("guild_id"),
-								RS.getShort("N1"),
-								RS.getShort("N2"),
-								RS.getString("objets"),
-								RS.getLong("kamas"),
-								RS.getLong("xp"));
+								result.getInt("guid"),
+								result.getShort("mapid"),
+								result.getInt("cellid"),
+								result.getByte("orientation"),
+								result.getInt("guild_id"),
+								result.getShort("N1"),
+								result.getShort("N2"),
+								result.getString("objets"),
+								result.getLong("kamas"),
+								result.getLong("xp"));
 				World.data.addPerco(collector);
 			}
-			closeResultSet(RS);
+			closeResultSet(result);
 		} catch(Exception e) {
 			Console.instance.writeln("SQL ERROR(CollectorData): "+e.getMessage());
 		}
@@ -105,23 +105,23 @@ public class CollectorData extends AbstractDAO<Percepteur>{
 	public Percepteur loadByMap(int id) {
 		Percepteur collector = null;
 		try {
-			ResultSet RS = getData("SELECT * FROM percepteurs WHERE mapid = "+id);
+			ResultSet result = getData("SELECT * FROM percepteurs WHERE mapid = "+id);
 			
-			if(RS.next()) {
+			while(result.next()) {
 				collector = new Percepteur(
-								RS.getInt("guid"),
-								RS.getShort("mapid"),
-								RS.getInt("cellid"),
-								RS.getByte("orientation"),
-								RS.getInt("guild_id"),
-								RS.getShort("N1"),
-								RS.getShort("N2"),
-								RS.getString("objets"),
-								RS.getLong("kamas"),
-								RS.getLong("xp"));
+								result.getInt("guid"),
+								result.getShort("mapid"),
+								result.getInt("cellid"),
+								result.getByte("orientation"),
+								result.getInt("guild_id"),
+								result.getShort("N1"),
+								result.getShort("N2"),
+								result.getString("objets"),
+								result.getLong("kamas"),
+								result.getLong("xp"));
 				World.data.addPerco(collector);
 			}
-			closeResultSet(RS);
+			closeResultSet(result);
 		} catch(Exception e) {
 			Console.instance.writeln("SQL ERROR(CollectorData): "+e.getMessage());
 		}

@@ -66,7 +66,7 @@ public class NpcData extends AbstractDAO<NPC>{
 		NPC npc = null;
 		try {
 			ResultSet result = getData("SELECT * FROM npcs WHERE mapid = "+id);
-			if(result.next()) {
+			while(result.next()) {
 				Carte map = World.data.getCarte(result.getShort("mapid"));
 				
 				if (map == null)

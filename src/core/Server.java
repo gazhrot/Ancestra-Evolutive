@@ -112,13 +112,13 @@ public class Server {
 	//Config
 	private Config configFile = ConfigFactory.parseFile(new File("config.conf"));
 	
-	public void initialize() {
-		Log.initLogs();
-		
+	public void initialize() {		
 		try {
 			//console
 			this.debug = configFile.getBoolean("console.debug");
 			this.canLog = configFile.getBoolean("console.log");
+
+			Log.initLogs();
 			
 			//database
 			this.host = configFile.getString("database.host");
@@ -167,27 +167,23 @@ public class Server {
 			
 			//arena
 			String maps = configFile.getString("arena.maps");
-			maps = maps.contains(",") ? maps : maps+",";
 			for(String s: maps.split(","))
 				this.arenaMaps.add(Integer.parseInt(s));
 			
 			this.arenaTime = configFile.getInt("arena.time");
-			
+		
 			//hdvs
 			String items = configFile.getString("hdvs.notInHdv");
-			items = items.contains(",") ? items : items+",";
-			for(String s: maps.split(","))
+			for(String s: items.split(","))
 				this.noInHdv.add(Integer.parseInt(s));
 			
 			//marchand
 			maps = configFile.getString("marchand.maps");
-			maps = maps.contains(",") ? maps : maps+",";
 			for(String s: maps.split(","))
 				this.marchandMaps.add(Integer.parseInt(s));
 			
 			//collector
 			maps = configFile.getString("collector.maps");
-			maps = maps.contains(",") ? maps : maps+",";
 			for(String s: maps.split(","))
 				this.collectorMaps.add(Integer.parseInt(s));
 		

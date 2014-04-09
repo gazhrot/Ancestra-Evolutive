@@ -44,7 +44,7 @@ public class HdvData extends AbstractDAO<HDV>{
 		try {
 			ResultSet result = getData("SELECT * FROM hdvs WHERE map = "+id);
 
-			if (result.next()) {
+			while(result.next()) {
 				hdv = new HDV(result.getInt("map"), result
 						.getFloat("sellTaxe"), result.getShort("sellTime"), result
 						.getShort("accountItem"), result.getShort("lvlMax"), result
