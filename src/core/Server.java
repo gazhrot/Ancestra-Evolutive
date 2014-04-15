@@ -6,6 +6,7 @@ import game.packet.PacketParser;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.lang.annotation.Annotation;
@@ -194,7 +195,12 @@ public class Server {
 			//initialisation des commandes
 			this.initializeCommands();
 			//initialisation des packets
-			this.initialisePackets();
+			try {
+				this.initializePackets();
+			} catch(Exception e) { 
+				System.out.println(" <> Erreur lors de l'initialisation des packets : "+e.getMessage());
+				System.exit(1);
+			}
 		} catch(Exception e) {
 			System.out.println(" <> Config illisible ou champs manquants: "+e.getMessage());
 			System.exit(1);
@@ -389,12 +395,13 @@ public class Server {
 		World.data.getPlayerCommands().putAll(playerCommands);
 		World.data.getConsoleCommands().putAll(consoleCommands);
 	}
-	
-	public void initialisePackets() throws ClassNotFoundException, SecurityException, 
-			IOException, InstantiationException, IllegalAccessException {
-		String path = Main.class.getResource(Main.class.getSimpleName() + ".class").getFile();
 		
-		if(path.startsWith("/")) {
+	public void initializePackets() throws ClassNotFoundException, SecurityException, 
+			IOException, InstantiationException, IllegalAccessException {		
+		try {
+			String path = getPathOfJarFile();
+			this.loadPacketsIntoThisJar(new File(path));
+		} catch(Exception e) {
 			String i = "game.packet.";
 			String[] packages = {"account", "basic", "channel", "dialog", "enemy", "environement", "exchange", "fight", "friend", "game", "group", "guild", "house", "house.kode", "mount", "object", "spell", "waypoint"};
 			
@@ -406,12 +413,15 @@ public class Server {
 						World.data.addParsers(name.value(), clas.newInstance());
 					}
 				}
-			}
-	    }else {
-	    	path = ClassLoader.getSystemClassLoader().getResource(path).getFile().substring(6);	    	
-	    	File file = new File(path.substring(0, path.lastIndexOf('!')));
-	    	this.loadPacketsIntoThisJar(file);
+			}	
 	    }
+	}
+	
+	private String getPathOfJarFile() throws FileNotFoundException {
+	    String path = Main.class.getResource(Main.class.getSimpleName() + ".class").getFile();
+	    path = ClassLoader.getSystemClassLoader().getResource(path).getFile();
+	    File file = new File(path.substring(0, path.lastIndexOf('!')));
+	    return new File(".").getAbsolutePath().replace(".", "")+file.getName();
 	}
 	
 	public PacketParser getPluginPacket(String packet) throws ClassNotFoundException, 
