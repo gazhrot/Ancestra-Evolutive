@@ -1,12 +1,12 @@
 package game.packet.exchange;
 
+import tool.plugin.packet.Packet;
+import tool.plugin.packet.PacketParser;
 import common.SocketManager;
 import common.World;
 
 import core.Server;
 import game.GameClient;
-import game.packet.Packet;
-import game.packet.PacketParser;
 
 @Packet("Eq")
 public class AskOfflineExchange implements PacketParser {

@@ -1,9 +1,9 @@
 package game.packet.house.kode;
 
 import objects.House;
+import tool.plugin.packet.Packet;
+import tool.plugin.packet.PacketParser;
 import game.GameClient;
-import game.packet.Packet;
-import game.packet.PacketParser;
 
 @Packet("KV")
 public class Close implements PacketParser {

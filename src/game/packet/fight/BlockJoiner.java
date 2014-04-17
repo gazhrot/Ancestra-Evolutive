@@ -1,8 +1,8 @@
 package game.packet.fight;
 
+import tool.plugin.packet.Packet;
+import tool.plugin.packet.PacketParser;
 import game.GameClient;
-import game.packet.Packet;
-import game.packet.PacketParser;
 
 @Packet("fN")
 public class BlockJoiner implements PacketParser {

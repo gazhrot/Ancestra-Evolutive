@@ -1,13 +1,13 @@
 package game.packet.group;
 
+import tool.plugin.packet.Packet;
+import tool.plugin.packet.PacketParser;
 import client.Player;
 import client.Player.Group;
 
 import common.SocketManager;
 
 import game.GameClient;
-import game.packet.Packet;
-import game.packet.PacketParser;
 
 @Packet("PW")
 public class Where implements PacketParser {

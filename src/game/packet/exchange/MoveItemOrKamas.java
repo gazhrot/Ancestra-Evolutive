@@ -5,14 +5,14 @@ import objects.Objet;
 import objects.Percepteur;
 import objects.Trunk;
 import objects.HDV.HdvEntry;
+import tool.plugin.packet.Packet;
+import tool.plugin.packet.PacketParser;
 import client.Player;
 
 import common.SocketManager;
 import common.World;
 
 import game.GameClient;
-import game.packet.Packet;
-import game.packet.PacketParser;
 
 @Packet("EM")
 public class MoveItemOrKamas implements PacketParser {

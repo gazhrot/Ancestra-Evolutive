@@ -1,7 +1,5 @@
 package game;
 
-import game.packet.PacketHandler;
-
 import java.util.concurrent.TimeUnit;
 
 import org.apache.mina.core.service.IoHandler;
@@ -44,7 +42,7 @@ public class GameHandler implements IoHandler {
 		String[] toParse = packet.split("\n");
 		
 		for(int i=toParse.length ; i > 0 ; i--) {
-			PacketHandler.parsePacket(Server.config.getGameServer().getClients().get(arg0.getId()), toParse[toParse.length-i]);
+			Server.config.getGameServer().getClients().get(arg0.getId()).parsePacket(toParse[toParse.length-i]);
 			Console.instance.println("gSession "+arg0.getId()+" : < recv < "+toParse[toParse.length-i]);
 		}
 	}

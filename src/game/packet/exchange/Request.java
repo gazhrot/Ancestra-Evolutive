@@ -3,14 +3,14 @@ package game.packet.exchange;
 import objects.HDV;
 import objects.NPC_tmpl;
 import objects.Percepteur;
+import tool.plugin.packet.Packet;
+import tool.plugin.packet.PacketParser;
 import client.Player;
 
 import common.SocketManager;
 import common.World;
 
 import game.GameClient;
-import game.packet.Packet;
-import game.packet.PacketParser;
 
 @Packet("ER")
 public class Request implements PacketParser {

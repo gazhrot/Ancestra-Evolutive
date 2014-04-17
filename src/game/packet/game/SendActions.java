@@ -9,6 +9,8 @@ import objects.House;
 import objects.Percepteur;
 import objects.Carte.Case;
 import objects.Sort.SortStats;
+import tool.plugin.packet.Packet;
+import tool.plugin.packet.PacketParser;
 import client.Player;
 
 import common.Constants;
@@ -20,8 +22,6 @@ import common.World;
 import core.Log;
 import game.GameAction;
 import game.GameClient;
-import game.packet.Packet;
-import game.packet.PacketParser;
 
 @Packet("GA")
 public class SendActions implements PacketParser {

@@ -1,11 +1,11 @@
 package game.packet.exchange;
 
+import tool.plugin.packet.Packet;
+import tool.plugin.packet.PacketParser;
 import common.SocketManager;
 import common.World;
 
 import game.GameClient;
-import game.packet.Packet;
-import game.packet.PacketParser;
 
 @Packet("ES")
 public class Sell implements PacketParser {

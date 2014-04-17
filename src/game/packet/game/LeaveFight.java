@@ -1,12 +1,12 @@
 package game.packet.game;
 
+import tool.plugin.packet.Packet;
+import tool.plugin.packet.PacketParser;
 import client.Player;
 
 import common.World;
 
 import game.GameClient;
-import game.packet.Packet;
-import game.packet.PacketParser;
 
 @Packet("GQ")
 public class LeaveFight implements PacketParser {

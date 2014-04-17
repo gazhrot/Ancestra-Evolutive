@@ -3,13 +3,13 @@ package game.packet.exchange;
 import client.Player;
 import objects.Objet;
 import objects.Objet.ObjTemplate;
+import tool.plugin.packet.Packet;
+import tool.plugin.packet.PacketParser;
 import common.SocketManager;
 import common.World;
 import core.Log;
 
 import game.GameClient;
-import game.packet.Packet;
-import game.packet.PacketParser;
 
 @Packet("EB")
 public class Buy implements PacketParser {

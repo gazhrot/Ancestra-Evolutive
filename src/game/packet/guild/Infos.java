@@ -2,13 +2,13 @@ package game.packet.guild;
 
 import objects.House;
 import objects.Percepteur;
+import tool.plugin.packet.Packet;
+import tool.plugin.packet.PacketParser;
 
 import common.SocketManager;
 import common.World;
 
 import game.GameClient;
-import game.packet.Packet;
-import game.packet.PacketParser;
 
 @Packet("gI")
 public class Infos implements PacketParser {

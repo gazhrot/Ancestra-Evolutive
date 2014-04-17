@@ -1,5 +1,7 @@
 package game.packet.friend;
 
+import tool.plugin.packet.Packet;
+import tool.plugin.packet.PacketParser;
 import client.Account;
 import client.Player;
 
@@ -7,8 +9,6 @@ import common.SocketManager;
 import common.World;
 
 import game.GameClient;
-import game.packet.Packet;
-import game.packet.PacketParser;
 
 @Packet("FD")
 public class RemoveFriend implements PacketParser {

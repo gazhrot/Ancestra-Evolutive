@@ -1,7 +1,6 @@
 package common;
 
 import game.GameClient;
-import game.packet.PacketParser;
 
 import java.sql.Connection;
 import java.util.ArrayList;
@@ -45,6 +44,7 @@ import objects.SubArea;
 import objects.SuperArea;
 import objects.Trunk;
 import tool.command.Command;
+import tool.plugin.packet.PacketParser;
 import core.Console;
 import core.Log;
 import core.Main;
@@ -91,7 +91,9 @@ public class World {
 	private Map<String, Command<Player>> playerCommands = new HashMap<>();
 	private Map<String, Command<Console>> consoleCommands = new HashMap<>();
 	private ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+	
 	private Map<String, PacketParser> parsers = new HashMap<>();
+	private Map<String, PacketParser> pluginParsers = new HashMap<>();
 			
 	private Connection connection;
 	
@@ -1042,9 +1044,9 @@ public class World {
 	public Map<String, PacketParser> getParsers() {
 		return parsers;
 	}
-
-	public void addParsers(String arg0, Object arg1) {
-		this.parsers.put(arg0, (PacketParser) arg1);
+	
+	public Map<String, PacketParser> getPluginParsers() {
+		return pluginParsers;
 	}
 
 	public Connection getConnection() {

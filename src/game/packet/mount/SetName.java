@@ -1,10 +1,10 @@
 package game.packet.mount;
 
+import tool.plugin.packet.Packet;
+import tool.plugin.packet.PacketParser;
 import common.SocketManager;
 
 import game.GameClient;
-import game.packet.Packet;
-import game.packet.PacketParser;
 
 @Packet("Rn")
 public class SetName implements PacketParser {

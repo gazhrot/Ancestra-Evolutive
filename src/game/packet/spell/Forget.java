@@ -1,12 +1,12 @@
 package game.packet.spell;
 
+import tool.plugin.packet.Packet;
+import tool.plugin.packet.PacketParser;
 import common.SocketManager;
 
 import core.Log;
 import core.Server;
 import game.GameClient;
-import game.packet.Packet;
-import game.packet.PacketParser;
 
 @Packet("SF")
 public class Forget implements PacketParser {

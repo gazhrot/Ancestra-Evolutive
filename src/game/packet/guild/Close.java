@@ -1,10 +1,10 @@
 package game.packet.guild;
 
+import tool.plugin.packet.Packet;
+import tool.plugin.packet.PacketParser;
 import common.SocketManager;
 
 import game.GameClient;
-import game.packet.Packet;
-import game.packet.PacketParser;
 
 @Packet("gV")
 public class Close implements PacketParser {

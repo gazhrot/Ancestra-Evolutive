@@ -1,8 +1,8 @@
 package game.packet.waypoint;
 
+import tool.plugin.packet.Packet;
+import tool.plugin.packet.PacketParser;
 import game.GameClient;
-import game.packet.Packet;
-import game.packet.PacketParser;
 
 @Packet("Wv")
 public class LeaveZaapi implements PacketParser {

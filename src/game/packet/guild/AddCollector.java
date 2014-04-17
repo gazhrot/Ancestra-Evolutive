@@ -1,6 +1,8 @@
 package game.packet.guild;
 
 import objects.Percepteur;
+import tool.plugin.packet.Packet;
+import tool.plugin.packet.PacketParser;
 import client.Player;
 
 import common.Constants;
@@ -9,8 +11,6 @@ import common.SocketManager;
 import common.World;
 
 import game.GameClient;
-import game.packet.Packet;
-import game.packet.PacketParser;
 
 @Packet("gH")
 public class AddCollector implements PacketParser {

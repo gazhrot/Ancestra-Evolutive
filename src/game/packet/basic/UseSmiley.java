@@ -1,8 +1,8 @@
 package game.packet.basic;
 
+import tool.plugin.packet.Packet;
+import tool.plugin.packet.PacketParser;
 import game.GameClient;
-import game.packet.Packet;
-import game.packet.PacketParser;
 
 @Packet("BS")
 public class UseSmiley implements PacketParser {

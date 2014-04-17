@@ -2,6 +2,8 @@ package game.packet.guild;
 
 import objects.Guild;
 import objects.Guild.GuildMember;
+import tool.plugin.packet.Packet;
+import tool.plugin.packet.PacketParser;
 import client.Player;
 
 import common.Constants;
@@ -10,8 +12,6 @@ import common.World;
 
 import core.Server;
 import game.GameClient;
-import game.packet.Packet;
-import game.packet.PacketParser;
 
 @Packet("gK")
 public class Kick implements PacketParser {

@@ -1,10 +1,10 @@
 package game.packet.account;
 
+import tool.plugin.packet.Packet;
+import tool.plugin.packet.PacketParser;
 import common.SocketManager;
 
 import game.GameClient;
-import game.packet.Packet;
-import game.packet.PacketParser;
 
 @Packet("AD")
 public class DeleteCharacter implements PacketParser {

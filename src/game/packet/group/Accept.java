@@ -1,5 +1,7 @@
 package game.packet.group;
 
+import tool.plugin.packet.Packet;
+import tool.plugin.packet.PacketParser;
 import client.Player;
 import client.Player.Group;
 
@@ -7,8 +9,6 @@ import common.SocketManager;
 import common.World;
 
 import game.GameClient;
-import game.packet.Packet;
-import game.packet.PacketParser;
 
 @Packet("PA")
 public class Accept implements PacketParser {

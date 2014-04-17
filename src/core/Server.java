@@ -1,8 +1,6 @@
 package core;
 
 import game.GameServer;
-import game.packet.Packet;
-import game.packet.PacketParser;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -24,6 +22,8 @@ import java.util.jar.JarFile;
 import realm.RealmServer;
 import tool.command.Command;
 import tool.command.CommandAccess;
+import tool.plugin.packet.Packet;
+import tool.plugin.packet.PacketParser;
 import tool.time.restricter.RestrictLevel;
 import tool.time.restricter.TimeRestricter;
 
@@ -410,11 +410,46 @@ public class Server {
 					Annotation annotation = clas.getAnnotation(Packet.class); 
 					if(annotation instanceof Packet) {
 						Packet name = (Packet) annotation;
-						World.data.addParsers(name.value(), clas.newInstance());
+						World.data.getParsers().put(name.value(), (PacketParser) clas.newInstance());
 					}
 				}
 			}	
-	    }
+	    } finally {
+	    	FileFilter filter = new FileFilter() {
+				public boolean accept(File file) {
+					return file.getName().endsWith(".jar");
+				}
+			};
+
+			File[] files = new File("./plugins/packets/").listFiles(filter);
+			
+			if(files == null)
+				throw new FileNotFoundException();
+
+			for(File file : files) {
+				JarFile jarFile = new JarFile(file); 
+				
+				ClassLoader loader = URLClassLoader.newInstance(
+				    new URL[] { file.toURI().toURL() },
+				    getClass().getClassLoader()
+				);
+
+				Enumeration<JarEntry> enumeration = jarFile.entries();
+
+				while(enumeration.hasMoreElements()) {
+					JarEntry jarEntry = enumeration.nextElement();
+					if(jarEntry.getName().endsWith(".class")) {
+						Class<?> localClass = loader.loadClass(jarEntry.getName()
+								.replaceAll(".class", "").replaceAll("/", "."));
+						Annotation annotation = localClass.getAnnotation(Packet.class); 
+						if(annotation instanceof Packet) {
+							 Packet name = (Packet) annotation;
+							 World.data.getPluginParsers().put(name.value(), (PacketParser) localClass.newInstance());
+						}
+					}
+				}
+			}
+	    }	
 	}
 	
 	private String getPathOfJarFile() throws FileNotFoundException {
@@ -423,48 +458,7 @@ public class Server {
 	    File file = new File(path.substring(0, path.lastIndexOf('!')));
 	    return new File(".").getAbsolutePath().replace(".", "")+file.getName();
 	}
-	
-	public PacketParser getPluginPacket(String packet) throws ClassNotFoundException, 
-			InstantiationException, IllegalAccessException, IOException {
-		FileFilter filter = new FileFilter() {
-			public boolean accept(File file) {
-				return file.getName().endsWith(".jar");
-			}
-		};
-
-		File[] files = new File("./plugins/packets/").listFiles(filter);
 		
-		if(files == null)
-			return null;
-
-		for(File file : files) {
-			JarFile jarFile = new JarFile(file); 
-			
-			ClassLoader loader = URLClassLoader.newInstance(
-			    new URL[] { file.toURI().toURL() },
-			    getClass().getClassLoader()
-			);
-
-			Enumeration<JarEntry> enumeration = jarFile.entries();
-
-			while(enumeration.hasMoreElements()) {
-				JarEntry jarEntry = enumeration.nextElement();
-				if(jarEntry.getName().endsWith(".class")) {
-					Class<?> localClass = loader.loadClass(jarEntry.getName()
-							.replaceAll(".class", "").replaceAll("/", "."));
-					Annotation annotation = localClass.getAnnotation(Packet.class); 
-					if(annotation instanceof Packet) {
-						 Packet name = (Packet) annotation;
-						 if(packet.equals(name.value()))
-							 return (PacketParser) localClass.newInstance();
-					}
-				}
-			}
-		}
-		
-		return null;
-	}
-	
 	public PacketParser loadPacketsIntoThisJar(File file) throws IOException, ClassNotFoundException, 
 			InstantiationException, IllegalAccessException {
 		if(file == null)
@@ -489,7 +483,7 @@ public class Server {
 					 Packet name = (Packet) annotation;
 					 if(name.value() != null)
 						 if(!name.value().equals(""))
-							 World.data.addParsers(name.value(), localClass.newInstance());
+							 World.data.getParsers().put(name.value(), (PacketParser) localClass.newInstance());
 				}
 			}
 		}

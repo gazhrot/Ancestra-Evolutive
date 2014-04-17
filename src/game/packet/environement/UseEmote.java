@@ -1,11 +1,11 @@
 package game.packet.environement;
 
+import tool.plugin.packet.Packet;
+import tool.plugin.packet.PacketParser;
 import common.SocketManager;
 
 import core.Console;
 import game.GameClient;
-import game.packet.Packet;
-import game.packet.PacketParser;
 
 @Packet("eU")
 public class UseEmote implements PacketParser {

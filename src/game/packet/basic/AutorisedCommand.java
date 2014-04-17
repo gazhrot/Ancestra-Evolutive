@@ -1,10 +1,10 @@
 package game.packet.basic;
 
+import tool.plugin.packet.Packet;
+import tool.plugin.packet.PacketParser;
 import common.Commands;
 
 import game.GameClient;
-import game.packet.Packet;
-import game.packet.PacketParser;
 
 @Packet("BA")
 public class AutorisedCommand implements PacketParser {

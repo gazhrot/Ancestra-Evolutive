@@ -1,14 +1,14 @@
 package game.packet.object;
 
 import objects.Objet;
+import tool.plugin.packet.Packet;
+import tool.plugin.packet.PacketParser;
 
 import common.Constants;
 import common.SocketManager;
 import common.World;
 
 import game.GameClient;
-import game.packet.Packet;
-import game.packet.PacketParser;
 
 @Packet("OD")
 public class Drop implements PacketParser {

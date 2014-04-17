@@ -3,13 +3,13 @@ package game.packet.dialog;
 import objects.NPC_tmpl.NPC;
 import objects.NPC_tmpl.NPC_question;
 import objects.NPC_tmpl.NPC_reponse;
+import tool.plugin.packet.Packet;
+import tool.plugin.packet.PacketParser;
 
 import common.SocketManager;
 import common.World;
 
 import game.GameClient;
-import game.packet.Packet;
-import game.packet.PacketParser;
 
 @Packet("DR")
 public class Answer implements PacketParser {

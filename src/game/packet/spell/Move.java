@@ -1,13 +1,13 @@
 package game.packet.spell;
 
 import objects.Sort.SortStats;
+import tool.plugin.packet.Packet;
+import tool.plugin.packet.PacketParser;
 
 import common.CryptManager;
 import common.SocketManager;
 
 import game.GameClient;
-import game.packet.Packet;
-import game.packet.PacketParser;
 
 @Packet("SM")
 public class Move implements PacketParser {

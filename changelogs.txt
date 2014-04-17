@@ -110,7 +110,6 @@ Version 0.5
 - GameClient fragmenter en plusieurs morceaux pour chaque type de packet.
 - GameAction refait (convention & getter/setter).
 
-
 Version 0.6
 
 - Ajout des maps & cellules de départ selon la classe.
@@ -120,4 +119,6 @@ Version 0.6
   > Possibilité de création de plug-in.
 - Correction d'un problème de connection dû au plugin IDE/Console.
 - Correction des problèmes de NPC, Collector, .. dû au lazy load.
-- Réctification de certains code et de nombreux bugs.
+- Rectification de certains code et de nombreux bugs.
+- Rectification du système de plug-in pour n'importe qu'elle nombre de lettre.
+- Correction d'un problème de démarrage, gestion des erreurs, ..

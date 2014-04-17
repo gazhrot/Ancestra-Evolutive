@@ -1,14 +1,14 @@
 package game.packet.guild;
 
 import objects.Percepteur;
+import tool.plugin.packet.Packet;
+import tool.plugin.packet.PacketParser;
 
 import common.World;
 
 import core.Log;
 import core.Server;
 import game.GameClient;
-import game.packet.Packet;
-import game.packet.PacketParser;
 
 @Packet("gT")
 public class JoinFight implements PacketParser {

@@ -1,4 +1,4 @@
-package game.packet;
+package tool.plugin.packet;
 
 import game.GameClient;
 

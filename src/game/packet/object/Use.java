@@ -2,6 +2,8 @@ package game.packet.object;
 
 import objects.Objet;
 import objects.Objet.ObjTemplate;
+import tool.plugin.packet.Packet;
+import tool.plugin.packet.PacketParser;
 import client.Player;
 
 import common.ConditionParser;
@@ -9,8 +11,6 @@ import common.SocketManager;
 import common.World;
 
 import game.GameClient;
-import game.packet.Packet;
-import game.packet.PacketParser;
 
 @Packet("OU")
 public class Use implements PacketParser {

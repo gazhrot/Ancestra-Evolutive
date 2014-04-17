@@ -1,13 +1,13 @@
 package game.packet.account;
 
+import tool.plugin.packet.Packet;
+import tool.plugin.packet.PacketParser;
 import common.Constants;
 import common.SocketManager;
 import common.World;
 
 import core.Server;
 import game.GameClient;
-import game.packet.Packet;
-import game.packet.PacketParser;
 
 @Packet("AT")
 public class SendTicket implements PacketParser {

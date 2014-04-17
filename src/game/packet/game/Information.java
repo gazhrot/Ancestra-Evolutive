@@ -2,12 +2,12 @@ package game.packet.game;
 
 import objects.Fight;
 import objects.House;
+import tool.plugin.packet.Packet;
+import tool.plugin.packet.PacketParser;
 
 import common.SocketManager;
 
 import game.GameClient;
-import game.packet.Packet;
-import game.packet.PacketParser;
 
 @Packet("GI")
 public class Information implements PacketParser {

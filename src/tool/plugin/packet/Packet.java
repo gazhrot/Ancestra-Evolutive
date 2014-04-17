@@ -1,10 +1,10 @@
-	package tool.plugin.command.admin;
+package tool.plugin.packet;
 
 import java.lang.annotation.*;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 
-public @interface CommandAdmin {
-	String name();
+public @interface Packet {
+	String value();
 }

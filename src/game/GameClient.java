@@ -1,18 +1,24 @@
 package game;
 
+
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.mina.core.session.IoSession;
 
 import tool.packetfilter.PacketFilter;
+import tool.plugin.packet.PacketParser;
 
 import client.Client;
 import client.Account;
 import client.Player;
 
 import common.Commands;
+import common.Constants;
+import common.SocketManager;
+import common.World;
 
 import core.Console;
 
@@ -91,6 +97,43 @@ public class GameClient implements Client {
 		this.getActions().remove(GA.getId());
 	}
 	
+	public void parsePacket(String packet) throws Exception { 
+		if(!verify(packet))
+			return;
+		
+		/** Les plugins avant les packages. **/
+		for(Entry<String, PacketParser> parser : World.data.getPluginParsers().entrySet()) {
+			if(parser.getKey().equals(packet.subSequence(0, parser.getKey().length()))) {
+				parser.getValue().parse(this, packet);
+			}
+		}
+		
+		String prefix = (String) packet.subSequence(0, 2);	
+		PacketParser parser = World.data.getParsers().get(prefix);
+		if(parser != null)
+			parser.parse(this, packet);
+		else
+			throw new Exception(" <> Packet parser not found !");
+	}
+
+	public boolean verify(String packet) {
+		if (!this.getFilter().authorizes(Constants.getIp(this.getSession().getRemoteAddress().toString())))
+			this.kick();
+		
+		if(this.getPlayer() != null)
+			this.getPlayer().refreshLastPacketTime();
+		
+		if(packet.length() > 3 && packet.substring(0,4).equalsIgnoreCase("ping"))	{
+			SocketManager.GAME_SEND_PONG(this);
+			return false;
+		}
+		if(packet.length() > 4 && packet.substring(0,5).equalsIgnoreCase("qping")) {
+			SocketManager.GAME_SEND_QPONG(this);
+			return false;
+		}
+		return true;
+	}
+	
 	public void closeSocket() {
 		try {
 			this.getSession().close(true);
@@ -106,4 +149,6 @@ public class GameClient implements Client {
     		}
 		} catch(Exception e1) {e1.printStackTrace();}
 	}
+	
+	
 }

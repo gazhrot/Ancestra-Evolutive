@@ -2,13 +2,13 @@ package game.packet.dialog;
 
 import objects.NPC_tmpl.NPC;
 import objects.NPC_tmpl.NPC_question;
+import tool.plugin.packet.Packet;
+import tool.plugin.packet.PacketParser;
 
 import common.SocketManager;
 import common.World;
 
 import game.GameClient;
-import game.packet.Packet;
-import game.packet.PacketParser;
 
 @Packet("DC")
 public class Create implements PacketParser {

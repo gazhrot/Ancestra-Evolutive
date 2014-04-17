@@ -1,6 +1,8 @@
 package game.packet.game;
 
 import objects.Carte.Case;
+import tool.plugin.packet.Packet;
+import tool.plugin.packet.PacketParser;
 
 import common.Constants;
 import common.CryptManager;
@@ -8,8 +10,6 @@ import common.SocketManager;
 
 import game.GameAction;
 import game.GameClient;
-import game.packet.Packet;
-import game.packet.PacketParser;
 
 @Packet("GK")
 public class ActionAck implements PacketParser {

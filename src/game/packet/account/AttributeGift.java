@@ -1,8 +1,8 @@
 package game.packet.account;
 
+import tool.plugin.packet.Packet;
+import tool.plugin.packet.PacketParser;
 import game.GameClient;
-import game.packet.Packet;
-import game.packet.PacketParser;
 
 @Packet("")
 public class AttributeGift implements PacketParser {

@@ -2,9 +2,9 @@ package game.packet.house.kode;
 
 import objects.House;
 import objects.Trunk;
+import tool.plugin.packet.Packet;
+import tool.plugin.packet.PacketParser;
 import game.GameClient;
-import game.packet.Packet;
-import game.packet.PacketParser;
 
 @Packet("KK")
 public class Code implements PacketParser {

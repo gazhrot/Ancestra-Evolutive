@@ -1,14 +1,14 @@
 package game.packet.exchange;
 
 import objects.Percepteur;
+import tool.plugin.packet.Packet;
+import tool.plugin.packet.PacketParser;
 import client.Player;
 
 import common.SocketManager;
 import common.World;
 
 import game.GameClient;
-import game.packet.Packet;
-import game.packet.PacketParser;
 
 @Packet("EV")
 public class Finish implements PacketParser {

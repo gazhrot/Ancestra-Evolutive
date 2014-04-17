@@ -1,6 +1,8 @@
 package game.packet.exchange;
 
 import objects.Carte;
+import tool.plugin.packet.Packet;
+import tool.plugin.packet.PacketParser;
 import client.Player;
 
 import common.Formulas;
@@ -9,8 +11,6 @@ import common.World;
 import core.Server;
 
 import game.GameClient;
-import game.packet.Packet;
-import game.packet.PacketParser;
 
 @Packet("EQ")
 public class OfflineExchange implements PacketParser {
