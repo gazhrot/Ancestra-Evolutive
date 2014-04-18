@@ -1,6 +1,6 @@
 package core;
 
-import realm.RealmServer;
+import login.LoginServer;
 
 import common.World;
 
@@ -47,11 +47,12 @@ public class Main {
 		Server.config.setGameServer(gameServer);
 		
 		//realmserver
-		RealmServer realmServer = new RealmServer();
+		LoginServer realmServer = new LoginServer();
 		realmServer.initialize();
 		Server.config.setRealmServer(realmServer);
 			
 		//serveur lance
+		console.writeln(" > Il y a "+World.data.getPluginParsers().size()+ " plug-in(s) charger.");
 		console.writeln(" > Lancement du serveur termine : "+ time +" ms");
 		console.writeln(" > HELP pour la liste de commandes");
 		

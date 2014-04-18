@@ -103,17 +103,21 @@ public class GameClient implements Client {
 		
 		/** Les plugins avant les packages. **/
 		for(Entry<String, PacketParser> parser : World.data.getPluginParsers().entrySet()) {
-			if(parser.getKey().equals(packet.subSequence(0, parser.getKey().length()))) {
-				parser.getValue().parse(this, packet);
-			}
+			try {
+				if(parser.getKey().equals(packet.substring(0, parser.getKey().length()))) {
+					parser.getValue().parse(this, packet);
+					return;
+				}
+			} catch(Exception e) { continue; }
 		}
 		
-		String prefix = (String) packet.subSequence(0, 2);	
+		String prefix = (String) packet.substring(0, 2);	
 		PacketParser parser = World.data.getParsers().get(prefix);
+		
 		if(parser != null)
 			parser.parse(this, packet);
 		else
-			throw new Exception(" <> Packet parser not found !");
+			throw new Exception(" : packet parser not found for : "+ packet +" !");
 	}
 
 	public boolean verify(String packet) {

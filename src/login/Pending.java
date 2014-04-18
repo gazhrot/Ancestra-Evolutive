@@ -1,4 +1,4 @@
-package realm;
+package login;
 
 import client.Account;
 import tool.time.waiter.Waiter;
@@ -19,18 +19,18 @@ public class Pending {
         	waiter.addNext(new Runnable() {
         		public void run() {
         			if(C == null || C.getRealmThread() == null) return;
-                	SocketManager.MULTI_SEND_Af_PACKET(C.getRealmThread(),1,RealmServer._totalAbo,RealmServer._totalNonAbo,""+1,RealmServer._queueID);
+                	SocketManager.MULTI_SEND_Af_PACKET(C.getRealmThread(),1,LoginServer._totalAbo,LoginServer._totalNonAbo,""+1,LoginServer._queueID);
                 	C._position = -1;
-                	RealmServer._totalAbo--;
+                	LoginServer._totalAbo--;
         		}
         	}, 750);
         } else {
         	waiter.addNext(new Runnable() {
         		public void run() {
         			if(C == null ||  C.getRealmThread() == null) return;
-            		SocketManager.MULTI_SEND_Af_PACKET(C.getRealmThread(),1,RealmServer._totalAbo,RealmServer._totalNonAbo,""+1,RealmServer._queueID);
+            		SocketManager.MULTI_SEND_Af_PACKET(C.getRealmThread(),1,LoginServer._totalAbo,LoginServer._totalNonAbo,""+1,LoginServer._queueID);
             		C._position = -1;
-            		RealmServer._totalAbo--;
+            		LoginServer._totalAbo--;
         		}
         	}, 750*C._position);
         }

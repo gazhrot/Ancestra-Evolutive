@@ -473,15 +473,16 @@ public class Commands {
 			int mapX = 0;
 			int mapY = 0;
 			int cellID = 0;
-			int contID = 0;//Par défaut Amakna
+			int cont = 0;
 			try
 			{
 				mapX = Integer.parseInt(infos[1]);
 				mapY = Integer.parseInt(infos[2]);
 				cellID = Integer.parseInt(infos[3]);
-				contID = Integer.parseInt(infos[4]);
+				cont = Integer.parseInt(infos[4]);
+				
 			}catch(Exception e){};
-			Carte map = World.data.getCarteByPosAndCont(mapX,mapY,contID);
+			Carte map = World.database.getMapData().loadMapByPos(mapX, mapY, cont);
 			if(map == null)
 			{
 				String str = "Position ou continent invalide";

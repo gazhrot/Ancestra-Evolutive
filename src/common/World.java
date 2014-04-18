@@ -590,16 +590,6 @@ public class World {
 		return max + 1;
 	}
 
-	public Carte getCarteByPosAndCont(int mapX, int mapY, int contID) {
-		for (Carte map : maps.values()) {
-			if (map.getX() == mapX
-					&& map.getY() == mapY
-					&& map.getSubArea().get_area().get_superArea().get_id() == contID)
-				return map;
-		}
-		return null;
-	}
-
 	public void addGuild(Guild g, boolean save) {
 		guilds.put(g.get_id(), g);
 		if (save)

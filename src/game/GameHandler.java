@@ -43,7 +43,7 @@ public class GameHandler implements IoHandler {
 		
 		for(int i=toParse.length ; i > 0 ; i--) {
 			Server.config.getGameServer().getClients().get(arg0.getId()).parsePacket(toParse[toParse.length-i]);
-			Console.instance.println("gSession "+arg0.getId()+" : < recv < "+toParse[toParse.length-i]);
+			Console.instance.println("gSession "+arg0.getId()+" : recv < "+toParse[toParse.length-i]);
 		}
 	}
 	
@@ -62,7 +62,7 @@ public class GameHandler implements IoHandler {
 
 	@Override
 	public void messageSent(IoSession arg0, Object arg1) throws Exception {
-		Console.instance.println("gSession "+arg0.getId()+" > sent > "+arg1.toString());
+		Console.instance.println("gSession "+arg0.getId()+" : sent > "+arg1.toString());
 	}
 
 	@Override

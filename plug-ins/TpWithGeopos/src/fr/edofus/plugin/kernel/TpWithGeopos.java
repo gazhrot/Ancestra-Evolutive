@@ -1,12 +1,12 @@
 package fr.edofus.plugin.kernel;
 
 import objects.Carte;
+import tool.plugin.packet.Packet;
+import tool.plugin.packet.PacketParser;
 
 import common.World;
 
 import game.GameClient;
-import game.packet.PacketParser;
-import game.packet.Packet;
 
 @Packet("BaM")
 public class TpWithGeopos implements PacketParser {
@@ -17,15 +17,15 @@ public class TpWithGeopos implements PacketParser {
 			return;
 		
 		packet = packet.substring(3);
-		
+
 		if(packet.isEmpty())
 			return;
 		
 		int x = Integer.parseInt(packet.split(",")[0]);
 		int y = Integer.parseInt(packet.split(",")[1]);
 		int cont = client.getPlayer().get_curCarte().getSubArea().get_area().get_superArea().get_id();
-		
-		Carte carte = World.data.getCarteByPosAndCont(x, y, cont);
+
+		Carte carte = World.database.getMapData().loadMapByPos(x, y, cont);
 		
 		if(carte == null)
 			return;	

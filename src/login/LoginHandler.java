@@ -1,4 +1,4 @@
-package realm;
+package login;
 
 import java.util.concurrent.TimeUnit;
 
@@ -14,7 +14,7 @@ import common.SocketManager;
 import core.Console;
 import core.Server;
 
-public class RealmHandler implements IoHandler {
+public class LoginHandler implements IoHandler {
 	private static PacketFilter filter = new PacketFilter(5, 1, TimeUnit.SECONDS).activeSafeMode();
 	
 	@Override
@@ -22,7 +22,7 @@ public class RealmHandler implements IoHandler {
 		if(!filter.authorizes(Constants.getIp(arg0.getRemoteAddress().toString())))
 			arg0.close(true);
 		else {
-			RealmClient client = new RealmClient(arg0);
+			LoginClient client = new LoginClient(arg0);
 			
 			if(Server.config.isPolicy())
 				SocketManager.REALM_SEND_POLICY_FILE(client);
@@ -41,17 +41,17 @@ public class RealmHandler implements IoHandler {
 		String[] toParse = packet.split("\n");
 		
 		for(int i=toParse.length ; i > 0 ; i--) {
-			RealmClient client = Server.config.getRealmServer().getClients().get(arg0.getId());
+			LoginClient client = Server.config.getRealmServer().getClients().get(arg0.getId());
 			client.addPacket();
 			client.parsePacket(toParse[toParse.length-i]);
 
-			Console.instance.println("rSession "+arg0.getId()+" : < recv < "+toParse[toParse.length-i]);
+			Console.instance.println("rSession "+arg0.getId()+" : recv < "+toParse[toParse.length-i]);
 		}
 	}
 	
 	@Override
 	public void sessionClosed(IoSession arg0) throws Exception {
-		RealmClient client = Server.config.getRealmServer().getClients().get(arg0.getId());
+		LoginClient client = Server.config.getRealmServer().getClients().get(arg0.getId());
 		client.kick();
 		Server.config.getRealmServer().getClients().remove(client.getSession().getId());
 	}
@@ -63,14 +63,14 @@ public class RealmHandler implements IoHandler {
 
 	@Override
 	public void messageSent(IoSession arg0, Object arg1) throws Exception {
-		Console.instance.println("rSession "+arg0.getId()+" > sent > "+arg1.toString());
+		Console.instance.println("rSession "+arg0.getId()+" : sent > "+arg1.toString());
 	}
 
 	@Override
 	public void sessionIdle(IoSession arg0, IdleStatus arg1) throws Exception {
 		Console.instance.println("rSession "+arg0.getId()+" : disconnected ("+arg1.toString()+")");
 		
-		RealmClient client = Server.config.getRealmServer().getClients().get(arg0.getId());
+		LoginClient client = Server.config.getRealmServer().getClients().get(arg0.getId());
 		SocketManager.REALM_SEND_MESSAGE(client,"01|"); 
 		client.kick();
 		Server.config.getRealmServer().getClients().remove(client.getSession().getId());

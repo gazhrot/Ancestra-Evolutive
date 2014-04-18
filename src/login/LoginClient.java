@@ -1,4 +1,4 @@
-package realm;
+package login;
 
 
 import org.apache.mina.core.session.IoSession;
@@ -13,7 +13,7 @@ import common.World;
 import core.Server;
 import enums.EmulatorInfos;
 
-public class RealmClient implements Client{
+public class LoginClient implements Client{
 	private String _hashKey;
 	private int _packetNum = 0;
 	private String _accountName;
@@ -21,7 +21,7 @@ public class RealmClient implements Client{
 	private Account _compte;
 	private IoSession session;
 	
-	public RealmClient(IoSession session) {
+	public LoginClient(IoSession session) {
 		this.setSession(session);
 	}
 	

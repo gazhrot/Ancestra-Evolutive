@@ -21,7 +21,7 @@ public class Console extends Thread {
 	public void run() {
 		while(Server.config.isRunning()) {
 			try {
-				write("\nConsole > \n");
+				write("Console > \n");
 				String line = scanner.next();
 				CommandParser.parse(line, this);
 			} catch (NoSuchElementException ignored) { }

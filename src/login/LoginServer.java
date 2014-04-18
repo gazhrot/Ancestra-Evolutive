@@ -1,4 +1,4 @@
-package realm;
+package login;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -19,23 +19,23 @@ import org.apache.mina.transport.socket.nio.NioSocketAcceptor;
 import core.Console;
 import core.Server;
 
-public class RealmServer {
+public class LoginServer {
 	public static int _totalNonAbo = 0;//Total de connections non abo
 	public static int _totalAbo = 0;//Total de connections abo
 	public static int _queueID = -1;//Numéro de la queue
 	public static int _subscribe = 1;//File des non abonnées (0) ou abonnées (1)
 	
-	private Map<Long, RealmClient> clients = new HashMap<>();
+	private Map<Long, LoginClient> clients = new HashMap<>();
 	private IoAcceptor acceptor;
 	
-	public RealmServer() {
+	public LoginServer() {
 		Executor worker = Executors.newCachedThreadPool();
 		acceptor = new NioSocketAcceptor(worker, new NioProcessor(worker));
 		acceptor.getFilterChain().addLast("realm-codec-filter", 
 				new ProtocolCodecFilter(
 				new TextLineCodecFactory(Charset.forName("UTF8"), LineDelimiter.NUL, 
 				new LineDelimiter("\n\0"))));
-		acceptor.setHandler(new RealmHandler());
+		acceptor.setHandler(new LoginHandler());
 	}
 	
 	public void initialize() {
@@ -57,7 +57,7 @@ public class RealmServer {
 	     acceptor.dispose();
 	}
 
-	public Map<Long, RealmClient> getClients() {
+	public Map<Long, LoginClient> getClients() {
 		return clients;
 	}
 }

@@ -12,9 +12,10 @@ import java.util.Map.Entry;
 
 import javax.swing.Timer;
 
+import login.LoginClient;
+
 import objects.Objet;
 import objects.HDV.HdvEntry;
-import realm.RealmClient;
 import common.*;
 import core.Server;
 
@@ -34,7 +35,7 @@ public class Account {
 	private String _curIP = "";
 	private String _lastConnectionDate = "";
 	private GameClient gameClient;
-	private RealmClient _realmThread;
+	private LoginClient _realmThread;
 	private Player _curPerso;
 	private long _bankKamas = 0;
 	private Map<Integer,Objet> _bank = new TreeMap<Integer,Objet>();
@@ -182,7 +183,7 @@ public class Account {
 		return gameClient;
 	}
 	
-	public RealmClient getRealmThread()
+	public LoginClient getRealmThread()
 	{
 		return _realmThread;
 	}
@@ -301,7 +302,7 @@ public class Account {
 		World.data.deletePerso(get_persos().get(guid));
 	}
 
-	public void setRealmThread(RealmClient thread)
+	public void setRealmThread(LoginClient thread)
 	{
 		_realmThread = thread;
 	}

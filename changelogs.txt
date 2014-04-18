@@ -122,3 +122,4 @@ Version 0.6
 - Rectification de certains code et de nombreux bugs.
 - Rectification du système de plug-in pour n'importe qu'elle nombre de lettre.
 - Correction d'un problème de démarrage, gestion des erreurs, ..
+- Gestion de nombreuse erreur sur les plug-ins.

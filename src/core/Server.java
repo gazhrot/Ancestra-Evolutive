@@ -4,7 +4,6 @@ import game.GameServer;
 
 import java.io.File;
 import java.io.FileFilter;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.lang.annotation.Annotation;
@@ -19,7 +18,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
-import realm.RealmServer;
+import login.LoginServer;
+
 import tool.command.Command;
 import tool.command.CommandAccess;
 import tool.plugin.packet.Packet;
@@ -44,7 +44,7 @@ public class Server {
 	private boolean isSaving;
 	
 	private GameServer gameServer;
-	private RealmServer realmServer;
+	private LoginServer realmServer;
 	
 	//console
 	private boolean canLog;
@@ -396,15 +396,16 @@ public class Server {
 		World.data.getConsoleCommands().putAll(consoleCommands);
 	}
 		
-	public void initializePackets() throws ClassNotFoundException, SecurityException, 
-			IOException, InstantiationException, IllegalAccessException {		
+	public void initializePackets() throws Exception {
 		try {
 			String path = getPathOfJarFile();
-			this.loadPacketsIntoThisJar(new File(path));
-		} catch(Exception e) {
+			this.loadPackets(new File(path), true);
+		} catch(NullPointerException e) {
 			String i = "game.packet.";
-			String[] packages = {"account", "basic", "channel", "dialog", "enemy", "environement", "exchange", "fight", "friend", "game", "group", "guild", "house", "house.kode", "mount", "object", "spell", "waypoint"};
-			
+			String[] packages = {"account", "basic", "channel", "dialog", "enemy", "environement", 
+								 "exchange", "fight", "friend", "game", "group", "guild", "house", 
+								 "house.kode", "mount", "object", "spell", "waypoint"};
+	
 			for (String packge : packages) {
 				for (Class<?> clas : getClasses(i + packge)) {
 					Annotation annotation = clas.getAnnotation(Packet.class); 
@@ -422,44 +423,27 @@ public class Server {
 			};
 
 			File[] files = new File("./plugins/packets/").listFiles(filter);
-			
+
 			if(files == null)
-				throw new FileNotFoundException();
+				return;
 
-			for(File file : files) {
-				JarFile jarFile = new JarFile(file); 
-				
-				ClassLoader loader = URLClassLoader.newInstance(
-				    new URL[] { file.toURI().toURL() },
-				    getClass().getClassLoader()
-				);
-
-				Enumeration<JarEntry> enumeration = jarFile.entries();
-
-				while(enumeration.hasMoreElements()) {
-					JarEntry jarEntry = enumeration.nextElement();
-					if(jarEntry.getName().endsWith(".class")) {
-						Class<?> localClass = loader.loadClass(jarEntry.getName()
-								.replaceAll(".class", "").replaceAll("/", "."));
-						Annotation annotation = localClass.getAnnotation(Packet.class); 
-						if(annotation instanceof Packet) {
-							 Packet name = (Packet) annotation;
-							 World.data.getPluginParsers().put(name.value(), (PacketParser) localClass.newInstance());
-						}
-					}
-				}
-			}
+			for(File file : files) 
+				this.loadPackets(file, false);
 	    }	
 	}
 	
-	private String getPathOfJarFile() throws FileNotFoundException {
+	private String getPathOfJarFile() throws Exception {
 	    String path = Main.class.getResource(Main.class.getSimpleName() + ".class").getFile();
+
+	    if(ClassLoader.getSystemClassLoader().getResource(path) == null)
+	    	return null;
+	    
 	    path = ClassLoader.getSystemClassLoader().getResource(path).getFile();
 	    File file = new File(path.substring(0, path.lastIndexOf('!')));
 	    return new File(".").getAbsolutePath().replace(".", "")+file.getName();
 	}
 		
-	public PacketParser loadPacketsIntoThisJar(File file) throws IOException, ClassNotFoundException, 
+	public PacketParser loadPackets(File file, boolean who) throws IOException, ClassNotFoundException, 
 			InstantiationException, IllegalAccessException {
 		if(file == null)
 			return null;
@@ -481,12 +465,17 @@ public class Server {
 				Annotation annotation = localClass.getAnnotation(Packet.class); 
 				if(annotation instanceof Packet) {
 					 Packet name = (Packet) annotation;
-					 if(name.value() != null)
-						 if(!name.value().equals(""))
-							 World.data.getParsers().put(name.value(), (PacketParser) localClass.newInstance());
+					 if(name.value() != null) {
+						 if(!name.value().equals("")) {
+							 if(who)
+								 World.data.getParsers().put(name.value(), (PacketParser) localClass.newInstance());
+							 else
+								 World.data.getPluginParsers().put(name.value(), (PacketParser) localClass.newInstance());
+						 }
+					}
 				}
 			}
-		}
+		}	
 		
 		return null;
 	}
@@ -677,7 +666,7 @@ public class Server {
 		return gameServer;
 	}
 
-	public RealmServer getRealmServer() {
+	public LoginServer getRealmServer() {
 		return realmServer;
 	}
 
@@ -737,7 +726,7 @@ public class Server {
 		this.gameServer = gameServer;
 	}
 
-	public void setRealmServer(RealmServer realmServer) {
+	public void setRealmServer(LoginServer realmServer) {
 		this.realmServer = realmServer;
 	}
 

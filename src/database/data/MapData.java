@@ -107,4 +107,29 @@ public class MapData extends AbstractDAO<Carte>{
 			Console.instance.writeln("SQL ERROR(MapData): "+e.getMessage());
 		}
 	}
+	
+	public Carte loadMapByPos(int x1, int y1, int cont1) {
+		try {
+			ResultSet result = getData("SELECT id, mappos FROM maps");
+			Carte carte = null;
+			while (result.next()) {
+				String[] mappos = result.getString("mappos").split(",");
+				int x2 = -1, y2 = -1, cont2 = -1;
+				try {
+					x2 = Integer.parseInt(mappos[0]);
+					y2 = Integer.parseInt(mappos[1]); 
+					cont2 = World.data.getSubArea(Integer.parseInt(mappos[2])).get_area().get_superArea().get_id();
+				} catch(Exception e) {}
+				if(x1 == x2 && y1 == y2 && cont1 == cont2) {
+					carte = World.data.getCarte(result.getShort("id"));
+					break;
+				}
+			}
+			closeResultSet(result);
+			return carte;
+		} catch (Exception e) {
+			Console.instance.writeln("SQL ERROR(MapData): "+e.getMessage());
+		}
+		return null;
+	}
 }
