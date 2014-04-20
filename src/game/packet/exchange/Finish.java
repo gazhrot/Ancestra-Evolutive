@@ -72,6 +72,7 @@ public class Finish implements PacketParser {
 			
 		client.getPlayer().save();
 		SocketManager.GAME_SEND_EV_PACKET(client);
+		SocketManager.GAME_SEND_EV_PACKET(World.data.getPlayers().get(client.getPlayer().get_isTradingWith()).get_compte().getGameClient());
 		client.getPlayer().set_isTradingWith(0);
 		client.getPlayer().set_away(false);
 		client.getPlayer().setInBank(false);

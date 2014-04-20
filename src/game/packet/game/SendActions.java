@@ -85,6 +85,7 @@ public class SendActions implements PacketParser {
 			
 			case 900://Demande Defie
 				game_ask_duel(client, packet);
+			break;
 			case 901://Accepter Defie
 				game_accept_duel(client, packet);
 			break;
@@ -265,7 +266,6 @@ public class SendActions implements PacketParser {
 			Fight fight = client.getPlayer().get_curCarte().newFight(World.data.getPersonnage(client.getPlayer().get_duelID()),client.getPlayer(),Constants.FIGHT_TYPE_CHALLENGE, false);
 			client.getPlayer().set_fight(fight);
 			World.data.getPersonnage(client.getPlayer().get_duelID()).set_fight(fight);
-			
 		}
 	
 		public static void game_cancel_duel(GameClient client, String packet)
@@ -291,10 +291,20 @@ public class SendActions implements PacketParser {
 			try
 			{
 				int guid = Integer.parseInt(packet.substring(5));
-				if(client.getPlayer().is_away() || client.getPlayer().get_fight() != null){SocketManager.GAME_SEND_DUEL_Y_AWAY(client, client.getPlayer().get_GUID());return;}
+				if(client.getPlayer().is_away() || client.getPlayer().get_fight() != null) {
+					SocketManager.GAME_SEND_DUEL_Y_AWAY(client, client.getPlayer().get_GUID());
+					return;
+				}
+				
 				Player Target = World.data.getPersonnage(guid);
-				if(Target == null) return;
-				if(Target.is_away() || Target.get_fight() != null || Target.get_curCarte().get_id() != client.getPlayer().get_curCarte().get_id()){SocketManager.GAME_SEND_DUEL_E_AWAY(client, client.getPlayer().get_GUID());return;}
+				
+				if(Target == null) 
+					return;
+				if(Target.is_away() || Target.get_fight() != null || Target.get_curCarte().get_id() != client.getPlayer().get_curCarte().get_id()) {
+					SocketManager.GAME_SEND_DUEL_E_AWAY(client, client.getPlayer().get_GUID());
+					return;
+				}
+				
 				client.getPlayer().set_duelID(guid);
 				client.getPlayer().set_away(true);
 				World.data.getPersonnage(guid).set_duelID(client.getPlayer().get_GUID());

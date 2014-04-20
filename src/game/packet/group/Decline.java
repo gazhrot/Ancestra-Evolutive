@@ -19,15 +19,13 @@ public class Decline implements PacketParser {
 		if(client.getPlayer().getInvitation() == 0)
 			return;
 		
-		client.getPlayer().setInvitation(0);
-		SocketManager.GAME_SEND_BN(client);
-		
+		SocketManager.GAME_SEND_BN(client);		
 		Player player = World.data.getPersonnage(client.getPlayer().getInvitation());
 		
-		if(player == null) 
-			return;
+		if(player != null) 
+			SocketManager.GAME_SEND_PR_PACKET(player);
 		
 		player.setInvitation(0);
-		SocketManager.GAME_SEND_PR_PACKET(player);
+		client.getPlayer().setInvitation(0);
 	}
 }

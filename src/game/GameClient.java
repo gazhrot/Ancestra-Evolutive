@@ -116,8 +116,6 @@ public class GameClient implements Client {
 		
 		if(parser != null)
 			parser.parse(this, packet);
-		else
-			throw new Exception(" : packet parser not found for : "+ packet +" !");
 	}
 
 	public boolean verify(String packet) {

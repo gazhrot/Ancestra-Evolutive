@@ -401,52 +401,55 @@ public class Server {
 			String path = getPathOfJarFile();
 			this.loadPackets(new File(path), true);
 		} catch(NullPointerException e) {
-			String i = "game.packet.";
-			String[] packages = {"account", "basic", "channel", "dialog", "enemy", "environement", 
-								 "exchange", "fight", "friend", "game", "group", "guild", "house", 
-								 "house.kode", "mount", "object", "spell", "waypoint"};
+			this.loadPacketsIntoTheJar();
+		} catch(Exception e) {
+			this.loadPacketsIntoTheJar();
+	    }
+	   
+		FileFilter filter = new FileFilter() {
+			public boolean accept(File file) {
+				return file.getName().endsWith(".jar");
+			}
+		};
+		
+		File[] files = new File("./plugins/packets/").listFiles(filter);
+			
+		if(files == null)
+			return;
+		
+		for(File file : files) 
+			this.loadPackets(file, false);
+	}
 	
-			for (String packge : packages) {
-				for (Class<?> clas : getClasses(i + packge)) {
-					Annotation annotation = clas.getAnnotation(Packet.class); 
-					if(annotation instanceof Packet) {
-						Packet name = (Packet) annotation;
-						World.data.getParsers().put(name.value(), (PacketParser) clas.newInstance());
-					}
+	private void loadPacketsIntoTheJar() throws ClassNotFoundException, InstantiationException, IllegalAccessException, IOException {
+		String i = "game.packet.";
+		String[] packages = {"account", "basic", "channel", "dialog", "enemy", "environement", 
+							 "exchange", "fight", "friend", "game", "group", "guild", "house", 
+							 "house.kode", "mount", "object", "spell", "waypoint"};
+
+		for (String packge : packages) {
+			for (Class<?> clas : getClasses(i + packge)) {
+				Annotation annotation = clas.getAnnotation(Packet.class); 
+				if(annotation instanceof Packet) {
+					Packet name = (Packet) annotation;
+					World.data.getParsers().put(name.value(), (PacketParser) clas.newInstance());
 				}
-			}	
-	    } finally {
-	    	FileFilter filter = new FileFilter() {
-				public boolean accept(File file) {
-					return file.getName().endsWith(".jar");
-				}
-			};
-
-			File[] files = new File("./plugins/packets/").listFiles(filter);
-
-			if(files == null)
-				return;
-
-			for(File file : files) 
-				this.loadPackets(file, false);
-	    }	
+			}
+		}	
 	}
 	
 	private String getPathOfJarFile() throws Exception {
 	    String path = Main.class.getResource(Main.class.getSimpleName() + ".class").getFile();
-
-	    if(ClassLoader.getSystemClassLoader().getResource(path) == null)
-	    	return null;
-	    
-	    path = ClassLoader.getSystemClassLoader().getResource(path).getFile();
+	    if(ClassLoader.getSystemClassLoader().getResource(path) != null) 
+	    	path = ClassLoader.getSystemClassLoader().getResource(path).getFile();
 	    File file = new File(path.substring(0, path.lastIndexOf('!')));
 	    return new File(".").getAbsolutePath().replace(".", "")+file.getName();
 	}
 		
-	public PacketParser loadPackets(File file, boolean who) throws IOException, ClassNotFoundException, 
-			InstantiationException, IllegalAccessException {
+	public void loadPackets(File file, boolean who) throws IOException, 
+			ClassNotFoundException, InstantiationException, IllegalAccessException {
 		if(file == null)
-			return null;
+			return;
 
 		JarFile jarFile = new JarFile(new File(file.getPath())); 
 
@@ -471,17 +474,15 @@ public class Server {
 								 World.data.getParsers().put(name.value(), (PacketParser) localClass.newInstance());
 							 else
 								 World.data.getPluginParsers().put(name.value(), (PacketParser) localClass.newInstance());
-						 }
+						}
 					}
 				}
 			}
-		}	
-		
-		return null;
+		}
 	}
 	
 	@SuppressWarnings("rawtypes")
-	private static Class[] getClasses(String packageName) throws ClassNotFoundException, IOException {
+	private Class[] getClasses(String packageName) throws ClassNotFoundException, IOException {
 		ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 		assert classLoader != null;
 		String path = packageName.replace('.', '/');
@@ -493,7 +494,7 @@ public class Server {
 			dirs.add(new File(resource.getFile()));
 		}
 	
-		ArrayList<Class> classes = new ArrayList<Class>();
+		ArrayList<Class> classes = new ArrayList<>();
 	
 		for (File directory : dirs) 
 			classes.addAll(findClasses(directory, packageName));
@@ -502,7 +503,7 @@ public class Server {
 	}
 	
 	@SuppressWarnings("rawtypes")
-	private static List<Class> findClasses(File directory, String packageName) throws ClassNotFoundException {
+	private List<Class> findClasses(File directory, String packageName) throws ClassNotFoundException {
 	    List<Class> classes = new ArrayList<Class>();
 	    if (!directory.exists()) {
 	        return classes;

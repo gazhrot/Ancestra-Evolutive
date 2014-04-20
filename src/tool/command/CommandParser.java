@@ -91,5 +91,4 @@ public class CommandParser {
 				command.execute((Console)t);
 		}
 	}
-
 }
