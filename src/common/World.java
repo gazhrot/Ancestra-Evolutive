@@ -278,6 +278,7 @@ public class World {
 		}
 		perso.remove();// Supression BDD Perso, items, monture.
 		unloadPerso(perso.get_GUID());// UnLoad du perso+item
+		players.remove(perso.get_GUID());
 	}
 
 	public String getSousZoneStateString() {
@@ -695,7 +696,6 @@ public class World {
 			}
 		}
 		toRem = null;
-		players.remove(g);
 	}
 
 	public boolean isArenaMap(int id) {
