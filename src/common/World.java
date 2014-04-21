@@ -695,7 +695,7 @@ public class World {
 			}
 		}
 		toRem = null;
-		// players.remove(g);
+		players.remove(g);
 	}
 
 	public boolean isArenaMap(int id) {

@@ -1107,10 +1107,23 @@ public class Fight
 		if((_init0 != null && _init0.getGUID() == guid) || (_init1 != null &&  _init1.getGUID() == guid))
 		{
 			specOk = !specOk;
-			if(Server.config.isDebug()) Log.addToLog(specOk?"Le combat accepte les spectateurs":"Le combat n'accepte plus les spectateurs");
-			SocketManager.GAME_SEND_FIGHT_CHANGE_OPTION_PACKET_TO_MAP(_init0.getPersonnage().get_curCarte(), specOk?'+':'-', 'S', _init0.getGUID());
-			SocketManager.GAME_SEND_FIGHT_CHANGE_OPTION_PACKET_TO_MAP(_init0.getPersonnage().get_curCarte(), specOk?'+':'-', 'S', _init1.getGUID());
-			SocketManager.GAME_SEND_Im_PACKET_TO_MAP(_map,specOk?"039":"040");
+			if(!specOk)
+			{
+				for(Entry<Integer, Player> spectateur : _spec.entrySet())//Expulsion des spectateurs
+				{
+					Player perso = spectateur.getValue();
+					SocketManager.GAME_SEND_GV_PACKET(perso);
+					_spec.remove(perso.get_GUID());
+					perso.setSitted(false);
+					perso.set_fight(null);
+					perso.set_away(false);
+				}
+			}
+			if (_init0.getGUID() == guid)
+				SocketManager.GAME_SEND_FIGHT_CHANGE_OPTION_PACKET_TO_MAP(_mapOld, specOk ? '+' : '-', 'S', _init0.getGUID());
+			else
+				SocketManager.GAME_SEND_FIGHT_CHANGE_OPTION_PACKET_TO_MAP(_mapOld, specOk ? '+' : '-', 'S', _init1.getGUID());
+			SocketManager.GAME_SEND_Im_PACKET_TO_FIGHT(this, 7, specOk ? "039" : "040");
 		}
 	}
 

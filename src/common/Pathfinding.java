@@ -474,6 +474,8 @@ public class Pathfinding {
 		{
 			int c = Pathfinding.GetCaseIDFromDirrection(startCell, d, map, true);
 			int dis = Pathfinding.getDistanceBetween(map, endCell, c);
+			if(map.getCase(c) == null)
+				continue;
 			if(dis < dist && map.getCase(c).isWalkable(true) && map.getCase(c).getFirstFighter() == null && !forbidens.contains(map.getCase(c)))
 			{
 				dist = dis;

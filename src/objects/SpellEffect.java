@@ -920,7 +920,7 @@ public class SpellEffect
 			while(true)
 			{
 				if(Pathfinding.GetCaseIDFromDirrection(c1, d, fight.get_map(), true) == cell.getID())
-					break;
+	 				break;
 				if(Pathfinding.GetCaseIDFromDirrection(c1, d, fight.get_map(), true) == -1)
 					return;
 				c1 = Pathfinding.GetCaseIDFromDirrection(c1, d, fight.get_map(), true);

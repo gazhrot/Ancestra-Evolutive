@@ -19,35 +19,30 @@ public class Join implements PacketParser {
 	public void parse(GameClient client, String packet) {
 		switch(packet.charAt(2))
 		{
-			case 'R'://Nom perso
-				Player P = World.data.getPersoByName(packet.substring(1));
-				if(P == null || client.getPlayer().get_guild() == null)
-				{
+			case 'R'://Nom perso			
+				Player P = World.data.getPersoByName(packet.substring(3));
+				
+				if(P == null || client.getPlayer().get_guild() == null) {
 					SocketManager.GAME_SEND_gJ_PACKET(client.getPlayer(), "Eu");
 					return;
 				}
-				if(!P.isOnline())
-				{
+				if(!P.isOnline()) {
 					SocketManager.GAME_SEND_gJ_PACKET(client.getPlayer(), "Eu");
 					return;
 				}
-				if(P.is_away())
-				{
+				if(P.is_away()) {
 					SocketManager.GAME_SEND_gJ_PACKET(client.getPlayer(), "Eo");
 					return;
 				}
-				if(P.get_guild() != null)
-				{
+				if(P.get_guild() != null) {
 					SocketManager.GAME_SEND_gJ_PACKET(client.getPlayer(), "Ea");
 					return;
 				}
-				if(!client.getPlayer().getGuildMember().canDo(Constants.G_INVITE))
-				{
+				if(!client.getPlayer().getGuildMember().canDo(Constants.G_INVITE)) {
 					SocketManager.GAME_SEND_gJ_PACKET(client.getPlayer(), "Ed");
 					return;
 				}
-				if(client.getPlayer().get_guild().getMembers().size() >= (40+client.getPlayer().get_guild().get_lvl()))//Limite membres max
-				{
+				if(client.getPlayer().get_guild().getMembers().size() >= (40+client.getPlayer().get_guild().get_lvl())) {//Limite membres max
 					SocketManager.GAME_SEND_Im_PACKET(client.getPlayer(), "155;"+(40+client.getPlayer().get_guild().get_lvl()));
 					return;
 				}
@@ -59,7 +54,7 @@ public class Join implements PacketParser {
 				SocketManager.GAME_SEND_gJ_PACKET(P,"r"+client.getPlayer().get_GUID()+"|"+client.getPlayer().get_name()+"|"+client.getPlayer().get_guild().get_name());
 			break;
 			case 'E'://ou Refus
-				if(packet.substring(1).equalsIgnoreCase(client.getPlayer().getInvitation()+""))
+				if(packet.substring(3).equalsIgnoreCase(client.getPlayer().getInvitation()+""))
 				{
 					Player p = World.data.getPersonnage(client.getPlayer().getInvitation());
 					if(p == null)return;//Pas cens� arriver
@@ -67,7 +62,7 @@ public class Join implements PacketParser {
 				}
 			break;
 			case 'K'://Accepte
-				if(packet.substring(1).equalsIgnoreCase(client.getPlayer().getInvitation()+""))
+				if(packet.substring(3).equalsIgnoreCase(client.getPlayer().getInvitation()+""))
 				{
 					Player p = World.data.getPersonnage(client.getPlayer().getInvitation());
 					if(p == null)return;//Pas cens� arriver

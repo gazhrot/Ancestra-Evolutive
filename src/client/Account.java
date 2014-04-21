@@ -289,9 +289,7 @@ public class Account {
 		
 		Player perso = Player.CREATE_PERSONNAGE(name, sexe, classe, color1, color2, color3, this);
 		if(perso==null)
-		{
 			return false;
-		}
 		World.data.addPersonnage(perso);
 		return true;
 	}
