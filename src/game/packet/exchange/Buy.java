@@ -6,8 +6,8 @@ import objects.Objet.ObjTemplate;
 import tool.plugin.packet.Packet;
 import tool.plugin.packet.PacketParser;
 import common.SocketManager;
-import common.World;
 import core.Log;
+import core.World;
 
 import game.GameClient;
 
@@ -72,7 +72,7 @@ public class Buy implements PacketParser {
 	            	if(World.data.getSeller(seller.get_curCarte().get_id()) != null && World.data.getSeller(seller.get_curCarte().get_id()).contains(seller.get_GUID())) {
 	        			World.data.removeSeller(seller.get_GUID(), seller.get_curCarte().get_id());
 	        			SocketManager.GAME_SEND_ERASE_ON_MAP_TO_MAP(seller.get_curCarte(), seller.get_GUID());
-	        			World.data.getParsers().get("EV").parse(client, packet);
+	        			World.data.getPacketJar().get("EV").parse(client, packet);
 	        		}
 	            }
             }

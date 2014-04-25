@@ -9,9 +9,9 @@ import client.Player;
 
 import objects.Trunk;
 
-import common.World;
 
 import core.Console;
+import core.World;
 import database.AbstractDAO;
 
 public class TrunkData extends AbstractDAO<Trunk>{

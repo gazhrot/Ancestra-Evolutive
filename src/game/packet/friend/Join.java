@@ -4,7 +4,7 @@ import tool.plugin.packet.Packet;
 import tool.plugin.packet.PacketParser;
 import client.Player;
 import common.SocketManager;
-import common.World;
+import core.World;
 
 import game.GameClient;
 

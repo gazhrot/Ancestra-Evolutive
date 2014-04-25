@@ -4,10 +4,10 @@ import objects.Percepteur;
 import tool.plugin.packet.Packet;
 import tool.plugin.packet.PacketParser;
 
-import common.World;
 
 import core.Log;
 import core.Server;
+import core.World;
 import game.GameClient;
 
 @Packet("gT")

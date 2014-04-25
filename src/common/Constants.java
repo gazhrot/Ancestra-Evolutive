@@ -8,6 +8,7 @@ import client.Player.Stats;
 
 import core.Server;
 import core.Log;
+import core.World;
 import enums.EmulatorInfos;
 
 

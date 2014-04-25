@@ -8,7 +8,7 @@ import java.util.TreeMap;
 import objects.Objet;
 import objects.Objet.ObjTemplate;
 
-import common.World;
+import core.World;
 
 public class Job {
 

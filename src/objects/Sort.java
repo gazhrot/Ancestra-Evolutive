@@ -8,9 +8,9 @@ import java.util.TreeMap;
 import common.Constants;
 import common.Formulas;
 import common.Pathfinding;
-import common.World;
 import core.Console;
 import core.Log;
+import core.World;
 import objects.Carte.Case;
 
 public class Sort {

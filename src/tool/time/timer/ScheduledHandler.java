@@ -1,10 +1,11 @@
 package tool.time.timer;
 
-import common.World;
 
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+
+import core.World;
 
 public abstract class ScheduledHandler implements Runnable {
     //world scheduler

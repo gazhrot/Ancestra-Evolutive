@@ -16,8 +16,8 @@ import common.CryptManager;
 import common.Formulas;
 import common.Pathfinding;
 import common.SocketManager;
-import common.World;
 import core.Log;
+import core.World;
 
 public class SpellEffect
 	{

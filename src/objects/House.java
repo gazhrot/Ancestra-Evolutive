@@ -9,8 +9,8 @@ import client.Player;
 
 import common.Constants;
 import common.SocketManager;
-import common.World;
 import core.Server;
+import core.World;
 
 public class House
 {

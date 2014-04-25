@@ -17,9 +17,9 @@ import common.Constants;
 import common.CryptManager;
 import common.Pathfinding;
 import common.SocketManager;
-import common.World;
 
 import core.Log;
+import core.World;
 import game.GameAction;
 import game.GameClient;
 

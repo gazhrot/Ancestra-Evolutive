@@ -3,7 +3,7 @@ package game.packet.account;
 import tool.plugin.packet.Packet;
 import tool.plugin.packet.PacketParser;
 import common.SocketManager;
-import common.World;
+import core.World;
 
 import game.GameClient;
 

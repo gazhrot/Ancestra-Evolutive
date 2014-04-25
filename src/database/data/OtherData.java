@@ -14,10 +14,10 @@ import objects.Objet.ObjTemplate;
 import common.Constants;
 import common.Couple;
 import common.SocketManager;
-import common.World;
 
 import core.Console;
 import core.Log;
+import core.World;
 import database.AbstractDAO;
 
 public class OtherData extends AbstractDAO<Object>{

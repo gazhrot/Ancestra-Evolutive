@@ -8,7 +8,7 @@ import client.Player;
 
 
 import common.SocketManager;
-import common.World;
+import core.World;
 
 public class Percepteur
 {

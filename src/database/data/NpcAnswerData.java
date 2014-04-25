@@ -7,9 +7,9 @@ import java.util.concurrent.locks.ReentrantLock;
 import objects.Action;
 import objects.NPC_tmpl.NPC_reponse;
 
-import common.World;
 
 import core.Console;
+import core.World;
 import database.AbstractDAO;
 
 public class NpcAnswerData extends AbstractDAO<NPC_reponse>{

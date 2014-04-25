@@ -7,9 +7,9 @@ import java.util.concurrent.locks.ReentrantLock;
 import objects.Sort;
 import objects.Sort.SortStats;
 
-import common.World;
 
 import core.Console;
+import core.World;
 import database.AbstractDAO;
 
 public class SpellData extends AbstractDAO<Sort>{

@@ -1,8 +1,8 @@
 package enums;
 
 public enum EmulatorInfos {
-	DEVELOPPER("John-r"),
-	RELEASE(0.6),
+	DEVELOPPER("John-r & Locos"),
+	RELEASE(0.7),
 	CLIENT_RELESE("1.29.1"),
 	SOFT_NAME("Ancestra Evolutive v"+RELEASE.toDouble());
 	
@@ -12,6 +12,7 @@ public enum EmulatorInfos {
 	private EmulatorInfos(String s) {
 		this.string = s;
 	}
+	
 	private EmulatorInfos(double d) {
 		this.value = d;
 	}

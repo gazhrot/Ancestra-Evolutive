@@ -1,5 +1,11 @@
 package tool.plugin;
 
+
+import core.Console;
+import core.Server;
+import core.World;
+import database.Database;
+
 public abstract class Plugin {
 	
 	public void onEnable() {}
@@ -8,10 +14,19 @@ public abstract class Plugin {
 	
 	public void onReload() {}
 	
-	public <T extends Plugin> T getPlugin(Class<T> clazz) {
-		if(!Plugin.class.isAssignableFrom(clazz))
-			throw new IllegalArgumentException(clazz + " ne contient pas l'extension "+ Plugin.class +" !");
-		clazz.asSubclass(clazz);
-		return null;
+	public Console getConsole() {
+		return Console.instance;
+	}
+	
+	public Server getServer() {
+		return Server.config;
+	}
+	
+	public World getWorld() {
+		return World.data;
+	}
+	
+	public Database getDatabase() {
+		return World.database;
 	}
 }

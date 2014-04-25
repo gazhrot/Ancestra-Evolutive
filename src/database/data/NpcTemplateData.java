@@ -6,9 +6,9 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import objects.NPC_tmpl;
 
-import common.World;
 
 import core.Console;
+import core.World;
 import database.AbstractDAO;
 
 public class NpcTemplateData extends AbstractDAO<NPC_tmpl>{

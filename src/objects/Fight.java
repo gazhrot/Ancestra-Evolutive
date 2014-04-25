@@ -34,11 +34,11 @@ import common.Formulas;
 import common.IA;
 import common.Pathfinding;
 import common.SocketManager;
-import common.World;
 
 import core.Console;
 import core.Log;
 import core.Server;
+import core.World;
 
 public class Fight
 {

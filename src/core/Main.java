@@ -1,8 +1,8 @@
 package core;
 
+import tool.plugin.PluginLoader;
 import login.LoginServer;
 
-import common.World;
 
 import enums.EmulatorInfos;
 import game.GameServer;
@@ -52,7 +52,7 @@ public class Main {
 		Server.config.setRealmServer(realmServer);
 			
 		//serveur lance
-		console.writeln(" > Il y a "+World.data.getPluginParsers().size()+ " plug-in(s) charger.");
+		console.writeln(" > Il y a "+(World.data.getPacketPlugins().size() + World.data.getOtherPlugins().size())+ " plug-in(s) charger.");
 		console.writeln(" > Lancement du serveur termine : "+ time +" ms");
 		console.writeln(" > HELP pour la liste de commandes");
 		
@@ -71,6 +71,8 @@ public class Main {
 					World.data.saveData(-1);
 					World.database.getAccountData().updateState(false);
 					World.database.close();
+					for(PluginLoader pl: World.data.getOtherPlugins().values())
+						pl.disable();
 					Console.instance.writeln(" <> Redemmarage <>");
 				}
 			}

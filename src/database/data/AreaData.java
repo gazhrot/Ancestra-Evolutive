@@ -6,9 +6,9 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import objects.Area;
 
-import common.World;
 
 import core.Console;
+import core.World;
 import database.AbstractDAO;
 
 public class AreaData extends AbstractDAO<Area>{

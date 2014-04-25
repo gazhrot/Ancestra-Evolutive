@@ -3,7 +3,7 @@ import java.util.ArrayList;
 
 import common.Constants;
 import common.Couple;
-import common.World;
+import core.World;
 
 public class PierreAme extends Objet{
 	private ArrayList<Couple<Integer, Integer>> _monsters;

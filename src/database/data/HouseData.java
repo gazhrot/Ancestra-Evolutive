@@ -11,9 +11,9 @@ import client.Player;
 import objects.House;
 import objects.Trunk;
 
-import common.World;
 
 import core.Console;
+import core.World;
 import database.AbstractDAO;
 
 public class HouseData extends AbstractDAO<House>{

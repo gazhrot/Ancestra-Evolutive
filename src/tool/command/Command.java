@@ -7,11 +7,9 @@ import client.Player;
 
 import tool.time.restricter.TimeRestricter;
 
-
-
 import core.Console;
 
-public abstract class Command<T>{
+public abstract class Command<T> {
 	private String name;
 	private Map<String, Parameter<T>> parameters = new HashMap<>();
 	private CommandGroupAccess<T> commandGroupAccess = new CommandGroupAccess<>();

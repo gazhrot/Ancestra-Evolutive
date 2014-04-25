@@ -17,6 +17,7 @@ import objects.Percepteur;
 import objects.SpellEffect;
 import core.Console;
 import core.Server;
+import core.World;
 
 public class Formulas {
 

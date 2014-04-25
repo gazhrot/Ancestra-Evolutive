@@ -16,6 +16,7 @@ import objects.SpellEffect;
 import core.Console;
 import core.Log;
 import core.Server;
+import core.World;
 
 public class IA implements Runnable{
 	private Fight fight;

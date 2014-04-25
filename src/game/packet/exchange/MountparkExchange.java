@@ -9,7 +9,7 @@ import tool.plugin.packet.PacketParser;
 
 import common.Constants;
 import common.SocketManager;
-import common.World;
+import core.World;
 
 import game.GameClient;
 

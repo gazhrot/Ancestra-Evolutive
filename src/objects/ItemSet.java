@@ -6,7 +6,7 @@ import client.Player.Stats;
 
 import objects.Objet.ObjTemplate;
 
-import common.World;
+import core.World;
 
 
 public class ItemSet

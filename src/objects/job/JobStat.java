@@ -7,8 +7,8 @@ import java.util.ArrayList;
 import client.Player;
 
 import common.SocketManager;
-import common.World;
 import core.Server;
+import core.World;
 
 import objects.Carte.Case;
 import objects.Carte.InteractiveObject;

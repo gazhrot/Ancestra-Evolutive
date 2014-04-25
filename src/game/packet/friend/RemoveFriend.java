@@ -6,7 +6,7 @@ import client.Account;
 import client.Player;
 
 import common.SocketManager;
-import common.World;
+import core.World;
 
 import game.GameClient;
 

@@ -11,7 +11,7 @@ import client.Player;
 
 import common.Couple;
 import common.SocketManager;
-import common.World;
+import core.World;
 
 public class HDV {
 	/**

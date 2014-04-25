@@ -12,8 +12,8 @@ import org.joda.time.Days;
 
 import client.Player;
 import client.Player.Stats;
-import common.World;
 import common.Constants;
+import core.World;
 
 public class Guild {
 	private int _id;

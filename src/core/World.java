@@ -1,4 +1,4 @@
-package common;
+package core;
 
 import game.GameClient;
 
@@ -14,6 +14,10 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+
+import common.Constants;
+import common.Couple;
+import common.SocketManager;
 
 import client.Account;
 import client.Player;
@@ -44,11 +48,8 @@ import objects.SubArea;
 import objects.SuperArea;
 import objects.Trunk;
 import tool.command.Command;
+import tool.plugin.PluginLoader;
 import tool.plugin.packet.PacketParser;
-import core.Console;
-import core.Log;
-import core.Main;
-import core.Server;
 import database.Database;
 
 public class World {
@@ -92,9 +93,10 @@ public class World {
 	private Map<String, Command<Console>> consoleCommands = new HashMap<>();
 	private ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 	
-	private Map<String, PacketParser> parsers = new HashMap<>();
-	private Map<String, PacketParser> pluginParsers = new HashMap<>();
-			
+	private Map<String, PacketParser> packetJar = new HashMap<>();
+	private Map<String, PacketParser> packetPlugins = new HashMap<>();
+	private Map<String, PluginLoader> otherPlugins = new HashMap<>();
+	
 	private Connection connection;
 	
 	private int nextHdvID;
@@ -1031,12 +1033,16 @@ public class World {
 		return scheduler;
 	}
 	
-	public Map<String, PacketParser> getParsers() {
-		return parsers;
+	public Map<String, PacketParser> getPacketJar() {
+		return packetJar;
 	}
 	
-	public Map<String, PacketParser> getPluginParsers() {
-		return pluginParsers;
+	public Map<String, PacketParser> getPacketPlugins() {
+		return packetPlugins;
+	}
+	
+	public Map<String, PluginLoader> getOtherPlugins() {
+		return otherPlugins;
 	}
 
 	public Connection getConnection() {

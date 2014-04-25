@@ -26,6 +26,7 @@ import objects.job.JobStat;
 import core.Console;
 import core.Log;
 import core.Server;
+import core.World;
 
 public class Commands {
 	Account _compte;

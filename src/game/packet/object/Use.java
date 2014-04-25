@@ -8,7 +8,7 @@ import client.Player;
 
 import common.ConditionParser;
 import common.SocketManager;
-import common.World;
+import core.World;
 
 import game.GameClient;
 

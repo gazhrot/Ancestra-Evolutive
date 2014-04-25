@@ -6,9 +6,9 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import objects.job.Job;
 
-import common.World;
 
 import core.Console;
+import core.World;
 import database.AbstractDAO;
 
 public class JobData extends AbstractDAO<Job>{

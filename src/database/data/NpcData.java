@@ -8,9 +8,9 @@ import java.util.concurrent.locks.ReentrantLock;
 import objects.Carte;
 import objects.NPC_tmpl.NPC;
 
-import common.World;
 
 import core.Console;
+import core.World;
 import database.AbstractDAO;
 
 public class NpcData extends AbstractDAO<NPC>{

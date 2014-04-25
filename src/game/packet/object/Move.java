@@ -10,7 +10,7 @@ import tool.plugin.packet.PacketParser;
 import common.ConditionParser;
 import common.Constants;
 import common.SocketManager;
-import common.World;
+import core.World;
 
 import game.GameClient;
 

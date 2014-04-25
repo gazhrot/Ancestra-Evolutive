@@ -4,7 +4,7 @@ import java.util.Deque;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.TimeUnit;
 
-import common.World;
+import core.World;
 
 public class Waiter implements Runnable {
 	private Deque<Instance> waitingList = new ConcurrentLinkedDeque<>();

@@ -6,9 +6,9 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import objects.IOTemplate;
 
-import common.World;
 
 import core.Console;
+import core.World;
 import database.AbstractDAO;
 
 public class IOTemplateData extends AbstractDAO<IOTemplate>{

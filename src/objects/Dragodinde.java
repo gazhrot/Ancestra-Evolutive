@@ -6,7 +6,7 @@ import java.util.Map.Entry;
 import client.Player.Stats;
 
 import common.Constants;
-import common.World;
+import core.World;
 
 
 public class Dragodinde {

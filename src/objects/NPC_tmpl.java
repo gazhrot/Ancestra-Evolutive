@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import client.Player;
 
 import common.ConditionParser;
-import common.World;
+import core.World;
 
 import objects.Objet.ObjTemplate;
 

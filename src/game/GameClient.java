@@ -18,9 +18,9 @@ import client.Player;
 import common.Commands;
 import common.Constants;
 import common.SocketManager;
-import common.World;
 
 import core.Console;
+import core.World;
 
 public class GameClient implements Client {
 	
@@ -102,7 +102,7 @@ public class GameClient implements Client {
 			return;
 		
 		/** Les plugins avant les packages. **/
-		for(Entry<String, PacketParser> parser : World.data.getPluginParsers().entrySet()) {
+		for(Entry<String, PacketParser> parser : World.data.getPacketPlugins().entrySet()) {
 			try {
 				if(parser.getKey().equals(packet.substring(0, parser.getKey().length()))) {
 					parser.getValue().parse(this, packet);
@@ -112,12 +112,12 @@ public class GameClient implements Client {
 		}
 		
 		String prefix = (String) packet.substring(0, 2);	
-		PacketParser parser = World.data.getParsers().get(prefix);
+		PacketParser parser = World.data.getPacketJar().get(prefix);
 		
 		if(parser != null)
 			parser.parse(this, packet);
 		else 
-			System.out.println(" <> Packet introuvable : "+ packet+"\n"+World.data.getParsers().keySet());
+			System.out.println(" <> Packet introuvable : "+ packet+"\n"+World.data.getPacketJar().keySet());
 	}
 
 	public boolean verify(String packet) {

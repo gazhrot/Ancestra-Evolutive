@@ -25,11 +25,11 @@ import org.apache.mina.transport.socket.nio.NioSocketAcceptor;
 
 import client.Account;
 
-import common.World;
 
 import core.Console;
 import core.Log;
 import core.Server;
+import core.World;
 
 public class GameServer {
 

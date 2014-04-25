@@ -12,7 +12,7 @@ import objects.job.Job;
 
 import common.Constants;
 import common.Formulas;
-import common.World;
+import core.World;
 
 public class Objet {
 

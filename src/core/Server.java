@@ -22,6 +22,7 @@ import login.LoginServer;
 
 import tool.command.Command;
 import tool.command.CommandAccess;
+import tool.plugin.PluginLoader;
 import tool.plugin.packet.Packet;
 import tool.plugin.packet.PacketParser;
 import tool.time.restricter.RestrictLevel;
@@ -33,7 +34,6 @@ import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import common.Constants;
 import common.CryptManager;
-import common.World;
 
 public class Server {
 	
@@ -196,9 +196,9 @@ public class Server {
 			this.initializeCommands();
 			//initialisation des packets
 			try {
-				this.initializePackets();
+				this.initializePlugins();
 			} catch(Exception e) { 
-				System.out.println(" <> Erreur lors de l'initialisation des packets : "+e.getMessage());
+				System.out.println(" <> Erreur lors de l'initialisation des plugins : "+e.getMessage());
 				System.exit(1);
 			}
 		} catch(Exception e) {
@@ -373,7 +373,7 @@ public class Server {
 			//ajout aux commmandes
 			consoleCommands.put(name, command);
 		}
-		
+
 		//Commande fixe HELP
 		Command<Console> command = new Command<Console>("HELP") {
 			
@@ -396,7 +396,7 @@ public class Server {
 		World.data.getConsoleCommands().putAll(consoleCommands);
 	}
 		
-	public void initializePackets() throws Exception {
+	public void initializePlugins() throws Exception {
 		try {
 			String path = getPathOfJarFile();
 			this.loadPackets(new File(path), true);
@@ -413,12 +413,19 @@ public class Server {
 		};
 		
 		File[] files = new File("./plugins/packets/").listFiles(filter);
-			
-		if(files == null)
-			return;
 		
-		for(File file : files) 
-			this.loadPackets(file, false);
+		if(files != null)		
+			for(File file : files) 
+				this.loadPackets(file, false);
+		
+		files = new File("./plugins/").listFiles(filter);
+		
+		if(files != null)		
+			for(File file : files) 
+				if(file != null)
+					World.data.getOtherPlugins()
+						.put(file.getName(), new PluginLoader(file));
+		
 	}
 	
 	private void loadPacketsIntoTheJar() throws ClassNotFoundException, InstantiationException, IllegalAccessException, IOException {
@@ -432,7 +439,7 @@ public class Server {
 				Annotation annotation = clas.getAnnotation(Packet.class); 
 				if(annotation instanceof Packet) {
 					Packet name = (Packet) annotation;
-					World.data.getParsers().put(name.value(), (PacketParser) clas.newInstance());
+					World.data.getPacketJar().put(name.value(), (PacketParser) clas.newInstance());
 				}
 			}
 		}	
@@ -471,9 +478,9 @@ public class Server {
 					 if(name.value() != null) {
 						 if(!name.value().equals("")) {
 							 if(who)
-								 World.data.getParsers().put(name.value(), (PacketParser) localClass.newInstance());
+								 World.data.getPacketJar().put(name.value(), (PacketParser) localClass.newInstance());
 							 else
-								 World.data.getPluginParsers().put(name.value(), (PacketParser) localClass.newInstance());
+								 World.data.getPacketPlugins().put(name.value(), (PacketParser) localClass.newInstance());
 						}
 					}
 				}

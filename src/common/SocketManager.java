@@ -30,6 +30,7 @@ import client.Player.Group;
 import core.Console;
 import core.Log;
 import core.Server;
+import core.World;
 import enums.EmulatorInfos;
 import game.GameClient;
 import game.GameServer;
