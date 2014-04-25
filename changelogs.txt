@@ -122,4 +122,14 @@ Version 0.6
 - Rectification de certains code et de nombreux bugs.
 - Rectification du système de plug-in pour n'importe qu'elle nombre de lettre.
 - Correction d'un problème de démarrage, gestion des erreurs, ..
-- Gestion de nombreuse erreur sur les plug-ins.
+- Ajout du système de plug-in générale. Un tutoriel sera crée pour les explications.
+- Rectification de certains bugs concernant les plug-ins ( plus aucun problème maintenant ).
+- Gestion de la totalité (?) des erreurs possible.
+- Correction :
+  > Des pop-ups groupe, défie, échange, disparition après annulation.
+  > Les mobs une fois fini d'attaquer quelque fois ils ne passent pas leurs tour.
+  > Impossible de se connecter au serveur.
+  > Impossible d'exclure un membre de la guilde si il est déconnecté.
+  > Impossible d'inviter un joueur dans une guilde
+  > Impossible de faire un échange également.
+  > Lorsque l'on demande un défie le packet réagi comme une agression.

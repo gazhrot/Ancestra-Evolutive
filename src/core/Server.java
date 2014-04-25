@@ -420,11 +420,18 @@ public class Server {
 		
 		files = new File("./plugins/").listFiles(filter);
 		
-		if(files != null)		
-			for(File file : files) 
-				if(file != null)
+		if(files != null) {		
+			for(File file : files) {
+				if(file != null) {
+					try {
 					World.data.getOtherPlugins()
 						.put(file.getName(), new PluginLoader(file));
+					} catch(Exception e) {
+						throw new Exception(file.getName() + " : ");
+					}
+				}
+			}
+		}
 		
 	}
 	
