@@ -116,6 +116,8 @@ public class GameClient implements Client {
 		
 		if(parser != null)
 			parser.parse(this, packet);
+		else 
+			System.out.println(" <> Packet introuvable : "+ packet+"\n"+World.data.getParsers().keySet());
 	}
 
 	public boolean verify(String packet) {

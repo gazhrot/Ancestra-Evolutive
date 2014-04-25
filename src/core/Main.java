@@ -66,17 +66,11 @@ public class Main {
 				if(Server.config.isRunning()) {
 					Console.instance.writeln(" <> Fermeture du jeu <>");
 					Server.config.setRunning(false);
-					Console.instance.writeln("Close RealmServer");
 					Server.config.getRealmServer().close();
-					Console.instance.writeln("CloseGameServer");
 					Server.config.getGameServer().close();
-					Console.instance.writeln("1");
 					World.data.saveData(-1);
-					Console.instance.writeln("1");
 					World.database.getAccountData().updateState(false);
-					Console.instance.writeln("1");
 					World.database.close();
-					Console.instance.writeln("1");
 					Console.instance.writeln(" <> Redemmarage <>");
 				}
 			}

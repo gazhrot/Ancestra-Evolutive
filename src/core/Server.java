@@ -443,7 +443,7 @@ public class Server {
 	    if(ClassLoader.getSystemClassLoader().getResource(path) != null) 
 	    	path = ClassLoader.getSystemClassLoader().getResource(path).getFile();
 	    File file = new File(path.substring(0, path.lastIndexOf('!')));
-	    return new File(".").getAbsolutePath().replace(".", "")+file.getName();
+	    return new File("").getAbsolutePath()+"\\"+file.getName();
 	}
 		
 	public void loadPackets(File file, boolean who) throws IOException, 

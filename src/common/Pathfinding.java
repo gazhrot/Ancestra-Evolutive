@@ -82,12 +82,12 @@ public class Pathfinding {
 		
 		for(char dir : dirs)
 		{
+			if(map.getCase(GetCaseIDFromDirrection(cellID, dir, map, false)) == null)
+				continue;
 			Fighter f = map.getCase(GetCaseIDFromDirrection(cellID, dir, map, false)).getFirstFighter();
 			if(f != null)
-			{
 				if(f.getTeam() != fight.getCurFighter().getTeam())
 					enemy.add(f);
-			}
 		}
 		if(enemy.size() == 0 || enemy.size() == 4) 
 			return null;
