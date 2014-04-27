@@ -1,7 +1,5 @@
 package fr.edofus.ancestra.evolutive.game.packet.game;
 
-
-
 import fr.edofus.ancestra.evolutive.common.Constants;
 import fr.edofus.ancestra.evolutive.common.CryptManager;
 import fr.edofus.ancestra.evolutive.common.SocketManager;

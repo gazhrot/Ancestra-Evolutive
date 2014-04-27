@@ -982,4 +982,16 @@ public class Formulas {
 		chance = a / b;
 		return (int) chance;
 	}
+	
+	public static int calculFinalSoin(Fighter soigneur, int range) {
+		int statC = soigneur.getTotalStats().getEffect(Constants.STATS_ADD_INTE);
+		int soins = soigneur.getTotalStats().getEffect(Constants.STATS_ADD_SOIN);
+		if(statC < 0)
+			statC = 0;
+		int adic = 200;
+		if(soigneur.getPersonnage() != null) 
+			if(soigneur.getPersonnage().get_classe() == 7)
+				adic = 100;
+		return (int) (range * ((100 + statC) / adic) + soins);
+	}
 }

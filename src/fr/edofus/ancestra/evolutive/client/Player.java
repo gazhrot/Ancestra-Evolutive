@@ -47,9 +47,6 @@ import java.util.TreeMap;
 
 import javax.swing.Timer;
 
-
-
-
 public class Player {
 	
 	private int _GUID;

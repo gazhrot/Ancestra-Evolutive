@@ -828,4 +828,34 @@ public class Pathfinding {
 		}
 		return null;
 	}
+	
+	public static int getCellAfterPushDerobade(Carte map, Case CCase, Case TCase, int value, Fight fight, Fighter target) {
+		if (CCase.getID() == TCase.getID())
+			return 0;
+		char c = getDirBetweenTwoCase(CCase.getID(), TCase.getID(), map, true);
+		int id = TCase.getID();
+		if (value < 0) {
+			c = getOpositeDirection(c);
+			value = -value;
+		}
+		for (int a = 0; a < value; a++) {
+			int nextCase = GetCaseIDFromDirrection(id, c, map, true);
+			
+			if (map.getCase(nextCase) != null && map.getCase(nextCase).isWalkable(true)
+					&& map.getCase(nextCase).getFighters().isEmpty()) {
+				id = nextCase;
+				for(Piege p : fight.get_traps()) {
+					int dist = Pathfinding.getDistanceBetween(fight.get_map(), p.get_cell().getID(), id);
+					if (dist <= p.get_size()) {
+						p.onTraped(target);
+						return id;
+					}
+				}
+			} else
+				return - (value - a);
+		}
+		if (id == TCase.getID())
+			id = 0;
+		return id;
+	}
 }
