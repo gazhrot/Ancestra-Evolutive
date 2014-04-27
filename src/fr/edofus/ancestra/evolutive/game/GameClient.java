@@ -97,6 +97,7 @@ public class GameClient implements Client {
 		this.getActions().remove(GA.getId());
 	}
 	
+	@SuppressWarnings("deprecation")
 	public void parsePacket(String packet) throws Exception { 
 		if(!verify(packet))
 			return;
@@ -117,7 +118,7 @@ public class GameClient implements Client {
 		if(parser != null)
 			parser.parse(this, packet);
 		else 
-			System.out.println(" <> Packet introuvable : "+ packet+"\n"+World.data.getPacketJar().keySet());
+			System.out.println(" <> Packet introuvable : "+ packet+" !");
 	}
 
 	public boolean verify(String packet) {

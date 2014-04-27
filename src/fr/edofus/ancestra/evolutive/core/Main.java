@@ -1,7 +1,5 @@
 package fr.edofus.ancestra.evolutive.core;
 
-
-
 import fr.edofus.ancestra.evolutive.enums.EmulatorInfos;
 import fr.edofus.ancestra.evolutive.game.GameServer;
 import fr.edofus.ancestra.evolutive.login.LoginServer;

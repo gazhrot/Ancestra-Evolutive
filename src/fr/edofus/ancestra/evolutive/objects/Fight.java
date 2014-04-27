@@ -36,12 +36,8 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import javax.swing.Timer;
 
-
-
-
-
-public class Fight
-{
+public class Fight {
+	
 	private int _id;
 	private Map<Integer,Fighter> _team0 = new ConcurrentHashMap<>();
 	private Map<Integer,Fighter> _team1 = new ConcurrentHashMap<>();
@@ -1507,6 +1503,16 @@ public class Fight
 			}
 			return false;
 		}
+		// Pour peur si la personne poussée a la ligne de vue vers la case
+		char dir = Pathfinding.getDirBetweenTwoCase(ValidlaunchCase, cell.getID(), _map, true);
+		if(spell.getSpellID() == 67)
+			if(!Pathfinding.checkLoS(_map, Pathfinding.GetCaseIDFromDirrection(ValidlaunchCase, dir, _map, true), cell.getID(), null, true, getAllFighters())) {
+				if(Server.config.isDebug()) 
+					Log.addToLog("("+_curPlayer+") Le sort demande une ligne de vue, mais la case visee n'est pas visible pour le joueur");
+				if(perso != null)
+					SocketManager.GAME_SEND_Im_PACKET(perso, "1174");
+				return false;
+			}
 		
 		int dist = Pathfinding.getDistanceBetween(_map, ValidlaunchCase, cell.getID());
 		int MaxPO = spell.getMaxPO();
@@ -1543,6 +1549,13 @@ public class Fight
 			return false;
 		}
 		return true;
+	}
+	
+	public ArrayList<Fighter> getAllFighters() {
+		ArrayList<Fighter> fighters = new ArrayList<Fighter>();
+		fighters.addAll(_team0.values());
+		fighters.addAll(_team1.values());
+		return fighters;
 	}
 	
 	public String GetGE(int win)

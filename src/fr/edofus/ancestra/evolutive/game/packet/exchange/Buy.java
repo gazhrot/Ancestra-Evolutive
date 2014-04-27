@@ -14,6 +14,7 @@ import fr.edofus.ancestra.evolutive.tool.plugin.packet.PacketParser;
 @Packet("EB")
 public class Buy implements PacketParser {
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public void parse(GameClient client, String packet) {
 		String[] infos = packet.substring(2).split("\\|");

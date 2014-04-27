@@ -399,7 +399,6 @@ public class Server {
 	public void initializePlugins() throws Exception {
 		try {
 			String path = getPathOfJarFile();
-			System.out.println("Path3 : "+path);
 			this.loadPackets(new File(path), true);
 		} catch(NullPointerException e) {
 			this.loadPacketsIntoTheJar();
@@ -412,14 +411,8 @@ public class Server {
 				return file.getName().endsWith(".jar");
 			}
 		};
-		
-		File[] files = new File("./plugins/packets/").listFiles(filter);
-		
-		if(files != null)		
-			for(File file : files) 
-				this.loadPackets(file, false);
-		
-		files = new File("./plugins/").listFiles(filter);
+
+		File[] files = new File("./plugins/").listFiles(filter);
 		
 		if(files != null) {		
 			for(File file : files) {
@@ -433,9 +426,9 @@ public class Server {
 				}
 			}
 		}
-		
 	}
 	
+	@SuppressWarnings("deprecation")
 	private void loadPacketsIntoTheJar() throws ClassNotFoundException, InstantiationException, IllegalAccessException, IOException {
 		String i = "fr.edofus.ancestra.evolutive.game.packet.";
 		String[] packages = {"account", "basic", "channel", "dialog", "enemy", "environement", 
@@ -455,14 +448,13 @@ public class Server {
 	
 	private String getPathOfJarFile() throws Exception {
 	    String path = Main.class.getResource(Main.class.getSimpleName() + ".class").getFile();
-	    System.out.println("Path1 : "+path);
 	    if(ClassLoader.getSystemClassLoader().getResource(path) != null) 
 	    	path = ClassLoader.getSystemClassLoader().getResource(path).getFile();
-	    System.out.println("Path2 : "+path);
 	    File file = new File(path.substring(0, path.lastIndexOf('!')));
-	    return new File("").getAbsolutePath()+"\\"+file.getName();
+	    return new File("").getAbsolutePath()+(new File("").getAbsolutePath().startsWith("/")?"/":"\\")+file.getName();
 	}
 		
+	@SuppressWarnings("deprecation")
 	public void loadPackets(File file, boolean who) throws IOException, 
 			ClassNotFoundException, InstantiationException, IllegalAccessException {
 		if(file == null)
@@ -485,14 +477,9 @@ public class Server {
 				Annotation annotation = localClass.getAnnotation(Packet.class); 
 				if(annotation instanceof Packet) {
 					 Packet name = (Packet) annotation;
-					 if(name.value() != null) {
-						 if(!name.value().equals("")) {
-							 if(who)
-								 World.data.getPacketJar().put(name.value(), (PacketParser) localClass.newInstance());
-							 else
-								 World.data.getPacketPlugins().put(name.value(), (PacketParser) localClass.newInstance());
-						}
-					}
+					 if(name.value() != null)
+						 if(!name.value().equals(""))
+							 World.data.getPacketJar().put(name.value(), (PacketParser) localClass.newInstance());
 				}
 			}
 		}

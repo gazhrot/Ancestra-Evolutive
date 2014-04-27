@@ -1,12 +1,10 @@
 package fr.edofus.plugin.kernel;
 
-import objects.Carte;
-import tool.plugin.packet.Packet;
-import tool.plugin.packet.PacketParser;
-
-import common.World;
-
-import game.GameClient;
+import fr.edofus.ancestra.evolutive.core.World;
+import fr.edofus.ancestra.evolutive.game.GameClient;
+import fr.edofus.ancestra.evolutive.objects.Carte;
+import fr.edofus.ancestra.evolutive.tool.plugin.packet.Packet;
+import fr.edofus.ancestra.evolutive.tool.plugin.packet.PacketParser;
 
 @Packet("BaM")
 public class TpWithGeopos implements PacketParser {

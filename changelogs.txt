@@ -1,5 +1,11 @@
 # Changelogs, sur les base d'AR 48
 
+Débuté par : John-R : https://github.com/Romain-P
+Continué par : Locos : https://github.com/F-Locos/
+
+Contribution :
+- Mars-Daylight.
+
 Version 0.1
 
 - Suppression d'objets et variables inutiles
@@ -133,3 +139,9 @@ Version 0.6
   > Impossible d'inviter un joueur dans une guilde
   > Impossible de faire un échange également.
   > Lorsque l'on demande un défie le packet réagi comme une agression.
+- Changement ( encore et encore.. ) du système de plug-in packet. Réuni sur les plug-ins générale. ( Cf TpWithGeopos ).
+- Ajout d'annotation @Deprecated pour évité toute utilisation de mauvaise fonction.
+- Correction de nombreux spellEffect (Thx Mars-Daylight).
+- Les plug-ins passent à présent sur tout les systèmes d'exploitation ( Linux & Windows sûr ).
+
+  

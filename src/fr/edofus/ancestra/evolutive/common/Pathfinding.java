@@ -438,7 +438,120 @@ public class Pathfinding {
 		return (loc5 - loc7);
 	}
 	
-	public static boolean checkLoS(Carte map, int cell1, int cell2,Fighter fighter)
+	public static boolean checkLoS(Carte map, int cell1, int cell2,Fighter fighter, boolean isPeur, ArrayList<Fighter> Fighters)
+	{
+		if(fighter != null && fighter.getPersonnage() != null){ 
+			return true;
+		}
+		ArrayList<Integer> CellsToConsider = new ArrayList<Integer>();
+		CellsToConsider = getLoSBotheringIDCases(map, cell1, cell2, true);
+		if(CellsToConsider == null) {
+			return true;
+		}
+		for(Integer cellID : CellsToConsider) {
+			if(map.getCase(cellID) != null){
+				if(!map.getCase(cellID).blockLoS() || ( !map.getCase(cellID).isWalkable(false) && isPeur )) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+	
+	private static ArrayList<Integer> getLoSBotheringIDCases(Carte map, int cellID1, int cellID2, boolean Combat) {
+		ArrayList<Integer> toReturn = new ArrayList<Integer>();
+		int consideredCell1 = cellID1;
+		int consideredCell2 = cellID2;
+		char dir = 'b';
+		int diffX = 0;
+		int diffY = 0;
+		int c1 = 0;
+		int compteur = 0;
+		ArrayList<Character> dirs = new ArrayList<Character>();
+		dirs.add('b');
+		dirs.add('d');
+		dirs.add('f');
+		dirs.add('h');
+		
+		while(getDistanceBetween(map, consideredCell1, consideredCell2) > 2 && compteur < 300) {
+			diffX= getCellXCoord(map, consideredCell1) - getCellXCoord(map, consideredCell2);
+			diffY= getCellYCoord(map, consideredCell1) - getCellYCoord(map, consideredCell2);
+			if(Math.abs(diffX) > Math.abs(diffY)) { // si il ya une plus grande différence pour la première coordonnée
+				if(diffX > 0)
+					dir = 'f';
+				else dir = 'b';
+				consideredCell1 = GetCaseIDFromDirrection(consideredCell1, dir, map, Combat); // on avance le chemin d'obstacles possibles
+				consideredCell2 = GetCaseIDFromDirrection(consideredCell2, getOpositeDirection(dir), map, Combat); // des deux côtés
+				if(consideredCell1 != -1 && map.getCase(consideredCell1) != null) toReturn.add(consideredCell1); // la liste des cases potentiellement obstacles
+				if(consideredCell2 != -1 && map.getCase(consideredCell2) != null) toReturn.add(consideredCell2); // la liste des cases potentiellement obstacles
+			} else if(Math.abs(diffX) < Math.abs(diffY)) { // si il y a une plus grand différence pour la seconde
+				if(diffY > 0) // détermine dans quel sens
+					dir = 'h';
+				else dir = 'd';
+				consideredCell1 = GetCaseIDFromDirrection(consideredCell1, dir, map, Combat); // on avance le chemin d'obstacles possibles
+				consideredCell2 = GetCaseIDFromDirrection(consideredCell2, getOpositeDirection(dir), map, Combat); // des deux côtés
+				if(consideredCell1 != -1 && map.getCase(consideredCell1) != null) toReturn.add(consideredCell1); // la liste des cases potentiellement obstacles
+				if(consideredCell2 != -1 && map.getCase(consideredCell2) != null) toReturn.add(consideredCell2); // la liste des cases potentiellement obstacles
+			} else {
+				if(compteur == 0) // si on est en diagonale parfaite
+					return getLoSBotheringCasesInDiagonal(map, cellID1, cellID2, diffX, diffY);
+				if(dir == 'f' || dir == 'b') // on change la direction dans le cas où on se retrouve en diagonale
+					if(diffY > 0)
+						dir = 'h';
+					else dir = 'd';
+				else if(dir == 'h' || dir == 'd')
+					if(diffX > 0)
+						dir = 'f';
+					else dir = 'b';
+				consideredCell1 = GetCaseIDFromDirrection(consideredCell1, dir, map, Combat); // on avance le chemin d'obstacles possibles
+				consideredCell2 = GetCaseIDFromDirrection(consideredCell2, getOpositeDirection(dir), map, Combat); // des deux côtés
+				if(consideredCell1 != -1 && map.getCase(consideredCell1) != null) toReturn.add(consideredCell1); // la liste des cases potentiellement obstacles
+				if(consideredCell2 != -1 && map.getCase(consideredCell2) != null) toReturn.add(consideredCell2); // la liste des cases potentiellement obstacles
+			}
+			compteur++;			
+		}
+		if(getDistanceBetween(map, consideredCell1, consideredCell2) == 2) {
+			dir = 0;
+			diffX= getCellXCoord(map, consideredCell1) - getCellXCoord(map, consideredCell2);
+			diffY= getCellYCoord(map, consideredCell1) - getCellYCoord(map, consideredCell2);
+			if(diffX == 0)
+				if(diffY > 0)
+					dir = 'h';
+				else dir = 'd';
+			if(diffY == 0)
+				if(diffX > 0)
+					dir = 'f';
+				else dir = 'b';
+			if(dir != 0)
+				c1 = GetCaseIDFromDirrection(consideredCell1, dir, map, Combat);
+				if(map.getCase(c1) != null) toReturn.add(c1);
+		}
+		return toReturn;
+	}
+	
+	private static ArrayList<Integer> getLoSBotheringCasesInDiagonal(Carte map, int cellID1, int cellID2, int diffX, int diffY) {
+		ArrayList<Integer> toReturn = new ArrayList<Integer>();
+		char dir = 'a';
+		if(diffX > 0 && diffY > 0)
+			dir = 'g';
+		if(diffX > 0 && diffY < 0)
+			dir = 'e';
+		if(diffX < 0 && diffY > 0)
+			dir = 'a';
+		if(diffX < 0 && diffY < 0)
+			dir = 'c';
+		int consideredCell = cellID1, compteur = 0;
+		while(consideredCell != -1 && compteur < 100) {
+			consideredCell = GetCaseIDFromDirrection(consideredCell, dir, map, true);
+			if(consideredCell == cellID2)
+				return toReturn;
+			toReturn.add(consideredCell);
+			compteur++;
+		}
+		return toReturn;
+	}
+	
+	public static boolean checkLoS(Carte map, int cell1, int cell2, Fighter fighter)
 	{
 		if(fighter.getPersonnage() != null)return true;
 		int dist = getDistanceBetween(map,cell1,cell2);

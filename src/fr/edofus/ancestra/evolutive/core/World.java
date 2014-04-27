@@ -6,6 +6,8 @@ import fr.edofus.ancestra.evolutive.common.Constants;
 import fr.edofus.ancestra.evolutive.common.Couple;
 import fr.edofus.ancestra.evolutive.common.SocketManager;
 import fr.edofus.ancestra.evolutive.database.Database;
+import fr.edofus.ancestra.evolutive.event.Event;
+import fr.edofus.ancestra.evolutive.event.Listener;
 import fr.edofus.ancestra.evolutive.game.GameClient;
 import fr.edofus.ancestra.evolutive.objects.Animations;
 import fr.edofus.ancestra.evolutive.objects.Area;
@@ -34,8 +36,10 @@ import fr.edofus.ancestra.evolutive.objects.Objet.ObjTemplate;
 import fr.edofus.ancestra.evolutive.objects.job.Job;
 import fr.edofus.ancestra.evolutive.tool.command.Command;
 import fr.edofus.ancestra.evolutive.tool.plugin.PluginLoader;
+import fr.edofus.ancestra.evolutive.tool.plugin.packet.Packet;
 import fr.edofus.ancestra.evolutive.tool.plugin.packet.PacketParser;
 
+import java.lang.annotation.Annotation;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -48,9 +52,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-
-
-
 
 public class World {
 
@@ -96,6 +97,8 @@ public class World {
 	private Map<String, PacketParser> packetJar = new HashMap<>();
 	private Map<String, PacketParser> packetPlugins = new HashMap<>();
 	private Map<String, PluginLoader> otherPlugins = new HashMap<>();
+	
+	private ArrayList<Listener> listeners = new ArrayList<>();
 	
 	private Connection connection;
 	
@@ -758,11 +761,12 @@ public class World {
 		return object;
 	}
 
-	public synchronized int getNextHdvID()// ATTENTION A NE PAS EXECUTER POUR
-											// RIEN CETTE METHODE CHANGE LE
-											// PROCHAIN ID DE L'HDV LORS DE SON
-											// EXECUTION
-	{
+	/**
+	 * @return The next line id (with incrementation).
+	 * @deprecated Do not use this function anyhow.
+	 */
+	@Deprecated
+	public synchronized int getNextHdvID() {
 		nextHdvID++;
 		return nextHdvID;
 	}
@@ -770,7 +774,12 @@ public class World {
 	public synchronized void setNextHdvID(int nextID) {
 		nextHdvID = nextID;
 	}
-
+	
+	/**
+	 * @return The next line id (with incrementation).
+	 * @deprecated Do not use this function anyhow.
+	 */
+	@Deprecated
 	public synchronized int getNextLigneID() {
 		nextLigneID++;
 		return nextLigneID;
@@ -815,17 +824,8 @@ public class World {
 	}
 
 	public Map<Integer, ArrayList<HdvEntry>> getMyItems(int compteID) {
-		if (hdvItems.get(compteID) == null)// Si le compte n'est pas dans la
-											// memoire
-			hdvItems.put(compteID, new HashMap<Integer, ArrayList<HdvEntry>>());// Ajout
-																				// du
-																				// compte
-																				// clé:compteID
-																				// et
-																				// un
-																				// nouveau
-																				// map<hdvID,items
-
+		if (hdvItems.get(compteID) == null)// Si le compte n'est pas dans la memoire
+			hdvItems.put(compteID, new HashMap<Integer, ArrayList<HdvEntry>>());
 		return hdvItems.get(compteID);
 	}
 
@@ -974,12 +974,8 @@ public class World {
 			if (mp.getValue().get_guild() != null
 					&& mp.getValue().get_guild().get_id() == GuildID) {
 				packet.append("|").append(mp.getValue().get_map().get_id())
-						.append(";").append(mp.getValue().get_size())
-						.append(";").append(mp.getValue().getObjectNumb());// Nombre
-																			// d'objets
-																			// pour
-																			// le
-																			// dernier
+					.append(";").append(mp.getValue().get_size())
+					.append(";").append(mp.getValue().getObjectNumb());
 			} else {
 				continue;
 			}
@@ -1033,6 +1029,11 @@ public class World {
 		return scheduler;
 	}
 	
+	/**
+	 * @return All packets of the jar file compiled.
+	 * @deprecated Do not use this function, only for the emulator. Please use : {@link #getPacketPlugins()}
+	 */
+	@Deprecated
 	public Map<String, PacketParser> getPacketJar() {
 		return packetJar;
 	}
@@ -1041,10 +1042,41 @@ public class World {
 		return packetPlugins;
 	}
 	
+	public void addPacketPlugins(String packet, PacketParser packetParser) {
+		if(packet == null || packetParser == null) {
+			Console.instance.writeln(" > The packet or packet parser was null.");
+			return;
+		}
+		if(this.packetPlugins.containsKey(packet)) {
+			Console.instance.writeln(" > The packet " + packet + " already exists and has been replaced.");
+			this.packetPlugins.remove(packet);
+		}
+		this.packetPlugins.put(packet, packetParser);
+	}
+	
 	public Map<String, PluginLoader> getOtherPlugins() {
 		return otherPlugins;
 	}
+	
+	public String valueOfPacket(Class<?> zClass) {
+		Annotation annotation = zClass.getAnnotation(Packet.class);
+		if(annotation == null)
+			return null;
+		if(annotation instanceof Packet) {
+			Packet name = (Packet) annotation;
+			return name.value();
+		}
+		return null;
+	}
 
+	public void addListener(Listener listener) {
+		this.listeners.add(listener);
+	}
+	
+	public void callEvent(Event event) {
+		
+	}
+	
 	public Connection getConnection() {
 		return connection;
 	}

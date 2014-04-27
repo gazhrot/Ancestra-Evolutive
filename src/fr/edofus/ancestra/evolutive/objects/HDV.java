@@ -113,6 +113,7 @@ public class HDV {
 			addEntry(toAdd);
 		}
 		
+		@SuppressWarnings("deprecation")
 		public void addEntry(HdvEntry toAdd)
 		{
 			//TODO : Peut-être catché un nullPointerException à cause du for

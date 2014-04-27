@@ -1,6 +1,5 @@
 package fr.edofus.ancestra.evolutive.tool.plugin;
 
-
 import fr.edofus.ancestra.evolutive.core.Console;
 import fr.edofus.ancestra.evolutive.core.Server;
 import fr.edofus.ancestra.evolutive.core.World;

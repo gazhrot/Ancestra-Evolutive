@@ -2140,8 +2140,12 @@ public class SpellEffect
 
 		private void applyEffect_4(Fight fight,ArrayList<Fighter> cibles)
 		{
-			if(turns >1)return;//Olol bondir 3 tours apres ?
-			
+			if(turns > 1)//Olol bondir 3 tours apres ?
+				return;
+			if (caster.isState(6)) { 
+				SocketManager.GAME_SEND_Im_PACKET(caster.getPersonnage(), "1116");
+				return; 
+			}
 			if(cell.isWalkable(true) && !fight.isOccuped(cell.getID()))//Si la case est prise, on va éviter que les joueurs se montent dessus *-*
 			{
 				caster.get_fightCell(false).getFighters().clear();
@@ -2150,8 +2154,7 @@ public class SpellEffect
 				
 				ArrayList<Piege> P = (new ArrayList<Piege>());
 				P.addAll(fight.get_traps());
-				for(Piege p : P)
-				{
+				for(Piege p : P) {
 					int dist = Pathfinding.getDistanceBetween(fight.get_map(),p.get_cell().getID(),caster.get_fightCell(false).getID());
 					//on active le piege
 					if(dist <= p.get_size())p.onTraped(caster);

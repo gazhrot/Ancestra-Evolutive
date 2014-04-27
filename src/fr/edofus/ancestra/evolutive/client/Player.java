@@ -8,6 +8,7 @@ import fr.edofus.ancestra.evolutive.core.Log;
 import fr.edofus.ancestra.evolutive.core.Main;
 import fr.edofus.ancestra.evolutive.core.Server;
 import fr.edofus.ancestra.evolutive.core.World;
+import fr.edofus.ancestra.evolutive.event.player.PlayerJoinEvent;
 import fr.edofus.ancestra.evolutive.game.GameAction;
 import fr.edofus.ancestra.evolutive.game.GameClient;
 import fr.edofus.ancestra.evolutive.objects.Carte;
@@ -1250,6 +1251,8 @@ public class Player {
 		_sitTimer.start();
 		//on le demarre coté client
 		SocketManager.GAME_SEND_ILS_PACKET(this, 2000);
+		PlayerJoinEvent event = new PlayerJoinEvent(this);
+		World.data.callEvent(event);
 	}
 	
 	public void SetSeeFriendOnline(boolean bool)
