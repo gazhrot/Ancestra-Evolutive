@@ -1,4 +1,4 @@
-package fr.edofus.ancestra.evolutive.event.player;
+ package fr.edofus.ancestra.evolutive.event.player;
 
 import fr.edofus.ancestra.evolutive.client.Player;
 import fr.edofus.ancestra.evolutive.event.Event;

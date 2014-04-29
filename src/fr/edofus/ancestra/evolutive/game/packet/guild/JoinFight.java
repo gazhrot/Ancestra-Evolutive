@@ -1,7 +1,5 @@
 package fr.edofus.ancestra.evolutive.game.packet.guild;
 
-
-
 import fr.edofus.ancestra.evolutive.core.Log;
 import fr.edofus.ancestra.evolutive.core.Server;
 import fr.edofus.ancestra.evolutive.core.World;
