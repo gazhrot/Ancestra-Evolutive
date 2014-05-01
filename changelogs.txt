@@ -143,5 +143,8 @@ Version 0.6
 - Ajout d'annotation @Deprecated pour évité toute utilisation de mauvaise fonction.
 - Correction de nombreux spellEffect (Thx Mars-Daylight).
 - Les plug-ins passent à présent sur tout les systèmes d'exploitation ( Linux & Windows sûr ).
+- Ajout du système d'événement ainsi que du listener. ( Merci Piou. Pour les plug-ins aussi )
+- Correction des demandent d'information concernant un joueur ( zone inconnu ).
+
 
   
