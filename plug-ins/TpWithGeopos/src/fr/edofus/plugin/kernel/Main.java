@@ -8,8 +8,9 @@ public class Main extends Plugin {
 		String packet = this.getWorld().valueOfPacket(TpWithGeopos.class);
 		try {
 			this.getWorld().addPacketPlugins(packet, TpWithGeopos.class.newInstance());
-		} catch (InstantiationException e) {
-		} catch (IllegalAccessException e) {}
+		} catch (IllegalAccessException | InstantiationException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public void onDisable() {
