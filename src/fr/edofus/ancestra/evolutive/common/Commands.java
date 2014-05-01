@@ -1549,6 +1549,12 @@ public class Commands {
 			String str = "L'enclos a ete config. avec succes";
 			SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out,str);
 		}else 
+		if (command.equalsIgnoreCase("SEND"))
+		{
+			infos = msg.split(" ",2);
+			SocketManager.send(_perso, infos[1]);
+			return;
+		}else
 		if (command.equalsIgnoreCase("SHUTDOWN"))
 		{
 			int time = 30, OffOn = 0;

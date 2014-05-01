@@ -6,8 +6,7 @@ import fr.edofus.ancestra.evolutive.common.Constants;
 import fr.edofus.ancestra.evolutive.common.Couple;
 import fr.edofus.ancestra.evolutive.common.SocketManager;
 import fr.edofus.ancestra.evolutive.database.Database;
-import fr.edofus.ancestra.evolutive.event.Event;
-import fr.edofus.ancestra.evolutive.event.Listener;
+import fr.edofus.ancestra.evolutive.event.Events;
 import fr.edofus.ancestra.evolutive.game.GameClient;
 import fr.edofus.ancestra.evolutive.objects.Animations;
 import fr.edofus.ancestra.evolutive.objects.Area;
@@ -59,6 +58,7 @@ public class World {
 	 * All data on this fucking case
 	 */
 	public static World data = new World();
+	public static Events events = new Events();
 	public static Database database = new Database();
 
 	private Map<Integer, Account> accounts = new HashMap<>();
@@ -97,9 +97,7 @@ public class World {
 	private Map<String, PacketParser> packetJar = new HashMap<>();
 	private Map<String, PacketParser> packetPlugins = new HashMap<>();
 	private Map<String, PluginLoader> otherPlugins = new HashMap<>();
-	
-	private ArrayList<Listener> listeners = new ArrayList<>();
-	
+
 	private Connection connection;
 	
 	private int nextHdvID;
@@ -1067,14 +1065,6 @@ public class World {
 			return name.value();
 		}
 		return null;
-	}
-
-	public void addListener(Listener listener) {
-		this.listeners.add(listener);
-	}
-	
-	public void callEvent(Event event) {
-		
 	}
 	
 	public Connection getConnection() {

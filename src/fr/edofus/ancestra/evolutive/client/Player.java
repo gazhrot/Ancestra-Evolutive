@@ -1248,8 +1248,8 @@ public class Player {
 		_sitTimer.start();
 		//on le demarre coté client
 		SocketManager.GAME_SEND_ILS_PACKET(this, 2000);
-		PlayerJoinEvent event = new PlayerJoinEvent(this);
-		World.data.callEvent(event);
+		World.events.call(new PlayerJoinEvent(this), null, null);
+
 	}
 	
 	public void SetSeeFriendOnline(boolean bool)
@@ -2611,7 +2611,7 @@ public class Player {
 		StringBuilder str = new StringBuilder();
 		str.append(";");
 		str.append("?;");//FIXME
-		str.append(_name).append(";");
+		str.append(this._name).append(";");
 		if(_compte.isFriendWith(guid))
 		{
 			str.append(_lvl).append(";");
@@ -2632,7 +2632,7 @@ public class Player {
 		StringBuilder str = new StringBuilder();
 		str.append(";");
 		str.append("?;");//FIXME
-		str.append(_name).append(";");
+		str.append(this._name).append(";");
 		if(_compte.isFriendWith(guid))
 		{
 			str.append(_lvl).append(";");

@@ -20,14 +20,14 @@ public class PluginLoader {
 	public PluginLoader(File file) throws Exception {
 		if(file == null)
 			throw new Exception("file doesn't exist.");
-		
+
 		JarFile jarFile = new JarFile(new File(file.getPath())); 
 		
 		ClassLoader classLoader = URLClassLoader.newInstance(
 			    new URL[] { file.toURI().toURL() },
 			    getClass().getClassLoader()
 		);
-		
+
 		this.file = file;
 
 		String nameClass;
@@ -37,25 +37,27 @@ public class PluginLoader {
 			throw new Exception("cannot read the plugin file.");
 		}	
 		
+		if(nameClass == null)
+			throw new Exception("the name class cannot be null");
 		if(nameClass.startsWith("fr.edofus.ancestra.evolutive."))
 			throw new Exception("the package of main class must not start with : fr.edofus.ancestra.evolutive.");
 		if(nameClass.contains(".java"))
 			throw new Exception("please check your plugin file and delete the extension .java");
-		
+
 		Class<?> mainClass;
 		try {
 			mainClass = Class.forName(nameClass, true, classLoader);
 		} catch(ClassNotFoundException e) {
 			throw new Exception("cannot find the main class.");
 		}
-		
+
 		Class<? extends Plugin> pluginClass;
 		try {
 			pluginClass = mainClass.asSubclass(Plugin.class);
 		} catch(ClassCastException e) {
 			throw new Exception("the main class haven't a plugin class.");
 		}
-		
+
 		try {
 			this.plugin = pluginClass.newInstance();
 		} catch(InstantiationException e) {
@@ -63,7 +65,7 @@ public class PluginLoader {
 		} catch(IllegalAccessException e) {
 			throw new Exception("the constructor doesn't public.");
 		}
-		
+
 		this.enable();
 	}
 	
@@ -106,8 +108,7 @@ public class PluginLoader {
 	private String readEntry(InputStream input) throws IOException {
 		InputStreamReader isr = new InputStreamReader(input);
 		BufferedReader reader = new BufferedReader(isr);
-		String line = null;
-		while((line = reader.readLine()) != null) {}
+		String line = reader.readLine();
 		reader.close();
 		return line;
     }

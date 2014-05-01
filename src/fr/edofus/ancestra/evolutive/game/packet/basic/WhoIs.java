@@ -15,10 +15,9 @@ public class WhoIs implements PacketParser {
 	@Override
 	public void parse(GameClient client, String packet) {
 		packet = packet.substring(2);
-		Player T = World.data.getPersoByName(packet);
-		if(T == null) 
+		Player player = World.data.getPersoByName(packet);
+		if(player == null) 
 			return;
-		SocketManager.GAME_SEND_BWK(client.getPlayer(), T.get_compte().get_pseudo()+"|1|"+T.get_name()+"|-1");
-	
+		SocketManager.GAME_SEND_BWK(client.getPlayer(), player.get_compte().get_pseudo()+"|1|"+player.get_name()+"|"+player.get_curCarte().getSubArea().get_area().get_id());
 	}
 }

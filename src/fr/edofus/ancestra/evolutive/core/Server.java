@@ -3,6 +3,9 @@ package fr.edofus.ancestra.evolutive.core;
 import fr.edofus.ancestra.evolutive.client.Player;
 import fr.edofus.ancestra.evolutive.common.Constants;
 import fr.edofus.ancestra.evolutive.common.CryptManager;
+import fr.edofus.ancestra.evolutive.event.Event;
+import fr.edofus.ancestra.evolutive.event.EventListener;
+import fr.edofus.ancestra.evolutive.event.player.PlayerJoinEvent;
 import fr.edofus.ancestra.evolutive.game.GameServer;
 import fr.edofus.ancestra.evolutive.login.LoginServer;
 import fr.edofus.ancestra.evolutive.tool.command.Command;
@@ -28,9 +31,6 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-
-
-
 
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
@@ -113,7 +113,15 @@ public class Server {
 	//Config
 	private Config configFile = ConfigFactory.parseFile(new File("config.conf"));
 	
-	public void initialize() {		
+	public void initialize() {	
+		
+		World.events.add(World.events.getEventClass(PlayerJoinEvent.class), new EventListener() {
+			@Override
+			public void call(Event event, Object source, Object[] args) {
+				if(event instanceof PlayerJoinEvent)
+					System.out.println(((PlayerJoinEvent) event).getPlayer().get_name()+" vient de rejoindre le serveur !");
+			}	
+		});
 		try {
 			//console
 			this.debug = configFile.getBoolean("console.debug");
@@ -421,7 +429,7 @@ public class Server {
 					World.data.getOtherPlugins()
 						.put(file.getName(), new PluginLoader(file));
 					} catch(Exception e) {
-						throw new Exception(file.getName() + " : ");
+						throw new Exception(file.getName() + " : " + e.getMessage());
 					}
 				}
 			}
