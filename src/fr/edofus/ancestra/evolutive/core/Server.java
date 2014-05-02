@@ -3,9 +3,6 @@ package fr.edofus.ancestra.evolutive.core;
 import fr.edofus.ancestra.evolutive.client.Player;
 import fr.edofus.ancestra.evolutive.common.Constants;
 import fr.edofus.ancestra.evolutive.common.CryptManager;
-import fr.edofus.ancestra.evolutive.event.Event;
-import fr.edofus.ancestra.evolutive.event.EventListener;
-import fr.edofus.ancestra.evolutive.event.player.PlayerJoinEvent;
 import fr.edofus.ancestra.evolutive.game.GameServer;
 import fr.edofus.ancestra.evolutive.login.LoginServer;
 import fr.edofus.ancestra.evolutive.tool.command.Command;
@@ -114,23 +111,6 @@ public class Server {
 	private Config configFile = ConfigFactory.parseFile(new File("config.conf"));
 	
 	public void initialize() {	
-		
-		World.events.add(World.events.getEventClass(PlayerJoinEvent.class), new EventListener() {
-			private boolean cancelled = false;
-			
-			@Override
-			public void call(Event event) {
-			
-				if(event instanceof PlayerJoinEvent) 
-					System.out.println(((PlayerJoinEvent) event).getPlayer().get_name()+" vient de rejoindre le serveur !");
-				this.cancelled = true;			
-			}
-
-			@Override
-			public boolean isCancelled() {
-				return cancelled;
-			}
-		});
 		try {
 			//console
 			this.debug = configFile.getBoolean("console.debug");
