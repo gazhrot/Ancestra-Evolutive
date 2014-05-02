@@ -15,14 +15,18 @@ public class Events {
 		listeners.get(event).add(listener);
     }
 
-	public void call(Event event, Object source, Object[] args) {
+	public boolean call(Event event) {
+		boolean cancelled = false;
 		for(Entry<Event, Set<EventListener>> entry : listeners.entrySet()) {
 			if(entry.getKey().getClass().getName().equals(event.getClass().getName())) {
-				for(EventListener listener: entry.getValue())
-					listener.call(event, source, args);
-				break;		
+				for(EventListener listener: entry.getValue()) {
+					listener.call(event);
+					if(listener.isCancelled())
+						cancelled = true;
+				}
 			}
 		}
+		return cancelled;
 	}
 	
 	public Event getEventClass(Class<?> zClass) {

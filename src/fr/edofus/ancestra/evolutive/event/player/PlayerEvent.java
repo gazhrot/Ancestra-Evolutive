@@ -3,7 +3,7 @@
 import fr.edofus.ancestra.evolutive.client.Player;
 import fr.edofus.ancestra.evolutive.event.Event;
 
-public class PlayerEvent implements Event  {
+public class PlayerEvent implements Event {
 	
 	private Player player;
 	

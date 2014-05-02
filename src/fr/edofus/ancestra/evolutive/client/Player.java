@@ -1161,12 +1161,18 @@ public class Player {
 	
 	public void OnJoinGame()
 	{
-		if(_compte.getGameClient() == null)return; 
+		if(_compte.getGameClient() == null)
+			return; 
+		
+		if(World.events.call(new PlayerJoinEvent(this)))
+			return;
+		
 		GameClient out = _compte.getGameClient();
 		_compte.setCurPerso(this);
 		_isOnline = true;
 		
-		if(_mount != null)SocketManager.GAME_SEND_Re_PACKET(this,"+",_mount);
+		if(_mount != null)
+			SocketManager.GAME_SEND_Re_PACKET(this,"+",_mount);
 		SocketManager.GAME_SEND_Rx_PACKET(this);
 		
 		SocketManager.GAME_SEND_ASK(out, this);
@@ -1248,8 +1254,6 @@ public class Player {
 		_sitTimer.start();
 		//on le demarre coté client
 		SocketManager.GAME_SEND_ILS_PACKET(this, 2000);
-		World.events.call(new PlayerJoinEvent(this), null, null);
-
 	}
 	
 	public void SetSeeFriendOnline(boolean bool)

@@ -116,11 +116,20 @@ public class Server {
 	public void initialize() {	
 		
 		World.events.add(World.events.getEventClass(PlayerJoinEvent.class), new EventListener() {
+			private boolean cancelled = false;
+			
 			@Override
-			public void call(Event event, Object source, Object[] args) {
-				if(event instanceof PlayerJoinEvent)
+			public void call(Event event) {
+			
+				if(event instanceof PlayerJoinEvent) 
 					System.out.println(((PlayerJoinEvent) event).getPlayer().get_name()+" vient de rejoindre le serveur !");
-			}	
+				this.cancelled = true;			
+			}
+
+			@Override
+			public boolean isCancelled() {
+				return cancelled;
+			}
 		});
 		try {
 			//console
