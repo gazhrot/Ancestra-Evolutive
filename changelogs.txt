@@ -144,7 +144,7 @@ Version 0.6
 - Correction de nombreux spellEffect (Thx Mars-Daylight).
 - Les plug-ins passent à présent sur tout les systèmes d'exploitation ( Linux & Windows sûr ).
 - Ajout du système d'événement ainsi que du listener. ( Merci Piou. Pour les plug-ins aussi )
-- Correction des demandent d'information concernant un joueur ( zone inconnu ).
+- Correction des demandent d'information concernant un ami ( zone inconnu ).
 
 
   
