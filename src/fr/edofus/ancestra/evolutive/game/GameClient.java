@@ -152,6 +152,7 @@ public class GameClient implements Client {
     				this.getPlayer().save();
     			this.getAccount().deconnexion();
     		}
+    		this.getSession().close(true);
 		} catch(Exception e1) {e1.printStackTrace();}
 	}
 	

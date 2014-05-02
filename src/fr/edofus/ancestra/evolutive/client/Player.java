@@ -1300,7 +1300,15 @@ public class Player {
 			str.append(_sexe).append(";").append(_align).append(",");//1,0,0,4055064
 			str.append("0,");//FIXME:?
 			str.append((_showWings?getGrade():"0")).append(",");
-			str.append(_lvl).append(";");
+			str.append(_lvl);
+			if(_showWings && _deshonor > 0)
+			{
+				str.append(",");
+				str.append(_deshonor>0?1:0).append(';');
+			}else
+			{
+				str.append(";");
+			}
 			str.append((_color1==-1?"-1":Integer.toHexString(_color1))).append(";");
 			str.append((_color2==-1?"-1":Integer.toHexString(_color2))).append(";");
 			str.append((_color3==-1?"-1":Integer.toHexString(_color3))).append(";");
@@ -1831,7 +1839,6 @@ public class Player {
 		
 		int prix = qua * (_items.get(guid).getTemplate().getPrix()/10);//Calcul du prix de vente (prix d'achat/10)
 		int newQua =  _items.get(guid).getQuantity() - qua;
-		
 		if(newQua <= 0)//Ne devrait pas etre <0, S'il n'y a plus d'item apres la vente 
 		{
 			Objet o = _items.get(guid);
@@ -1844,7 +1851,8 @@ public class Player {
 			_items.get(guid).setQuantity(newQua);
 			SocketManager.GAME_SEND_OBJECT_QUANTITY_PACKET(this, _items.get(guid));
 		}
-		_kamas = _kamas + prix;
+
+		_kamas += prix;
 		SocketManager.GAME_SEND_STATS_PACKET(this);
 		SocketManager.GAME_SEND_Ow_PACKET(this);
 		SocketManager.GAME_SEND_ESK_PACKEt(this);
