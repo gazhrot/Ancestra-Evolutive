@@ -38,7 +38,7 @@ import fr.edofus.ancestra.evolutive.objects.job.JobStat;
 public class SocketManager {
 	
 	public static void send(Player p, String packet) {
-		p.get_compte().getGameClient().getSession().write(packet);
+		p.getAccount().getGameClient().getSession().write(packet);
 	}
 	
 	public static void send(Client out, String packet) {
@@ -470,8 +470,8 @@ public class SocketManager {
 		String packet = "GM|-"+guid;
 		for(Player z : map.getPersos())
 		{
-			if(z.get_compte().getGameClient() == null)continue;
-			send(z.get_compte().getGameClient(),packet);
+			if(z.getAccount().getGameClient() == null)continue;
+			send(z.getAccount().getGameClient(),packet);
 		}
 		if(Server.config.isDebug())
 			Log.addToSockLog("Game: Map "+map.get_id()+": Send>>"+packet);
@@ -482,13 +482,13 @@ public class SocketManager {
 		String packet = "GM|-"+guid;
 		for(int z=0;z < f.getFighters(1).size();z++)
 		{
-			if(f.getFighters(1).get(z).getPersonnage().get_compte().getGameClient() == null)continue;
-			send(f.getFighters(1).get(z).getPersonnage().get_compte().getGameClient(),packet);
+			if(f.getFighters(1).get(z).getPersonnage().getAccount().getGameClient() == null)continue;
+			send(f.getFighters(1).get(z).getPersonnage().getAccount().getGameClient(),packet);
 		}
 		for(int z=0;z < f.getFighters(2).size();z++)
 		{
-			if(f.getFighters(2).get(z).getPersonnage().get_compte().getGameClient() == null)continue;
-			send(f.getFighters(2).get(z).getPersonnage().get_compte().getGameClient(),packet);
+			if(f.getFighters(2).get(z).getPersonnage().getAccount().getGameClient() == null)continue;
+			send(f.getFighters(2).get(z).getPersonnage().getAccount().getGameClient(),packet);
 		}
 		if(Server.config.isDebug())
 			Log.addToSockLog("Game: Fighter ID "+f.get_id()+": Send>>"+packet);
@@ -499,8 +499,8 @@ public class SocketManager {
 		String packet = "GM|-"+guid;
 		for(Fighter F : f.getFighters(team))
 		{
-			if(F.getPersonnage() == null || F.getPersonnage().get_compte().getGameClient() == null || F.getPersonnage().get_GUID() == guid)continue;
-			send(F.getPersonnage().get_compte().getGameClient(),packet);
+			if(F.getPersonnage() == null || F.getPersonnage().getAccount().getGameClient() == null || F.getPersonnage().get_GUID() == guid)continue;
+			send(F.getPersonnage().getAccount().getGameClient(),packet);
 		}
 		if(Server.config.isDebug())
 			Log.addToSockLog("Game: Fighter ID "+f.get_id()+": Send>>"+packet);
@@ -512,15 +512,15 @@ public class SocketManager {
 		packet.append("GM|-").append(guid).append((char)0x00).append(fighter.getGmPacket('~'));
 		for(Fighter F : fight.getFighters(team))
 		{
-			if(F.getPersonnage() == null || F.getPersonnage().get_compte().getGameClient() == null || !F.getPersonnage().isOnline())continue;
-			send(F.getPersonnage().get_compte().getGameClient(),packet.toString());
+			if(F.getPersonnage() == null || F.getPersonnage().getAccount().getGameClient() == null || !F.getPersonnage().isOnline())continue;
+			send(F.getPersonnage().getAccount().getGameClient(),packet.toString());
 		}
 		if(otherteam > -1)
 		{
 			for(Fighter F : fight.getFighters(otherteam))
 			{
-				if(F.getPersonnage() == null || F.getPersonnage().get_compte().getGameClient() == null || !F.getPersonnage().isOnline())continue;
-				send(F.getPersonnage().get_compte().getGameClient(),packet.toString());
+				if(F.getPersonnage() == null || F.getPersonnage().getAccount().getGameClient() == null || !F.getPersonnage().isOnline())continue;
+				send(F.getPersonnage().getAccount().getGameClient(),packet.toString());
 			}
 		}
 		if(Server.config.isDebug())
@@ -1220,7 +1220,7 @@ public class SocketManager {
 			if (f != _fighter)
 			{
 				if(f.getPersonnage() == null || !f.getPersonnage().isOnline())continue;
-				if(f.getPersonnage() != null && f.getPersonnage().get_compte().getGameClient() != null)
+				if(f.getPersonnage() != null && f.getPersonnage().getAccount().getGameClient() != null)
 					send(f.getPersonnage(),packet);
 			}
 		}
@@ -1296,7 +1296,7 @@ public class SocketManager {
 	public static void GAME_SEND_cMK_PACKET_TO_ADMIN(String suffix,int guid,String name,String msg)
 	{
 		String packet = "cMK"+suffix+"|"+guid+"|"+name+"|"+msg;
-		for(Player perso : World.data.getOnlinePersos())if(perso.isOnline())if(perso.get_compte() != null)if(perso.get_compte().getGmLvl()>0)send(perso,packet);
+		for(Player perso : World.data.getOnlinePersos())if(perso.isOnline())if(perso.getAccount() != null)if(perso.getAccount().getGmLvl()>0)send(perso,packet);
 		if(Server.config.isDebug())
 			Log.addToSockLog("Game: ALL("+World.data.getOnlinePersos().size()+"): Send>>"+packet);
 	}
@@ -1945,7 +1945,7 @@ public class SocketManager {
 	
 	public static void GAME_SEND_FRIENDLIST_PACKET(Player perso)
 	{
-		String packet = "FL"+perso.get_compte().parseFriend();
+		String packet = "FL"+perso.getAccount().parseFriend();
 		send(perso,packet);
 		if(perso.getWife() != 0)
 		{
@@ -1960,7 +1960,7 @@ public class SocketManager {
 	
 	public static void GAME_SEND_FRIEND_ONLINE(Player logando, Player amigo) 
 	{
-		String packet = "Im0143;"+logando.get_compte().getPseudo()+" (<b><a href='asfunction:onHref,ShowPlayerPopupMenu,"+logando.get_name()+"'>"+logando.get_name()+"</a></b>)";
+		String packet = "Im0143;"+logando.getAccount().getPseudo()+" (<b><a href='asfunction:onHref,ShowPlayerPopupMenu,"+logando.get_name()+"'>"+logando.get_name()+"</a></b>)";
 		send(amigo, packet);
 		if (Server.config.isDebug())
 		Log.addToSockLog("Game: Send>>" + packet);
@@ -2230,7 +2230,7 @@ public class SocketManager {
 	public static void GAME_SEND_WC_PACKET(Player perso)
 	{
 		String packet = "WC"+perso.parseZaapList();
-		send(perso.get_compte().getGameClient(),packet);
+		send(perso.getAccount().getGameClient(),packet);
 		if(Server.config.isDebug())
 			Log.addToSockLog("Game: Send>>"+packet);
 	}
@@ -2307,7 +2307,7 @@ public class SocketManager {
 	public static void GAME_SEND_ADD_ENEMY(Player out, Player pr)
 	{
 		
-		String packet = "iAK"+pr.get_compte().getName()+";2;"+pr.get_name()+";36;10;0;100.FL.";
+		String packet = "iAK"+pr.getAccount().getName()+";2;"+pr.get_name()+";36;10;0;100.FL.";
 		send(out, packet);
 		if(Server.config.isDebug())
 			Log.addToSockLog("Game: Send>>" + packet);
@@ -2325,7 +2325,7 @@ public class SocketManager {
 	public static void GAME_SEND_ENEMY_LIST(Player perso)
 	{
 		
-		String packet = "iL"+perso.get_compte().parseEnemy();
+		String packet = "iL"+perso.getAccount().parseEnemy();
 		send(perso, packet);
 		if(Server.config.isDebug())
 			Log.addToSockLog("Game: Send>>" + packet);
@@ -2512,7 +2512,7 @@ public class SocketManager {
 	public static void GAME_SEND_HDVITEM_SELLING(Player perso)
 	{
 		String packet = "EL";
-		HdvEntry[] entries = perso.get_compte().getHdvItems(Math.abs(perso.get_isTradingWith()));	//Récupère un tableau de tout les items que le personnage à en vente dans l'HDV où il est
+		HdvEntry[] entries = perso.getAccount().getHdvItems(Math.abs(perso.get_isTradingWith()));	//Récupère un tableau de tout les items que le personnage à en vente dans l'HDV où il est
 		boolean isFirst = true;
 		for(HdvEntry curEntry : entries)
 		{

@@ -130,7 +130,7 @@ public class MoveItemOrKamas implements PacketParser {
 					int count = Integer.parseInt(packet.substring(4).split("\\|")[1]);
 					if(count <= 0)return;
 					
-					client.getPlayer().get_compte().recoverItem(cheapestID,count);//Retire l'objet de la liste de vente du compte
+					client.getPlayer().getAccount().recoverItem(cheapestID,count);//Retire l'objet de la liste de vente du compte
 					SocketManager.GAME_SEND_EXCHANGE_OTHER_MOVE_OK(client,'-',"",cheapestID+"");
 				break;
 				case '+'://Mettre un objet en vente
@@ -145,7 +145,7 @@ public class MoveItemOrKamas implements PacketParser {
 					
 					if(!client.getPlayer().hasItemGuid(itmID))//V�rifie si le personnage a bien l'item sp�cifi� et l'argent pour payer la taxe
 						return;
-					if(client.getPlayer().get_compte().countHdvItems(curHdv.getHdvID()) >= curHdv.getMaxItemCompte())
+					if(client.getPlayer().getAccount().countHdvItems(curHdv.getHdvID()) >= curHdv.getMaxItemCompte())
 					{
 						SocketManager.GAME_SEND_Im_PACKET(client.getPlayer(), "058");
 						return;
@@ -182,7 +182,7 @@ public class MoveItemOrKamas implements PacketParser {
 						obj = newObj;
 					}
 					
-					HdvEntry toAdd = new HdvEntry(price,amount,client.getPlayer().get_compte().getUUID(),obj);
+					HdvEntry toAdd = new HdvEntry(price,amount,client.getPlayer().getAccount().getUUID(),obj);
 					curHdv.addEntry(toAdd);	//Ajoute l'entry dans l'HDV
 					
 					SocketManager.GAME_SEND_EXCHANGE_OTHER_MOVE_OK(client,'+',"",toAdd.parseToEmK());	//Envoie un packet pour ajouter l'item dans la fenetre de l'HDV du client

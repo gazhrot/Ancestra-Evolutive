@@ -52,14 +52,14 @@ public class Exchange
 		if(i == 1)
 		{
 			ok1 = !ok1;
-			SocketManager.GAME_SEND_EXCHANGE_OK(perso1.get_compte().getGameClient(),ok1,guid);
-			SocketManager.GAME_SEND_EXCHANGE_OK(perso2.get_compte().getGameClient(),ok1,guid);
+			SocketManager.GAME_SEND_EXCHANGE_OK(perso1.getAccount().getGameClient(),ok1,guid);
+			SocketManager.GAME_SEND_EXCHANGE_OK(perso2.getAccount().getGameClient(),ok1,guid);
 		}
 		else if (i == 2)
 		{
 			ok2 = !ok2;
-			SocketManager.GAME_SEND_EXCHANGE_OK(perso1.get_compte().getGameClient(),ok2,guid);
-			SocketManager.GAME_SEND_EXCHANGE_OK(perso2.get_compte().getGameClient(),ok2,guid);
+			SocketManager.GAME_SEND_EXCHANGE_OK(perso1.getAccount().getGameClient(),ok2,guid);
+			SocketManager.GAME_SEND_EXCHANGE_OK(perso2.getAccount().getGameClient(),ok2,guid);
 		}
 		else 
 			return;
@@ -79,28 +79,28 @@ public class Exchange
 			i = 1;
 		else if(perso2.get_GUID() == guid)
 			i = 2;
-		SocketManager.GAME_SEND_EXCHANGE_OK(perso1.get_compte().getGameClient(),ok1,perso1.get_GUID());
-		SocketManager.GAME_SEND_EXCHANGE_OK(perso2.get_compte().getGameClient(),ok1,perso1.get_GUID());
-		SocketManager.GAME_SEND_EXCHANGE_OK(perso1.get_compte().getGameClient(),ok2,perso2.get_GUID());
-		SocketManager.GAME_SEND_EXCHANGE_OK(perso2.get_compte().getGameClient(),ok2,perso2.get_GUID());
+		SocketManager.GAME_SEND_EXCHANGE_OK(perso1.getAccount().getGameClient(),ok1,perso1.get_GUID());
+		SocketManager.GAME_SEND_EXCHANGE_OK(perso2.getAccount().getGameClient(),ok1,perso1.get_GUID());
+		SocketManager.GAME_SEND_EXCHANGE_OK(perso1.getAccount().getGameClient(),ok2,perso2.get_GUID());
+		SocketManager.GAME_SEND_EXCHANGE_OK(perso2.getAccount().getGameClient(),ok2,perso2.get_GUID());
 		
 		if(i == 1)
 		{
 			kamas1 = k;
 			SocketManager.GAME_SEND_EXCHANGE_MOVE_OK(perso1, 'G', "", k+"");
-			SocketManager.GAME_SEND_EXCHANGE_OTHER_MOVE_OK(perso2.get_compte().getGameClient(), 'G', "", k+"");
+			SocketManager.GAME_SEND_EXCHANGE_OTHER_MOVE_OK(perso2.getAccount().getGameClient(), 'G', "", k+"");
 		}else if (i == 2)
 		{
 			kamas2 = k;
-			SocketManager.GAME_SEND_EXCHANGE_OTHER_MOVE_OK(perso1.get_compte().getGameClient(), 'G', "", k+"");
+			SocketManager.GAME_SEND_EXCHANGE_OTHER_MOVE_OK(perso1.getAccount().getGameClient(), 'G', "", k+"");
 			SocketManager.GAME_SEND_EXCHANGE_MOVE_OK(perso2, 'G', "", k+"");	
 		}
 	}
 	
 	synchronized public void cancel()
 	{
-		if(perso1.get_compte() != null)if(perso1.get_compte().getGameClient() != null)SocketManager.GAME_SEND_EV_PACKET(perso1.get_compte().getGameClient());
-		if(perso2.get_compte() != null)if(perso2.get_compte().getGameClient() != null)SocketManager.GAME_SEND_EV_PACKET(perso2.get_compte().getGameClient());
+		if(perso1.getAccount() != null)if(perso1.getAccount().getGameClient() != null)SocketManager.GAME_SEND_EV_PACKET(perso1.getAccount().getGameClient());
+		if(perso2.getAccount() != null)if(perso2.getAccount().getGameClient() != null)SocketManager.GAME_SEND_EV_PACKET(perso2.getAccount().getGameClient());
 		perso1.set_isTradingWith(0);
 		perso2.set_isTradingWith(0);
 		perso1.setCurExchange(null);
@@ -171,8 +171,8 @@ public class Exchange
 		SocketManager.GAME_SEND_Ow_PACKET(perso2);
 		SocketManager.GAME_SEND_STATS_PACKET(perso1);
 		SocketManager.GAME_SEND_STATS_PACKET(perso2);
-		SocketManager.GAME_SEND_EXCHANGE_VALID(perso1.get_compte().getGameClient(),'a');
-		SocketManager.GAME_SEND_EXCHANGE_VALID(perso2.get_compte().getGameClient(),'a');	
+		SocketManager.GAME_SEND_EXCHANGE_VALID(perso1.getAccount().getGameClient(),'a');
+		SocketManager.GAME_SEND_EXCHANGE_VALID(perso2.getAccount().getGameClient(),'a');	
 		perso1.save();
 		perso2.save();
 	}
@@ -192,10 +192,10 @@ public class Exchange
 		String str = guid+"|"+qua;
 		if(obj == null)return;
 		String add = "|"+obj.getTemplate().getID()+"|"+obj.parseStatsString();
-		SocketManager.GAME_SEND_EXCHANGE_OK(perso1.get_compte().getGameClient(),ok1,perso1.get_GUID());
-		SocketManager.GAME_SEND_EXCHANGE_OK(perso2.get_compte().getGameClient(),ok1,perso1.get_GUID());
-		SocketManager.GAME_SEND_EXCHANGE_OK(perso1.get_compte().getGameClient(),ok2,perso2.get_GUID());
-		SocketManager.GAME_SEND_EXCHANGE_OK(perso2.get_compte().getGameClient(),ok2,perso2.get_GUID());
+		SocketManager.GAME_SEND_EXCHANGE_OK(perso1.getAccount().getGameClient(),ok1,perso1.get_GUID());
+		SocketManager.GAME_SEND_EXCHANGE_OK(perso2.getAccount().getGameClient(),ok1,perso1.get_GUID());
+		SocketManager.GAME_SEND_EXCHANGE_OK(perso1.getAccount().getGameClient(),ok2,perso2.get_GUID());
+		SocketManager.GAME_SEND_EXCHANGE_OK(perso2.getAccount().getGameClient(),ok2,perso2.get_GUID());
 		if(i == 1)
 		{
 			Couple<Integer,Integer> couple = getCoupleInList(items1,guid);
@@ -203,11 +203,11 @@ public class Exchange
 			{
 				couple.second += qua;
 				SocketManager.GAME_SEND_EXCHANGE_MOVE_OK(perso1, 'O', "+", ""+guid+"|"+couple.second);
-				SocketManager.GAME_SEND_EXCHANGE_OTHER_MOVE_OK(perso2.get_compte().getGameClient(), 'O', "+", ""+guid+"|"+couple.second+add);
+				SocketManager.GAME_SEND_EXCHANGE_OTHER_MOVE_OK(perso2.getAccount().getGameClient(), 'O', "+", ""+guid+"|"+couple.second+add);
 				return;
 			}
 			SocketManager.GAME_SEND_EXCHANGE_MOVE_OK(perso1, 'O', "+", str);
-			SocketManager.GAME_SEND_EXCHANGE_OTHER_MOVE_OK(perso2.get_compte().getGameClient(), 'O', "+", str+add);	
+			SocketManager.GAME_SEND_EXCHANGE_OTHER_MOVE_OK(perso2.getAccount().getGameClient(), 'O', "+", str+add);	
 			items1.add(new Couple<Integer,Integer>(guid,qua));
 		}else if(i == 2)
 		{
@@ -216,11 +216,11 @@ public class Exchange
 			{
 				couple.second += qua;
 				SocketManager.GAME_SEND_EXCHANGE_MOVE_OK(perso2, 'O', "+", ""+guid+"|"+couple.second);
-				SocketManager.GAME_SEND_EXCHANGE_OTHER_MOVE_OK(perso1.get_compte().getGameClient(), 'O', "+", ""+guid+"|"+couple.second+add);
+				SocketManager.GAME_SEND_EXCHANGE_OTHER_MOVE_OK(perso1.getAccount().getGameClient(), 'O', "+", ""+guid+"|"+couple.second+add);
 				return;
 			}
 			SocketManager.GAME_SEND_EXCHANGE_MOVE_OK(perso2, 'O', "+", str);
-			SocketManager.GAME_SEND_EXCHANGE_OTHER_MOVE_OK(perso1.get_compte().getGameClient(), 'O', "+", str+add);
+			SocketManager.GAME_SEND_EXCHANGE_OTHER_MOVE_OK(perso1.getAccount().getGameClient(), 'O', "+", str+add);
 			items2.add(new Couple<Integer,Integer>(guid,qua));
 		}
 	}
@@ -236,10 +236,10 @@ public class Exchange
 		ok1 = false;
 		ok2 = false;
 		
-		SocketManager.GAME_SEND_EXCHANGE_OK(perso1.get_compte().getGameClient(),ok1,perso1.get_GUID());
-		SocketManager.GAME_SEND_EXCHANGE_OK(perso2.get_compte().getGameClient(),ok1,perso1.get_GUID());
-		SocketManager.GAME_SEND_EXCHANGE_OK(perso1.get_compte().getGameClient(),ok2,perso2.get_GUID());
-		SocketManager.GAME_SEND_EXCHANGE_OK(perso2.get_compte().getGameClient(),ok2,perso2.get_GUID());
+		SocketManager.GAME_SEND_EXCHANGE_OK(perso1.getAccount().getGameClient(),ok1,perso1.get_GUID());
+		SocketManager.GAME_SEND_EXCHANGE_OK(perso2.getAccount().getGameClient(),ok1,perso1.get_GUID());
+		SocketManager.GAME_SEND_EXCHANGE_OK(perso1.getAccount().getGameClient(),ok2,perso2.get_GUID());
+		SocketManager.GAME_SEND_EXCHANGE_OK(perso2.getAccount().getGameClient(),ok2,perso2.get_GUID());
 		
 		Objet obj = World.data.getObjet(guid);
 		if(obj == null)return;
@@ -252,12 +252,12 @@ public class Exchange
 			{
 				items1.remove(couple);
 				SocketManager.GAME_SEND_EXCHANGE_MOVE_OK(perso1, 'O', "-", ""+guid);
-				SocketManager.GAME_SEND_EXCHANGE_OTHER_MOVE_OK(perso2.get_compte().getGameClient(), 'O', "-", ""+guid);
+				SocketManager.GAME_SEND_EXCHANGE_OTHER_MOVE_OK(perso2.getAccount().getGameClient(), 'O', "-", ""+guid);
 			}else
 			{
 				couple.second = newQua;
 				SocketManager.GAME_SEND_EXCHANGE_MOVE_OK(perso1, 'O', "+", ""+guid+"|"+newQua);
-				SocketManager.GAME_SEND_EXCHANGE_OTHER_MOVE_OK(perso2.get_compte().getGameClient(), 'O', "+", ""+guid+"|"+newQua+add);
+				SocketManager.GAME_SEND_EXCHANGE_OTHER_MOVE_OK(perso2.getAccount().getGameClient(), 'O', "+", ""+guid+"|"+newQua+add);
 			}
 		}else if(i ==2)
 		{
@@ -267,12 +267,12 @@ public class Exchange
 			if(newQua <1)//Si il n'y a pu d'item
 			{
 				items2.remove(couple);
-				SocketManager.GAME_SEND_EXCHANGE_OTHER_MOVE_OK(perso1.get_compte().getGameClient(), 'O', "-", ""+guid);
+				SocketManager.GAME_SEND_EXCHANGE_OTHER_MOVE_OK(perso1.getAccount().getGameClient(), 'O', "-", ""+guid);
 				SocketManager.GAME_SEND_EXCHANGE_MOVE_OK(perso2, 'O', "-", ""+guid);
 			}else
 			{
 				couple.second = newQua;
-				SocketManager.GAME_SEND_EXCHANGE_OTHER_MOVE_OK(perso1.get_compte().getGameClient(), 'O', "+", ""+guid+"|"+newQua+add);
+				SocketManager.GAME_SEND_EXCHANGE_OTHER_MOVE_OK(perso1.getAccount().getGameClient(), 'O', "+", ""+guid+"|"+newQua+add);
 				SocketManager.GAME_SEND_EXCHANGE_MOVE_OK(perso2, 'O', "+", ""+guid+"|"+newQua);
 			}
 		}

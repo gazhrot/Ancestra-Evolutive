@@ -145,7 +145,7 @@ public class JobAction {
 				if(distItem < dist)
 				{
 					SocketManager.GAME_SEND_MESSAGE(P, "Vous êtes trop loin pour pouvoir pêcher ce poisson !", Server.config.getMotdColor());	
-					SocketManager.GAME_SEND_GA_PACKET(P.get_compte().getGameClient(), "", "0", "", "");
+					SocketManager.GAME_SEND_GA_PACKET(P.getAccount().getGameClient(), "", "0", "", "");
 					P.setCurJobAction(null);
 					P.setDoAction(false);
 					//SM.setOnAction(false);
@@ -908,7 +908,7 @@ public class JobAction {
 					if ((type >= 1 && type <= 11) || (type >= 16 && type <= 22) || type == 81 || type == 102 || type == 114
 					|| ing.getTemplate().getPACost() > 0) {
 						objectFm = ing;
-						SocketManager.GAME_SEND_EXCHANGE_OTHER_MOVE_OK_FM(this.player.get_compte().getGameClient(), 'O',"+", objectFm.getGuid() + "|" + 1);
+						SocketManager.GAME_SEND_EXCHANGE_OTHER_MOVE_OK_FM(this.player.getAccount().getGameClient(), 'O',"+", objectFm.getGuid() + "|" + 1);
 						deleteID = idIngredient;
 						Objet newObj = Objet.getCloneObjet(objectFm, 1);
 						if (objectFm.getQuantity() > 1) {

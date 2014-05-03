@@ -38,6 +38,6 @@ public class Invite implements PacketParser {
 		target.setInvitation(client.getPlayer().get_GUID());	
 		client.getPlayer().setInvitation(target.get_GUID());
 		SocketManager.GAME_SEND_GROUP_INVITATION(client, client.getPlayer().get_name(),name);
-		SocketManager.GAME_SEND_GROUP_INVITATION(target.get_compte().getGameClient(), client.getPlayer().get_name(),name);
+		SocketManager.GAME_SEND_GROUP_INVITATION(target.getAccount().getGameClient(), client.getPlayer().get_name(),name);
 	}
 }

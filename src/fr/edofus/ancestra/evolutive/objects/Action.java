@@ -39,8 +39,8 @@ public class Action {
 			SocketManager.GAME_SEND_Im_PACKET(perso, "119");
 			return;
 		}
-		if(perso.get_compte().getGameClient() == null) return;
-		GameClient out = perso.get_compte().getGameClient();	
+		if(perso.getAccount().getGameClient() == null) return;
+		GameClient out = perso.getAccount().getGameClient();	
 		switch(ID)
 		{
 			case -2://créer guilde
@@ -73,7 +73,7 @@ public class Action {
 					SocketManager.GAME_SEND_STATS_PACKET(perso);
 					SocketManager.GAME_SEND_Im_PACKET(perso, "020;"+cost);
 				}
-				SocketManager.GAME_SEND_ECK_PACKET(perso.get_compte().getGameClient(), 5, "");
+				SocketManager.GAME_SEND_ECK_PACKET(perso.getAccount().getGameClient(), 5, "");
 				SocketManager.GAME_SEND_EL_BANK_PACKET(perso);
 				perso.set_away(true);
 				perso.setInBank(true);
@@ -90,7 +90,7 @@ public class Action {
 			break;
 			
 			case 1://Discours NPC
-				out = perso.get_compte().getGameClient();
+				out = perso.getAccount().getGameClient();
 				if(args.equalsIgnoreCase("DV"))
 				{
 					SocketManager.GAME_SEND_END_DIALOG_PACKET(out);
@@ -520,7 +520,7 @@ public class Action {
 					GameClient GT = Server.config.getGameServer().getClients().get((int)b);
 					Player P = GT.getPlayer();
 					if(P == null || P == perso)continue;
-					if(P.get_compte().getCurIp().compareTo(perso.get_compte().getCurIp()) == 0)continue;
+					if(P.getAccount().getCurIp().compareTo(perso.getAccount().getCurIp()) == 0)continue;
 					//SI pas sériane ni neutre et si alignement opposé
 					if(P.get_align() == perso.get_align() || P.get_align() == 0 || P.get_align() == 3)continue;
 					

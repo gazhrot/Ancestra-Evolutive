@@ -159,12 +159,12 @@ public class OtherData extends AbstractDAO<Object>{
 							+ " hors ligne");
 					continue;
 				}
-				if (perso.get_compte() == null) {
+				if (perso.getAccount() == null) {
 					Log.addToShopLog("Le Personnage " + result.getInt("PlayerID")
 							+ " n'est attribue a aucun compte charge");
 					continue;
 				}
-				if (perso.get_compte().getGameClient() == null) {
+				if (perso.getAccount().getGameClient() == null) {
 					Log.addToShopLog("Le Personnage "
 							+ result.getInt("PlayerID")
 							+ " n'a pas thread associe, le personnage est il hors ligne ?");

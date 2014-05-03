@@ -417,7 +417,7 @@ public class House
 				if(!isFirst) packet.append("|");
 				
 				packet.append(house.getKey()).append(";");
-				packet.append(World.data.getPersonnage(house.getValue().get_owner_id()).get_compte().getPseudo()).append(";");
+				packet.append(World.data.getPersonnage(house.getValue().get_owner_id()).getAccount().getPseudo()).append(";");
 				packet.append(World.data.getCarte((short)house.getValue().get_mapid()).getX()).append(",").append(World.data.getCarte((short)house.getValue().get_mapid()).getY()).append(";");
 				packet.append("0;");//TODO : Compétences ...
 				packet.append(house.getValue().get_guild_rights());	

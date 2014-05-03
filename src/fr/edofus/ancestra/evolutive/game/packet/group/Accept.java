@@ -31,10 +31,10 @@ public class Accept implements PacketParser {
 			group = new Group(player, client.getPlayer());
 			SocketManager.GAME_SEND_GROUP_CREATE(client, group);
 			SocketManager.GAME_SEND_PL_PACKET(client, group);
-			SocketManager.GAME_SEND_GROUP_CREATE(player.get_compte().getGameClient(),group);
-			SocketManager.GAME_SEND_PL_PACKET(player.get_compte().getGameClient(), group);
+			SocketManager.GAME_SEND_GROUP_CREATE(player.getAccount().getGameClient(),group);
+			SocketManager.GAME_SEND_PL_PACKET(player.getAccount().getGameClient(), group);
 			player.setGroup(group);
-			SocketManager.GAME_SEND_ALL_PM_ADD_PACKET(player.get_compte().getGameClient(), group);
+			SocketManager.GAME_SEND_ALL_PM_ADD_PACKET(player.getAccount().getGameClient(), group);
 		}else {
 			SocketManager.GAME_SEND_GROUP_CREATE(client, group);
 			SocketManager.GAME_SEND_PL_PACKET(client, group);

@@ -477,9 +477,9 @@ public class Account {
 	public Map<Integer, Player> getPlayers() {
 		Map<Integer, Player> players = new HashMap<>();
 		for(Entry<Integer, Player> player : World.data.getPlayers().entrySet()) {
-			if(player.getValue().get_compte().getUUID() == this.getUUID()) {
-				if(player.getValue().get_compte() == null ||
-						player.getValue().get_compte().getGameClient() == null)
+			if(player.getValue().getAccount().getUUID() == this.getUUID()) {
+				if(player.getValue().getAccount() == null ||
+						player.getValue().getAccount().getGameClient() == null)
 					player.getValue().setAccount(this);
 				players.put(player.getKey(), player.getValue());
 			}

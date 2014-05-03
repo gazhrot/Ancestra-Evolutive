@@ -46,7 +46,7 @@ public class RemoveFriend implements PacketParser {
 					SocketManager.GAME_SEND_FD_PACKET(client.getPlayer(), "Ef");
 					return;
 				}
-				guid = player.get_compte().getUUID();
+				guid = player.getAccount().getUUID();
 			break;
 		}
 		

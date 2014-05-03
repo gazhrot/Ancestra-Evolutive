@@ -905,7 +905,7 @@ public class Fight {
 				{
 					if(!g.getPersos().contains(perso))
 					{
-						SocketManager.GAME_SEND_GA903_ERROR_PACKET(perso.get_compte().getGameClient(),'f',guid);
+						SocketManager.GAME_SEND_GA903_ERROR_PACKET(perso.getAccount().getGameClient(),'f',guid);
 						return;
 					}
 				}
@@ -914,12 +914,12 @@ public class Fight {
 			{
 				if(perso.get_align() == Constants.ALIGNEMENT_NEUTRE)
 				{
-					SocketManager.GAME_SEND_GA903_ERROR_PACKET(perso.get_compte().getGameClient(),'f',guid);
+					SocketManager.GAME_SEND_GA903_ERROR_PACKET(perso.getAccount().getGameClient(),'f',guid);
 					return;
 				}
 				if(_init0.getPersonnage().get_align() != perso.get_align())
 				{
-					SocketManager.GAME_SEND_GA903_ERROR_PACKET(perso.get_compte().getGameClient(),'f',guid);
+					SocketManager.GAME_SEND_GA903_ERROR_PACKET(perso.getAccount().getGameClient(),'f',guid);
 					return;
 				}
 			}
@@ -927,13 +927,13 @@ public class Fight {
 			{
 				if(get_guildID() == perso.get_guild().get_id()) 
 				{
-					SocketManager.GAME_SEND_GA903_ERROR_PACKET(perso.get_compte().getGameClient(),'f',guid);
+					SocketManager.GAME_SEND_GA903_ERROR_PACKET(perso.getAccount().getGameClient(),'f',guid);
 					return;
 				}
 			}
 			if(locked0)
 			{
-				SocketManager.GAME_SEND_GA903_ERROR_PACKET(perso.get_compte().getGameClient(),'f',guid);
+				SocketManager.GAME_SEND_GA903_ERROR_PACKET(perso.getAccount().getGameClient(),'f',guid);
 				return;
 			}
 			if(_type == Constants.FIGHT_TYPE_CHALLENGE)
@@ -943,7 +943,7 @@ public class Fight {
 			{
 				SocketManager.GAME_SEND_GJK_PACKET(perso,2,0,1,0,0,_type);
 			}
-			SocketManager.GAME_SEND_FIGHT_PLACES_PACKET(perso.get_compte().getGameClient(), _map.get_placesStr(), _st1);
+			SocketManager.GAME_SEND_FIGHT_PLACES_PACKET(perso.getAccount().getGameClient(), _map.get_placesStr(), _st1);
 			SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(Fight.this, 3, 950, perso.get_GUID()+"", perso.get_GUID()+","+Constants.ETAT_PORTE+",0");
 			SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(Fight.this, 3, 950, perso.get_GUID()+"", perso.get_GUID()+","+Constants.ETAT_PORTEUR+",0");
 			SocketManager.GAME_SEND_ERASE_ON_MAP_TO_MAP(perso.get_curCarte(), perso.get_GUID());
@@ -969,7 +969,7 @@ public class Fight {
 				{
 					if(!g.getPersos().contains(perso))
 					{
-						SocketManager.GAME_SEND_GA903_ERROR_PACKET(perso.get_compte().getGameClient(),'f',guid);
+						SocketManager.GAME_SEND_GA903_ERROR_PACKET(perso.getAccount().getGameClient(),'f',guid);
 						return;
 					}
 				}
@@ -978,12 +978,12 @@ public class Fight {
 			{
 				if(perso.get_align() == Constants.ALIGNEMENT_NEUTRE)
 				{
-					SocketManager.GAME_SEND_GA903_ERROR_PACKET(perso.get_compte().getGameClient(),'f',guid);
+					SocketManager.GAME_SEND_GA903_ERROR_PACKET(perso.getAccount().getGameClient(),'f',guid);
 					return;
 				}
 				if(_init1.getPersonnage().get_align() != perso.get_align())
 				{
-					SocketManager.GAME_SEND_GA903_ERROR_PACKET(perso.get_compte().getGameClient(),'f',guid);
+					SocketManager.GAME_SEND_GA903_ERROR_PACKET(perso.getAccount().getGameClient(),'f',guid);
 					return;
 				}
 			}
@@ -991,13 +991,13 @@ public class Fight {
 			{
 				if(get_guildID() == perso.get_guild().get_id()) 
 				{
-					SocketManager.GAME_SEND_GA903_ERROR_PACKET(perso.get_compte().getGameClient(),'f',guid);
+					SocketManager.GAME_SEND_GA903_ERROR_PACKET(perso.getAccount().getGameClient(),'f',guid);
 					return;
 				}
 			}
 			if(locked1)
 			{
-				SocketManager.GAME_SEND_GA903_ERROR_PACKET(perso.get_compte().getGameClient(),'f',guid);
+				SocketManager.GAME_SEND_GA903_ERROR_PACKET(perso.getAccount().getGameClient(),'f',guid);
 				return;
 			}
 			if(_type == Constants.FIGHT_TYPE_CHALLENGE)
@@ -1007,7 +1007,7 @@ public class Fight {
 			{
 				SocketManager.GAME_SEND_GJK_PACKET(perso,2,0,1,0,0,_type);
 			}
-			SocketManager.GAME_SEND_FIGHT_PLACES_PACKET(perso.get_compte().getGameClient(), _map.get_placesStr(), _st2);
+			SocketManager.GAME_SEND_FIGHT_PLACES_PACKET(perso.getAccount().getGameClient(), _map.get_placesStr(), _st2);
 			SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(Fight.this, 3, 950, perso.get_GUID()+"", perso.get_GUID()+","+Constants.ETAT_PORTE+",0");
 			SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(Fight.this, 3, 950, perso.get_GUID()+"", perso.get_GUID()+","+Constants.ETAT_PORTEUR+",0");
 			SocketManager.GAME_SEND_ERASE_ON_MAP_TO_MAP(perso.get_curCarte(), perso.get_GUID());
@@ -1043,7 +1043,7 @@ public class Fight {
 				Case cell = getRandomCell(_start1);
 				if(cell == null)return;
 				SocketManager.GAME_SEND_GJK_PACKET(perso,2,0,1,0,0,_type);
-				SocketManager.GAME_SEND_FIGHT_PLACES_PACKET(perso.get_compte().getGameClient(), _map.get_placesStr(), _st2);
+				SocketManager.GAME_SEND_FIGHT_PLACES_PACKET(perso.getAccount().getGameClient(), _map.get_placesStr(), _st2);
 				SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(Fight.this, 3, 950, perso.get_GUID()+"", perso.get_GUID()+","+Constants.ETAT_PORTE+",0");
 				SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(Fight.this, 3, 950, perso.get_GUID()+"", perso.get_GUID()+","+Constants.ETAT_PORTEUR+",0");
 				SocketManager.GAME_SEND_ERASE_ON_MAP_TO_MAP(perso.get_curCarte(), perso.get_GUID());
@@ -1247,7 +1247,7 @@ public class Fight {
         	if(_ordreJeu.get(_curPlayer).getPersonnage() != null)
         	{
         		//On envoie le path qu'au joueur qui se déplace
-        		GameClient out = _ordreJeu.get(_curPlayer).getPersonnage().get_compte().getGameClient();
+        		GameClient out = _ordreJeu.get(_curPlayer).getPersonnage().getAccount().getGameClient();
         		SocketManager.GAME_SEND_GA_PACKET(out,  GA.getId()+"", "1", _ordreJeu.get(_curPlayer).getGUID()+"", "a"+CryptManager.cellID_To_Code(f.get_fightCell(false).getID())+newPath);
         	}
         }
@@ -1320,7 +1320,7 @@ public class Fight {
     		return true;
         }
         //*/
-        f.getPersonnage().get_compte().getGameClient().addAction(GA);
+        f.getPersonnage().getAccount().getGameClient().addAction(GA);
         return true;
     }
 
@@ -1831,7 +1831,7 @@ public class Fight {
         		{
 	        		if(_init1.getPersonnage().get_align() != 0 && _init0.getPersonnage().get_align() != 0)
 	    			{
-	        			if(_init1.getPersonnage().get_compte().getCurIp().compareTo(_init0.getPersonnage().get_compte().getCurIp()) != 0 || Server.config.isMulePvp())
+	        			if(_init1.getPersonnage().getAccount().getCurIp().compareTo(_init0.getPersonnage().getAccount().getCurIp()) != 0 || Server.config.isMulePvp())
 	        			{
 	            			winH = Formulas.calculHonorWin(TEAM1,TEAM2,i);
 	        			}
@@ -1905,7 +1905,7 @@ public class Fight {
         		int winD = 0;
         		if(_init1.getPersonnage().get_align() != 0 && _init0.getPersonnage().get_align() != 0)
     			{
-        			if(_init1.getPersonnage().get_compte().getCurIp().compareTo(_init0.getPersonnage().get_compte().getCurIp()) != 0 || Server.config.isMulePvp())
+        			if(_init1.getPersonnage().getAccount().getCurIp().compareTo(_init0.getPersonnage().getAccount().getCurIp()) != 0 || Server.config.isMulePvp())
             		{
             			winH = Formulas.calculHonorWin(TEAM1,TEAM2,i);
         			}
@@ -2102,7 +2102,7 @@ public class Fight {
 							for(Player z : World.data.getCarte((short)F._Perco.get_mapID()).getPersos())
 							{
 								if(z == null) continue;
-								SocketManager.GAME_SEND_MAP_PERCO_GMS_PACKETS(z.get_compte().getGameClient(), z.get_curCarte());
+								SocketManager.GAME_SEND_MAP_PERCO_GMS_PACKETS(z.getAccount().getGameClient(), z.get_curCarte());
 							}
 						}
 						if(F.hasLeft())continue;
@@ -2749,7 +2749,7 @@ public class Fight {
 									for(Player z : World.data.getCarte((short)_perco.get_mapID()).getPersos())
 									{
 										if(z == null) continue;
-										SocketManager.GAME_SEND_MAP_PERCO_GMS_PACKETS(z.get_compte().getGameClient(), z.get_curCarte());
+										SocketManager.GAME_SEND_MAP_PERCO_GMS_PACKETS(z.getAccount().getGameClient(), z.get_curCarte());
 									}
 								}
 								if(_type == Constants.FIGHT_TYPE_PVM)
@@ -2940,16 +2940,16 @@ public class Fight {
 		{
 			for(Entry<Integer,Fighter> e : _team0.entrySet())
 			{
-				if(e.getValue().getPersonnage() != null && e.getValue().getPersonnage().get_compte().getGameClient() != null)
-					PWs.add(e.getValue().getPersonnage().get_compte().getGameClient());
+				if(e.getValue().getPersonnage() != null && e.getValue().getPersonnage().getAccount().getGameClient() != null)
+					PWs.add(e.getValue().getPersonnage().getAccount().getGameClient());
 			}
 		}
 		else if(teams == 1)
 		{
 			for(Entry<Integer,Fighter> e : _team1.entrySet())
 			{
-				if(e.getValue().getPersonnage() != null && e.getValue().getPersonnage().get_compte().getGameClient() != null)
-					PWs.add(e.getValue().getPersonnage().get_compte().getGameClient());
+				if(e.getValue().getPersonnage() != null && e.getValue().getPersonnage().getAccount().getGameClient() != null)
+					PWs.add(e.getValue().getPersonnage().getAccount().getGameClient());
 			}
 		}
 		SocketManager.GAME_SEND_FIGHT_SHOW_CASE(PWs, guid, cellID);
@@ -2960,17 +2960,17 @@ public class Fight {
 		ArrayList<GameClient> PWs = new ArrayList<>();
 		for(Entry<Integer,Fighter> e : _team0.entrySet())
 		{
-			if(e.getValue().getPersonnage() != null && e.getValue().getPersonnage().get_compte().getGameClient() != null)
-				PWs.add(e.getValue().getPersonnage().get_compte().getGameClient());
+			if(e.getValue().getPersonnage() != null && e.getValue().getPersonnage().getAccount().getGameClient() != null)
+				PWs.add(e.getValue().getPersonnage().getAccount().getGameClient());
 		}
 		for(Entry<Integer,Fighter> e : _team1.entrySet())
 		{
-			if(e.getValue().getPersonnage() != null && e.getValue().getPersonnage().get_compte().getGameClient() != null)
-				PWs.add(e.getValue().getPersonnage().get_compte().getGameClient());
+			if(e.getValue().getPersonnage() != null && e.getValue().getPersonnage().getAccount().getGameClient() != null)
+				PWs.add(e.getValue().getPersonnage().getAccount().getGameClient());
 		}
 		for(Entry<Integer,Player> e : _spec.entrySet())
 		{
-			PWs.add(e.getValue().get_compte().getGameClient());
+			PWs.add(e.getValue().getAccount().getGameClient());
 		}
 		SocketManager.GAME_SEND_FIGHT_SHOW_CASE(PWs, guid, cellID);
 	}

@@ -53,7 +53,7 @@ public class ConditionParser
 			 	jep.addVariable("PG", perso.get_classe());
 			 	jep.addVariable("PS", perso.get_sexe());
 			 	jep.addVariable("PZ", 1);//Abonnement
-			 	jep.addVariable("PX", perso.get_compte().getGmLvl());
+			 	jep.addVariable("PX", perso.getAccount().getGmLvl());
 			 	jep.addVariable("PW", perso.getMaxPod());
 			 	jep.addVariable("PB", perso.get_curCarte().getSubArea().get_id());
 			 	jep.addVariable("PR", (perso.getWife()>0?1:0));

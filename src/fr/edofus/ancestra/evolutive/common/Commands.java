@@ -55,7 +55,7 @@ public class Commands {
 	        	{
 	        		for(Player perso : World.data.getOnlinePersos())
 	        		{
-	        			perso.get_compte().getGameClient().kick();
+	        			perso.getAccount().getGameClient().kick();
 	        		}
 	    			System.exit(0);
 	        	}
@@ -67,7 +67,7 @@ public class Commands {
 	
 	public Commands(Player perso)
 	{
-		this._compte = perso.get_compte();
+		this._compte = perso.getAccount();
 		this._perso = perso;
 		this._out = _compte.getGameClient();
 	}
@@ -582,13 +582,13 @@ public class Commands {
 				return;
 			}
 			String mess = "Vous avez mute "+perso.get_name()+" pour "+time+" secondes";
-			if(perso.get_compte() == null)
+			if(perso.getAccount() == null)
 			{
 				mess = "(Le personnage "+perso.get_name()+" n'etait pas connecte)";
 				SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out,mess);
 				return;
 			}
-			perso.get_compte().mute(true,time);
+			perso.getAccount().mute(true,time);
 			SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out,mess);
 			
 			if(!perso.isOnline())
@@ -619,7 +619,7 @@ public class Commands {
 				return;
 			}
 			
-			perso.get_compte().mute(false,0);
+			perso.getAccount().mute(false,0);
 			String mess = "Vous avez unmute "+perso.get_name();
 			SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out,mess);
 			
@@ -646,7 +646,7 @@ public class Commands {
 			}
 			if(perso.isOnline())
 			{
-				perso.get_compte().getGameClient().kick();
+				perso.getAccount().getGameClient().kick();
 				String mess = "Vous avez kick "+perso.get_name();
 				SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out,mess);
 			}
@@ -1037,7 +1037,7 @@ public class Commands {
 					if(perso.isOnline())
 					{
 						SocketManager.GAME_SEND_SPELL_LIST(perso);
-						SocketManager.GAME_SEND_NEW_LVL_PACKET(perso.get_compte().getGameClient(),perso.get_lvl());
+						SocketManager.GAME_SEND_NEW_LVL_PACKET(perso.getAccount().getGameClient(),perso.get_lvl());
 						SocketManager.GAME_SEND_STATS_PACKET(perso);
 					}
 				}
@@ -1264,15 +1264,15 @@ public class Commands {
 				SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out, "Personnage non trouve");
 				return;
 			}
-			if(P.get_compte() == null)World.database.getAccountData().load(P.getAccID());
-			if(P.get_compte() == null)
+			if(P.getAccount() == null)World.database.getAccountData().load(P.getAccID());
+			if(P.getAccount() == null)
 			{
 				SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out, "Erreur");
 				return;
 			}
-			P.get_compte().setBanned(true);
-			World.database.getAccountData().update(P.get_compte());
-			if(P.get_compte().getGameClient() != null)P.get_compte().getGameClient().kick();
+			P.getAccount().setBanned(true);
+			World.database.getAccountData().update(P.getAccount());
+			if(P.getAccount().getGameClient() != null)P.getAccount().getGameClient().kick();
 			SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out, "Vous avez banni "+P.get_name());
 			return;
 		}else
@@ -1284,14 +1284,14 @@ public class Commands {
 				SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out, "Personnage non trouve");
 				return;
 			}
-			if(P.get_compte() == null)World.database.getAccountData().load(P.getAccID());
-			if(P.get_compte() == null)
+			if(P.getAccount() == null)World.database.getAccountData().load(P.getAccID());
+			if(P.getAccount() == null)
 			{
 				SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out, "Erreur");
 				return;
 			}
-			P.get_compte().setBanned(false);
-			World.database.getAccountData().update(P.get_compte());
+			P.getAccount().setBanned(false);
+			World.database.getAccountData().update(P.getAccount());
 			SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out, "Vous avez debanni "+P.get_name());
 			return;
 		}else
@@ -1626,8 +1626,8 @@ public class Commands {
 					return;
 				}
 			}
-			target.get_compte().setGmLvl(gmLvl);
-			World.database.getAccountData().update(target.get_compte());
+			target.getAccount().setGmLvl(gmLvl);
+			World.database.getAccountData().update(target.getAccount());
 			String str = "Le niveau GM du joueur a ete modifie";
 			SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out,str);
 		}else
@@ -1669,8 +1669,8 @@ public class Commands {
 			{
 				for(Player z : World.data.getOnlinePersos()) 
 				{
-					if(z.get_compte().getGmLvl() < GmAccess)
-						z.get_compte().getGameClient().closeSocket();
+					if(z.getAccount().getGmLvl() < GmAccess)
+						z.getAccount().getGameClient().closeSocket();
 				}
 				SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out, "Les joueurs de GmLevel inferieur a "+GmAccess+" ont ete kicks.");
 			}
@@ -1689,15 +1689,15 @@ public class Commands {
 				return;
 			}
 			
-			if(!Constants.IPcompareToBanIP(P.get_compte().getCurIp()))
+			if(!Constants.IPcompareToBanIP(P.getAccount().getCurIp()))
 			{
-				Constants.BAN_IP += ","+P.get_compte().getCurIp();
-				if(World.database.getOtherData().addBannedIp(P.get_compte().getCurIp()))
+				Constants.BAN_IP += ","+P.getAccount().getCurIp();
+				if(World.database.getOtherData().addBannedIp(P.getAccount().getCurIp()))
 				{
 					SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out, "L'IP a ete banni.");
 				}
 				if(P.isOnline()){
-					P.get_compte().getGameClient().kick();
+					P.getAccount().getGameClient().kick();
 					SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out, "Le joueur a ete kick.");
 				}
 			}else

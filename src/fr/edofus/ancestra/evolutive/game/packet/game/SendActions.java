@@ -197,7 +197,7 @@ public class SendActions implements PacketParser {
 					client.getPlayer().get_curCarte().getCase(cell) == null)
 				return;
 			GA.setArgs(cell+";"+action);
-			client.getPlayer().get_compte().getGameClient().addAction(GA);
+			client.getPlayer().getAccount().getGameClient().addAction(GA);
 		}
 	
 		public static void game_tryCac(GameClient client, String packet)

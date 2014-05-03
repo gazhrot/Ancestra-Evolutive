@@ -24,7 +24,7 @@ public class Accept implements PacketParser {
 			return;
 		
 		SocketManager.GAME_SEND_EXCHANGE_CONFIRM_OK(client, 1);
-		SocketManager.GAME_SEND_EXCHANGE_CONFIRM_OK(target.get_compte().getGameClient(), 1);
+		SocketManager.GAME_SEND_EXCHANGE_CONFIRM_OK(target.getAccount().getGameClient(), 1);
 		
 		Exchange echg = new Exchange(target, client.getPlayer());
 		client.getPlayer().setCurExchange(echg);

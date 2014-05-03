@@ -1056,7 +1056,7 @@ public class Carte {
 				break;
 				case 114://Utiliser (zaap)
 					perso.openZaapMenu();
-					perso.get_compte().getGameClient().removeAction(GA);
+					perso.getAccount().getGameClient().removeAction(GA);
 				break;
 				case 157: //Zaapis
 					String ZaapiList= "";
@@ -1141,13 +1141,13 @@ public class Carte {
 					if(perso.get_lvl()>15)
 					{
 						SocketManager.GAME_SEND_Im_PACKET(perso, "1127");
-						perso.get_compte().getGameClient().removeAction(GA);
+						perso.getAccount().getGameClient().removeAction(GA);
 						return;
 					}
 					short mapID  = Constants.getStartMap(perso.get_classe());
 					int cellID = Constants.getStartCell(perso.get_classe());
 					perso.teleport(mapID, cellID);
-					perso.get_compte().getGameClient().removeAction(GA);
+					perso.getAccount().getGameClient().removeAction(GA);
 				break;
 				case 81://Vérouiller maison
 					House h = House.get_house_id_by_coord(perso.get_curCarte().get_id(), CcellID);

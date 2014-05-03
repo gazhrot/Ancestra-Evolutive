@@ -347,8 +347,8 @@ public class World {
 		List<Player> online = new ArrayList<Player>();
 		for (Entry<Integer, Player> perso : players.entrySet()) {
 			if (perso.getValue().isOnline()
-					&& perso.getValue().get_compte().getGameClient() != null) {
-				if (perso.getValue().get_compte().getGameClient() != null) {
+					&& perso.getValue().getAccount().getGameClient() != null) {
+				if (perso.getValue().getAccount().getGameClient() != null) {
 					online.add(perso.getValue());
 				}
 			}
@@ -401,7 +401,7 @@ public class World {
 				Player saver = saverID != -1 ? getPersonnage(saverID)
 						: null;
 				if (saver != null)
-					_out = saver.get_compte().getGameClient();
+					_out = saver.getAccount().getGameClient();
 
 				set_state((short) 2);
 

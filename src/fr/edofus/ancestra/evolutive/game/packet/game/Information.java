@@ -26,7 +26,7 @@ public class Information implements PacketParser {
 		House.LoadHouse(client.getPlayer(), client.getPlayer().get_curCarte().get_id());
 		//Objets sur la carte
 		SocketManager.GAME_SEND_MAP_GMS_PACKETS(client.getPlayer().get_curCarte(), client.getPlayer());
-		SocketManager.GAME_SEND_MAP_MOBS_GMS_PACKETS(client.getPlayer().get_compte().getGameClient(), client.getPlayer().get_curCarte());
+		SocketManager.GAME_SEND_MAP_MOBS_GMS_PACKETS(client.getPlayer().getAccount().getGameClient(), client.getPlayer().get_curCarte());
 		SocketManager.GAME_SEND_MAP_NPCS_GMS_PACKETS(client, client.getPlayer().get_curCarte());
 		SocketManager.GAME_SEND_MAP_PERCO_GMS_PACKETS(client, client.getPlayer().get_curCarte());
 		SocketManager.GAME_SEND_MAP_OBJECTS_GDS_PACKETS(client, client.getPlayer().get_curCarte());

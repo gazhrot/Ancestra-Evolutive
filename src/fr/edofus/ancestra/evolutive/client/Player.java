@@ -65,7 +65,7 @@ public class Player {
 	private int _size;
 	private int _gfxID;
 	private int _orientation = 1;
-	private Account _compte;
+	private Account account;
 	private int _accID;
 	private boolean _canAggro = true;
 	private String _emotes = "7667711";
@@ -247,8 +247,8 @@ public class Player {
 			if(_persos.size() == 1)
 			{
 				_persos.get(0).setGroup(null);
-				if(_persos.get(0).get_compte() == null || _persos.get(0).get_compte().getGameClient() == null)return;
-				SocketManager.GAME_SEND_PV_PACKET(_persos.get(0).get_compte().getGameClient(),"");
+				if(_persos.get(0).getAccount() == null || _persos.get(0).getAccount().getGameClient() == null)return;
+				SocketManager.GAME_SEND_PV_PACKET(_persos.get(0).getAccount().getGameClient(),"");
 			}
 			else
 				SocketManager.GAME_SEND_PM_DEL_PACKET_TO_GROUP(this,p.get_GUID());
@@ -513,7 +513,7 @@ public class Player {
 		this._mountXpGive = mountXp;
 		this._baseStats = new Stats(stats,true,this);
 		this._accID = _compte;
-		this._compte = World.data.getCompte(_compte);
+		this.account = World.data.getCompte(_compte);
 		this._showFriendConnection = seeFriend==1;
 		this._wife = wifeGuid; 
 		if(this.get_align() != 0)
@@ -697,7 +697,7 @@ public class Player {
 		_PDV++;
 	}
 	
-	public static Player CREATE_PERSONNAGE(String name, int sexe, int classe, int color1, int color2, int color3,Account compte)
+	public static Player CREATE_PERSONNAGE(String name, int sexe, int classe, int color1, int color2, int color3, Account compte)
 	{
 		String z = "";
 		if(Server.config.isAllZaaps())
@@ -852,8 +852,8 @@ public class Player {
 		this._kamas = l;
 	}
 
-	public Account get_compte() {
-		return _compte;
+	public Account getAccount() {
+		return account;
 	}
 
 	public int get_spellPts() {
@@ -1161,14 +1161,14 @@ public class Player {
 	
 	public void OnJoinGame()
 	{
-		if(_compte.getGameClient() == null)
+		if(this.getAccount().getGameClient() == null)
 			return; 
 		
 		if(World.events.call(new PlayerJoinEvent(this)))
 			return;
 		
-		GameClient out = _compte.getGameClient();
-		_compte.setCurPlayer(this);
+		GameClient out = this.getAccount().getGameClient();
+		this.getAccount().setCurPlayer(this);
 		_isOnline = true;
 		
 		if(_mount != null)
@@ -1200,12 +1200,12 @@ public class Player {
 			{
 				for(JobStat sm : list)
 					if(sm.getTemplate().isValidTool(obj.getTemplate().getID()))
-						SocketManager.GAME_SEND_OT_PACKET(_compte.getGameClient(),sm.getTemplate().getId());
+						SocketManager.GAME_SEND_OT_PACKET(this.getAccount().getGameClient(),sm.getTemplate().getId());
 			}
 		}
 		//Fin métier
 		SocketManager.GAME_SEND_ALIGNEMENT(out, _align);
-		SocketManager.GAME_SEND_ADD_CANAL(out,_canaux+"^"+(_compte.getGmLvl()>0?"@¤":""));
+		SocketManager.GAME_SEND_ADD_CANAL(out,_canaux+"^"+(this.getAccount().getGmLvl()>0?"@¤":""));
 		if(_guildMember != null)
 			SocketManager.GAME_SEND_gS_PACKET(this,_guildMember);
 		SocketManager.GAME_SEND_ZONE_ALLIGN_STATUT(out);
@@ -1214,16 +1214,16 @@ public class Player {
 		SocketManager.GAME_SEND_RESTRICTIONS(out);
 		SocketManager.GAME_SEND_Ow_PACKET(this);
 		SocketManager.GAME_SEND_SEE_FRIEND_CONNEXION(out,_showFriendConnection);
-		this._compte.sendOnline();
+		this.getAccount().sendOnline();
 		
 		//Messages de bienvenue
 		SocketManager.GAME_SEND_Im_PACKET(this, "189");
-		if(!_compte.getLastConnection().equals("") && !_compte.getLastIp().equals(""))
-			SocketManager.GAME_SEND_Im_PACKET(this, "0152;"+_compte.getLastConnection()+"~"+_compte.getLastIp());
-		SocketManager.GAME_SEND_Im_PACKET(this, "0153;"+_compte.getCurIp());
+		if(!this.getAccount().getLastConnection().equals("") && !this.getAccount().getLastIp().equals(""))
+			SocketManager.GAME_SEND_Im_PACKET(this, "0152;"+this.getAccount().getLastConnection()+"~"+this.getAccount().getLastIp());
+		SocketManager.GAME_SEND_Im_PACKET(this, "0153;"+this.getAccount().getCurIp());
 		//Fin messages
 		//Actualisation de l'ip
-		_compte.setLastIp(_compte.getCurIp());
+		this.getAccount().setLastIp(this.getAccount().getCurIp());
 		
 		//Mise a jour du lastConnectionDate
 		Date actDate = new Date();
@@ -1237,12 +1237,12 @@ public class Player {
 		String heure = dateFormat.format(actDate);
 		dateFormat = new SimpleDateFormat("mm");
 		String min = dateFormat.format(actDate);
-		_compte.setLastConnection(annee+"~"+mois+"~"+jour+"~"+heure+"~"+min);
+		this.getAccount().setLastConnection(annee+"~"+mois+"~"+jour+"~"+heure+"~"+min);
 		if(_guildMember != null)
 			_guildMember.setLastCo(annee+"~"+mois+"~"+jour+"~"+heure+"~"+min);
 		
 		//Actualisation dans la DB
-		World.database.getAccountData().update(_compte);
+		World.database.getAccountData().update(this.getAccount());
 		
 		if(!Server.config.getMotd().equals(""))//Si le motd est notifié
 		{
@@ -1264,8 +1264,8 @@ public class Player {
 	
 	public void sendGameCreate()
 	{
-		if(_compte.getGameClient() == null) return;
-		GameClient out = _compte.getGameClient();
+		if(this.getAccount().getGameClient() == null) return;
+		GameClient out = this.getAccount().getGameClient();
 		
 		if(is_showSeller() == true && World.data.getSeller(get_curCarte().get_id()) != null && World.data.getSeller(get_curCarte().get_id()).contains(get_GUID()))
 		{
@@ -1656,7 +1656,7 @@ public class Player {
 	public void refreshMapAfterFight()
 	{
 		_curCarte.addPlayer(this);
-		if(_compte.getGameClient() != null && _compte.getGameClient() != null)
+		if(this.getAccount().getGameClient() != null && this.getAccount().getGameClient() != null)
 		{
 			SocketManager.GAME_SEND_STATS_PACKET(this);
 			SocketManager.GAME_SEND_ILS_PACKET(this, 1000);
@@ -1721,7 +1721,7 @@ public class Player {
 
 	public boolean isMuted()
 	{
-		return _compte.isMuted();
+		return this.getAccount().isMuted();
 	}
 	public void set_curCarte(Carte carte)
 	{
@@ -1783,8 +1783,8 @@ public class Player {
 	public String getBankItemsIDSplitByChar(String splitter)
 	{
 		StringBuilder str = new StringBuilder();
-		if(_compte.getBank().isEmpty())return "";
-		for(int entry : _compte.getBank().keySet())
+		if(this.getAccount().getBank().isEmpty())return "";
+		for(int entry : this.getAccount().getBank().keySet())
 		{
 			str.append(entry).append(splitter);
 		}
@@ -1937,7 +1937,7 @@ public class Player {
 			getGuildMember().setLevel(_lvl);
 		}
 		if(send && _isOnline) {
-			SocketManager.GAME_SEND_NEW_LVL_PACKET(_compte.getGameClient(),_lvl);
+			SocketManager.GAME_SEND_NEW_LVL_PACKET(this.getAccount().getGameClient(),_lvl);
 			SocketManager.GAME_SEND_STATS_PACKET(this);
 			SocketManager.GAME_SEND_SPELL_LIST(this);
 		}
@@ -1950,7 +1950,7 @@ public class Player {
 			levelUp(false,false);
 		if(_isOnline) {
 			if(exLevel < _lvl) 
-				SocketManager.GAME_SEND_NEW_LVL_PACKET(_compte.getGameClient(),_lvl);
+				SocketManager.GAME_SEND_NEW_LVL_PACKET(this.getAccount().getGameClient(),_lvl);
 			
 			SocketManager.GAME_SEND_STATS_PACKET(Player.this);
 			SocketManager.GAME_SEND_SPELL_LIST(Player.this);
@@ -2029,7 +2029,7 @@ public class Player {
 			Objet obj = getObjetByPos(Constants.ITEM_POS_ARME);
 			if(obj != null)
 				if(sm.getTemplate().isValidTool(obj.getTemplate().getID()))
-					SocketManager.GAME_SEND_OT_PACKET(_compte.getGameClient(),m.getId());
+					SocketManager.GAME_SEND_OT_PACKET(this.getAccount().getGameClient(),m.getId());
 		}
 		return pos;
 	}
@@ -2101,7 +2101,7 @@ public class Player {
 		//Si case invalide
 		if(!_curCarte.getCase(cellID).canDoAction(action))return;
 		_curCarte.getCase(cellID).startAction(this,GA);
-	//	_compte.getGameClient().removeAction(GA);
+	//	this.getAccount().getGameClient().removeAction(GA);
 	}
 
 	public void finishActionOnCell(GameAction GA)
@@ -2118,9 +2118,9 @@ public class Player {
 	public void teleport(short newMapID, int newCellID)
 	{
 		GameClient PW = null;
-		if(_compte.getGameClient() != null)
+		if(this.getAccount().getGameClient() != null)
 		{
-			PW = _compte.getGameClient();
+			PW = this.getAccount().getGameClient();
 		}
 		if(World.data.getCarte(newMapID) == null)
 		{
@@ -2186,7 +2186,7 @@ public class Player {
 	
 	public int getBankCost()
 	{
-		return _compte.getBank().size();
+		return this.getAccount().getBank().size();
 	}
 	
 	public String getStringVar(String str)
@@ -2202,13 +2202,13 @@ public class Player {
 
 	public void setBankKamas(long i)
 	{
-		_compte.setBankKamas(i);
-		World.database.getAccountData().update(_compte);
+		this.getAccount().setBankKamas(i);
+		World.database.getAccountData().update(this.getAccount());
 	}
 	
 	public long getBankKamas()
 	{
-		return _compte.getBankKamas();
+		return this.getAccount().getBankKamas();
 	}
 
 	public void setInBank(boolean b)
@@ -2223,7 +2223,7 @@ public class Player {
 	public String parseBankPacket()
 	{
 		StringBuilder packet = new StringBuilder();
-		for(Entry<Integer, Objet> entry : _compte.getBank().entrySet())
+		for(Entry<Integer, Objet> entry : this.getAccount().getBank().entrySet())
 			packet.append("O").append(entry.getValue().parseItem()).append(";");
 		if(getBankKamas() != 0)
 			packet.append("G").append(getBankKamas());
@@ -2262,7 +2262,7 @@ public class Player {
 				//On enleve l'objet du sac du joueur
 				removeItem(PersoObj.getGuid());
 				//On met l'objet du sac dans la banque, avec la meme quantité
-				_compte.getBank().put(PersoObj.getGuid(), PersoObj);
+				this.getAccount().getBank().put(PersoObj.getGuid(), PersoObj);
 				String str = "O+"+PersoObj.getGuid()+"|"+PersoObj.getQuantity()+"|"+PersoObj.getTemplate().getID()+"|"+PersoObj.parseStatsString();
 				SocketManager.GAME_SEND_EsK_PACKET(this, str);
 				SocketManager.GAME_SEND_REMOVE_ITEM_PACKET(this, guid);
@@ -2275,7 +2275,7 @@ public class Player {
 				//On ajoute l'objet a la banque et au monde
 				BankObj = Objet.getCloneObjet(PersoObj, qua);
 				World.data.addObjet(BankObj, true);
-				_compte.getBank().put(BankObj.getGuid(), BankObj);
+				this.getAccount().getBank().put(BankObj.getGuid(), BankObj);
 				
 				//Envoie des packets
 				String str = "O+"+BankObj.getGuid()+"|"+BankObj.getQuantity()+"|"+BankObj.getTemplate().getID()+"|"+BankObj.parseStatsString();
@@ -2312,12 +2312,12 @@ public class Player {
 			}
 		}
 		SocketManager.GAME_SEND_Ow_PACKET(this);
-		World.database.getAccountData().update(_compte);
+		World.database.getAccountData().update(this.getAccount());
 	}
 
 	private Objet getSimilarBankItem(Objet obj)
 	{
-		for(Objet value : _compte.getBank().values())
+		for(Objet value : this.getAccount().getBank().values())
 		{
 			if(value.getTemplate().getType() == 85)
 				continue;
@@ -2331,7 +2331,7 @@ public class Player {
 	{
 		Objet BankObj = World.data.getObjet(guid);
 		//Si le joueur n'a pas l'item dans sa banque ...
-		if(_compte.getBank().get(guid) == null)
+		if(this.getAccount().getBank().get(guid) == null)
 		{
 			Log.addToLog("Le joueur "+_name+" a tenter de retirer un objet en banque qu'il n'avait pas.");
 			return;
@@ -2347,7 +2347,7 @@ public class Player {
 			if(newQua <= 0)
 			{
 				//On retire l'item de la banque
-				_compte.getBank().remove(guid);
+				this.getAccount().getBank().remove(guid);
 				//On l'ajoute au joueur
 				_items.put(guid, BankObj);
 				
@@ -2380,7 +2380,7 @@ public class Player {
 			if(newQua <= 0)
 			{
 				//On retire l'item de la banque
-				_compte.getBank().remove(BankObj.getGuid());
+				this.getAccount().getBank().remove(BankObj.getGuid());
 				World.data.removeItem(BankObj.getGuid());
 				//On Modifie la quantité de l'item du sac du joueur
 				PersoObj.setQuantity(PersoObj.getQuantity() + BankObj.getQuantity());
@@ -2406,7 +2406,7 @@ public class Player {
 			}
 		}
 		SocketManager.GAME_SEND_Ow_PACKET(this);
-		World.database.getAccountData().update(_compte);
+		World.database.getAccountData().update(this.getAccount());
 	}
 
 	public void openMountPark()
@@ -2625,7 +2625,7 @@ public class Player {
 		str.append(";");
 		str.append("?;");//FIXME
 		str.append(this._name).append(";");
-		if(_compte.isFriendWith(guid))
+		if(this.getAccount().isFriendWith(guid))
 		{
 			str.append(_lvl).append(";");
 			str.append(_align).append(";");
@@ -2646,7 +2646,7 @@ public class Player {
 		str.append(";");
 		str.append("?;");//FIXME
 		str.append(this._name).append(";");
-		if(_compte.isFriendWith(guid))
+		if(this.getAccount().isFriendWith(guid))
 		{
 			str.append(_lvl).append(";");
 			str.append(_align).append(";");
@@ -2849,9 +2849,8 @@ public class Player {
 		return _accID;
 	}
 
-	public void setAccount(Account c)
-	{
-		_compte = c;
+	public void setAccount(Account account) {
+		this.account = account;
 	}
 	public String parseZaapList()//Pour le packet WC
 	{
@@ -3028,7 +3027,7 @@ public class Player {
 		
 		if(_isInvisible)
 		{
-			return _compte.isFriendWith(sender.get_compte().getUUID());
+			return this.getAccount().isFriendWith(sender.getAccount().getUUID());
 		}
 		
 		return true;
@@ -3704,7 +3703,7 @@ public class Player {
 
 	public void save() {
 		World.database.getCharacterData().update(this);
-		World.database.getAccountData().update(this.get_compte());
+		World.database.getAccountData().update(this.getAccount());
 	}
 
 	public Waiter getWaiter() {

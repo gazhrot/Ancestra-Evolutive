@@ -102,7 +102,7 @@ public class Request implements PacketParser {
 						return;
 					}
 					SocketManager.GAME_SEND_EXCHANGE_REQUEST_OK(client, client.getPlayer().get_GUID(), guidTarget,1);
-					SocketManager.GAME_SEND_EXCHANGE_REQUEST_OK(target.get_compte().getGameClient(),client.getPlayer().get_GUID(), guidTarget,1);
+					SocketManager.GAME_SEND_EXCHANGE_REQUEST_OK(target.getAccount().getGameClient(),client.getPlayer().get_GUID(), guidTarget,1);
 					client.getPlayer().set_isTradingWith(guidTarget);
 					target.set_isTradingWith(client.getPlayer().get_GUID());
 				} catch(NumberFormatException e) {}

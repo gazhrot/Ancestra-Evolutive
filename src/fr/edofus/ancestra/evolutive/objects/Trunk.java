@@ -186,7 +186,7 @@ public class Trunk {
 		
 		if(packet.compareTo(t.get_key()) == 0 || isTrunk)//Si c'est chez lui ou que le mot de passe est bon
 		{
-			SocketManager.GAME_SEND_ECK_PACKET(P.get_compte().getGameClient(), 5, "");
+			SocketManager.GAME_SEND_ECK_PACKET(P.getAccount().getGameClient(), 5, "");
 			SocketManager.GAME_SEND_EL_TRUNK_PACKET(P, t);
 			closeCode(P);
 		}
