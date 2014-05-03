@@ -641,7 +641,7 @@ public class World {
 		C.getPlayers().clear();
 		database.getCharacterData().loadByAccount(C);
 		for (Player P : players.values()) {
-			if (P.getAccID() == C.getUUID()) {
+			if (P.getAccount().getUUID() == C.getUUID()) {
 				P.setAccount(C);
 			}
 		}

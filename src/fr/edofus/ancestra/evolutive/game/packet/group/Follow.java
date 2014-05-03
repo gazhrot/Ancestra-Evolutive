@@ -1,9 +1,7 @@
 package fr.edofus.ancestra.evolutive.game.packet.group;
 
-
-
 import fr.edofus.ancestra.evolutive.client.Player;
-import fr.edofus.ancestra.evolutive.client.Player.Group;
+import fr.edofus.ancestra.evolutive.client.other.Group;
 import fr.edofus.ancestra.evolutive.common.SocketManager;
 import fr.edofus.ancestra.evolutive.core.World;
 import fr.edofus.ancestra.evolutive.game.GameClient;

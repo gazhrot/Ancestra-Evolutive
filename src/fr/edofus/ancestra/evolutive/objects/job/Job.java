@@ -84,7 +84,7 @@ public class Job {
 	}
 	
 	public static int getActualJet(Objet obj, String statsModif) {
-		for(Entry<Integer,Integer> entry : obj.getStats().getMap().entrySet()) {
+		for(Entry<Integer,Integer> entry : obj.getStats().getEffects().entrySet()) {
 			if(Integer.toHexString(entry.getKey()).compareTo(statsModif) > 0) {//Effets inutiles
 				continue;
 			}else 
@@ -99,7 +99,7 @@ public class Job {
 	{
 		if (!obj.parseStatsString().isEmpty()) 
 		{
-			for (Entry<Integer, Integer> entry : obj.getStats().getMap().entrySet()) 
+			for (Entry<Integer, Integer> entry : obj.getStats().getEffects().entrySet()) 
 			{
 				if (Integer.toHexString(entry.getKey()).compareTo(stats) > 0)//Effets inutiles
 				{

@@ -200,7 +200,7 @@ public class House
 				}
 				SocketManager.GAME_SEND_hOUSE(P, packet.toString());
 
-				if(house.getValue().get_owner_id() == P.getAccID())
+				if(house.getValue().get_owner_id() == P.getAccount().getUUID())
 				{
 					StringBuilder packet1 = new StringBuilder();
 					packet1.append("L+|").append(house.getValue().get_id()).append(";").append(house.getValue().get_access()).append(";");
@@ -233,7 +233,7 @@ public class House
 		
 		House h = P.getInHouse();
 		if(h == null) return;
-		if(h.get_owner_id() == P.getAccID() || (P.get_guild() != null && P.get_guild().get_id() == h.get_guild_id() && canDo(Constants.H_GNOCODE)))//C'est sa maison ou même guilde + droits entrer sans pass
+		if(h.get_owner_id() == P.getAccount().getUUID() || (P.get_guild() != null && P.get_guild().get_id() == h.get_guild_id() && canDo(Constants.H_GNOCODE)))//C'est sa maison ou même guilde + droits entrer sans pass
 		{
 			OpenHouse(P, "-", true);
 		}
@@ -371,7 +371,7 @@ public class House
 
 	public boolean isHouse(Player P, House h)//Savoir si c'est sa maison
 	{
-		if(h.get_owner_id() == P.getAccID()) return true;
+		if(h.get_owner_id() == P.getAccount().getUUID()) return true;
 		else return false;
 	}
 	
@@ -431,7 +431,7 @@ public class House
 	{
 		for(Entry<Integer, House> house : World.data.getHouses().entrySet())
 		{
-			if(house.getValue().get_owner_id() == P.getAccID())
+			if(house.getValue().get_owner_id() == P.getAccount().getUUID())
 			{
 				return true;
 			}
@@ -556,7 +556,7 @@ public class House
 	{
 		for(Entry<Integer, House> house : World.data.getHouses().entrySet())
 		{
-			if(house.getValue().get_owner_id() == P.getAccID())
+			if(house.getValue().get_owner_id() == P.getAccount().getUUID())
 			{
 				return house.getValue();
 			}

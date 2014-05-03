@@ -50,7 +50,7 @@ public class CharacterData extends AbstractDAO<Player>{
 			statement.setLong(13,obj.get_curExp());
 			statement.setInt(14,obj.get_size());
 			statement.setInt(15,obj.get_gfxID());
-			statement.setInt(16,obj.getAccID());
+			statement.setInt(16,obj.getAccount().getUUID());
 			statement.setInt(17,obj.get_curCell().getID());
 			statement.setInt(18,obj.get_curCarte().get_id());
 			statement.setString(19, obj.parseSpellToDB());

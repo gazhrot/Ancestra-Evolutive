@@ -1264,7 +1264,7 @@ public class Commands {
 				SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out, "Personnage non trouve");
 				return;
 			}
-			if(P.getAccount() == null)World.database.getAccountData().load(P.getAccID());
+			if(P.getAccount() == null)World.database.getAccountData().load(P.getAccount().getUUID());
 			if(P.getAccount() == null)
 			{
 				SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out, "Erreur");
@@ -1284,7 +1284,7 @@ public class Commands {
 				SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out, "Personnage non trouve");
 				return;
 			}
-			if(P.getAccount() == null)World.database.getAccountData().load(P.getAccID());
+			if(P.getAccount() == null)World.database.getAccountData().load(P.getAccount().getUUID());
 			if(P.getAccount() == null)
 			{
 				SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out, "Erreur");

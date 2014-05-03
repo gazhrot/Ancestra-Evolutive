@@ -13,28 +13,36 @@ import fr.edofus.ancestra.evolutive.core.Server;
 import fr.edofus.ancestra.evolutive.core.World;
 import fr.edofus.ancestra.evolutive.enums.EmulatorInfos;
 
-public class LoginClient implements Client{
-	private String _hashKey;
-	private int _packetNum = 0;
-	private String _accountName;
-	private String _hashPass;
+public class LoginClient implements Client {
+	private String key;
+	private int packet = 0;
+	private String name;
+	private String password;
 	private Account account;
 	private IoSession session;
 	
 	public LoginClient(IoSession session) {
-		this.setSession(session);
+		this.session = session;
 	}
 	
 	public IoSession getSession() {
 		return session;
 	}
-
-	public void setSession(IoSession session) {
-		this.session = session;
+	
+	public Account getAccount() {
+		return account;
+	}
+	
+	public void setKey(String key) {
+		this.key = key;
+	}
+	
+	public void addPacket() {
+		this.packet++;
 	}
 	
 	public void parsePacket(String packet) {
-		switch(_packetNum)
+		switch(this.packet)
 		{
 			case 1://Version
 				if(!packet.equalsIgnoreCase(EmulatorInfos.CLIENT_RELESE.toString()) && !Constants.IGNORE_VERSION)
@@ -46,7 +54,7 @@ public class LoginClient implements Client{
 				}
 				break;
 			case 2://Account Name
-				_accountName = packet.toLowerCase();
+				name = packet.toLowerCase();
 				break;
 			case 3://HashPass
 				if(!packet.substring(0, 2).equalsIgnoreCase("#1"))
@@ -55,29 +63,29 @@ public class LoginClient implements Client{
 						this.kick();
 					} catch (Exception e) {}
 				}
-				_hashPass = packet;
+				this.password = packet;
 				
-				if(Account.login(_accountName,_hashPass,get_hashKey()))
+				if(Account.login(name, this.password, this.key))
 				{
-					account = World.data.getCompteByName(_accountName);
+					this.account = World.data.getCompteByName(name);
 					
-					if(account.isLogged()) {
-						if(account.getLoginClient() != null)
-							account.getLoginClient().kick();
-						else if(account.getGameClient() != null) 
-							account.getGameClient().kick();
+					if(this.getAccount().isLogged()) {
+						if(this.getAccount().getLoginClient() != null)
+							this.getAccount().getLoginClient().kick();
+						else if(this.getAccount().getGameClient() != null) 
+							this.getAccount().getGameClient().kick();
 						
-						if(!account.isLogged()) {
+						if(!this.getAccount().isLogged()) {
 							SocketManager.REALM_SEND_ALREADY_CONNECTED(this);
 							kick();
 							return;
 						} else {
-							World.data.getAccounts().remove(account.getUUID());
-							account = World.database.getAccountData().loadByName(_accountName);
+							World.data.getAccounts().remove(this.getAccount().getUUID());
+							this.account = World.database.getAccountData().loadByName(name);
 						}
 					}
 					
-					if(account.isBanned())
+					if(this.getAccount().isBanned())
 					{
 						SocketManager.REALM_SEND_BANNED(this);
 						try {
@@ -88,7 +96,7 @@ public class LoginClient implements Client{
 					if(Server.config.getPlayerLimitOnServer() != -1 && Server.config.getPlayerLimitOnServer() <= Server.config.getGameServer().getPlayerNumber())
 					{
 						//Seulement si joueur
-						if(account.getGmLvl() == 0  && !account.isVip())
+						if(this.getAccount().getGmLvl() == 0  && !this.getAccount().isVip())
 						{
 							SocketManager.REALM_SEND_TOO_MANY_PLAYER_ERROR(this);
 							try {
@@ -97,7 +105,7 @@ public class LoginClient implements Client{
 							return;
 						}
 					}
-					if(World.data.getGmAccess() > account.getGmLvl())
+					if(World.data.getGmAccess() > this.getAccount().getGmLvl())
 					{
 						SocketManager.REALM_SEND_TOO_MANY_PLAYER_ERROR(this);
 						return;
@@ -120,11 +128,11 @@ public class LoginClient implements Client{
 							return;
 						}
 					}
-					account.setLoginClient(this);
-					account.setCurIp(ip);
-					account.setLogged(true);
-					World.database.getAccountData().update(account);
-					SocketManager.REALM_SEND_Ad_Ac_AH_AlK_AQ_PACKETS(this, account.getPseudo(),(account.getGmLvl()>0?(1):(0)), account.getQuestion() ); 
+					this.getAccount().setLoginClient(this);
+					this.getAccount().setCurIp(ip);
+					this.getAccount().setLogged(true);
+					World.database.getAccountData().update(this.getAccount());
+					SocketManager.REALM_SEND_Ad_Ac_AH_AlK_AQ_PACKETS(this, this.getAccount().getPseudo(),(this.getAccount().getGmLvl()>0?(1):(0)), this.getAccount().getQuestion() ); 
 				}else//Si le compte n'a pas �t� reconnu
 				{
 					SocketManager.REALM_SEND_LOGIN_ERROR(this);
@@ -136,44 +144,32 @@ public class LoginClient implements Client{
 			default: 
 				if(packet.substring(0,2).equals("Af"))
 				{
-					_packetNum--;
-					Pending.PendingSystem(account);
+					this.packet--;
+					Pending.PendingSystem(this.getAccount());
 				}else
 				if(packet.substring(0,2).equals("Ax"))
 				{
-					if(account == null)return;
-					account = World.data.getCompteByName(_accountName);
-					SocketManager.REALM_SEND_PERSO_LIST(this, account.getPlayers().size());
+					if(this.getAccount() == null)return;
+					this.account = World.data.getCompteByName(name);
+					SocketManager.REALM_SEND_PERSO_LIST(this, this.getAccount().getPlayers().size());
 				}else
 				if(packet.equals("AX1"))
 				{
-					Server.config.getGameServer().addWaitingCompte(account);
-					String ip = account.getCurIp();
-					SocketManager.REALM_SEND_GAME_SERVER_IP(this, account.getUUID(),ip.equals("127.0.0.1"));
+					Server.config.getGameServer().addWaitingCompte(this.getAccount());
+					String ip = this.getAccount().getCurIp();
+					SocketManager.REALM_SEND_GAME_SERVER_IP(this, this.getAccount().getUUID(),ip.equals("127.0.0.1"));
 				}
 				break;
 		}
 	}
 	
 	public void kick() {
-		account.setLogged(false);
-		World.database.getAccountData().update(account);
+		this.getAccount().setLogged(false);
+		World.database.getAccountData().update(this.getAccount());
 		
 		if(!session.isClosing())
 			session.close(true);
 		Server.config.getRealmServer().getClients().remove(session.getId());
-		account.setLoginClient(null);
-	}
-
-	public String get_hashKey() {
-		return _hashKey;
-	}
-
-	public void set_hashKey(String _hashKey) {
-		this._hashKey = _hashKey;
-	}	
-
-	public void addPacket() {
-		this._packetNum++;
+		this.getAccount().setLoginClient(null);
 	}
 }

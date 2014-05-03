@@ -157,7 +157,7 @@ public class Trunk {
 		House h = World.data.getHouse(_house_id);
 		
 		if(t == null) return;
-		if(t.get_owner_id() == P.getAccID() || (P.get_guild() == null ? false : P.get_guild().get_id() == h.get_guild_id() && h.canDo(Constants.C_GNOCODE)))
+		if(t.get_owner_id() == P.getAccount().getUUID() || (P.get_guild() == null ? false : P.get_guild().get_id() == h.get_guild_id() && h.canDo(Constants.C_GNOCODE)))
 		{
 			OpenTrunk(P, "-", true);
 		}
@@ -206,7 +206,7 @@ public class Trunk {
 	
 	public boolean isTrunk(Player P, Trunk t)//Savoir si c'est son coffre
 	{
-		if(t.get_owner_id() == P.getAccID()) return true;
+		if(t.get_owner_id() == P.getAccount().getUUID()) return true;
 		else return false;
 	}
 	

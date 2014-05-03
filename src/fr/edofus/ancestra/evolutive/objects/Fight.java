@@ -1,7 +1,7 @@
 package fr.edofus.ancestra.evolutive.objects;
 
 import fr.edofus.ancestra.evolutive.client.Player;
-import fr.edofus.ancestra.evolutive.client.Player.Group;
+import fr.edofus.ancestra.evolutive.client.other.Group;
 import fr.edofus.ancestra.evolutive.common.Constants;
 import fr.edofus.ancestra.evolutive.common.Couple;
 import fr.edofus.ancestra.evolutive.common.CryptManager;
@@ -1591,11 +1591,11 @@ public class Fight {
         for(Fighter F : TEAM2)
         {
         	if(F.isInvocation())continue;
-        	if(curp != null && curp.get_traque() != null && curp.get_traque().get_traqued() == F.getPersonnage())
+        	if(curp != null && curp.getStalk() != null && curp.getStalk().getTraque() == F.getPersonnage())
         	{ 
         		SocketManager.GAME_SEND_MESSAGE(curp, "Thomas Sacre : Contrat fini, reviens me voir pour recuperer ta recompense.", "000000"); 
-        		curp.get_traque().set_traqued(null); 
-        		curp.get_traque().set_time(-2); 
+        		curp.getStalk().setTraque(null); 
+        		curp.getStalk().setTime(-2); 
         	} 
         }
         //fin

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Map.Entry;
 
 
-import fr.edofus.ancestra.evolutive.client.Player.Stats;
+import fr.edofus.ancestra.evolutive.client.other.Stats;
 import fr.edofus.ancestra.evolutive.common.Constants;
 import fr.edofus.ancestra.evolutive.core.World;
 
@@ -170,7 +170,7 @@ public class Dragodinde {
 	private String parseStats()
 	{
 		String stats = "";
-		for(Entry<Integer,Integer> entry : _stats.getMap().entrySet())
+		for(Entry<Integer,Integer> entry : _stats.getEffects().entrySet())
 		{
 			if(entry.getValue() <= 0)continue;
 			if(stats.length() >0)stats += ",";

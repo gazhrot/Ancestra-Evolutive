@@ -29,7 +29,7 @@ public class RemoveEnemy implements PacketParser {
 					SocketManager.GAME_SEND_FD_PACKET(client.getPlayer(), "Ef");
 					return;
 				}
-				guid = player.getAccID();
+				guid = player.getAccount().getUUID();
 				
 			break;
 			case '*'://Pseudo

@@ -58,7 +58,7 @@ public class TrunkData extends AbstractDAO<Trunk>{
 			
 			statement.setString(1, packet);
 			statement.setInt(2, trunk.get_id());
-			statement.setInt(3, player.getAccID());
+			statement.setInt(3, player.getAccount().getUUID());
 
 			execute(statement);
 			return true;

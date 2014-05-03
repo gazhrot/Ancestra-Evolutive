@@ -27,7 +27,7 @@ public class LoginHandler implements IoHandler {
 			if(Server.config.isPolicy())
 				SocketManager.REALM_SEND_POLICY_FILE(client);
 	        
-			client.set_hashKey(SocketManager.REALM_SEND_HC_PACKET(client));
+			client.setKey(SocketManager.REALM_SEND_HC_PACKET(client));
 			Server.config.getRealmServer().getClients().put(arg0.getId(), client);
 			
 			Console.instance.println("rSession "+arg0.getId()+" : created");

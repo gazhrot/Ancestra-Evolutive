@@ -11,7 +11,7 @@ import java.util.TreeMap;
 
 
 
-import fr.edofus.ancestra.evolutive.client.Player.Stats;
+import fr.edofus.ancestra.evolutive.client.other.Stats;
 import fr.edofus.ancestra.evolutive.common.Constants;
 import fr.edofus.ancestra.evolutive.common.Formulas;
 import fr.edofus.ancestra.evolutive.core.Server;

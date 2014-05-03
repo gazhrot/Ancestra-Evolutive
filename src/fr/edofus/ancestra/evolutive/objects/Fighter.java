@@ -9,7 +9,7 @@ import java.util.Map.Entry;
 
 
 import fr.edofus.ancestra.evolutive.client.Player;
-import fr.edofus.ancestra.evolutive.client.Player.Stats;
+import fr.edofus.ancestra.evolutive.client.other.Stats;
 import fr.edofus.ancestra.evolutive.common.Constants;
 import fr.edofus.ancestra.evolutive.common.Formulas;
 import fr.edofus.ancestra.evolutive.common.SocketManager;

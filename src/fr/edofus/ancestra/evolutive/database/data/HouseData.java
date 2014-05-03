@@ -68,12 +68,12 @@ public class HouseData extends AbstractDAO<House>{
 	public boolean update(Player player, House house) {
 		try {
 			String query = "UPDATE `houses` SET `sale`='0', " +
-					"`owner_id`= "+player.getAccID()+", `guild_id`='0', `access`='0'," +
+					"`owner_id`= "+player.getAccount().getUUID()+", `guild_id`='0', `access`='0'," +
 					" `key`='-', `guild_rights`='0' WHERE `id` = "+house.get_id();
 			execute(query);
 			
 			house.set_sale(0);
-			house.set_owner_id(player.getAccID());
+			house.set_owner_id(player.getAccount().getUUID());
 			house.set_guild_id(0);
 			house.set_access(0);
 			house.set_key("-");
@@ -85,7 +85,7 @@ public class HouseData extends AbstractDAO<House>{
 		
 		ArrayList<Trunk> trunks = Trunk.getTrunksByHouse(house);
 		for (Trunk trunk : trunks) {
-			trunk.set_owner_id(player.getAccID());
+			trunk.set_owner_id(player.getAccount().getUUID());
 			trunk.set_key("-");
 		}
 
@@ -93,7 +93,7 @@ public class HouseData extends AbstractDAO<House>{
 			String query = "UPDATE `coffres` SET `owner_id`=?, `key`='-' WHERE `id_house` = ?;";
 			PreparedStatement statement = connection.prepareStatement(query);
 			
-			statement.setInt(1, player.getAccID());
+			statement.setInt(1, player.getAccount().getUUID());
 			statement.setInt(2, house.get_id());
 			
 			execute(statement);
@@ -128,7 +128,7 @@ public class HouseData extends AbstractDAO<House>{
 			
 			statement.setString(1, packet);
 			statement.setInt(2, house.get_id());
-			statement.setInt(3, player.getAccID());
+			statement.setInt(3, player.getAccount().getUUID());
 
 			execute(statement);
 

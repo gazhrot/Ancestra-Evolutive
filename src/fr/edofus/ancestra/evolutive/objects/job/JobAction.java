@@ -1255,7 +1255,7 @@ public class JobAction {
 
 	public static int currentWeithStats(Objet obj, String statsModif)
 	{
-		for (Entry<Integer, Integer> entry : obj.getStats().getMap().entrySet())
+		for (Entry<Integer, Integer> entry : obj.getStats().getEffects().entrySet())
 		{
 			int statID = entry.getKey();
 			if (Integer.toHexString(statID).toLowerCase().compareTo(statsModif.toLowerCase()) > 0)

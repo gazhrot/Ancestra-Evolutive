@@ -27,7 +27,7 @@ public class AddEnemy implements PacketParser {
 					SocketManager.GAME_SEND_FD_PACKET(client.getPlayer(), "Ef");
 					return;
 				}
-				guid = player.getAccID();
+				guid = player.getAccount().getUUID();
 			break;
 			case '*'://Pseudo
 				packet = packet.substring(3);

@@ -7,7 +7,7 @@ import java.util.Random;
 
 import fr.edofus.ancestra.evolutive.client.Client;
 import fr.edofus.ancestra.evolutive.client.Player;
-import fr.edofus.ancestra.evolutive.client.Player.Group;
+import fr.edofus.ancestra.evolutive.client.other.Group;
 import fr.edofus.ancestra.evolutive.core.Console;
 import fr.edofus.ancestra.evolutive.core.Log;
 import fr.edofus.ancestra.evolutive.core.Server;

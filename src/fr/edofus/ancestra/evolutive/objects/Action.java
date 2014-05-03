@@ -1,7 +1,7 @@
 package fr.edofus.ancestra.evolutive.objects;
 
 import fr.edofus.ancestra.evolutive.client.Player;
-import fr.edofus.ancestra.evolutive.client.Player.traque;
+import fr.edofus.ancestra.evolutive.client.other.Stalk;
 import fr.edofus.ancestra.evolutive.common.ConditionParser;
 import fr.edofus.ancestra.evolutive.common.Constants;
 import fr.edofus.ancestra.evolutive.common.Formulas;
@@ -504,12 +504,12 @@ public class Action {
 		        }catch(Exception e){Log.addToLog(e.getMessage());};
 			break;
 			case 50://Traque
-				if(perso.get_traque() == null)
+				if(perso.getStalk() == null)
 				{
-					traque traq = new traque(0, null);
-					perso.set_traque(traq);
+					Stalk traq = new Stalk(0, null);
+					perso.setStalk(traq);
 				}
-				if(perso.get_traque().get_time() < System.currentTimeMillis() - 600000 || perso.get_traque().get_time() == 0)
+				if(perso.getStalk().getTime() < System.currentTimeMillis() - 600000 || perso.getStalk().getTime() == 0)
 				{
 					Player tempP = null;
 					int tmp = 15;
@@ -537,8 +537,8 @@ public class Action {
 					
 					SocketManager.GAME_SEND_MESSAGE(perso, "Vous etes desormais en chasse de "+tempP.get_name()+"." , "000000");
 					
-					perso.get_traque().set_traqued(tempP);
-					perso.get_traque().set_time(System.currentTimeMillis());
+					perso.getStalk().setTraque(tempP);
+					perso.getStalk().setTime(System.currentTimeMillis());
 					
 					
 					ObjTemplate T = World.data.getObjTemplate(10085);
@@ -602,11 +602,11 @@ public class Action {
 				SocketManager.GAME_SEND_FLAG_PACKET(perso, cible);
 			break;
 			case 52://recompenser pour traque
-				if(perso.get_traque() != null && perso.get_traque().get_time() == -2)
+				if(perso.getStalk() != null && perso.getStalk().getTime() == -2)
 				{
 					int xp = Formulas.getTraqueXP(perso.get_lvl());
 					perso.addXp(xp);
-					perso.set_traque(null);//On supprime la traque
+					perso.setStalk(null);//On supprime la traque
 					SocketManager.GAME_SEND_MESSAGE(perso, "Vous venez de recevoir "+xp+" points d'experiences." , "000000");
 				}
 				else

@@ -8,7 +8,7 @@ import java.util.TreeMap;
 
 
 import fr.edofus.ancestra.evolutive.client.Player;
-import fr.edofus.ancestra.evolutive.client.Player.Stats;
+import fr.edofus.ancestra.evolutive.client.other.Stats;
 import fr.edofus.ancestra.evolutive.common.Constants;
 import fr.edofus.ancestra.evolutive.common.Formulas;
 import fr.edofus.ancestra.evolutive.core.World;
@@ -243,7 +243,7 @@ public class Objet {
 	protected int quantity = 1;
 	protected int position = Constants.ITEM_POS_NO_EQUIPED;
 	protected int guid;
-	private Player.Stats Stats = new Stats();
+	private Stats Stats = new Stats();
 	private ArrayList<SpellEffect> Effects = new ArrayList<SpellEffect>();
 	private Map<Integer,String> txtStats = new TreeMap<Integer,String>();
 	
@@ -335,7 +335,7 @@ public class Objet {
 		this.Effects = effects;
 	}
 	
-	public Player.Stats getStats() {
+	public Stats getStats() {
 		return Stats;
 	}
 
@@ -396,7 +396,7 @@ public class Objet {
 			isFirst = false;
 		}
 		
-		for(Entry<Integer,Integer> entry : Stats.getMap().entrySet())
+		for(Entry<Integer,Integer> entry : Stats.getEffects().entrySet())
 		{
 			if(!isFirst)
 				stats.append(",");
@@ -452,7 +452,7 @@ public class Objet {
 			isFirst = false;
 		}
 		
-		for(Entry<Integer,Integer> entry : obj.Stats.getMap().entrySet())
+		for(Entry<Integer,Integer> entry : obj.Stats.getEffects().entrySet())
 		{
 			if(!isFirst)stats.append(",");
 			if(Integer.toHexString(entry.getKey()).compareTo(statsstr) == 0)
@@ -509,7 +509,7 @@ public class Objet {
 			isFirst = false;
 		}
 		
-		for(Entry<Integer,Integer> entry : obj.Stats.getMap().entrySet())
+		for(Entry<Integer,Integer> entry : obj.Stats.getEffects().entrySet())
 		{
 				//En cas d'echec les stats négatives Chance,Agi,Intel,Force,Portee,Vita augmentes
 				int newstats = 0;
@@ -833,7 +833,7 @@ public class Objet {
 			}
 			first = true;
 		}
-		for (Entry<Integer, Integer> entry : obj.Stats.getMap().entrySet()) 
+		for (Entry<Integer, Integer> entry : obj.Stats.getEffects().entrySet()) 
 		{
 			int newstats = 0;
 			int statID = (entry.getKey());

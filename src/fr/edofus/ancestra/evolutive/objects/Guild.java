@@ -10,7 +10,7 @@ import org.joda.time.LocalDate;
 import org.joda.time.Days;
 
 import fr.edofus.ancestra.evolutive.client.Player;
-import fr.edofus.ancestra.evolutive.client.Player.Stats;
+import fr.edofus.ancestra.evolutive.client.other.Stats;
 import fr.edofus.ancestra.evolutive.common.Constants;
 import fr.edofus.ancestra.evolutive.core.World;
 import fr.edofus.ancestra.evolutive.objects.Sort.SortStats;

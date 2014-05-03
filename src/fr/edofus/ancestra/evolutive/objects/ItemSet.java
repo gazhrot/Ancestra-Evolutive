@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 
 
-import fr.edofus.ancestra.evolutive.client.Player.Stats;
+import fr.edofus.ancestra.evolutive.client.other.Stats;
 import fr.edofus.ancestra.evolutive.core.World;
 import fr.edofus.ancestra.evolutive.objects.Objet.ObjTemplate;
 

@@ -1,5 +1,8 @@
 package fr.edofus.ancestra.evolutive.client;
 
+import fr.edofus.ancestra.evolutive.client.other.Group;
+import fr.edofus.ancestra.evolutive.client.other.Stalk;
+import fr.edofus.ancestra.evolutive.client.other.Stats;
 import fr.edofus.ancestra.evolutive.common.Constants;
 import fr.edofus.ancestra.evolutive.common.Formulas;
 import fr.edofus.ancestra.evolutive.common.SocketManager;
@@ -66,7 +69,6 @@ public class Player {
 	private int _gfxID;
 	private int _orientation = 1;
 	private Account account;
-	private int _accID;
 	private boolean _canAggro = true;
 	private String _emotes = "7667711";
 	
@@ -135,7 +137,7 @@ public class Player {
 	//Percepteurs
 	private int _isOnPercepteurID = 0;
 	//Traque
-	private traque _traqued = null;
+	private Stalk _traqued = null;
 	//Titre
 	private byte _title = 0;
 	//Inactivité
@@ -160,329 +162,6 @@ public class Player {
 	private Waiter waiter = new Waiter();
 	//end
 	private boolean needEndFightAction;
-	
-	public static class traque 
-	{
-		private long _time;
-		private Player _traqued;
-		
-		public traque(long time, Player p)
-		{
-			this._time = time;
-			this._traqued = p;
-		}
-		
-		public void set_traqued(Player tempP)
-		{
-			_traqued = tempP;
-		}
-		
-		public Player get_traqued()
-		{
-			return _traqued;
-		}
-		
-		public long get_time()
-		{
-			return _time;
-		}
-	
-		public void set_time(long time)
-		{
-			_time = time;
-		}
-	}
-	public static class Group
-	{
-		private ArrayList<Player> _persos = new ArrayList<Player>();
-		private Player _chief;
-		
-		public Group(Player p1,Player p2)
-		{
-			_chief = p1;
-			_persos.add(p1);
-			_persos.add(p2);
-		}
-		
-		public boolean isChief(int guid)
-		{
-			return _chief.get_GUID() == guid;
-		}
-		
-		public void addPerso(Player p)
-		{
-			_persos.add(p);
-		}
-		
-		public int getPersosNumber()
-		{
-			return _persos.size();
-		}
-		
-		public int getGroupLevel()
-		{
-			int lvls = 0;
-			for(Player p : _persos)
-			{
-				lvls += p.get_lvl();
-			}
-			return lvls;
-		}
-		
-		public ArrayList<Player> getPersos()
-		{
-			return _persos;
-		}
-
-		public Player getChief()
-		{
-			return _chief;
-		}
-
-		public void leave(Player p)
-		{
-			if(!_persos.contains(p))return;
-			p.setGroup(null);
-			_persos.remove(p);
-			if(_persos.size() == 1)
-			{
-				_persos.get(0).setGroup(null);
-				if(_persos.get(0).getAccount() == null || _persos.get(0).getAccount().getGameClient() == null)return;
-				SocketManager.GAME_SEND_PV_PACKET(_persos.get(0).getAccount().getGameClient(),"");
-			}
-			else
-				SocketManager.GAME_SEND_PM_DEL_PACKET_TO_GROUP(this,p.get_GUID());
-		}
-	}
-	public static class Stats
-	{
-		private Map<Integer,Integer> Effects = new TreeMap<Integer,Integer>();
-		
-		public Stats(boolean addBases,Player perso)
-		{
-			Effects = new TreeMap<Integer,Integer>();
-			if(!addBases)return;
-			Effects.put(Constants.STATS_ADD_PA,  perso.get_lvl()<100?6:7);
-			Effects.put(Constants.STATS_ADD_PM, 3);
-			Effects.put(Constants.STATS_ADD_PROS, perso.get_classe()==Constants.CLASS_ENUTROF?120:100);
-			Effects.put(Constants.STATS_ADD_PODS, 1000);
-			Effects.put(Constants.STATS_CREATURE, 1);
-			Effects.put(Constants.STATS_ADD_INIT, 1);
-		}
-		public Stats(Map<Integer, Integer> stats, boolean addBases,Player perso)
-		{
-			Effects = stats;
-			if(!addBases)return;
-			Effects.put(Constants.STATS_ADD_PA, perso.get_lvl()<100?6:7);
-			Effects.put(Constants.STATS_ADD_PM, 3);
-			Effects.put(Constants.STATS_ADD_PROS, perso.get_classe()==Constants.CLASS_ENUTROF?120:100);
-			Effects.put(Constants.STATS_ADD_PODS, 1000);
-			Effects.put(Constants.STATS_CREATURE, 1);
-			Effects.put(Constants.STATS_ADD_INIT, 1);
-		}
-		
-		public Stats(Map<Integer, Integer> stats)
-		{
-			Effects = stats;
-		}
-		
-		public Stats()
-		{
-			Effects = new TreeMap<Integer,Integer>();
-		}
-		
-		public int addOneStat(int id, int val)
-		{
-			if(Effects.get(id) == null || Effects.get(id) == 0)
-				Effects.put(id,val);
-			else
-			{
-				int newVal = (Effects.get(id)+val);
-				Effects.put(id, newVal);
-			}
-			return Effects.get(id);
-		}
-		
-		public boolean isSameStats(Stats other)
-		{
-			for(Entry<Integer,Integer> entry : Effects.entrySet())
-			{
-				//Si la stat n'existe pas dans l'autre map
-				if(other.getMap().get(entry.getKey()) == null)return false;
-				//Si la stat existe mais n'a pas la même valeur
-				if(other.getMap().get(entry.getKey()) != entry.getValue())return false;	
-			}
-			for(Entry<Integer,Integer> entry : other.getMap().entrySet())
-			{
-				//Si la stat n'existe pas dans l'autre map
-				if(Effects.get(entry.getKey()) == null)return false;
-				//Si la stat existe mais n'a pas la même valeur
-				if(Effects.get(entry.getKey()) != entry.getValue())return false;	
-			}
-			return true;
-		}
-		
-		public int getEffect(int id)
-		{
-			int val;
-			if(Effects.get(id) == null)
-				 val=0;
-			else
-				val = Effects.get(id);
-			
-			switch(id)//Bonus/Malus TODO
-			{
-				case Constants.STATS_ADD_AFLEE:
-					if(Effects.get(Constants.STATS_REM_AFLEE)!= null)
-						val -= (int)(getEffect(Constants.STATS_REM_AFLEE));
-					if(Effects.get(Constants.STATS_ADD_SAGE) != null)
-						val += (int)(getEffect(Constants.STATS_ADD_SAGE)/4);
-				break;
-				case Constants.STATS_ADD_MFLEE:
-					if(Effects.get(Constants.STATS_REM_MFLEE)!= null)
-						val -= (int)(getEffect(Constants.STATS_REM_MFLEE));
-					if(Effects.get(Constants.STATS_ADD_SAGE) != null)
-						val += (int)(getEffect(Constants.STATS_ADD_SAGE)/4);
-				break;
-				case Constants.STATS_ADD_INIT:
-					if(Effects.get(Constants.STATS_REM_INIT)!= null)
-						val -= Effects.get(Constants.STATS_REM_INIT);
-				break;
-				case Constants.STATS_ADD_AGIL:
-					if(Effects.get(Constants.STATS_REM_AGIL)!= null)
-						val -= Effects.get(Constants.STATS_REM_AGIL);
-				break;
-				case Constants.STATS_ADD_FORC:
-					if(Effects.get(Constants.STATS_REM_FORC)!= null)
-						val -= Effects.get(Constants.STATS_REM_FORC);
-				break;
-				case Constants.STATS_ADD_CHAN:
-					if(Effects.get(Constants.STATS_REM_CHAN)!= null)
-						val -= Effects.get(Constants.STATS_REM_CHAN);
-				break;
-				case Constants.STATS_ADD_INTE:
-					if(Effects.get(Constants.STATS_REM_INTE)!= null)
-					val -= Effects.get(Constants.STATS_REM_INTE);
-				break;
-				case Constants.STATS_ADD_PA:
-					if(Effects.get(Constants.STATS_ADD_PA2)!= null)
-						val += Effects.get(Constants.STATS_ADD_PA2);
-					if(Effects.get(Constants.STATS_REM_PA)!= null)
-						val -= Effects.get(Constants.STATS_REM_PA);
-					if(Effects.get(Constants.STATS_REM_PA2)!= null)//Non esquivable
-						val -= Effects.get(Constants.STATS_REM_PA2);
-				break;
-				case Constants.STATS_ADD_PM:
-					if(Effects.get(Constants.STATS_ADD_PM2)!= null)
-						val += Effects.get(Constants.STATS_ADD_PM2);
-					if(Effects.get(Constants.STATS_REM_PM)!= null)
-						val -= Effects.get(Constants.STATS_REM_PM);
-					if(Effects.get(Constants.STATS_REM_PM2)!= null)//Non esquivable
-						val -= Effects.get(Constants.STATS_REM_PM2);
-				break;
-				case Constants.STATS_ADD_PO:
-					if(Effects.get(Constants.STATS_REM_PO)!= null)
-						val -= Effects.get(Constants.STATS_REM_PO);
-				break;
-				case Constants.STATS_ADD_VITA:
-					if(Effects.get(Constants.STATS_REM_VITA)!= null)
-						val -= Effects.get(Constants.STATS_REM_VITA);
-				break;
-				case Constants.STATS_ADD_DOMA:
-					if(Effects.get(Constants.STATS_REM_DOMA)!= null)
-						val -= Effects.get(Constants.STATS_REM_DOMA);
-				break;
-				case Constants.STATS_ADD_PODS:
-					if(Effects.get(Constants.STATS_REM_PODS)!= null)
-						val -= Effects.get(Constants.STATS_REM_PODS);
-				break;
-				case Constants.STATS_ADD_PROS:
-					if(Effects.get(Constants.STATS_REM_PROS)!= null)
-						val -= Effects.get(Constants.STATS_REM_PROS);
-				break;
-				case Constants.STATS_ADD_R_TER:
-					if(Effects.get(Constants.STATS_REM_R_TER)!= null)
-						val -= Effects.get(Constants.STATS_REM_R_TER);
-				break;
-				case Constants.STATS_ADD_R_EAU:
-					if(Effects.get(Constants.STATS_REM_R_EAU)!= null)
-						val -= Effects.get(Constants.STATS_REM_R_EAU);
-				break;
-				case Constants.STATS_ADD_R_AIR:
-					if(Effects.get(Constants.STATS_REM_R_AIR)!= null)
-						val -= Effects.get(Constants.STATS_REM_R_AIR);
-				break;
-				case Constants.STATS_ADD_R_FEU:
-					if(Effects.get(Constants.STATS_REM_R_FEU)!= null)
-						val -= Effects.get(Constants.STATS_REM_R_FEU);
-				break;
-				case Constants.STATS_ADD_R_NEU:
-					if(Effects.get(Constants.STATS_REM_R_NEU)!= null)
-						val -= Effects.get(Constants.STATS_REM_R_NEU);
-				break;
-				case Constants.STATS_ADD_RP_TER:
-					if(Effects.get(Constants.STATS_REM_RP_TER)!= null)
-						val -= Effects.get(Constants.STATS_REM_RP_TER);
-				break;
-				case Constants.STATS_ADD_RP_EAU:
-					if(Effects.get(Constants.STATS_REM_RP_EAU)!= null)
-						val -= Effects.get(Constants.STATS_REM_RP_EAU);
-				break;
-				case Constants.STATS_ADD_RP_AIR:
-					if(Effects.get(Constants.STATS_REM_RP_AIR)!= null)
-						val -= Effects.get(Constants.STATS_REM_RP_AIR);
-				break;
-				case Constants.STATS_ADD_RP_FEU:
-					if(Effects.get(Constants.STATS_REM_RP_FEU)!= null)
-						val -= Effects.get(Constants.STATS_REM_RP_FEU);
-				break;
-				case Constants.STATS_ADD_RP_NEU:
-					if(Effects.get(Constants.STATS_REM_RP_NEU)!= null)
-						val -= Effects.get(Constants.STATS_REM_RP_NEU);
-				break;
-				case Constants.STATS_ADD_MAITRISE:
-					if(Effects.get(Constants.STATS_ADD_MAITRISE)!= null)
-						val = Effects.get(Constants.STATS_ADD_MAITRISE);
-				break;
-			}
-			return val;
-		}
-
-		public static Stats cumulStat(Stats s1,Stats s2)
-		{
-			TreeMap<Integer,Integer> effets = new TreeMap<Integer,Integer>();
-			for(int a = 0; a <= Constants.MAX_EFFECTS_ID; a++)
-			{
-				if((s1.Effects.get(a) == null  || s1.Effects.get(a) == 0) && (s2.Effects.get(a) == null || s2.Effects.get(a) == 0))
-					continue;
-				int som = 0;
-				if(s1.Effects.get(a) != null)
-					som += s1.Effects.get(a);
-				
-				if(s2.Effects.get(a) != null)
-					som += s2.Effects.get(a);
-				
-				effets.put(a, som);
-			}
-			return new Stats(effets,false,null);
-		}
-		
-		public Map<Integer, Integer> getMap()
-		{
-			return Effects;
-		}
-		public String parseToItemSetStats()
-		{
-			StringBuilder str = new StringBuilder();
-			if(Effects.isEmpty())return "";
-			for(Entry<Integer,Integer> entry : Effects.entrySet())
-			{
-				if(str.length() >0)str.append(",");
-				str.append(Integer.toHexString(entry.getKey())).append("#").append(Integer.toHexString(entry.getValue())).append("#0#0");
-			}
-			return str.toString();
-		}
-	}
 	
 	public Player(int _guid, String _name, int _sexe, int _classe,
 			int _color1, int _color2, int _color3,long _kamas, int pts, int _capital, int _energy, int _lvl, long exp,
@@ -512,7 +191,6 @@ public class Player {
 		this._gfxID = _gfxid;
 		this._mountXpGive = mountXp;
 		this._baseStats = new Stats(stats,true,this);
-		this._accID = _compte;
 		this.account = World.data.getCompte(_compte);
 		this._showFriendConnection = seeFriend==1;
 		this._wife = wifeGuid; 
@@ -2844,11 +2522,6 @@ public class Player {
 		return _guildMember;
 	}
 
-	public int getAccID()
-	{
-		return _accID;
-	}
-
 	public void setAccount(Account account) {
 		this.account = account;
 	}
@@ -3334,12 +3007,12 @@ public class Player {
 		
 	}
 	
-	public traque get_traque()
+	public Stalk getStalk()
 	{
 		return _traqued;
 	}
 	
-	public void set_traque(traque traq)
+	public void setStalk(Stalk traq)
 	{
 		_traqued = traq;
 	}
