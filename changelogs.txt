@@ -5,6 +5,7 @@ Continué par : Locos : https://github.com/F-Locos/
 
 Contribution :
 - Mars-Daylight.
+- Origin.
 
 Version 0.1
 
@@ -145,6 +146,14 @@ Version 0.6
 - Les plug-ins passent à présent sur tout les systèmes d'exploitation ( Linux & Windows sûr ).
 - Ajout du système d'événement ainsi que du listener. ( Merci Piou. Pour les plug-ins aussi )
 - Correction des demandent d'information concernant un ami ( zone inconnu ).
+- Refonte de la syntaxe sur la class Account.java 
+- Séparation des class static dans Player.java ( Stalk, Stats, Group ).
+- Correction des bugs suivant :
+  > Elle n'exclue pas le joueur demandé. 
+  > Il nous déconnecte pas lorsque l'on passe en mode marchand et nous arrivons encore a bouger une seule fois ce qui fait bugs l'affichage du mode marchand sur l'écran des autres joueurs.
+  > Les points de déshonneur ne modifient pas les aîles correctement, elles devraient être trouées normalement.
+
+Version 0.7
 
 
   
