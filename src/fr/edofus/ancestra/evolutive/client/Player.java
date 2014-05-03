@@ -725,7 +725,7 @@ public class Player {
 				100,
 				Integer.parseInt(classe+""+sexe),
 				(byte)0,
-				compte.get_GUID(),
+				compte.getUUID(),
 				new TreeMap<Integer,Integer>(),
 				(byte)1,
 				(byte)0,
@@ -1168,7 +1168,7 @@ public class Player {
 			return;
 		
 		GameClient out = _compte.getGameClient();
-		_compte.setCurPerso(this);
+		_compte.setCurPlayer(this);
 		_isOnline = true;
 		
 		if(_mount != null)
@@ -1205,24 +1205,25 @@ public class Player {
 		}
 		//Fin métier
 		SocketManager.GAME_SEND_ALIGNEMENT(out, _align);
-		SocketManager.GAME_SEND_ADD_CANAL(out,_canaux+"^"+(_compte.get_gmLvl()>0?"@¤":""));
-		if(_guildMember != null)SocketManager.GAME_SEND_gS_PACKET(this,_guildMember);
+		SocketManager.GAME_SEND_ADD_CANAL(out,_canaux+"^"+(_compte.getGmLvl()>0?"@¤":""));
+		if(_guildMember != null)
+			SocketManager.GAME_SEND_gS_PACKET(this,_guildMember);
 		SocketManager.GAME_SEND_ZONE_ALLIGN_STATUT(out);
 		SocketManager.GAME_SEND_SPELL_LIST(this);
 		SocketManager.GAME_SEND_EMOTE_LIST(this,_emotes,"0");
 		SocketManager.GAME_SEND_RESTRICTIONS(out);
 		SocketManager.GAME_SEND_Ow_PACKET(this);
 		SocketManager.GAME_SEND_SEE_FRIEND_CONNEXION(out,_showFriendConnection);
-		this._compte.SendOnline();
+		this._compte.sendOnline();
 		
 		//Messages de bienvenue
 		SocketManager.GAME_SEND_Im_PACKET(this, "189");
-		if(!_compte.getLastConnectionDate().equals("") && !_compte.get_lastIP().equals(""))
-			SocketManager.GAME_SEND_Im_PACKET(this, "0152;"+_compte.getLastConnectionDate()+"~"+_compte.get_lastIP());
-		SocketManager.GAME_SEND_Im_PACKET(this, "0153;"+_compte.get_curIP());
+		if(!_compte.getLastConnection().equals("") && !_compte.getLastIp().equals(""))
+			SocketManager.GAME_SEND_Im_PACKET(this, "0152;"+_compte.getLastConnection()+"~"+_compte.getLastIp());
+		SocketManager.GAME_SEND_Im_PACKET(this, "0153;"+_compte.getCurIp());
 		//Fin messages
 		//Actualisation de l'ip
-		_compte.setLastIP(_compte.get_curIP());
+		_compte.setLastIp(_compte.getCurIp());
 		
 		//Mise a jour du lastConnectionDate
 		Date actDate = new Date();
@@ -1236,7 +1237,7 @@ public class Player {
 		String heure = dateFormat.format(actDate);
 		dateFormat = new SimpleDateFormat("mm");
 		String min = dateFormat.format(actDate);
-		_compte.setLastConnectionDate(annee+"~"+mois+"~"+jour+"~"+heure+"~"+min);
+		_compte.setLastConnection(annee+"~"+mois+"~"+jour+"~"+heure+"~"+min);
 		if(_guildMember != null)
 			_guildMember.setLastCo(annee+"~"+mois+"~"+jour+"~"+heure+"~"+min);
 		
@@ -3027,7 +3028,7 @@ public class Player {
 		
 		if(_isInvisible)
 		{
-			return _compte.isFriendWith(sender.get_compte().get_GUID());
+			return _compte.isFriendWith(sender.get_compte().getUUID());
 		}
 		
 		return true;

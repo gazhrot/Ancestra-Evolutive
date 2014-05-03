@@ -284,7 +284,7 @@ public class Guild {
 	}
 	public GuildMember addNewMember(Player p)
 	{
-		GuildMember GM = new GuildMember(p.get_GUID(),this,p.get_name(),p.get_lvl(),p.get_gfxID(),0,0,(byte) 0,0,p.get_align(),p.get_compte().getLastConnectionDate());
+		GuildMember GM = new GuildMember(p.get_GUID(),this,p.get_name(),p.get_lvl(),p.get_gfxID(),0,0,(byte) 0,0,p.get_align(),p.get_compte().getLastConnection());
 		_members.put(p.get_GUID(),GM);
 		return GM;
 	}

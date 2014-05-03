@@ -60,12 +60,12 @@ public class AddCharacter implements PacketParser {
 		//Si le nom est invalide
 		if(!isValid || Integer.parseInt(infos[1]) <= 0 || Integer.parseInt(infos[1]) > 12)
 			SocketManager.GAME_SEND_NAME_ALREADY_EXIST(client);
-		else if(client.getAccount().GET_PERSO_NUMBER() >= Server.config.getMaxPlayersPerAccount())
+		else if(client.getAccount().getPlayers().size() >= Server.config.getMaxPlayersPerAccount())
 			SocketManager.GAME_SEND_CREATE_PERSO_FULL(client);
 		else if(client.getAccount().createPerso(infos[0], Integer.parseInt(infos[2]), Integer.parseInt(infos[1]),
 				Integer.parseInt(infos[3]), Integer.parseInt(infos[4]),	Integer.parseInt(infos[5]))) {
 			SocketManager.GAME_SEND_CREATE_OK(client);
-			SocketManager.GAME_SEND_PERSO_LIST(client, client.getAccount().get_persos());
+			SocketManager.GAME_SEND_PERSO_LIST(client, client.getAccount().getPlayers());
 		} else {
 			SocketManager.GAME_SEND_CREATE_FAILED(client);
 		}	

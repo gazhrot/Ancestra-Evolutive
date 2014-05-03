@@ -140,7 +140,7 @@ public class GameServer {
 
 	public synchronized Account getWaitingCompte(int guid) {
 		for (int i = 0; i < waitingClients.size(); i++) 
-			if(waitingClients.get(i).get_GUID() == guid)
+			if(waitingClients.get(i).getUUID() == guid)
 				return waitingClients.get(i);
 		return null;
 	}

@@ -18,7 +18,7 @@ public class SendMessage implements PacketParser {
 	@Override
 	public void parse(GameClient client, String packet) {
 		if(client.getPlayer().isMuted()) {
-			SocketManager.GAME_SEND_Im_PACKET(client.getPlayer(), "1124;"+client.getPlayer().get_compte()._muteTimer.getInitialDelay());
+			SocketManager.GAME_SEND_Im_PACKET(client.getPlayer(), "1124;"+client.getPlayer().get_compte().getMuteTimer().getInitialDelay());
 			return;
 		}
 		
@@ -78,7 +78,7 @@ public class SendMessage implements PacketParser {
 				SocketManager.GAME_SEND_cMK_PACKET_TO_ALL(":", client.getPlayer().get_GUID(), client.getPlayer().get_name(), msg);
 			break;
 			case '@'://Canal Admin
-				if(client.getPlayer().get_compte().get_gmLvl() ==0)return;
+				if(client.getPlayer().get_compte().getGmLvl() ==0)return;
 				msg = packet.split("\\|",2)[1];
 				SocketManager.GAME_SEND_cMK_PACKET_TO_ADMIN("@", client.getPlayer().get_GUID(), client.getPlayer().get_name(), msg);
 			break;
@@ -142,7 +142,7 @@ public class SendMessage implements PacketParser {
 						SocketManager.GAME_SEND_CHAT_ERROR_PACKET(client, nom);
 						return;
 					}
-					if(target.get_compte().isEnemyWith(client.getPlayer().get_compte().get_GUID()) == true || !target.isDispo(client.getPlayer())) {
+					if(target.get_compte().isEnemyWith(client.getPlayer().get_compte().getUUID()) == true || !target.isDispo(client.getPlayer())) {
 						SocketManager.GAME_SEND_Im_PACKET(client.getPlayer(), "114;"+target.get_name());
 						return;
 					}

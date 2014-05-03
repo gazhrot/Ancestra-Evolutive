@@ -520,7 +520,7 @@ public class Action {
 					GameClient GT = Server.config.getGameServer().getClients().get((int)b);
 					Player P = GT.getPlayer();
 					if(P == null || P == perso)continue;
-					if(P.get_compte().get_curIP().compareTo(perso.get_compte().get_curIP()) == 0)continue;
+					if(P.get_compte().getCurIp().compareTo(perso.get_compte().getCurIp()) == 0)continue;
 					//SI pas sériane ni neutre et si alignement opposé
 					if(P.get_align() == perso.get_align() || P.get_align() == 0 || P.get_align() == 3)continue;
 					

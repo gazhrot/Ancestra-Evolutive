@@ -1,7 +1,5 @@
 package fr.edofus.ancestra.evolutive.game.packet.enemy;
 
-
-
 import fr.edofus.ancestra.evolutive.client.Account;
 import fr.edofus.ancestra.evolutive.client.Player;
 import fr.edofus.ancestra.evolutive.common.SocketManager;
@@ -38,7 +36,7 @@ public class AddEnemy implements PacketParser {
 					SocketManager.GAME_SEND_FD_PACKET(client.getPlayer(), "Ef");
 					return;
 				}
-				guid = account.get_GUID();
+				guid = account.getUUID();
 			break;
 			default:
 				packet = packet.substring(2);
@@ -48,7 +46,7 @@ public class AddEnemy implements PacketParser {
 					SocketManager.GAME_SEND_FD_PACKET(client.getPlayer(), "Ef");
 					return;
 				}
-				guid = player.get_compte().get_GUID();
+				guid = player.get_compte().getUUID();
 			break;
 		}
 		if(guid == -1) {

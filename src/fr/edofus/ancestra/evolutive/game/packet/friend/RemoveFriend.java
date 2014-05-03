@@ -37,7 +37,7 @@ public class RemoveFriend implements PacketParser {
 					SocketManager.GAME_SEND_FD_PACKET(client.getPlayer(), "Ef");
 					return;
 				}
-				guid = account.get_GUID();
+				guid = account.getUUID();
 			break;
 			default:
 				packet = packet.substring(2);
@@ -46,7 +46,7 @@ public class RemoveFriend implements PacketParser {
 					SocketManager.GAME_SEND_FD_PACKET(client.getPlayer(), "Ef");
 					return;
 				}
-				guid = player.get_compte().get_GUID();
+				guid = player.get_compte().getUUID();
 			break;
 		}
 		

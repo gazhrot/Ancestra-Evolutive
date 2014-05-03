@@ -75,7 +75,7 @@ public class Commands {
 	public void consoleCommand(String packet)
 	{
 		
-		if(_compte.get_gmLvl() < 1)
+		if(_compte.getGmLvl() < 1)
 		{
 			_compte.getGameClient().closeSocket();
 			return;
@@ -88,24 +88,24 @@ public class Commands {
 		
 		if(Server.config.isCanLog())
 		{
-			Log.addToMjLog(_compte.get_curIP()+": "+_compte.get_name()+" "+_perso.get_name()+"=>"+msg);
+			Log.addToMjLog(_compte.getCurIp()+": "+_compte.getName()+" "+_perso.get_name()+"=>"+msg);
 		}
 		
-		if(_compte.get_gmLvl() == 1)
+		if(_compte.getGmLvl() == 1)
 		{
 			commandGmOne(command, infos, msg);
 		}else
-		if(_compte.get_gmLvl() == 2)
+		if(_compte.getGmLvl() == 2)
 		{
 			commandGmTwo(command, infos, msg);
 		}
 		else
-		if(_compte.get_gmLvl() == 3)
+		if(_compte.getGmLvl() == 3)
 		{
 			commandGmThree(command, infos, msg);
 		}
 		else
-		if(_compte.get_gmLvl() >= 4)
+		if(_compte.getGmLvl() >= 4)
 		{
 			commandGmFour(command, infos, msg);
 		}
@@ -113,7 +113,7 @@ public class Commands {
 	
 	public void commandGmOne(String command, String[] infos, String msg)
 	{
-		if(_compte.get_gmLvl() < 1)
+		if(_compte.getGmLvl() < 1)
 		{
 			_compte.getGameClient().closeSocket();
 			return;
@@ -554,7 +554,7 @@ public class Commands {
 	
 	public void commandGmTwo(String command, String[] infos, String msg)
 	{
-		if(_compte.get_gmLvl() < 2)
+		if(_compte.getGmLvl() < 2)
 		{
 			_compte.getGameClient().closeSocket();
 			return;
@@ -1113,7 +1113,7 @@ public class Commands {
 		if(command.equalsIgnoreCase("ITEM") || command.equalsIgnoreCase("!getitem"))
 		{
 			boolean isOffiCmd = command.equalsIgnoreCase("!getitem");
-			if(_compte.get_gmLvl() < 2)
+			if(_compte.getGmLvl() < 2)
 			{
 				SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out, "Vous n'avez pas le niveau MJ requis");
 				return;
@@ -1197,7 +1197,7 @@ public class Commands {
 	
 	public void commandGmThree(String command, String[] infos, String msg)
 	{
-		if(_compte.get_gmLvl() < 3)
+		if(_compte.getGmLvl() < 3)
 		{
 			_compte.getGameClient().closeSocket();
 			return;
@@ -1477,7 +1477,7 @@ public class Commands {
 		}else
 		if(command.equalsIgnoreCase("DELNPCITEM"))
 		{
-			if(_compte.get_gmLvl() <3)return;
+			if(_compte.getGmLvl() <3)return;
 			int npcGUID = 0;
 			int itmID = -1;
 			try
@@ -1501,7 +1501,7 @@ public class Commands {
 		}else
 		if(command.equalsIgnoreCase("ADDNPCITEM"))
 		{
-			if(_compte.get_gmLvl() <3)return;
+			if(_compte.getGmLvl() <3)return;
 			int npcGUID = 0;
 			int itmID = -1;
 			try
@@ -1596,7 +1596,7 @@ public class Commands {
 	
 	public void commandGmFour(String command, String[] infos, String msg)
 	{
-		if(_compte.get_gmLvl() < 4)
+		if(_compte.getGmLvl() < 4)
 		{
 			_compte.getGameClient().closeSocket();
 			return;
@@ -1669,7 +1669,7 @@ public class Commands {
 			{
 				for(Player z : World.data.getOnlinePersos()) 
 				{
-					if(z.get_compte().get_gmLvl() < GmAccess)
+					if(z.get_compte().getGmLvl() < GmAccess)
 						z.get_compte().getGameClient().closeSocket();
 				}
 				SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out, "Les joueurs de GmLevel inferieur a "+GmAccess+" ont ete kicks.");
@@ -1689,10 +1689,10 @@ public class Commands {
 				return;
 			}
 			
-			if(!Constants.IPcompareToBanIP(P.get_compte().get_curIP()))
+			if(!Constants.IPcompareToBanIP(P.get_compte().getCurIp()))
 			{
-				Constants.BAN_IP += ","+P.get_compte().get_curIP();
-				if(World.database.getOtherData().addBannedIp(P.get_compte().get_curIP()))
+				Constants.BAN_IP += ","+P.get_compte().getCurIp();
+				if(World.database.getOtherData().addBannedIp(P.get_compte().getCurIp()))
 				{
 					SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out, "L'IP a ete banni.");
 				}

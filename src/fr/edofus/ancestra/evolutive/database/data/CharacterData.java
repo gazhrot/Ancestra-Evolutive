@@ -249,7 +249,7 @@ public class CharacterData extends AbstractDAO<Player>{
 	public Player loadByAccount(Account obj) {
 		Player player = null;
 		try {
-			ResultSet result = getData("SELECT * FROM personnages WHERE account = "+obj.get_GUID());
+			ResultSet result = getData("SELECT * FROM personnages WHERE account = "+obj.getUUID());
 			while(result.next()) {
 				TreeMap<Integer,Integer> stats = new TreeMap<Integer,Integer>();
 				stats.put(Constants.STATS_ADD_VITA, result.getInt("vitalite"));

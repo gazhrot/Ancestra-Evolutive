@@ -18,6 +18,6 @@ public class WhoIs implements PacketParser {
 		Player player = World.data.getPersoByName(packet);
 		if(player == null) 
 			return;
-		SocketManager.GAME_SEND_BWK(client.getPlayer(), player.get_compte().get_pseudo()+"|1|"+player.get_name()+"|"+player.get_curCarte().getSubArea().get_area().get_id());
+		SocketManager.GAME_SEND_BWK(client.getPlayer(), player.get_compte().getPseudo()+"|1|"+player.get_name()+"|"+player.get_curCarte().getSubArea().get_area().get_id());
 	}
 }

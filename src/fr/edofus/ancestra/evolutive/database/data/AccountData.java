@@ -51,14 +51,14 @@ public class AccountData extends AbstractDAO<Account>{
 			
 			statement.setLong(1, obj.getBankKamas());
 			statement.setString(2, obj.parseBankObjetsToDB());
-			statement.setInt(3, obj.get_gmLvl());
+			statement.setInt(3, obj.getGmLvl());
 			statement.setInt(4, (obj.isBanned()?1:0));
-			statement.setString(5, obj.parseFriendListToDB());
-			statement.setString(6, obj.parseEnemyListToDB());
-			statement.setString(7, obj.get_curIP());
-			statement.setString(8, obj.getLastConnectionDate());
+			statement.setString(5, obj.parseFriendToDb());
+			statement.setString(6, obj.parseEnemyToDb());
+			statement.setString(7, obj.getCurIp());
+			statement.setString(8, obj.getLastConnection());
 			statement.setInt(9, obj.isLogged() == true ? 1:0);
-			statement.setInt(10, obj.get_GUID());
+			statement.setInt(10, obj.getUUID());
 			super.execute(statement);
 			return true;
 		} catch(Exception e) {
@@ -154,7 +154,7 @@ public class AccountData extends AbstractDAO<Account>{
 	
 	public void updateState(Account account, boolean online) { 
 		int state = online ? 1 : 0;
-		String baseQuery = "UPDATE accounts SET logged = "+state+" WHERE account = '"+account.get_name()+"';";
+		String baseQuery = "UPDATE accounts SET logged = "+state+" WHERE account = '"+account.getName()+"';";
 		execute(baseQuery);
 	}
 }

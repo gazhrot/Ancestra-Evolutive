@@ -590,9 +590,9 @@ public class HDV {
 			
 			delEntry(toBuy);//Retire l'item de l'HDV ainsi que de la liste du vendeur
 			
-			if(World.data.getCompte(toBuy.getOwner()) != null && World.data.getCompte(toBuy.getOwner()).get_curPerso() != null)
+			if(World.data.getCompte(toBuy.getOwner()) != null && World.data.getCompte(toBuy.getOwner()).getCurPlayer() != null)
 			{
-				SocketManager.GAME_SEND_Im_PACKET(World.data.getCompte(toBuy.getOwner()).get_curPerso(),"065;"+price+"~"+toBuy.getObjet().getTemplate().getID()+"~"+toBuy.getObjet().getTemplate().getID()+"~1");
+				SocketManager.GAME_SEND_Im_PACKET(World.data.getCompte(toBuy.getOwner()).getCurPlayer(),"065;"+price+"~"+toBuy.getObjet().getTemplate().getID()+"~"+toBuy.getObjet().getTemplate().getID()+"~1");
 				//Si le vendeur est connecter, envoie du packet qui lui annonce la vente de son objet
 			}
 			if(toBuy.getOwner() == -1)

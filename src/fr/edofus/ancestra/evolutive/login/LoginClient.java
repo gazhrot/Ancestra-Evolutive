@@ -18,11 +18,19 @@ public class LoginClient implements Client{
 	private int _packetNum = 0;
 	private String _accountName;
 	private String _hashPass;
-	private Account _compte;
+	private Account account;
 	private IoSession session;
 	
 	public LoginClient(IoSession session) {
 		this.setSession(session);
+	}
+	
+	public IoSession getSession() {
+		return session;
+	}
+
+	public void setSession(IoSession session) {
+		this.session = session;
 	}
 	
 	public void parsePacket(String packet) {
@@ -49,27 +57,27 @@ public class LoginClient implements Client{
 				}
 				_hashPass = packet;
 				
-				if(Account.COMPTE_LOGIN(_accountName,_hashPass,get_hashKey()))
+				if(Account.login(_accountName,_hashPass,get_hashKey()))
 				{
-					_compte = World.data.getCompteByName(_accountName);
+					account = World.data.getCompteByName(_accountName);
 					
-					if(_compte.isLogged()) {
-						if(_compte.getRealmThread() != null)
-							_compte.getRealmThread().kick();
-						else if(_compte.getGameClient() != null) 
-							_compte.getGameClient().kick();
+					if(account.isLogged()) {
+						if(account.getLoginClient() != null)
+							account.getLoginClient().kick();
+						else if(account.getGameClient() != null) 
+							account.getGameClient().kick();
 						
-						if(!_compte.isLogged()) {
+						if(!account.isLogged()) {
 							SocketManager.REALM_SEND_ALREADY_CONNECTED(this);
 							kick();
 							return;
 						} else {
-							World.data.getAccounts().remove(_compte.get_GUID());
-							_compte = World.database.getAccountData().loadByName(_accountName);
+							World.data.getAccounts().remove(account.getUUID());
+							account = World.database.getAccountData().loadByName(_accountName);
 						}
 					}
 					
-					if(_compte.isBanned())
+					if(account.isBanned())
 					{
 						SocketManager.REALM_SEND_BANNED(this);
 						try {
@@ -80,7 +88,7 @@ public class LoginClient implements Client{
 					if(Server.config.getPlayerLimitOnServer() != -1 && Server.config.getPlayerLimitOnServer() <= Server.config.getGameServer().getPlayerNumber())
 					{
 						//Seulement si joueur
-						if(_compte.get_gmLvl() == 0  && _compte.get_vip() == 0)
+						if(account.getGmLvl() == 0  && !account.isVip())
 						{
 							SocketManager.REALM_SEND_TOO_MANY_PLAYER_ERROR(this);
 							try {
@@ -89,7 +97,7 @@ public class LoginClient implements Client{
 							return;
 						}
 					}
-					if(World.data.getGmAccess() > _compte.get_gmLvl())
+					if(World.data.getGmAccess() > account.getGmLvl())
 					{
 						SocketManager.REALM_SEND_TOO_MANY_PLAYER_ERROR(this);
 						return;
@@ -112,11 +120,11 @@ public class LoginClient implements Client{
 							return;
 						}
 					}
-					_compte.setRealmThread(this);
-					_compte.setCurIP(ip);
-					_compte.setLogged(true);
-					World.database.getAccountData().update(_compte);
-					SocketManager.REALM_SEND_Ad_Ac_AH_AlK_AQ_PACKETS(this, _compte.get_pseudo(),(_compte.get_gmLvl()>0?(1):(0)), _compte.get_question() ); 
+					account.setLoginClient(this);
+					account.setCurIp(ip);
+					account.setLogged(true);
+					World.database.getAccountData().update(account);
+					SocketManager.REALM_SEND_Ad_Ac_AH_AlK_AQ_PACKETS(this, account.getPseudo(),(account.getGmLvl()>0?(1):(0)), account.getQuestion() ); 
 				}else//Si le compte n'a pas �t� reconnu
 				{
 					SocketManager.REALM_SEND_LOGIN_ERROR(this);
@@ -129,32 +137,32 @@ public class LoginClient implements Client{
 				if(packet.substring(0,2).equals("Af"))
 				{
 					_packetNum--;
-					Pending.PendingSystem(_compte);
+					Pending.PendingSystem(account);
 				}else
 				if(packet.substring(0,2).equals("Ax"))
 				{
-					if(_compte == null)return;
-					_compte = World.data.getCompteByName(_accountName);
-					SocketManager.REALM_SEND_PERSO_LIST(this, _compte.GET_PERSO_NUMBER());
+					if(account == null)return;
+					account = World.data.getCompteByName(_accountName);
+					SocketManager.REALM_SEND_PERSO_LIST(this, account.getPlayers().size());
 				}else
 				if(packet.equals("AX1"))
 				{
-					Server.config.getGameServer().addWaitingCompte(_compte);
-					String ip = _compte.get_curIP();
-					SocketManager.REALM_SEND_GAME_SERVER_IP(this, _compte.get_GUID(),ip.equals("127.0.0.1"));
+					Server.config.getGameServer().addWaitingCompte(account);
+					String ip = account.getCurIp();
+					SocketManager.REALM_SEND_GAME_SERVER_IP(this, account.getUUID(),ip.equals("127.0.0.1"));
 				}
 				break;
 		}
 	}
 	
 	public void kick() {
-		_compte.setLogged(false);
-		World.database.getAccountData().update(_compte);
+		account.setLogged(false);
+		World.database.getAccountData().update(account);
 		
 		if(!session.isClosing())
 			session.close(true);
 		Server.config.getRealmServer().getClients().remove(session.getId());
-		_compte.setRealmThread(null);
+		account.setLoginClient(null);
 	}
 
 	public String get_hashKey() {
@@ -163,15 +171,7 @@ public class LoginClient implements Client{
 
 	public void set_hashKey(String _hashKey) {
 		this._hashKey = _hashKey;
-	}
-
-	public IoSession getSession() {
-		return session;
-	}
-
-	public void setSession(IoSession session) {
-		this.session = session;
-	}
+	}	
 
 	public void addPacket() {
 		this._packetNum++;

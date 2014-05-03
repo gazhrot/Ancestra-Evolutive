@@ -1296,7 +1296,7 @@ public class SocketManager {
 	public static void GAME_SEND_cMK_PACKET_TO_ADMIN(String suffix,int guid,String name,String msg)
 	{
 		String packet = "cMK"+suffix+"|"+guid+"|"+name+"|"+msg;
-		for(Player perso : World.data.getOnlinePersos())if(perso.isOnline())if(perso.get_compte() != null)if(perso.get_compte().get_gmLvl()>0)send(perso,packet);
+		for(Player perso : World.data.getOnlinePersos())if(perso.isOnline())if(perso.get_compte() != null)if(perso.get_compte().getGmLvl()>0)send(perso,packet);
 		if(Server.config.isDebug())
 			Log.addToSockLog("Game: ALL("+World.data.getOnlinePersos().size()+"): Send>>"+packet);
 	}
@@ -1945,7 +1945,7 @@ public class SocketManager {
 	
 	public static void GAME_SEND_FRIENDLIST_PACKET(Player perso)
 	{
-		String packet = "FL"+perso.get_compte().parseFriendList();
+		String packet = "FL"+perso.get_compte().parseFriend();
 		send(perso,packet);
 		if(perso.getWife() != 0)
 		{
@@ -1960,7 +1960,7 @@ public class SocketManager {
 	
 	public static void GAME_SEND_FRIEND_ONLINE(Player logando, Player amigo) 
 	{
-		String packet = "Im0143;"+logando.get_compte().get_pseudo()+" (<b><a href='asfunction:onHref,ShowPlayerPopupMenu,"+logando.get_name()+"'>"+logando.get_name()+"</a></b>)";
+		String packet = "Im0143;"+logando.get_compte().getPseudo()+" (<b><a href='asfunction:onHref,ShowPlayerPopupMenu,"+logando.get_name()+"'>"+logando.get_name()+"</a></b>)";
 		send(amigo, packet);
 		if (Server.config.isDebug())
 		Log.addToSockLog("Game: Send>>" + packet);
@@ -2307,7 +2307,7 @@ public class SocketManager {
 	public static void GAME_SEND_ADD_ENEMY(Player out, Player pr)
 	{
 		
-		String packet = "iAK"+pr.get_compte().get_name()+";2;"+pr.get_name()+";36;10;0;100.FL.";
+		String packet = "iAK"+pr.get_compte().getName()+";2;"+pr.get_name()+";36;10;0;100.FL.";
 		send(out, packet);
 		if(Server.config.isDebug())
 			Log.addToSockLog("Game: Send>>" + packet);
@@ -2325,7 +2325,7 @@ public class SocketManager {
 	public static void GAME_SEND_ENEMY_LIST(Player perso)
 	{
 		
-		String packet = "iL"+perso.get_compte().parseEnemyList();
+		String packet = "iL"+perso.get_compte().parseEnemy();
 		send(perso, packet);
 		if(Server.config.isDebug())
 			Log.addToSockLog("Game: Send>>" + packet);

@@ -161,7 +161,7 @@ public class House
 						packet.append("undefined;");
 					}else
 					{
-						packet.append(World.data.getCompte(house.getValue().get_owner_id()).get_pseudo()).append(";");
+						packet.append(World.data.getCompte(house.getValue().get_owner_id()).getPseudo()).append(";");
 					}
 				}else
 				{
@@ -307,10 +307,10 @@ public class House
 			long newbankkamas = Seller.getBankKamas()+h.get_sale()+tKamas;
 			Seller.setBankKamas(newbankkamas);
 			//Petit message pour le prévenir si il est on?
-			if(Seller.get_curPerso() != null)
+			if(Seller.getCurPlayer() != null)
 			{
-				SocketManager.GAME_SEND_MESSAGE(Seller.get_curPerso(), "Une maison vous appartenant à été vendue "+h.get_sale()+" kamas.", Server.config.getMotdColor());
-				Seller.get_curPerso().save();
+				SocketManager.GAME_SEND_MESSAGE(Seller.getCurPlayer(), "Une maison vous appartenant à été vendue "+h.get_sale()+" kamas.", Server.config.getMotdColor());
+				Seller.getCurPlayer().save();
 			}
 			World.database.getAccountData().update(Seller);
 		}
@@ -417,7 +417,7 @@ public class House
 				if(!isFirst) packet.append("|");
 				
 				packet.append(house.getKey()).append(";");
-				packet.append(World.data.getPersonnage(house.getValue().get_owner_id()).get_compte().get_pseudo()).append(";");
+				packet.append(World.data.getPersonnage(house.getValue().get_owner_id()).get_compte().getPseudo()).append(";");
 				packet.append(World.data.getCarte((short)house.getValue().get_mapid()).getX()).append(",").append(World.data.getCarte((short)house.getValue().get_mapid()).getY()).append(";");
 				packet.append("0;");//TODO : Compétences ...
 				packet.append(house.getValue().get_guild_rights());	

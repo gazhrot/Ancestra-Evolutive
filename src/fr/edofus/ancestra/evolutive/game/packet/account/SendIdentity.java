@@ -9,6 +9,6 @@ public class SendIdentity implements PacketParser {
 
 	@Override
 	public void parse(GameClient client, String packet) {
-		client.getAccount().setClientKey(packet.substring(2));
+		client.getAccount().setKey(packet.substring(2));
 	}
 }

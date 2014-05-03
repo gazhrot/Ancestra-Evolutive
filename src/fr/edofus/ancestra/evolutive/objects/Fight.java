@@ -1831,7 +1831,7 @@ public class Fight {
         		{
 	        		if(_init1.getPersonnage().get_align() != 0 && _init0.getPersonnage().get_align() != 0)
 	    			{
-	        			if(_init1.getPersonnage().get_compte().get_curIP().compareTo(_init0.getPersonnage().get_compte().get_curIP()) != 0 || Server.config.isMulePvp())
+	        			if(_init1.getPersonnage().get_compte().getCurIp().compareTo(_init0.getPersonnage().get_compte().getCurIp()) != 0 || Server.config.isMulePvp())
 	        			{
 	            			winH = Formulas.calculHonorWin(TEAM1,TEAM2,i);
 	        			}
@@ -1905,7 +1905,7 @@ public class Fight {
         		int winD = 0;
         		if(_init1.getPersonnage().get_align() != 0 && _init0.getPersonnage().get_align() != 0)
     			{
-        			if(_init1.getPersonnage().get_compte().get_curIP().compareTo(_init0.getPersonnage().get_compte().get_curIP()) != 0 || Server.config.isMulePvp())
+        			if(_init1.getPersonnage().get_compte().getCurIp().compareTo(_init0.getPersonnage().get_compte().getCurIp()) != 0 || Server.config.isMulePvp())
             		{
             			winH = Formulas.calculHonorWin(TEAM1,TEAM2,i);
         			}

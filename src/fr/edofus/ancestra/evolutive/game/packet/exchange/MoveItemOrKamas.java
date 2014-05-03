@@ -182,7 +182,7 @@ public class MoveItemOrKamas implements PacketParser {
 						obj = newObj;
 					}
 					
-					HdvEntry toAdd = new HdvEntry(price,amount,client.getPlayer().get_compte().get_GUID(),obj);
+					HdvEntry toAdd = new HdvEntry(price,amount,client.getPlayer().get_compte().getUUID(),obj);
 					curHdv.addEntry(toAdd);	//Ajoute l'entry dans l'HDV
 					
 					SocketManager.GAME_SEND_EXCHANGE_OTHER_MOVE_OK(client,'+',"",toAdd.parseToEmK());	//Envoie un packet pour ajouter l'item dans la fenetre de l'HDV du client

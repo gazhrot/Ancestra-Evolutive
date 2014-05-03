@@ -220,7 +220,7 @@ public class World {
 		Account account = null;
 		
 		for(Account acc: accounts.values())
-			if(acc.get_name().equalsIgnoreCase(name))
+			if(acc.getName().equalsIgnoreCase(name))
 				account = acc;
 		
 		if(account == null) 
@@ -233,7 +233,7 @@ public class World {
 	}
 
 	public void addAccount(Account compte) {
-		accounts.put(compte.get_GUID(), compte);
+		accounts.put(compte.getUUID(), compte);
 	}
 
 	public void addPersonnage(Player perso) {
@@ -566,7 +566,7 @@ public class World {
 
 	public Account getCompteByPseudo(String p) {
 		for (Account C : accounts.values())
-			if (C.get_pseudo().equals(p))
+			if (C.getPseudo().equals(p))
 				return C;
 		return null;
 	}
@@ -638,10 +638,10 @@ public class World {
 	}
 
 	public void ReassignAccountToChar(Account C) {
-		C.get_persos().clear();
+		C.getPlayers().clear();
 		database.getCharacterData().loadByAccount(C);
 		for (Player P : players.values()) {
-			if (P.getAccID() == C.get_GUID()) {
+			if (P.getAccID() == C.getUUID()) {
 				P.setAccount(C);
 			}
 		}
@@ -686,7 +686,7 @@ public class World {
 
 	public boolean ipIsUsed(String ip) {
 		for (Account c : accounts.values())
-			if (c.get_curIP().compareTo(ip) == 0)
+			if (c.getCurIp().compareTo(ip) == 0)
 				return true;
 		return false;
 	}

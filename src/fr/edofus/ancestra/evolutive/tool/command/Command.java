@@ -16,14 +16,14 @@ public abstract class Command<T> {
 	private StringBuilder successMessages = new StringBuilder();
 	private TimeRestricter restricter;
 	
-	public abstract void action(T t);
+	public abstract void action(T t, String[] args);
 	
 	public Command(String name) {
 		this.name = name.toLowerCase();
 	}
 	
 	public Parameter<T> addParameter(Parameter<T> parameter) {
-		this.getParameters().put(parameter.getName(), parameter);
+		this.parameters.put(parameter.getName(), parameter);
 		return parameter;
 	}
 	
@@ -35,12 +35,12 @@ public abstract class Command<T> {
 		this.successMessages.append(message).append("\n");
 	}
 	
-	public void execute(T t) {
+	public void execute(T t, String[] args) {
 		if(this.commandGroupAccess.authorizes(t)) {
 			if(t instanceof Player && 
 					this.restricter != null && !this.restricter.authorizes((Player)t))
 				return;
-			this.action(t);
+			this.action(t, args);
 			Console.instance.print(this.successMessages.toString(), t);
 		}
 	}

@@ -63,7 +63,7 @@ public class TimeRestricter {
 			case ACCOUNT:
 				if(result == null) {
 					for(ClientInstance instance: players.values()) {
-						if(instance.getAccount() == player.get_compte().get_GUID()) {
+						if(instance.getAccount() == player.get_compte().getUUID()) {
 							result = instance;
 							break;
 						}
@@ -73,7 +73,7 @@ public class TimeRestricter {
 			case IP:
 				if(result == null) {
 					for(ClientInstance instance: players.values()) {
-						if(instance.getIp() == player.get_compte().get_curIP()) {
+						if(instance.getIp() == player.get_compte().getCurIp()) {
 							result = instance;
 							break;
 						}
@@ -104,8 +104,8 @@ class ClientInstance {
 	
 	public ClientInstance(Player player, TimeRestricter restricter) {
 		this.player = player.get_GUID();
-		this.account = player.get_compte().get_GUID();
-		this.ip = player.get_compte().get_curIP();
+		this.account = player.get_compte().getUUID();
+		this.ip = player.get_compte().getCurIp();
 		this.hits = 0;
 		this.restricter = restricter;
 	}

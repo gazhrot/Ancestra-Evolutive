@@ -11,7 +11,7 @@ import fr.edofus.ancestra.evolutive.tool.plugin.packet.Packet;
 import fr.edofus.ancestra.evolutive.tool.plugin.packet.PacketParser;
 
 @Packet("FA")
-public class addFriend implements PacketParser {
+public class AddFriend implements PacketParser {
 
 	@Override
 	public void parse(GameClient client, String packet) {
@@ -38,7 +38,7 @@ public class addFriend implements PacketParser {
 					SocketManager.GAME_SEND_FA_PACKET(client.getPlayer(), "Ef");
 					return;
 				}
-				guid = account.get_GUID();
+				guid = account.getUUID();
 			break;
 			default:
 				packet = packet.substring(2);
@@ -47,7 +47,7 @@ public class addFriend implements PacketParser {
 					SocketManager.GAME_SEND_FA_PACKET(client.getPlayer(), "Ef");
 					return;
 				}
-				guid = player.get_compte().get_GUID();
+				guid = player.get_compte().getUUID();
 			break;
 		}
 		
