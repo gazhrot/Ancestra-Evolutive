@@ -2,7 +2,7 @@ Ancestra-Evolutive
 ==================
 
 Ancestra Evolutive is my public projet start the 3th of March,
-stopped on 20/03/2014.
+stopped on 20/03/2014 by John-R/Return and taken over by Locos.
 
 I searched to discover more about java, i've seen DAO & mina pattern,
 and that's good to improve the emulator (before, 1 player equals 1 thread, now, it's 1 thread to all clients)
