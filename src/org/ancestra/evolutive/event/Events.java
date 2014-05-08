@@ -9,7 +9,7 @@ import org.ancestra.evolutive.event.EventListener;
 public class Events {
 	Map<Class<?>, Set<EventListener>> listeners = new HashMap<Class<?>, Set<EventListener>>();
 
-	public void add(Class<?> zClass, org.ancestra.evolutive.event.EventListener eventListener) {
+	public void add(Class<?> zClass, EventListener eventListener) {
 		if(!listeners.containsKey(zClass)) 
 			listeners.put(zClass, new HashSet<EventListener>(2));
 		listeners.get(zClass).add(eventListener);
