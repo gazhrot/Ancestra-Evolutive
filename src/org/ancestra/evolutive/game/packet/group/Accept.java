@@ -8,7 +8,6 @@ import org.ancestra.evolutive.game.GameClient;
 import org.ancestra.evolutive.tool.plugin.packet.Packet;
 import org.ancestra.evolutive.tool.plugin.packet.PacketParser;
 
-
 @Packet("PA")
 public class Accept implements PacketParser {
 
@@ -16,10 +15,10 @@ public class Accept implements PacketParser {
 	public void parse(GameClient client, String packet) {
 		if(client.getPlayer() == null)
 			return;
-		if(client.getPlayer().getInvitation() == 0)
+		if(client.getPlayer().getInviting() == 0)
 			return;
 		
-		Player player = World.data.getPersonnage(client.getPlayer().getInvitation());
+		Player player = World.data.getPersonnage(client.getPlayer().getInviting());
 		
 		if(player == null)
 			return;
@@ -38,7 +37,7 @@ public class Accept implements PacketParser {
 			SocketManager.GAME_SEND_GROUP_CREATE(client, group);
 			SocketManager.GAME_SEND_PL_PACKET(client, group);
 			SocketManager.GAME_SEND_PM_ADD_PACKET_TO_GROUP(group, client.getPlayer());
-			group.addPerso(client.getPlayer());
+			group.addPlayer(client.getPlayer());
 		}
 		
 		client.getPlayer().setGroup(group);

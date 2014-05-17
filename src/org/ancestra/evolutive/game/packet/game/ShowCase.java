@@ -1,11 +1,9 @@
 package org.ancestra.evolutive.game.packet.game;
 
-
 import org.ancestra.evolutive.common.Constants;
 import org.ancestra.evolutive.game.GameClient;
 import org.ancestra.evolutive.tool.plugin.packet.Packet;
 import org.ancestra.evolutive.tool.plugin.packet.PacketParser;
-
 
 @Packet("Gf")
 public class ShowCase implements PacketParser {
@@ -14,9 +12,9 @@ public class ShowCase implements PacketParser {
 	public void parse(GameClient client, String packet) {
 		if(client.getPlayer() == null)
 			return;
-		if(client.getPlayer().get_fight() == null)
+		if(client.getPlayer().getFight() == null)
 			return;
-		if(client.getPlayer().get_fight().get_state() != Constants.FIGHT_STATE_ACTIVE)
+		if(client.getPlayer().getFight().get_state() != Constants.FIGHT_STATE_ACTIVE)
 			return;
 		
 		int cellID = -1;
@@ -27,6 +25,6 @@ public class ShowCase implements PacketParser {
 		
 		if(cellID == -1)
 			return;
-		client.getPlayer().get_fight().showCaseToTeam(client.getPlayer().get_GUID(),cellID);
+		client.getPlayer().getFight().showCaseToTeam(client.getPlayer().getUUID(),cellID);
 	}
 }

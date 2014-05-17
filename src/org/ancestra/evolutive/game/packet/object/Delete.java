@@ -1,14 +1,11 @@
 package org.ancestra.evolutive.game.packet.object;
 
-
-
 import org.ancestra.evolutive.common.SocketManager;
 import org.ancestra.evolutive.core.World;
 import org.ancestra.evolutive.game.GameClient;
-import org.ancestra.evolutive.objects.Objet;
+import org.ancestra.evolutive.object.Objet;
 import org.ancestra.evolutive.tool.plugin.packet.Packet;
 import org.ancestra.evolutive.tool.plugin.packet.PacketParser;
-
 
 @Packet("Od")
 public class Delete implements PacketParser {
@@ -24,7 +21,7 @@ public class Delete implements PacketParser {
 			} catch(Exception e) {}
 			
 			Objet obj = World.data.getObjet(guid);
-			if(obj == null || !client.getPlayer().hasItemGuid(guid) || qua <= 0 || client.getPlayer().get_fight() != null || client.getPlayer().is_away()) {
+			if(obj == null || !client.getPlayer().hasItemGuid(guid) || qua <= 0 || client.getPlayer().getFight() != null || client.getPlayer().isAway()) {
 				SocketManager.GAME_SEND_DELETE_OBJECT_FAILED_PACKET(client);
 				return;
 			}

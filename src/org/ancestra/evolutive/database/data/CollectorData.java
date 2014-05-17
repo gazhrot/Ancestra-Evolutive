@@ -8,13 +8,13 @@ import java.util.concurrent.locks.ReentrantLock;
 import org.ancestra.evolutive.core.Console;
 import org.ancestra.evolutive.core.World;
 import org.ancestra.evolutive.database.AbstractDAO;
-import org.ancestra.evolutive.objects.Carte;
-import org.ancestra.evolutive.objects.Percepteur;
+import org.ancestra.evolutive.entity.Collector;
+import org.ancestra.evolutive.map.Maps;
 
 
 
 
-public class CollectorData extends AbstractDAO<Percepteur>{
+public class CollectorData extends AbstractDAO<Collector>{
 
 	public CollectorData(Connection connection, ReentrantLock locker) {
 		super(connection, locker);
@@ -22,7 +22,7 @@ public class CollectorData extends AbstractDAO<Percepteur>{
 	}
 
 	@Override
-	public boolean create(Percepteur obj) {
+	public boolean create(Collector obj) {
 		String baseQuery = "INSERT INTO `percepteurs`" +
 				" VALUES (?,?,?,?,?,?,?,?,?,?);";
 		try {
@@ -47,14 +47,14 @@ public class CollectorData extends AbstractDAO<Percepteur>{
 	}
 
 	@Override
-	public boolean delete(Percepteur obj) {
+	public boolean delete(Collector obj) {
 		String baseQuery = "DELETE FROM percepteurs WHERE guid = "+obj.getGuid();
 		execute(baseQuery);
 		return true;
 	}
 
 	@Override
-	public boolean update(Percepteur obj) {
+	public boolean update(Collector obj) {
 		String baseQuery = "UPDATE `percepteurs` SET " + "`objets` = ?,"
 				+ "`kamas` = ?," + "`xp` = ?" + " WHERE guid = ?;";
 
@@ -74,16 +74,16 @@ public class CollectorData extends AbstractDAO<Percepteur>{
 	}
 
 	@Override
-	public Percepteur load(int id) {
-		Percepteur collector = null;
+	public Collector load(int id) {
+		Collector collector = null;
 		try {
 			ResultSet result = getData("SELECT * FROM percepteurs WHERE guid = "+id);
 			
 			if(result.next()) {
-				Carte map = World.data.getCarte(result.getShort("mapid"));
+				Maps map = World.data.getCarte(result.getShort("mapid"));
 				if(map == null) return null;
 				
-				collector = new Percepteur(
+				collector = new Collector(
 								result.getInt("guid"),
 								result.getShort("mapid"),
 								result.getInt("cellid"),
@@ -103,13 +103,13 @@ public class CollectorData extends AbstractDAO<Percepteur>{
 		return collector;
 	}
 	
-	public Percepteur loadByMap(int id) {
-		Percepteur collector = null;
+	public Collector loadByMap(int id) {
+		Collector collector = null;
 		try {
 			ResultSet result = getData("SELECT * FROM percepteurs WHERE mapid = "+id);
 			
 			while(result.next()) {
-				collector = new Percepteur(
+				collector = new Collector(
 								result.getInt("guid"),
 								result.getShort("mapid"),
 								result.getInt("cellid"),

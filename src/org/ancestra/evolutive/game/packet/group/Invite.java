@@ -1,14 +1,11 @@
 package org.ancestra.evolutive.game.packet.group;
 
-
-
 import org.ancestra.evolutive.client.Player;
 import org.ancestra.evolutive.common.SocketManager;
 import org.ancestra.evolutive.core.World;
 import org.ancestra.evolutive.game.GameClient;
 import org.ancestra.evolutive.tool.plugin.packet.Packet;
 import org.ancestra.evolutive.tool.plugin.packet.PacketParser;
-
 
 @Packet("PI")
 public class Invite implements PacketParser {
@@ -31,14 +28,14 @@ public class Invite implements PacketParser {
 			SocketManager.GAME_SEND_GROUP_INVITATION_ERROR(client, "a"+name);
 			return;
 		}
-		if(client.getPlayer().getGroup() != null && client.getPlayer().getGroup().getPersosNumber() == 8) {
+		if(client.getPlayer().getGroup() != null && client.getPlayer().getGroup().getPlayers().size() == 8) {
 			SocketManager.GAME_SEND_GROUP_INVITATION_ERROR(client, "f");
 			return;
 		}
 		
-		target.setInvitation(client.getPlayer().get_GUID());	
-		client.getPlayer().setInvitation(target.get_GUID());
-		SocketManager.GAME_SEND_GROUP_INVITATION(client, client.getPlayer().get_name(),name);
-		SocketManager.GAME_SEND_GROUP_INVITATION(target.getAccount().getGameClient(), client.getPlayer().get_name(),name);
+		target.setInviting(client.getPlayer().getUUID());	
+		client.getPlayer().setInviting(target.getUUID());
+		SocketManager.GAME_SEND_GROUP_INVITATION(client, client.getPlayer().getName(),name);
+		SocketManager.GAME_SEND_GROUP_INVITATION(target.getAccount().getGameClient(), client.getPlayer().getName(),name);
 	}
 }

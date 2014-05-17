@@ -1,12 +1,10 @@
 package org.ancestra.evolutive.game.packet.environement;
 
-
 import org.ancestra.evolutive.common.SocketManager;
 import org.ancestra.evolutive.core.Console;
 import org.ancestra.evolutive.game.GameClient;
 import org.ancestra.evolutive.tool.plugin.packet.Packet;
 import org.ancestra.evolutive.tool.plugin.packet.PacketParser;
-
 
 @Packet("eU")
 public class UseEmote implements PacketParser {
@@ -21,7 +19,7 @@ public class UseEmote implements PacketParser {
 		
 		if(emote == -1 || client.getPlayer() == null)
 			return;
-		if(client.getPlayer().get_fight() != null)
+		if(client.getPlayer().getFight() != null)
 			return;
 		
 		switch(emote) {//effets speciaux des emotes
@@ -31,14 +29,14 @@ public class UseEmote implements PacketParser {
 			break;
 		}
 		
-		if(client.getPlayer().emoteActive() == emote)
+		if(client.getPlayer().getEmoteActive() == emote)
 			client.getPlayer().setEmoteActive(0);
 		else 
 			client.getPlayer().setEmoteActive(emote);
 		
-		Console.instance.println("Set Emote "+client.getPlayer().emoteActive());
+		Console.instance.println("Set Emote "+client.getPlayer().getEmoteActive());
 		Console.instance.println("Is sitted "+client.getPlayer().isSitted());
 		
-		SocketManager.GAME_SEND_eUK_PACKET_TO_MAP(client.getPlayer().get_curCarte(), client.getPlayer().get_GUID(), client.getPlayer().emoteActive());
+		SocketManager.GAME_SEND_eUK_PACKET_TO_MAP(client.getPlayer().getCurMap(), client.getPlayer().getUUID(), client.getPlayer().getEmoteActive());
 	}
 }

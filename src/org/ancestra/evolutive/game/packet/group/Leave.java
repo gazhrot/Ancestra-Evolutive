@@ -1,7 +1,5 @@
 package org.ancestra.evolutive.game.packet.group;
 
-
-
 import org.ancestra.evolutive.client.Player;
 import org.ancestra.evolutive.client.other.Group;
 import org.ancestra.evolutive.common.SocketManager;
@@ -9,7 +7,6 @@ import org.ancestra.evolutive.core.World;
 import org.ancestra.evolutive.game.GameClient;
 import org.ancestra.evolutive.tool.plugin.packet.Packet;
 import org.ancestra.evolutive.tool.plugin.packet.PacketParser;
-
 
 @Packet("PV")
 public class Leave implements PacketParser {
@@ -29,7 +26,7 @@ public class Leave implements PacketParser {
 			SocketManager.GAME_SEND_PV_PACKET(client, "");
 			SocketManager.GAME_SEND_IH_PACKET(client.getPlayer(), "");
 		}else 
-		if(group.isChief(client.getPlayer().get_GUID())) {//Sinon, c'est qu'il kick un joueur du groupe
+		if(group.isChief(client.getPlayer().getUUID())) {//Sinon, c'est qu'il kick un joueur du groupe
 			int guid = -1;
 			
 			try {
@@ -42,7 +39,7 @@ public class Leave implements PacketParser {
 			Player player = World.data.getPersonnage(guid);
 			
 			group.leave(player);
-			SocketManager.GAME_SEND_PV_PACKET(player.getAccount().getGameClient(), String.valueOf(client.getPlayer().get_GUID()));
+			SocketManager.GAME_SEND_PV_PACKET(player.getAccount().getGameClient(), String.valueOf(client.getPlayer().getUUID()));
 			SocketManager.GAME_SEND_IH_PACKET(player, "");
 		}
 	}

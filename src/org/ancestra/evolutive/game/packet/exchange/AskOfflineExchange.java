@@ -1,6 +1,5 @@
 package org.ancestra.evolutive.game.packet.exchange;
 
-
 import org.ancestra.evolutive.common.SocketManager;
 import org.ancestra.evolutive.core.Server;
 import org.ancestra.evolutive.core.World;
@@ -8,28 +7,27 @@ import org.ancestra.evolutive.game.GameClient;
 import org.ancestra.evolutive.tool.plugin.packet.Packet;
 import org.ancestra.evolutive.tool.plugin.packet.PacketParser;
 
-
 @Packet("Eq")
 public class AskOfflineExchange implements PacketParser {
 
 	@Override
 	public void parse(GameClient client, String packet) {
-		if(client.getPlayer().get_isTradingWith() > 0 || client.getPlayer().get_fight() != null || client.getPlayer().is_away())
+		if(client.getPlayer().getIsTradingWith() > 0 || client.getPlayer().getFight() != null || client.getPlayer().isAway())
 			return;
         if(client.getPlayer().parseStoreItemsList().isEmpty()) {
         	SocketManager.GAME_SEND_Im_PACKET(client.getPlayer(), "123");
         	return;
         }
-        if(World.data.isMarchandMap(client.getPlayer().get_curCarte().get_id())) {
+        if(World.data.isMarchandMap(client.getPlayer().getCurMap().getId())) {
         	SocketManager.GAME_SEND_Im_PACKET(client.getPlayer(), "113");
         	return;
         }
-        if (client.getPlayer().get_curCarte().get_id() == 33 || client.getPlayer().get_curCarte().get_id() == 38 || client.getPlayer().get_curCarte().get_id() == 4601 || client.getPlayer().get_curCarte().get_id() == 8036 || client.getPlayer().get_curCarte().get_id() == 10301) {
-			if (client.getPlayer().get_curCarte().getStoreCount() >= 25) {
+        if (client.getPlayer().getCurMap().getId() == 33 || client.getPlayer().getCurMap().getId() == 38 || client.getPlayer().getCurMap().getId() == 4601 || client.getPlayer().getCurMap().getId() == 8036 || client.getPlayer().getCurMap().getId() == 10301) {
+			if (client.getPlayer().getCurMap().getStoreCount() >= 25) {
 				SocketManager.GAME_SEND_Im_PACKET(client.getPlayer(), "125;25");
 				return;
 			}
-        }else if(client.getPlayer().get_curCarte().getStoreCount() >= 6) {
+        }else if(client.getPlayer().getCurMap().getStoreCount() >= 6) {
         	SocketManager.GAME_SEND_Im_PACKET(client.getPlayer(), "125;6");
 			return;
         }

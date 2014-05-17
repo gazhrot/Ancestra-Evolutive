@@ -1,28 +1,25 @@
 package org.ancestra.evolutive.game.packet.exchange;
 
-
-
 import org.ancestra.evolutive.common.SocketManager;
 import org.ancestra.evolutive.core.World;
 import org.ancestra.evolutive.game.GameClient;
-import org.ancestra.evolutive.objects.HDV;
+import org.ancestra.evolutive.hdv.HDV;
 import org.ancestra.evolutive.tool.plugin.packet.Packet;
 import org.ancestra.evolutive.tool.plugin.packet.PacketParser;
-
 
 @Packet("EH")
 public class BigStore implements PacketParser {
 
 	@Override
 	public void parse(GameClient client, String packet) {
-		if(client.getPlayer().get_isTradingWith() > 0 || client.getPlayer().get_fight() != null || client.getPlayer().is_away())
+		if(client.getPlayer().getIsTradingWith() > 0 || client.getPlayer().getFight() != null || client.getPlayer().isAway())
 			return;
 		
 		switch(packet.charAt(2))
 		{
 			case 'B': //Confirmation d'achat
 				String[] info = packet.substring(3).split("\\|");//ligneID|amount|price
-				HDV curHdv = World.data.getHdv(Math.abs(client.getPlayer().get_isTradingWith()));
+				HDV curHdv = World.data.getHdv(Math.abs(client.getPlayer().getIsTradingWith()));
 				int ligneID = Integer.parseInt(info[0]);
 				byte amount = Byte.parseByte(info[1]);
 				
@@ -42,7 +39,7 @@ public class BigStore implements PacketParser {
 			case 'l'://Demande listage d'un template (les prix)
 				int template = Integer.parseInt(packet.substring(3));
 				try	{
-					SocketManager.GAME_SEND_EHl(client.getPlayer(), World.data.getHdv(Math.abs(client.getPlayer().get_isTradingWith())), template);
+					SocketManager.GAME_SEND_EHl(client.getPlayer(), World.data.getHdv(Math.abs(client.getPlayer().getIsTradingWith())), template);
 				}catch(NullPointerException e) {//Si erreur il y a, retire le template de la liste chez le client
 					SocketManager.GAME_SEND_EHM_PACKET(client.getPlayer(), "-", template+"");
 				}	
@@ -53,7 +50,7 @@ public class BigStore implements PacketParser {
 			break;			
 			case 'T'://Demande des template de la cat�gorie
 				int categ = Integer.parseInt(packet.substring(3));
-				String allTemplate = World.data.getHdv(Math.abs(client.getPlayer().get_isTradingWith())).parseTemplate(categ);
+				String allTemplate = World.data.getHdv(Math.abs(client.getPlayer().getIsTradingWith())).parseTemplate(categ);
 				SocketManager.GAME_SEND_EHL_PACKET(client.getPlayer(), categ, allTemplate);
 			break;			
 		}

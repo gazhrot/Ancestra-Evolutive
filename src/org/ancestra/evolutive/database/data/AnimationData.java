@@ -7,12 +7,12 @@ import java.util.concurrent.locks.ReentrantLock;
 import org.ancestra.evolutive.core.Console;
 import org.ancestra.evolutive.core.World;
 import org.ancestra.evolutive.database.AbstractDAO;
-import org.ancestra.evolutive.objects.Animations;
+import org.ancestra.evolutive.fight.spell.Animation;
 
 
 
 
-public class AnimationData extends AbstractDAO<Animations> {
+public class AnimationData extends AbstractDAO<Animation> {
 
 	public AnimationData(Connection connection, ReentrantLock locker) {
 		super(connection, locker);
@@ -20,31 +20,31 @@ public class AnimationData extends AbstractDAO<Animations> {
 	}
 
 	@Override
-	public boolean create(Animations obj) {
+	public boolean create(Animation obj) {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
-	public boolean delete(Animations obj) {
+	public boolean delete(Animation obj) {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
-	public boolean update(Animations obj) {
+	public boolean update(Animation obj) {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
-	public Animations load(int id) {
-		Animations animation = null;
+	public Animation load(int id) {
+		Animation animation = null;
 		try {
 			ResultSet result = getData("SELECT * FROM animations WHERE guid = "+id);
 			
 			if(result.next()) {
-				animation = new Animations(
+				animation = new Animation(
 						result.getInt("guid"),
 						result.getInt("id"),
 						result.getString("nom"),

@@ -7,20 +7,24 @@ import org.ancestra.evolutive.client.Player;
 import org.ancestra.evolutive.core.Console;
 import org.ancestra.evolutive.tool.time.restricter.TimeRestricter;
 
-
-
-
 public abstract class Command<T> {
+	
 	private String name;
 	private Map<String, Parameter<T>> parameters = new HashMap<>();
 	private CommandGroupAccess<T> commandGroupAccess = new CommandGroupAccess<>();
 	private StringBuilder successMessages = new StringBuilder();
 	private TimeRestricter restricter;
+	private boolean specificParams = false;
 	
 	public abstract void action(T t, String[] args);
 	
 	public Command(String name) {
 		this.name = name.toLowerCase();
+	}
+	
+	public Command(String name, boolean specific) {
+		this.name = name.toLowerCase();
+		this.specificParams = specific;
 	}
 	
 	public Parameter<T> addParameter(Parameter<T> parameter) {
@@ -57,5 +61,13 @@ public abstract class Command<T> {
 
 	public Map<String, Parameter<T>> getParameters() {
 		return parameters;
+	}
+
+	public boolean isSpecificParams() {
+		return specificParams;
+	}
+
+	public void setSpecificParams(boolean specificParams) {
+		this.specificParams = specificParams;
 	}
 }

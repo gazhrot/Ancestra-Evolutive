@@ -1,6 +1,5 @@
 package org.ancestra.evolutive.common;
 
-
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Map.Entry;
@@ -13,21 +12,19 @@ import org.ancestra.evolutive.core.Console;
 import org.ancestra.evolutive.core.Log;
 import org.ancestra.evolutive.core.Server;
 import org.ancestra.evolutive.core.World;
+import org.ancestra.evolutive.entity.monster.MobGroup;
+import org.ancestra.evolutive.entity.npc.NpcTemplate;
+import org.ancestra.evolutive.entity.npc.Npc;
+import org.ancestra.evolutive.entity.npc.NpcQuestion;
 import org.ancestra.evolutive.enums.EmulatorInfos;
 import org.ancestra.evolutive.game.GameClient;
-import org.ancestra.evolutive.objects.Action;
-import org.ancestra.evolutive.objects.Carte;
-import org.ancestra.evolutive.objects.ItemSet;
-import org.ancestra.evolutive.objects.NPC_tmpl;
-import org.ancestra.evolutive.objects.Objet;
-import org.ancestra.evolutive.objects.Carte.MountPark;
-import org.ancestra.evolutive.objects.Monstre.MobGroup;
-import org.ancestra.evolutive.objects.NPC_tmpl.NPC;
-import org.ancestra.evolutive.objects.NPC_tmpl.NPC_question;
-import org.ancestra.evolutive.objects.Objet.ObjTemplate;
-import org.ancestra.evolutive.objects.job.JobStat;
-
-
+import org.ancestra.evolutive.job.JobStat;
+import org.ancestra.evolutive.map.Maps;
+import org.ancestra.evolutive.map.MountPark;
+import org.ancestra.evolutive.object.ItemSet;
+import org.ancestra.evolutive.object.Objet;
+import org.ancestra.evolutive.object.Objet.ObjTemplate;
+import org.ancestra.evolutive.other.Action;
 
 public class Commands {
 	Account _compte;
@@ -89,7 +86,7 @@ public class Commands {
 		
 		if(Server.config.isCanLog())
 		{
-			Log.addToMjLog(_compte.getCurIp()+": "+_compte.getName()+" "+_perso.get_name()+"=>"+msg);
+			Log.addToMjLog(_compte.getCurIp()+": "+_compte.getName()+" "+_perso.getName()+"=>"+msg);
 		}
 		
 		if(_compte.getGmLvl() == 1)
@@ -140,7 +137,7 @@ public class Commands {
 		}else
 		if(command.equalsIgnoreCase("REFRESHMOBS"))
 		{
-			_perso.get_curCarte().refreshSpawns();
+			_perso.getCurMap().refreshSpawns();
 			String mess = "Mob Spawn refreshed!";
 			SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out, mess);
 			return;
@@ -149,17 +146,17 @@ public class Commands {
 			String mess = 	"==========\n"
 						+	"Liste des Npcs de la carte:";
 			SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out, mess);
-			Carte map = _perso.get_curCarte();
-			for(Entry<Integer,NPC> entry : map.get_npcs().entrySet())
+			Maps map = _perso.getCurMap();
+			for(Entry<Integer, Npc> entry : map.getNpcs().entrySet())
 			{
-				mess = entry.getKey()+" "+entry.getValue().get_template().get_id()+" "+entry.getValue().get_cellID()+" "+entry.getValue().get_template().get_initQuestionID();
+				mess = entry.getKey()+" "+entry.getValue().getTemplate().getId()+" "+entry.getValue().getCellid()+" "+entry.getValue().getTemplate().getInitQuestion();
 				SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out, mess);
 			}
 			mess = "Liste des groupes de monstres:";
 			SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out, mess);
-			for(Entry<Integer,MobGroup> entry : map.getMobGroups().entrySet())
+			for(Entry<Integer, MobGroup> entry : map.getMobGroups().entrySet())
 			{
-				mess = entry.getKey()+" "+entry.getValue().getCellID()+" "+entry.getValue().getAlignement()+" "+entry.getValue().getSize();
+				mess = entry.getKey()+" "+entry.getValue().getCellid()+" "+entry.getValue().getAlign()+" "+entry.getValue().getMobs().size();
 				SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out, mess);
 			}
 			mess = "==========";
@@ -174,9 +171,9 @@ public class Commands {
 			for(GameClient client: Server.config.getGameServer().getClients().values()) {
 				Player P = client.getPlayer();
 				if(P == null)continue;
-				mess = P.get_name()+"("+P.get_GUID()+") ";
+				mess = P.getName()+"("+P.getUUID()+") ";
 				
-				switch(P.get_classe())
+				switch(P.getClasse())
 				{
 					case Constants.CLASS_FECA:
 						mess += "Fec";
@@ -218,10 +215,10 @@ public class Commands {
 						mess += "Unk";
 				}
 				mess += " ";
-				mess += (P.get_sexe()==0?"M":"F")+" ";
-				mess += P.get_lvl()+" ";
-				mess += P.get_curCarte().get_id()+"("+P.get_curCarte().getX()+"/"+P.get_curCarte().getY()+") ";
-				mess += P.get_fight()==null?"":"Combat ";
+				mess += (P.getSex()==0?"M":"F")+" ";
+				mess += P.getLevel()+" ";
+				mess += P.getCurMap().getId()+"("+P.getCurMap().getX()+"/"+P.getCurMap().getY()+") ";
+				mess += P.getFight()==null?"":"Combat ";
 				SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out, mess);
 			}
 			mess = 	"==========\n";
@@ -232,7 +229,7 @@ public class Commands {
 		{
 			String mess = "Liste des StartCell [teamID][cellID]:";
 			SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out, mess);
-			String places = _perso.get_curCarte().get_placesStr();
+			String places = _perso.getCurMap().getPlaces();
 			if(places.indexOf('|') == -1 || places.length() <2)
 			{
 				mess = "Les places n'ont pas ete definies";
@@ -281,18 +278,18 @@ public class Commands {
 			
 			if(!perso.isOnline())
 			{
-				String mess = "Le personnage "+perso.get_name()+" n'etait pas connecte";
+				String mess = "Le personnage "+perso.getName()+" n'etait pas connecte";
 				SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out,mess);
 				return;
 			}
-			if(perso.get_guild() != null || perso.getGuildMember() != null)
+			if(perso.getGuild() != null || perso.getGuildMember() != null)
 			{
-				String mess = "Le personnage "+perso.get_name()+" a deja une guilde";
+				String mess = "Le personnage "+perso.getName()+" a deja une guilde";
 				SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out,mess);
 				return;
 			}
 			SocketManager.GAME_SEND_gn_PACKET(perso);
-			String mess = perso.get_name()+": Panneau de creation de guilde ouvert";
+			String mess = perso.getName()+": Panneau de creation de guilde ouvert";
 			SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out,mess);
 			return;
 		}else
@@ -315,15 +312,15 @@ public class Commands {
 				return;
 			}
 			
-			perso.set_canAggro(!perso.canAggro());
-			String mess = perso.get_name();
-			if(perso.canAggro()) mess += " peut maintenant etre aggresser";
+			perso.setCanAggro(!perso.isCanAggro());
+			String mess = perso.getName();
+			if(perso.isCanAggro()) mess += " peut maintenant etre aggresser";
 			else mess += " ne peut plus etre agresser";
 			SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out,mess);
 			
 			if(!perso.isOnline())
 			{
-				mess = "(Le personnage "+perso.get_name()+" n'etait pas connecte)";
+				mess = "(Le personnage "+perso.getName()+" n'etait pas connecte)";
 				SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out,mess);
 			}
 		}else
@@ -346,10 +343,10 @@ public class Commands {
 					return;
 				}
 			}
-			int morphID = target.get_classe()*10 + target.get_sexe();
-			target.set_gfxID(morphID);
-			SocketManager.GAME_SEND_ERASE_ON_MAP_TO_MAP(target.get_curCarte(), target.get_GUID());
-			SocketManager.GAME_SEND_ADD_PLAYER_TO_MAP(target.get_curCarte(), target);
+			int morphID = target.getClasse()*10 + target.getSex();
+			target.setGfx(morphID);
+			SocketManager.GAME_SEND_ERASE_ON_MAP_TO_MAP(target.getCurMap(), target.getUUID());
+			SocketManager.GAME_SEND_ADD_PLAYER_TO_MAP(target.getCurMap(), target);
 			String str = "Le joueur a ete transforme";
 			SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out,str);
 		}
@@ -363,8 +360,8 @@ public class Commands {
 				SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out,str);
 				return;
 			}
-			short mapID = P.get_curCarte().get_id();
-			int cellID = P.get_curCell().getID();
+			short mapID = P.getCurMap().getId();
+			int cellID = P.getCurCell().getId();
 			
 			Player target = _perso;
 			if(infos.length > 2)//Si un nom de perso est spécifié
@@ -376,7 +373,7 @@ public class Commands {
 					SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out,str);
 					return;
 				}
-				if(target.get_fight() != null)
+				if(target.getFight() != null)
 				{
 					String str = "La cible est en combat";
 					SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out,str);
@@ -396,7 +393,7 @@ public class Commands {
 				SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out,str);
 				return;
 			}
-			if(target.get_fight() != null)
+			if(target.getFight() != null)
 			{
 				String str = "La cible est en combat";
 				SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out,str);
@@ -415,8 +412,8 @@ public class Commands {
 			}
 			if(P.isOnline())
 			{
-				short mapID = P.get_curCarte().get_id();
-				int cellID = P.get_curCell().getID();
+				short mapID = P.getCurMap().getId();
+				int cellID = P.getCurCell().getId();
 				target.teleport(mapID, cellID);
 				String str = "Le joueur a ete teleporte";
 				SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out,str);
@@ -429,7 +426,7 @@ public class Commands {
 		if(command.equalsIgnoreCase("NAMEANNOUNCE"))
 		{
 			infos = msg.split(" ",2);
-			String prefix = "["+_perso.get_name()+"]";
+			String prefix = "["+_perso.getName()+"]";
 			SocketManager.GAME_SEND_MESSAGE_TO_ALL(prefix+infos[1], Server.config.getMotdColor());
 			return;
 		}else
@@ -448,7 +445,7 @@ public class Commands {
 				SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out,str);
 				return;
 			}
-			if(World.data.getCarte(mapID).getCase(cellID) == null)
+			if(World.data.getCarte(mapID).getCases().get(cellID) == null)
 			{
 				String str = "MapID ou cellID invalide";
 				SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out,str);
@@ -458,7 +455,7 @@ public class Commands {
 			if(infos.length > 3)//Si un nom de perso est spécifié
 			{
 				target = World.data.getPersoByName(infos[3]);
-				if(target == null  || target.get_fight() != null)
+				if(target == null  || target.getFight() != null)
 				{
 					String str = "Le personnage n'a pas ete trouve ou est en combat";
 					SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out,str);
@@ -483,14 +480,14 @@ public class Commands {
 				cont = Integer.parseInt(infos[4]);
 				
 			}catch(Exception e){};
-			Carte map = World.database.getMapData().loadMapByPos(mapX, mapY, cont);
+			Maps map = World.database.getMapData().loadMapByPos(mapX, mapY, cont);
 			if(map == null)
 			{
 				String str = "Position ou continent invalide";
 				SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out,str);
 				return;
 			}
-			if(map.getCase(cellID) == null)
+			if(map.getCases().get(cellID) == null)
 			{
 				String str = "CellID invalide";
 				SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out,str);
@@ -500,20 +497,20 @@ public class Commands {
 			if(infos.length > 5)//Si un nom de perso est spécifié
 			{
 				target = World.data.getPersoByName(infos[5]);
-				if(target == null || target.get_fight() != null)
+				if(target == null || target.getFight() != null)
 				{
 					String str = "Le personnage n'a pas ete trouve ou est en combat";
 					SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out,str);
 					return;
 				}
-				if(target.get_fight() != null)
+				if(target.getFight() != null)
 				{
 					String str = "La cible est en combat";
 					SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out,str);
 					return;
 				}
 			}
-			target.teleport(map.get_id(), cellID);
+			target.teleport(map.getId(), cellID);
 			String str = "Le joueur a ete teleporte";
 			SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out,str);
 		}else
@@ -582,10 +579,10 @@ public class Commands {
 				SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out,mess);
 				return;
 			}
-			String mess = "Vous avez mute "+perso.get_name()+" pour "+time+" secondes";
+			String mess = "Vous avez mute "+perso.getName()+" pour "+time+" secondes";
 			if(perso.getAccount() == null)
 			{
-				mess = "(Le personnage "+perso.get_name()+" n'etait pas connecte)";
+				mess = "(Le personnage "+perso.getName()+" n'etait pas connecte)";
 				SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out,mess);
 				return;
 			}
@@ -594,7 +591,7 @@ public class Commands {
 			
 			if(!perso.isOnline())
 			{
-				mess = "(Le personnage "+perso.get_name()+" n'etait pas connecte)";
+				mess = "(Le personnage "+perso.getName()+" n'etait pas connecte)";
 				SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out,mess);
 			}else
 			{
@@ -621,12 +618,12 @@ public class Commands {
 			}
 			
 			perso.getAccount().mute(false,0);
-			String mess = "Vous avez unmute "+perso.get_name();
+			String mess = "Vous avez unmute "+perso.getName();
 			SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out,mess);
 			
 			if(!perso.isOnline())
 			{
-				mess = "(Le personnage "+perso.get_name()+" n'etait pas connecte)";
+				mess = "(Le personnage "+perso.getName()+" n'etait pas connecte)";
 				SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out,mess);
 			}
 		}else
@@ -648,12 +645,12 @@ public class Commands {
 			if(perso.isOnline())
 			{
 				perso.getAccount().getGameClient().kick();
-				String mess = "Vous avez kick "+perso.get_name();
+				String mess = "Vous avez kick "+perso.getName();
 				SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out,mess);
 			}
 			else
 			{
-				String mess = "Le personnage "+perso.get_name()+" n'est pas connecte";
+				String mess = "Le personnage "+perso.getName()+" n'est pas connecte";
 				SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out,mess);
 			}
 		}else
@@ -753,7 +750,7 @@ public class Commands {
 			{
 				id = Integer.parseInt(infos[1]);
 			}catch(Exception e){};
-			NPC_question Q = World.data.getNPCQuestion(id);
+			NpcQuestion Q = World.data.getNpcQuestion(id);
 			String str = "";
 			if(id == 0 || Q == null)
 			{
@@ -761,7 +758,7 @@ public class Commands {
 				SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out,str);
 				return;
 			}
-			str = "Liste des reponses pour la question "+id+": "+Q.getReponses();
+			str = "Liste des reponses pour la question "+id+": "+Q.getAnswer();
 			SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out,str);
 			return;
 		}else
@@ -783,8 +780,8 @@ public class Commands {
 					return;
 				}
 			}
-			String str = "Vous avez ajouter "+honor+" honneur a "+target.get_name();
-			if(target.get_align() == Constants.ALIGNEMENT_NEUTRE)
+			String str = "Vous avez ajouter "+honor+" honneur a "+target.getName();
+			if(target.getAlign() == Constants.ALIGNEMENT_NEUTRE)
 			{
 				str = "Le joueur est neutre ...";
 				SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out,str);
@@ -916,9 +913,9 @@ public class Commands {
 					return;
 				}
 			}
-			target.set_size(size);
-			SocketManager.GAME_SEND_ERASE_ON_MAP_TO_MAP(target.get_curCarte(), target.get_GUID());
-			SocketManager.GAME_SEND_ADD_PLAYER_TO_MAP(target.get_curCarte(), target);
+			target.setSize(size);
+			SocketManager.GAME_SEND_ERASE_ON_MAP_TO_MAP(target.getCurMap(), target.getUUID());
+			SocketManager.GAME_SEND_ADD_PLAYER_TO_MAP(target.getCurMap(), target);
 			String str = "La taille du joueur a ete modifiee";
 			SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out,str);
 		}else
@@ -946,9 +943,9 @@ public class Commands {
 					return;
 				}
 			}
-			target.set_gfxID(morphID);
-			SocketManager.GAME_SEND_ERASE_ON_MAP_TO_MAP(target.get_curCarte(), target.get_GUID());
-			SocketManager.GAME_SEND_ADD_PLAYER_TO_MAP(target.get_curCarte(), target);
+			target.setGfx(morphID);
+			SocketManager.GAME_SEND_ERASE_ON_MAP_TO_MAP(target.getCurMap(), target.getUUID());
+			SocketManager.GAME_SEND_ADD_PLAYER_TO_MAP(target.getCurMap(), target);
 			String str = "Le joueur a ete transforme";
 			SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out,str);
 		}if(command.equalsIgnoreCase("MOVENPC"))
@@ -958,29 +955,29 @@ public class Commands {
 			{
 				id = Integer.parseInt(infos[1]);
 			}catch(Exception e){};
-			NPC npc = _perso.get_curCarte().getNPC(id);
+			Npc npc = _perso.getCurMap().getNpcs().get(id);
 			if(id == 0 || npc == null)
 			{
 				String str = "Npc GUID invalide";
 				SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out,str);
 				return;
 			}
-			int exC = npc.get_cellID();
+			int exC = npc.getCellid();
 			//on l'efface de la map
-			SocketManager.GAME_SEND_ERASE_ON_MAP_TO_MAP(_perso.get_curCarte(), id);
+			SocketManager.GAME_SEND_ERASE_ON_MAP_TO_MAP(_perso.getCurMap(), id);
 			//on change sa position/orientation
-			npc.setCellID(_perso.get_curCell().getID());
-			npc.setOrientation((byte)_perso.get_orientation());
+			npc.setCellid(_perso.getCurCell().getId());
+			npc.setOrientation((byte)_perso.getOrientation());
 			//on envoie la modif
-			SocketManager.GAME_SEND_ADD_NPC_TO_MAP(_perso.get_curCarte(),npc);
+			SocketManager.GAME_SEND_ADD_NPC_TO_MAP(_perso.getCurMap(),npc);
 			String str = "Le PNJ a ete deplace";
-			if(_perso.get_orientation() == 0
-			|| _perso.get_orientation() == 2
-			|| _perso.get_orientation() == 4
-			|| _perso.get_orientation() == 6)
+			if(_perso.getOrientation() == 0
+			|| _perso.getOrientation() == 2
+			|| _perso.getOrientation() == 4
+			|| _perso.getOrientation() == 6)
 				str += " mais est devenu invisible (orientation diagonale invalide).";
-			if(World.database.getNpcData().delete(_perso.get_curCarte().get_id(),exC)
-			&& World.database.getNpcData().create(_perso.get_curCarte().get_id(),npc.get_template().get_id(),_perso.get_curCell().getID(),_perso.get_orientation()))
+			if(World.database.getNpcData().delete(_perso.getCurMap().getId(),exC)
+			&& World.database.getNpcData().create(_perso.getCurMap().getId(),npc.getTemplate().getId(),_perso.getCurCell().getId(),_perso.getOrientation()))
 				SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out,str);
 			else
 				SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out,"Erreur au moment de sauvegarder la position");
@@ -1029,20 +1026,20 @@ public class Commands {
 					if(perso == null)
 						perso = _perso;
 				}
-				if(perso.get_lvl() < count)
+				if(perso.getLevel() < count)
 				{
-					while(perso.get_lvl() < count)
+					while(perso.getLevel() < count)
 					{
 						perso.levelUp(false,true);
 					}
 					if(perso.isOnline())
 					{
 						SocketManager.GAME_SEND_SPELL_LIST(perso);
-						SocketManager.GAME_SEND_NEW_LVL_PACKET(perso.getAccount().getGameClient(),perso.get_lvl());
+						SocketManager.GAME_SEND_NEW_LVL_PACKET(perso.getAccount().getGameClient(),perso.getLevel());
 						SocketManager.GAME_SEND_STATS_PACKET(perso);
 					}
 				}
-				String mess = "Vous avez fixer le niveau de "+perso.get_name()+" a "+count;
+				String mess = "Vous avez fixer le niveau de "+perso.getName()+" a "+count;
 				SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out,mess);
 			}catch(Exception e)
 			{
@@ -1066,11 +1063,11 @@ public class Commands {
 					if(perso == null)
 						perso = _perso;
 				}
-				int newPDV = perso.get_PDVMAX() * count / 100;
-				perso.set_PDV(newPDV);
+				int newPDV = perso.getMaxPdv() * count / 100;
+				perso.setPdv(newPDV);
 				if(perso.isOnline())
 					SocketManager.GAME_SEND_STATS_PACKET(perso);
-				String mess = "Vous avez fixer le pourcentage de pdv de "+perso.get_name()+" a "+count;
+				String mess = "Vous avez fixer le pourcentage de pdv de "+perso.getName()+" a "+count;
 				SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out,mess);
 			}catch(Exception e)
 			{
@@ -1099,16 +1096,16 @@ public class Commands {
 				if(perso == null)
 					perso = _perso;
 			}
-			long curKamas = perso.get_kamas();
+			long curKamas = perso.getKamas();
 			long newKamas = curKamas + count;
 			if(newKamas <0) newKamas = 0;
 			if(newKamas > 1000000000) newKamas = 1000000000;
-			perso.set_kamas(newKamas);
+			perso.setKamas(newKamas);
 			if(perso.isOnline())
 				SocketManager.GAME_SEND_STATS_PACKET(perso);
 			String mess = "Vous avez ";
 			mess += (count<0?"retirer":"ajouter")+" ";
-			mess += Math.abs(count)+" kamas a "+perso.get_name();
+			mess += Math.abs(count)+" kamas a "+perso.getName();
 			SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out,mess);
 		}else
 		if(command.equalsIgnoreCase("ITEM") || command.equalsIgnoreCase("!getitem"))
@@ -1167,7 +1164,7 @@ public class Commands {
 				Mob = infos[1];
 			}catch(Exception e){};
             if(Mob == null) return;
-			_perso.get_curCarte().spawnGroupOnCommand(_perso.get_curCell().getID(), Mob);
+			_perso.getCurMap().spawnGroupOnCommand(_perso.getCurCell().getId(), Mob);
 		}else
 		if (command.equalsIgnoreCase("TITLE"))
 		{
@@ -1186,10 +1183,10 @@ public class Commands {
 				return;
 			}
 			
-			target.set_title(TitleID);
+			target.setTitle(TitleID);
 			SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out, "Titre mis en place.");
 			World.database.getCharacterData().update(target);
-			if(target.get_fight() == null) SocketManager.GAME_SEND_ALTER_GM_PACKET(target.get_curCarte(), target);
+			if(target.getFight() == null) SocketManager.GAME_SEND_ALTER_GM_PACKET(target.getCurMap(), target);
 		}else
 		{
 			this.commandGmOne(command, infos, msg);
@@ -1210,7 +1207,7 @@ public class Commands {
 		}else
 		if(command.equalsIgnoreCase("SAVE") && !Server.config.isSaving())
 		{
-			World.data.saveData(_perso.get_GUID());
+			World.data.saveData(_perso.getUUID());
 			String mess = "Sauvegarde lancee!";
 			SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out, mess);
 			return;
@@ -1222,11 +1219,11 @@ public class Commands {
 			{
 				cell = Integer.parseInt(infos[2]);
 			}catch(Exception e){};
-			if(cell < 0 || _perso.get_curCarte().getCase(cell) == null)
+			if(cell < 0 || _perso.getCurMap().getCases().get(cell) == null)
 			{
-				cell = _perso.get_curCell().getID();
+				cell = _perso.getCurCell().getId();
 			}
-			String places = _perso.get_curCarte().get_placesStr();
+			String places = _perso.getCurMap().getPlaces();
 			String[] p = places.split("\\|");
 			String newPlaces = "";
 			String team0 = "",team1 = "";
@@ -1252,8 +1249,8 @@ public class Commands {
 				if(cell == CryptManager.cellCode_To_ID(c))continue;
 				newPlaces += c;
 			}
-			_perso.get_curCarte().setPlaces(newPlaces);
-			if(!World.database.getMapData().update(_perso.get_curCarte()))return;
+			_perso.getCurMap().setPlaces(newPlaces);
+			if(!World.database.getMapData().update(_perso.getCurMap()))return;
 			SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out,"Les places ont ete modifiees ("+newPlaces+")");
 			return;
 		}else
@@ -1274,7 +1271,7 @@ public class Commands {
 			P.getAccount().setBanned(true);
 			World.database.getAccountData().update(P.getAccount());
 			if(P.getAccount().getGameClient() != null)P.getAccount().getGameClient().kick();
-			SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out, "Vous avez banni "+P.get_name());
+			SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out, "Vous avez banni "+P.getName());
 			return;
 		}else
 		if(command.equalsIgnoreCase("UNBAN"))
@@ -1293,7 +1290,7 @@ public class Commands {
 			}
 			P.getAccount().setBanned(false);
 			World.database.getAccountData().update(P.getAccount());
-			SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out, "Vous avez debanni "+P.get_name());
+			SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out, "Vous avez debanni "+P.getName());
 			return;
 		}else
 		if(command.equalsIgnoreCase("ADDFIGHTPOS"))
@@ -1311,11 +1308,11 @@ public class Commands {
 				SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out,str);
 				return;
 			}
-			if(cell <0 || _perso.get_curCarte().getCase(cell) == null || !_perso.get_curCarte().getCase(cell).isWalkable(true))
+			if(cell <0 || _perso.getCurMap().getCases().get(cell) == null || !_perso.getCurMap().getCases().get(cell).isWalkable(true))
 			{
-				cell = _perso.get_curCell().getID();
+				cell = _perso.getCurCell().getId();
 			}
-			String places = _perso.get_curCarte().get_placesStr();
+			String places = _perso.getCurMap().getPlaces();
 			String[] p = places.split("\\|");
 			boolean already = false;
 			String team0 = "",team1 = "";
@@ -1342,8 +1339,8 @@ public class Commands {
 			
 			String newPlaces = team0+"|"+team1;
 			
-			_perso.get_curCarte().setPlaces(newPlaces);
-			if(!World.database.getMapData().update(_perso.get_curCarte()))return;
+			_perso.getCurMap().setPlaces(newPlaces);
+			if(!World.database.getMapData().update(_perso.getCurMap()))return;
 			SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out,"Les places ont ete modifiees ("+newPlaces+")");
 			return;
 		}else
@@ -1362,8 +1359,8 @@ public class Commands {
 				return;
 			}
 			String mess = "Le nombre de groupe a ete fixe";
-			_perso.get_curCarte().setMaxGroup(id);
-			boolean ok = World.database.getMapData().update(_perso.get_curCarte());
+			_perso.getCurMap().setMaxGroup(id);
+			boolean ok = World.database.getMapData().update(_perso.getCurMap());
 			if(ok)mess += " et a ete sauvegarder a la BDD";
 			SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out,mess);
 		}else
@@ -1371,10 +1368,10 @@ public class Commands {
 		{
 			String groupData = infos[1];
 
-			_perso.get_curCarte().addStaticGroup(_perso.get_curCell().getID(), groupData);
+			_perso.getCurMap().addStaticGroup(_perso.getCurCell().getId(), groupData);
 			String str = "Le grouppe a ete fixe";
 			//Sauvegarde DB de la modif
-			if(World.database.getMonsterData().saveNewFixGroup(_perso.get_curCarte().get_id(),_perso.get_curCell().getID(), groupData))
+			if(World.database.getMonsterData().saveNewFixGroup(_perso.getCurMap().getId(),_perso.getCurCell().getId(), groupData))
 				str += " et a ete sauvegarde dans la BDD";
 			SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out,str);
 			return;
@@ -1386,22 +1383,22 @@ public class Commands {
 			{
 				id = Integer.parseInt(infos[1]);
 			}catch(Exception e){};
-			if(id == 0 || World.data.getNPCTemplate(id) == null)
+			if(id == 0 || World.data.getNpcTemplate(id) == null)
 			{
 				String str = "NpcID invalide";
 				SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out,str);
 				return;
 			}
-			NPC npc = _perso.get_curCarte().addNpc(id, _perso.get_curCell().getID(), _perso.get_orientation());
-			SocketManager.GAME_SEND_ADD_NPC_TO_MAP(_perso.get_curCarte(), npc);
+			Npc npc = _perso.getCurMap().addNpc(id, _perso.getCurCell().getId(), _perso.getOrientation());
+			SocketManager.GAME_SEND_ADD_NPC_TO_MAP(_perso.getCurMap(), npc);
 			String str = "Le PNJ a ete ajoute";
-			if(_perso.get_orientation() == 0
-					|| _perso.get_orientation() == 2
-					|| _perso.get_orientation() == 4
-					|| _perso.get_orientation() == 6)
+			if(_perso.getOrientation() == 0
+					|| _perso.getOrientation() == 2
+					|| _perso.getOrientation() == 4
+					|| _perso.getOrientation() == 6)
 						str += " mais est invisible (orientation diagonale invalide).";
 			
-			if(World.database.getNpcData().create(_perso.get_curCarte().get_id(), id, _perso.get_curCell().getID(), _perso.get_orientation()))
+			if(World.database.getNpcData().create(_perso.getCurMap().getId(), id, _perso.getCurCell().getId(), _perso.getOrientation()))
 				SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out,str);
 			else
 				SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out,"Erreur au moment de sauvegarder la position");
@@ -1413,20 +1410,23 @@ public class Commands {
 			{
 				id = Integer.parseInt(infos[1]);
 			}catch(Exception e){};
-			NPC npc = _perso.get_curCarte().getNPC(id);
+			Npc npc = _perso.getCurMap().getNpcs().get(id);
 			if(id == 0 || npc == null)
 			{
 				String str = "Npc GUID invalide";
 				SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out,str);
 				return;
 			}
-			int exC = npc.get_cellID();
+			int exC = npc.getCellid();
 			//on l'efface de la map
-			SocketManager.GAME_SEND_ERASE_ON_MAP_TO_MAP(_perso.get_curCarte(), id);
-			_perso.get_curCarte().removeNpcOrMobGroup(id);
+			SocketManager.GAME_SEND_ERASE_ON_MAP_TO_MAP(_perso.getCurMap(), id);
+			if(_perso.getCurMap().getNpcs().containsKey(id))
+				_perso.getCurMap().getNpcs().remove(id);
+			if(_perso.getCurMap().getMobGroups().containsKey(id))
+				_perso.getCurMap().getMobGroups().remove(id);
 			
 			String str = "Le PNJ a ete supprime";
-			if(World.database.getNpcData().delete(_perso.get_curCarte().get_id(),exC))
+			if(World.database.getNpcData().delete(_perso.getCurMap().getId(),exC))
 				SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out,str);
 			else
 				SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out,"Erreur au moment de sauvegarder la position");
@@ -1438,15 +1438,15 @@ public class Commands {
 			{
 				cellID = Integer.parseInt(infos[1]);
 			}catch(Exception e){};
-			if(cellID == -1 || _perso.get_curCarte().getCase(cellID) == null)
+			if(cellID == -1 || _perso.getCurMap().getCases().get(cellID) == null)
 			{
 				String str = "CellID invalide";
 				SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out,str);
 				return;
 			}
 			
-			_perso.get_curCarte().getCase(cellID).clearOnCellAction();
-			boolean success = World.database.getScriptedCellData().delete(_perso.get_curCarte().get_id(),cellID);
+			_perso.getCurMap().getCases().get(cellID).clearOnCellAction();
+			boolean success = World.database.getScriptedCellData().delete(_perso.getCurMap().getId(),cellID);
 			String str = "";
 			if(success)	str = "Le trigger a ete retire";
 			else 		str = "Le trigger n'a pas ete retire";
@@ -1469,8 +1469,8 @@ public class Commands {
 				return;
 			}
 			
-			_perso.get_curCell().addOnCellStopAction(actionID,args, cond);
-			boolean success = World.database.getScriptedCellData().update(_perso.get_curCarte().get_id(),_perso.get_curCell().getID(),actionID,1,args,cond);
+			_perso.getCurCell().addOnCellStopAction(actionID,args, cond);
+			boolean success = World.database.getScriptedCellData().update(_perso.getCurMap().getId(),_perso.getCurCell().getId(),actionID,1,args,cond);
 			String str = "";
 			if(success)	str = "Le trigger a ete ajoute";
 			else 		str = "Le trigger n'a pas ete ajoute";
@@ -1486,7 +1486,7 @@ public class Commands {
 				npcGUID = Integer.parseInt(infos[1]);
 				itmID = Integer.parseInt(infos[2]);
 			}catch(Exception e){};
-			NPC_tmpl npc =  _perso.get_curCarte().getNPC(npcGUID).get_template();
+			NpcTemplate npc =  _perso.getCurMap().getNpcs().get(npcGUID).getTemplate();
 			if(npcGUID == 0 || itmID == -1 || npc == null)
 			{
 				String str = "NpcGUID ou itmID invalide";
@@ -1496,7 +1496,7 @@ public class Commands {
 			
 			
 			String str = "";
-			if(npc.delItemVendor(itmID))str = "L'objet a ete retire";
+			if(npc.removeObject(itmID))str = "L'objet a ete retire";
 			else str = "L'objet n'a pas ete retire";
 			SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out,str);
 		}else
@@ -1510,7 +1510,7 @@ public class Commands {
 				npcGUID = Integer.parseInt(infos[1]);
 				itmID = Integer.parseInt(infos[2]);
 			}catch(Exception e){};
-			NPC_tmpl npc =  _perso.get_curCarte().getNPC(npcGUID).get_template();
+			NpcTemplate npc =  _perso.getCurMap().getNpcs().get(npcGUID).getTemplate();
 			ObjTemplate item =  World.data.getObjTemplate(itmID);
 			if(npcGUID == 0 || itmID == -1 || npc == null || item == null)
 			{
@@ -1521,7 +1521,7 @@ public class Commands {
 			
 			
 			String str = "";
-			if(npc.addItemVendor(item))str = "L'objet a ete rajoute";
+			if(npc.addObject(item))str = "L'objet a ete rajoute";
 			else str = "L'objet n'a pas ete rajoute";
 			SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out,str);
 		}else
@@ -1538,14 +1538,14 @@ public class Commands {
 				if(price > 20000000)price = 20000000;
 				if(price <0)price = 0;
 			}catch(Exception e){};
-			if(size == -1 || owner == -2 || price == -1 || _perso.get_curCarte().getMountPark() != null)
+			if(size == -1 || owner == -2 || price == -1 || _perso.getCurMap().getMountPark() != null)
 			{
 				String str = "Infos invalides ou map deja config.";
 				SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out,str);
 				return;
 			}
-			MountPark MP = new MountPark(owner, _perso.get_curCarte(), _perso.get_curCell().getID(), size, "", -1, price);
-			_perso.get_curCarte().setMountPark(MP);
+			MountPark MP = new MountPark(owner, _perso.getCurMap(), _perso.getCurCell().getId(), size, "", -1, price);
+			_perso.getCurMap().setMountPark(MP);
 			World.database.getMountparkData().update(MP);
 			String str = "L'enclos a ete config. avec succes";
 			SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out,str);

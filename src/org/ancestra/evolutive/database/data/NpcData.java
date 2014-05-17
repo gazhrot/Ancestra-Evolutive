@@ -8,13 +8,10 @@ import java.util.concurrent.locks.ReentrantLock;
 import org.ancestra.evolutive.core.Console;
 import org.ancestra.evolutive.core.World;
 import org.ancestra.evolutive.database.AbstractDAO;
-import org.ancestra.evolutive.objects.Carte;
-import org.ancestra.evolutive.objects.NPC_tmpl.NPC;
+import org.ancestra.evolutive.entity.npc.Npc;
+import org.ancestra.evolutive.map.Maps;
 
-
-
-
-public class NpcData extends AbstractDAO<NPC>{
+public class NpcData extends AbstractDAO<Npc>{
 
 	public NpcData(Connection connection, ReentrantLock locker) {
 		super(connection, locker);
@@ -22,7 +19,7 @@ public class NpcData extends AbstractDAO<NPC>{
 	}
 
 	@Override
-	public boolean create(NPC obj) {
+	public boolean create(Npc obj) {
 		// TODO Auto-generated method stub
 		return false;
 	}
@@ -45,7 +42,7 @@ public class NpcData extends AbstractDAO<NPC>{
 	}
 
 	@Override
-	public boolean delete(NPC obj) {
+	public boolean delete(Npc obj) {
 		// TODO Auto-generated method stub
 		return false;
 	}
@@ -57,18 +54,18 @@ public class NpcData extends AbstractDAO<NPC>{
 	}
 
 	@Override
-	public boolean update(NPC obj) {
+	public boolean update(Npc obj) {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
-	public NPC load(int id) {
-		NPC npc = null;
+	public Npc load(int id) {
+		Npc npc = null;
 		try {
 			ResultSet result = getData("SELECT * FROM npcs WHERE mapid = "+id);
 			while(result.next()) {
-				Carte map = World.data.getCarte(result.getShort("mapid"));
+				Maps map = World.data.getCarte(result.getShort("mapid"));
 				
 				if (map == null)
 					return null;

@@ -3,11 +3,10 @@ package org.ancestra.evolutive.game.packet.guild;
 import org.ancestra.evolutive.core.Log;
 import org.ancestra.evolutive.core.Server;
 import org.ancestra.evolutive.core.World;
+import org.ancestra.evolutive.entity.Collector;
 import org.ancestra.evolutive.game.GameClient;
-import org.ancestra.evolutive.objects.Percepteur;
 import org.ancestra.evolutive.tool.plugin.packet.Packet;
 import org.ancestra.evolutive.tool.plugin.packet.PacketParser;
-
 
 @Packet("gT")
 public class JoinFight implements PacketParser {
@@ -23,7 +22,7 @@ public class JoinFight implements PacketParser {
 					id = Integer.parseInt(Integer.toString(Integer.parseInt(packet.substring(1)), 36));
 				} catch(Exception e) {}
 				
-				Percepteur collector = World.data.getPerco(id);
+				Collector collector = World.data.getPerco(id);
 				
 				if(collector == null) 
 					return;
@@ -37,7 +36,7 @@ public class JoinFight implements PacketParser {
 				short map = -1;
 				
 				try {		
-					map = World.data.getCarte((short) collector.get_mapID()).getFight(fight).get_map().get_id();
+					map = World.data.getCarte((short) collector.get_mapID()).getFights().get(fight).get_map().getId();
 				} catch(Exception e) {}
 				
 				int cell = -1;
@@ -50,10 +49,10 @@ public class JoinFight implements PacketParser {
 					Log.addToLog("[DEBUG] Percepteur INFORMATIONS : TiD:"+id+", FightID:"+fight+", MapID:"+map+", CellID"+cell);
 				if(id == -1 || fight == -1 || map == -1 || cell == -1) 
 					return;
-				if(client.getPlayer().get_fight() == null && !client.getPlayer().is_away())	{
-					if(client.getPlayer().get_curCarte().get_id() != map)
+				if(client.getPlayer().getFight() == null && !client.getPlayer().isAway())	{
+					if(client.getPlayer().getCurMap().getId() != map)
 						client.getPlayer().teleport(map, cell);
-					World.data.getCarte(map).getFight(fight).joinPercepteurFight(client.getPlayer(),client.getPlayer().get_GUID(), id);
+					World.data.getCarte(map).getFights().get(fight).joinPercepteurFight(client.getPlayer(),client.getPlayer().getUUID(), id);
 				}
 			break;
 		}

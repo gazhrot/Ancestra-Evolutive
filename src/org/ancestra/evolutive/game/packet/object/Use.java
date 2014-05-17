@@ -1,17 +1,14 @@
 package org.ancestra.evolutive.game.packet.object;
 
-
-
 import org.ancestra.evolutive.client.Player;
 import org.ancestra.evolutive.common.ConditionParser;
 import org.ancestra.evolutive.common.SocketManager;
 import org.ancestra.evolutive.core.World;
 import org.ancestra.evolutive.game.GameClient;
-import org.ancestra.evolutive.objects.Objet;
-import org.ancestra.evolutive.objects.Objet.ObjTemplate;
+import org.ancestra.evolutive.object.Objet;
+import org.ancestra.evolutive.object.Objet.ObjTemplate;
 import org.ancestra.evolutive.tool.plugin.packet.Packet;
 import org.ancestra.evolutive.tool.plugin.packet.PacketParser;
-
 
 @Packet("OU")
 public class Use implements PacketParser {
@@ -36,9 +33,9 @@ public class Use implements PacketParser {
 		//Si le joueur n'a pas l'objet
 		if(World.data.getPersonnage(targetGuid) != null)
 			Target = World.data.getPersonnage(targetGuid);
-		if(!client.getPlayer().hasItemGuid(guid) || client.getPlayer().get_fight() != null || client.getPlayer().is_away())
+		if(!client.getPlayer().hasItemGuid(guid) || client.getPlayer().getFight() != null || client.getPlayer().isAway())
 			return;
-		if(Target != null && (Target.get_fight() != null || Target.is_away()))
+		if(Target != null && (Target.getFight() != null || Target.isAway()))
 			return;
 		
 		Objet obj = World.data.getObjet(guid);

@@ -7,12 +7,12 @@ import java.util.concurrent.locks.ReentrantLock;
 import org.ancestra.evolutive.core.Console;
 import org.ancestra.evolutive.core.World;
 import org.ancestra.evolutive.database.AbstractDAO;
-import org.ancestra.evolutive.objects.NPC_tmpl;
+import org.ancestra.evolutive.entity.npc.NpcTemplate;
 
 
 
 
-public class NpcTemplateData extends AbstractDAO<NPC_tmpl>{
+public class NpcTemplateData extends AbstractDAO<NpcTemplate>{
 
 	public NpcTemplateData(Connection connection, ReentrantLock locker) {
 		super(connection, locker);
@@ -20,26 +20,26 @@ public class NpcTemplateData extends AbstractDAO<NPC_tmpl>{
 	}
 
 	@Override
-	public boolean create(NPC_tmpl obj) {
+	public boolean create(NpcTemplate obj) {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
-	public boolean delete(NPC_tmpl obj) {
+	public boolean delete(NpcTemplate obj) {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
-	public boolean update(NPC_tmpl obj) {
+	public boolean update(NpcTemplate obj) {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
-	public NPC_tmpl load(int id) {
-		NPC_tmpl template = null;
+	public NpcTemplate load(int id) {
+		NpcTemplate template = null;
 		try {
 			ResultSet result = getData("SELECT * FROM npc_template WHERE id = "+id);
 			if(result.next()) {
@@ -56,7 +56,7 @@ public class NpcTemplateData extends AbstractDAO<NPC_tmpl>{
 				int customArtWork = result.getInt("customArtWork");
 				int initQId = result.getInt("initQuestion");
 				String ventes = result.getString("ventes");
-				template = new NPC_tmpl(id, bonusValue, gfxID,
+				template = new NpcTemplate(id, bonusValue, gfxID,
 						scaleX, scaleY, sex, color1, color2, color3, access,
 						extraClip, customArtWork, initQId, ventes);
 				World.data.addNpcTemplate(template);

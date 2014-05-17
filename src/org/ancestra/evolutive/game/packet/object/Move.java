@@ -7,13 +7,10 @@ import org.ancestra.evolutive.common.Constants;
 import org.ancestra.evolutive.common.SocketManager;
 import org.ancestra.evolutive.core.World;
 import org.ancestra.evolutive.game.GameClient;
-import org.ancestra.evolutive.objects.Objet;
-import org.ancestra.evolutive.objects.job.JobStat;
+import org.ancestra.evolutive.job.JobStat;
+import org.ancestra.evolutive.object.Objet;
 import org.ancestra.evolutive.tool.plugin.packet.Packet;
 import org.ancestra.evolutive.tool.plugin.packet.PacketParser;
-
-
-
 
 @Packet("OM")
 public class Move implements PacketParser {
@@ -35,9 +32,9 @@ public class Move implements PacketParser {
 			if(!client.getPlayer().hasItemGuid(guid) || obj == null)
 				return;
 			
-			if(client.getPlayer().get_fight() != null)
+			if(client.getPlayer().getFight() != null)
 			{
-				if(client.getPlayer().get_fight().get_state() > 2)
+				if(client.getPlayer().getFight().get_state() > 2)
 				{
 					return;
 				}
@@ -51,7 +48,7 @@ public class Move implements PacketParser {
 				SocketManager.GAME_SEND_Im_PACKET(client.getPlayer(), "119|43");
 				return;
 			}
-			if(obj.getTemplate().getLevel() > client.getPlayer().get_lvl())
+			if(obj.getTemplate().getLevel() > client.getPlayer().getLevel())
 			{
 				SocketManager.GAME_SEND_OAEL_PACKET(client);
 				return;
@@ -130,7 +127,7 @@ public class Move implements PacketParser {
 				pos == Constants.ITEM_POS_CAPE		||
 				pos == Constants.ITEM_POS_BOUCLIER	||
 				pos == Constants.ITEM_POS_NO_EQUIPED)
-				SocketManager.GAME_SEND_ON_EQUIP_ITEM(client.getPlayer().get_curCarte(), client.getPlayer());
+				SocketManager.GAME_SEND_ON_EQUIP_ITEM(client.getPlayer().getCurMap(), client.getPlayer());
 		
 			//Si familier
 			if(pos == Constants.ITEM_POS_FAMILIER && client.getPlayer().isOnMount())
@@ -147,8 +144,8 @@ public class Move implements PacketParser {
 			//Si objet de panoplie
 			if(obj.getTemplate().getPanopID() > 0)
 				SocketManager.GAME_SEND_OS_PACKET(client.getPlayer(),obj.getTemplate().getPanopID());
-			if(client.getPlayer().get_fight() != null)
-				SocketManager.GAME_SEND_ON_EQUIP_ITEM_FIGHT(client.getPlayer(), client.getPlayer().get_fight().getFighterByPerso(client.getPlayer()), client.getPlayer().get_fight());
+			if(client.getPlayer().getFight() != null)
+				SocketManager.GAME_SEND_ON_EQUIP_ITEM_FIGHT(client.getPlayer(), client.getPlayer().getFight().getFighterByPerso(client.getPlayer()), client.getPlayer().getFight());
 		}catch(Exception e)	{
 			e.printStackTrace();
 			SocketManager.GAME_SEND_DELETE_OBJECT_FAILED_PACKET(client);

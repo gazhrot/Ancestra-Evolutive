@@ -7,7 +7,6 @@ import java.util.Map.Entry;
 import org.ancestra.evolutive.client.Player;
 import org.ancestra.evolutive.common.Constants;
 
-
 public class Stats {
 	
 	private Map<Integer, Integer> effects = new TreeMap<>();
@@ -26,9 +25,9 @@ public class Stats {
 		if(!addBases)
 			return;
 		
-		this.effects.put(Constants.STATS_ADD_PA, player.get_lvl()<100?6:7);
+		this.effects.put(Constants.STATS_ADD_PA, player.getLevel()<100?6:7);
 		this.effects.put(Constants.STATS_ADD_PM, 3);
-		this.effects.put(Constants.STATS_ADD_PROS, player.get_classe()==Constants.CLASS_ENUTROF?120:100);
+		this.effects.put(Constants.STATS_ADD_PROS, player.getClasse()==Constants.CLASS_ENUTROF?120:100);
 		this.effects.put(Constants.STATS_ADD_PODS, 1000);
 		this.effects.put(Constants.STATS_CREATURE, 1);
 		this.effects.put(Constants.STATS_ADD_INIT, 1);
@@ -40,9 +39,9 @@ public class Stats {
 		if(!addBases)
 			return;
 		
-		this.effects.put(Constants.STATS_ADD_PA, player.get_lvl()<100?6:7);
+		this.effects.put(Constants.STATS_ADD_PA, player.getLevel()<100?6:7);
 		this.effects.put(Constants.STATS_ADD_PM, 3);
-		this.effects.put(Constants.STATS_ADD_PROS, player.get_classe()==Constants.CLASS_ENUTROF?120:100);
+		this.effects.put(Constants.STATS_ADD_PROS, player.getClasse()==Constants.CLASS_ENUTROF?120:100);
 		this.effects.put(Constants.STATS_ADD_PODS, 1000);
 		this.effects.put(Constants.STATS_CREATURE, 1);
 		this.effects.put(Constants.STATS_ADD_INIT, 1);

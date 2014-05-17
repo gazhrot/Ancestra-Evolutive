@@ -7,12 +7,9 @@ import java.util.concurrent.locks.ReentrantLock;
 import org.ancestra.evolutive.core.Console;
 import org.ancestra.evolutive.core.World;
 import org.ancestra.evolutive.database.AbstractDAO;
-import org.ancestra.evolutive.objects.NPC_tmpl.NPC_question;
+import org.ancestra.evolutive.entity.npc.NpcQuestion;
 
-
-
-
-public class NpcQuestionData extends AbstractDAO<NPC_question>{
+public class NpcQuestionData extends AbstractDAO<NpcQuestion>{
 
 	public NpcQuestionData(Connection connection, ReentrantLock locker) {
 		super(connection, locker);
@@ -20,34 +17,34 @@ public class NpcQuestionData extends AbstractDAO<NPC_question>{
 	}
 
 	@Override
-	public boolean create(NPC_question obj) {
+	public boolean create(NpcQuestion obj) {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
-	public boolean delete(NPC_question obj) {
+	public boolean delete(NpcQuestion obj) {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
-	public boolean update(NPC_question obj) {
+	public boolean update(NpcQuestion obj) {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
-	public NPC_question load(int id) {
-		NPC_question question = null;
+	public NpcQuestion load(int id) {
+		NpcQuestion question = null;
 		try {
 			ResultSet statement = getData("SELECT * FROM npc_questions WHERE ID = "+id);
 			
 			if(statement.next()) {
-				question = new NPC_question(statement.getInt("ID"), statement
+				question = new NpcQuestion(statement.getInt("ID"), statement
 						.getString("responses"), statement.getString("params"), statement
 						.getString("cond"), statement.getInt("ifFalse"));
-				World.data.addNPCQuestion(question);
+				World.data.addNpcQuestion(question);
 			}
 			closeResultSet(statement);
 		} catch (Exception e) {

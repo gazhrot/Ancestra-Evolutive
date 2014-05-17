@@ -4,10 +4,10 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.util.concurrent.locks.ReentrantLock;
 
+import org.ancestra.evolutive.area.SubArea;
 import org.ancestra.evolutive.core.Console;
 import org.ancestra.evolutive.core.World;
 import org.ancestra.evolutive.database.AbstractDAO;
-import org.ancestra.evolutive.objects.SubArea;
 
 
 
@@ -50,8 +50,8 @@ public class AreaSubData extends AbstractDAO<SubArea> {
 						result.getString("name"));
 				World.data.addSubArea(subArea);
 				//on ajoute la sous zone a la zone
-				if(subArea.get_area() != null)
-					subArea.get_area().addSubArea(subArea);
+				if(subArea.getArea() != null)
+					subArea.getArea().addSubArea(subArea);
 			}
 			closeResultSet(result);
 		} catch(Exception e) {

@@ -10,8 +10,8 @@ import org.ancestra.evolutive.client.Player;
 import org.ancestra.evolutive.core.Console;
 import org.ancestra.evolutive.core.World;
 import org.ancestra.evolutive.database.AbstractDAO;
-import org.ancestra.evolutive.objects.House;
-import org.ancestra.evolutive.objects.Trunk;
+import org.ancestra.evolutive.house.House;
+import org.ancestra.evolutive.house.Trunk;
 
 
 

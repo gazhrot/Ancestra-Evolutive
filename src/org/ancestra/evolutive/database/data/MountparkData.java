@@ -8,11 +8,8 @@ import java.util.concurrent.locks.ReentrantLock;
 import org.ancestra.evolutive.core.Console;
 import org.ancestra.evolutive.core.World;
 import org.ancestra.evolutive.database.AbstractDAO;
-import org.ancestra.evolutive.objects.Carte;
-import org.ancestra.evolutive.objects.Carte.MountPark;
-
-
-
+import org.ancestra.evolutive.map.Maps;
+import org.ancestra.evolutive.map.MountPark;
 
 public class MountparkData extends AbstractDAO<MountPark>{
 
@@ -41,13 +38,13 @@ public class MountparkData extends AbstractDAO<MountPark>{
 			
 			PreparedStatement statement = connection.prepareStatement(baseQuery);
 			
-			statement.setInt(1, obj.get_map().get_id());
-			statement.setInt(2, obj.get_cellid());
-			statement.setInt(3, obj.get_size());
-			statement.setInt(4, obj.get_owner());
-			statement.setInt(5, (obj.get_guild() == null ? -1 : obj.get_guild().get_id()));
-			statement.setInt(6, obj.get_price());
-			statement.setString(7, obj.parseDBData());
+			statement.setInt(1, obj.getMap().getId());
+			statement.setInt(2, obj.getCellid());
+			statement.setInt(3, obj.getSize());
+			statement.setInt(4, obj.getOwner());
+			statement.setInt(5, (obj.getGuild() == null ? -1 : obj.getGuild().getId()));
+			statement.setInt(6, obj.getPrice());
+			statement.setString(7, obj.parseDataToDb());
 
 			execute(statement);
 			return true;
@@ -63,7 +60,7 @@ public class MountparkData extends AbstractDAO<MountPark>{
 		try {
 			ResultSet result = getData("SELECT * FROM mountpark_data WHERE mapid ="+id);
 			while(result.next()) {
-				Carte map = World.data.getCarte(result.getShort("mapid"));
+				Maps map = World.data.getCarte(result.getShort("mapid"));
 				
 				if (map == null)
 					continue;

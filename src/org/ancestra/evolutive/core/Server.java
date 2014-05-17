@@ -222,7 +222,7 @@ public class Server {
 			public void call(Event event) {
 				if(event instanceof PlayerJoinEvent) {
 					PlayerJoinEvent event1 = (PlayerJoinEvent) event;
-					System.out.println("- Le joueur " + event1.getPlayer().get_name() + " vient de se connecté !");
+					System.out.println("- Le joueur " + event1.getPlayer().getName() + " vient de se connecté !");
 				}
 			}			
 		});
@@ -253,7 +253,7 @@ public class Server {
 			command.addAccess(new CommandAccess<Player>() {
 				@Override
 				public boolean authorizes(Player player) {
-					return player.get_fight() == null;
+					return player.getFight() == null;
 				}
 				
 				@Override
@@ -398,10 +398,16 @@ public class Server {
 		Command<Console> command = new Command<Console>("SHOWPLUGIN") {
 			
 			@Override
-			public void action(Console console, String[] args) {
-				for(Entry<String, PluginLoader> plugin : World.data.getOtherPlugins().entrySet()) {
-					System.out.println("--> " + plugin.getKey());
+			public void action(Console t, String[] args) {
+				if(World.data.getOtherPlugins().isEmpty()) {
+					Console.instance.writeln("Aucun plug-in est actuellement actif.");
+					return;
 				}
+				
+				Console.instance.writeln("Liste des plug-ins actif :");
+				
+				for(Entry<String, PluginLoader> plugin : World.data.getOtherPlugins().entrySet())
+					Console.instance.writeln("--> " + plugin.getKey());					
 			}
 			
 		};
@@ -409,7 +415,22 @@ public class Server {
 		//ajout aux commmandes
 		consoleCommands.put("SHOWPLUGIN", command);
 		
-		
+		//création de la commande
+		command = new Command<Console>("ADDPLUGIN") {
+
+			@Override
+			public void action(Console console, String[] args) {
+				if(args == null) {
+					Console.instance.writeln("Aucun argument défini.");
+					return;
+				}		
+	
+			}
+			
+		};
+				
+		//ajout aux commmandes
+		consoleCommands.put("ADDPLUGIN", command);
 		
 		
 		//Commande fixe HELP

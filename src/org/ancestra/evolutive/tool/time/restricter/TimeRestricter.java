@@ -6,7 +6,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.ancestra.evolutive.client.Player;
 
-
 public class TimeRestricter {
 	
 	private RestrictLevel level;
@@ -59,7 +58,7 @@ public class TimeRestricter {
 	}
 	
 	private ClientInstance find(Player player) {
-		ClientInstance result = players.get(player.get_GUID());
+		ClientInstance result = players.get(player.getUUID());
 		switch(this.level) {
 			case ACCOUNT:
 				if(result == null) {
@@ -87,7 +86,7 @@ public class TimeRestricter {
 		if (result != null) return result;
 		
 		result = new ClientInstance(player, this);
-		players.put(player.get_GUID(), result);
+		players.put(player.getUUID(), result);
 		return result;
 	}
 	
@@ -104,7 +103,7 @@ class ClientInstance {
 	private TimeRestricter restricter;
 	
 	public ClientInstance(Player player, TimeRestricter restricter) {
-		this.player = player.get_GUID();
+		this.player = player.getUUID();
 		this.account = player.getAccount().getUUID();
 		this.ip = player.getAccount().getCurIp();
 		this.hits = 0;

@@ -1,36 +1,30 @@
 package org.ancestra.evolutive.core;
 
+import org.ancestra.evolutive.area.Area;
+import org.ancestra.evolutive.area.SubArea;
+import org.ancestra.evolutive.area.Continent;
 import org.ancestra.evolutive.core.Console;
 import org.ancestra.evolutive.core.Log;
 import org.ancestra.evolutive.core.Main;
 import org.ancestra.evolutive.core.Server;
 import org.ancestra.evolutive.core.World;
+import org.ancestra.evolutive.entity.Mount;
+import org.ancestra.evolutive.entity.Collector;
+import org.ancestra.evolutive.entity.monster.MobTemplate;
+import org.ancestra.evolutive.entity.npc.NpcAnswer;
+import org.ancestra.evolutive.entity.npc.NpcTemplate;
+import org.ancestra.evolutive.entity.npc.NpcQuestion;
 import org.ancestra.evolutive.event.Events;
-import org.ancestra.evolutive.objects.Animations;
-import org.ancestra.evolutive.objects.Area;
-import org.ancestra.evolutive.objects.Carte;
-import org.ancestra.evolutive.objects.Dragodinde;
-import org.ancestra.evolutive.objects.ExpLevel;
-import org.ancestra.evolutive.objects.Guild;
-import org.ancestra.evolutive.objects.HDV;
-import org.ancestra.evolutive.objects.House;
-import org.ancestra.evolutive.objects.IOTemplate;
-import org.ancestra.evolutive.objects.ItemSet;
-import org.ancestra.evolutive.objects.Monstre;
-import org.ancestra.evolutive.objects.NPC_tmpl;
-import org.ancestra.evolutive.objects.Objet;
-import org.ancestra.evolutive.objects.Percepteur;
-import org.ancestra.evolutive.objects.PierreAme;
-import org.ancestra.evolutive.objects.Sort;
-import org.ancestra.evolutive.objects.SubArea;
-import org.ancestra.evolutive.objects.SuperArea;
-import org.ancestra.evolutive.objects.Trunk;
-import org.ancestra.evolutive.objects.Carte.MountPark;
-import org.ancestra.evolutive.objects.HDV.HdvEntry;
-import org.ancestra.evolutive.objects.NPC_tmpl.NPC_question;
-import org.ancestra.evolutive.objects.NPC_tmpl.NPC_reponse;
-import org.ancestra.evolutive.objects.Objet.ObjTemplate;
-import org.ancestra.evolutive.objects.job.Job;
+import org.ancestra.evolutive.fight.spell.Animation;
+import org.ancestra.evolutive.fight.spell.Spell;
+import org.ancestra.evolutive.map.Maps;
+import org.ancestra.evolutive.map.MountPark;
+import org.ancestra.evolutive.map.InteractiveObject.InteractiveObjectTemplate;
+import org.ancestra.evolutive.object.ItemSet;
+import org.ancestra.evolutive.object.Objet;
+import org.ancestra.evolutive.object.PierreAme;
+import org.ancestra.evolutive.object.Objet.ObjTemplate;
+import org.ancestra.evolutive.other.ExpLevel;
 import org.ancestra.evolutive.tool.command.Command;
 import org.ancestra.evolutive.tool.plugin.PluginLoader;
 import org.ancestra.evolutive.tool.plugin.packet.Packet;
@@ -57,6 +51,12 @@ import org.ancestra.evolutive.common.Couple;
 import org.ancestra.evolutive.common.SocketManager;
 import org.ancestra.evolutive.database.Database;
 import org.ancestra.evolutive.game.GameClient;
+import org.ancestra.evolutive.guild.Guild;
+import org.ancestra.evolutive.hdv.HDV;
+import org.ancestra.evolutive.hdv.HDV.HdvEntry;
+import org.ancestra.evolutive.house.House;
+import org.ancestra.evolutive.house.Trunk;
+import org.ancestra.evolutive.job.Job;
 
 public class World {
 
@@ -69,18 +69,18 @@ public class World {
 
 	private Map<Integer, Account> accounts = new HashMap<>();
 	private Map<Integer, Player> players = new HashMap<>();
-	private Map<Short, Carte> maps = new HashMap<>();
+	private Map<Short, Maps> maps = new HashMap<>();
 	private Map<Integer, Objet> objects = new HashMap<>();
 	private Map<Integer, ExpLevel> expLevels = new HashMap<>();
-	private Map<Integer, Sort> spells = new HashMap<>();
+	private Map<Integer, Spell> spells = new HashMap<>();
 	private Map<Integer, ObjTemplate> templateObjects = new HashMap<>();
-	private Map<Integer, Monstre> templateMobs = new HashMap<>();
-	private Map<Integer, NPC_tmpl> npcTemplates = new HashMap<>();
-	private Map<Integer, NPC_question> npcQuestions = new HashMap<>();
-	private Map<Integer, NPC_reponse> npcResponses = new HashMap<>();
-	private Map<Integer, IOTemplate> templateIO = new HashMap<>();
-	private Map<Integer, Dragodinde> mounts = new HashMap<>();
-	private Map<Integer, SuperArea> superAreas = new HashMap<>();
+	private Map<Integer, MobTemplate> templateMobs = new HashMap<>();
+	private Map<Integer, NpcTemplate> npcTemplates = new HashMap<>();
+	private Map<Integer, NpcQuestion> npcQuestions = new HashMap<>();
+	private Map<Integer, NpcAnswer> npcAnswers = new HashMap<>();
+	private Map<Integer, InteractiveObjectTemplate> templateIO = new HashMap<>();
+	private Map<Integer, Mount> mounts = new HashMap<>();
+	private Map<Integer, Continent> Continents = new HashMap<>();
 	private Map<Integer, Area> areas = new HashMap<>();
 	private Map<Integer, SubArea> subAreas = new HashMap<>();
 	private Map<Integer, Job> jobs = new HashMap<>();
@@ -90,10 +90,10 @@ public class World {
 	private Map<Integer, HDV> hdvs = new HashMap<>();
 	private Map<Integer, Map<Integer, ArrayList<HdvEntry>>> hdvItems = new HashMap<>();
 	private Map<Integer, Player> married = new HashMap<>();
-	private Map<Integer, Animations> animations = new HashMap<>();
-	private Map<Short, Carte.MountPark> mountParks = new HashMap<>();
+	private Map<Integer, Animation> animations = new HashMap<>();
+	private Map<Short, MountPark> mountParks = new HashMap<>();
 	private Map<Integer, Trunk> trunks = new HashMap<>();
-	private Map<Integer, Percepteur> collectors = new ConcurrentHashMap<>();
+	private Map<Integer, Collector> collectors = new ConcurrentHashMap<>();
 	private Map<Integer, House> houses = new HashMap<>();
 	private Map<Short, Collection<Integer>> sellers = new HashMap<>();
 	private Map<String, Command<Player>> playerCommands = new HashMap<>();
@@ -137,8 +137,8 @@ public class World {
 		return area;
 	}
 
-	public SuperArea getSuperArea(int areaID) {
-		return superAreas.get(areaID);
+	public Continent getContinent(int areaID) {
+		return Continents.get(areaID);
 	}
 
 	public SubArea getSubArea(int areaID) {
@@ -149,23 +149,23 @@ public class World {
 	}
 
 	public void addArea(Area area) {
-		areas.put(area.get_id(), area);
+		areas.put(area.getId(), area);
 	}
 
-	public void addSuperArea(SuperArea SA) {
-		superAreas.put(SA.get_id(), SA);
+	public void addContinent(Continent SA) {
+		Continents.put(SA.getId(), SA);
 	}
 
 	public void addSubArea(SubArea SA) {
-		subAreas.put(SA.get_id(), SA);
+		subAreas.put(SA.getId(), SA);
 	}
 
-	public void addNPCreponse(NPC_reponse rep) {
-		npcResponses.put(rep.get_id(), rep);
+	public void addNpcAnswer(NpcAnswer rep) {
+		npcAnswers.put(rep.getId(), rep);
 	}
 
-	public NPC_reponse getNPCreponse(int guid) {
-		NPC_reponse object = npcResponses.get(guid);
+	public NpcAnswer getNpcAnswer(int guid) {
+		NpcAnswer object = npcAnswers.get(guid);
 		if(object == null)
 			object = World.database.getNpcAnswerData().load(guid);
 		return object;
@@ -183,43 +183,43 @@ public class World {
 		return accounts.get(guid);
 	}
 
-	public void addNPCQuestion(NPC_question quest) {
-		npcQuestions.put(quest.get_id(), quest);
+	public void addNpcQuestion(NpcQuestion question) {
+		npcQuestions.put(question.getId(), question);
 	}
 
-	public NPC_question getNPCQuestion(int guid) {
-		NPC_question object = npcQuestions.get(guid);
+	public NpcQuestion getNpcQuestion(int guid) {
+		NpcQuestion object = npcQuestions.get(guid);
 		if(object == null)
 			object = World.database.getNpcQuestionData().load(guid);
 		return object;
 	}
 
-	public NPC_tmpl getNPCTemplate(int guid) {
-		NPC_tmpl object = npcTemplates.get(guid);
+	public NpcTemplate getNpcTemplate(int guid) {
+		NpcTemplate object = npcTemplates.get(guid);
 		if(object == null)
 			object = World.database.getNpcTemplateData().load(guid);
 		return object;
 	}
 
-	public void addNpcTemplate(NPC_tmpl temp) {
-		npcTemplates.put(temp.get_id(), temp);
+	public void addNpcTemplate(NpcTemplate temp) {
+		npcTemplates.put(temp.getId(), temp);
 	}
 
-	public Carte getCarte(short id) {
-		Carte map = maps.get(id);
+	public Maps getCarte(short id) {
+		Maps map = maps.get(id);
 		if(map == null)
 			map = World.database.getMapData().load(id);
 		return map;
 	}
 
-	public void addCarte(Carte map) {
-		if (!maps.containsKey(map.get_id()))
-			maps.put(map.get_id(), map);
+	public void addCarte(Maps map) {
+		if (!maps.containsKey(map.getId()))
+			maps.put(map.getId(), map);
 	}
 
-	public void delCarte(Carte map) {
-		if (maps.containsKey(map.get_id()))
-			maps.remove(map.get_id());
+	public void delCarte(Maps map) {
+		if (maps.containsKey(map.getId()))
+			maps.remove(map.getId());
 	}
 
 	public Account getCompteByName(String name) {
@@ -243,51 +243,42 @@ public class World {
 	}
 
 	public void addPersonnage(Player perso) {
-		players.put(perso.get_GUID(), perso);
+		players.put(perso.getUUID(), perso);
 	}
 
 	public Player getPersoByName(String name) {
 		ArrayList<Player> Ps = new ArrayList<Player>();
 		Ps.addAll(players.values());
 		for (Player P : Ps)
-			if (P.get_name().equalsIgnoreCase(name))
+			if (P.getName().equalsIgnoreCase(name))
 				return P;
 		return null;
 	}
 
 	public void deletePerso(Player perso) {
-		if (perso.get_guild() != null) {
-			if (perso.get_guild().getMembers().size() <= 1)// Il est tout seul
-															// dans la guilde :
-															// Supression
-			{
-				removeGuild(perso.get_guild().get_id());
-			} else if (perso.getGuildMember().getRank() == 1)// On passe les
-																// pouvoir a
-																// celui qui a
-																// le plus de
-																// droits si il
-																// est meneur
-			{
+		if (perso.getGuild() != null) {
+			if (perso.getGuild().getMembers().size() <= 1) {
+				removeGuild(perso.getGuild().getId());
+			} else if (perso.getGuildMember().getRank() == 1) {
 				int curMaxRight = 0;
 				Player Meneur = null;
-				for (Player newMeneur : perso.get_guild().getMembers()) {
+				for (Player newMeneur : perso.getGuild().getMembers()) {
 					if (newMeneur == perso)
 						continue;
-					if (newMeneur.getGuildMember().getRights() < curMaxRight) {
+					if (newMeneur.getGuildMember().getRight() < curMaxRight) {
 						Meneur = newMeneur;
 					}
 				}
-				perso.get_guild().removeMember(perso);
+				perso.getGuild().removeMember(perso);
 				Meneur.getGuildMember().setRank(1);
 			} else// Supression simple
 			{
-				perso.get_guild().removeMember(perso);
+				perso.getGuild().removeMember(perso);
 			}
 		}
 		perso.remove();// Supression BDD Perso, items, monture.
-		unloadPerso(perso.get_GUID());// UnLoad du perso+item
-		players.remove(perso.get_GUID());
+		unloadPerso(perso.getUUID());// UnLoad du perso+item
+		players.remove(perso.getUUID());
 	}
 
 	public String getSousZoneStateString() {
@@ -312,7 +303,7 @@ public class World {
 		return expLevels.get(_lvl + 1).perso;
 	}
 
-	public void addSort(Sort sort) {
+	public void addSort(Spell sort) {
 		spells.put(sort.getSpellID(), sort);
 	}
 
@@ -320,8 +311,8 @@ public class World {
 		templateObjects.put(obj.getID(), obj);
 	}
 
-	public Sort getSort(int id) {
-		Sort spell = spells.get(id);
+	public Spell getSort(int id) {
+		Spell spell = spells.get(id);
 		if(spell == null)
 			spell = World.database.getSpellData().load(id);
 		return spell;
@@ -338,12 +329,12 @@ public class World {
 		return nextObjectID++;
 	}
 
-	public void addMobTemplate(int id, Monstre mob) {
+	public void addMobTemplate(int id, MobTemplate mob) {
 		templateMobs.put(id, mob);
 	}
 
-	public Monstre getMonstre(int id) {
-		Monstre monster = templateMobs.get(id);
+	public MobTemplate getMonstre(int id) {
+		MobTemplate monster = templateMobs.get(id);
 		if(monster == null)
 			monster = World.database.getMonsterData().load(id);
 		return monster;
@@ -381,19 +372,19 @@ public class World {
 		database.getItemData().delete(o);
 	}
 
-	public void addIOTemplate(IOTemplate IOT) {
+	public void addInteractiveObjectTemplate(InteractiveObjectTemplate IOT) {
 		templateIO.put(IOT.getId(), IOT);
 	}
 
-	public Dragodinde getDragoByID(int id) {
-		Dragodinde mount = mounts.get(id);
+	public Mount getDragoByID(int id) {
+		Mount mount = mounts.get(id);
 		if(mount == null)
 			mount = World.database.getMountData().load(id);
 		return mount;
 	}
 
-	public void addDragodinde(Dragodinde DD) {
-		mounts.put(DD.get_id(), DD);
+	public void addDragodinde(Mount DD) {
+		mounts.put(DD.getId(), DD);
 	}
 
 	public void removeDragodinde(int DID) {
@@ -430,7 +421,7 @@ public class World {
 					}
 
 					Log.addToLog("Sauvegarde des percepteurs...");
-					for (Percepteur perco : collectors.values()) {
+					for (Collector perco : collectors.values()) {
 						if (perco.get_inFight() > 0)
 							continue;
 						database.getCollectorData().update(perco);
@@ -451,8 +442,8 @@ public class World {
 					}
 
 					Log.addToLog("Sauvegarde des enclos...");
-					for (Carte.MountPark mp : mountParks.values()) {
-						if (mp.get_owner() > 0 || mp.get_owner() == -1) {
+					for (MountPark mp : mountParks.values()) {
+						if (mp.getOwner() > 0 || mp.getOwner() == -1) {
 							database.getMountparkData().update(mp);
 						}
 					}
@@ -475,7 +466,7 @@ public class World {
 									_out,
 									"Erreur. Nouvelle tentative de sauvegarde");
 						saveTries++;
-						saveData(saver.get_GUID());
+						saveData(saver.getUUID());
 					} else {
 						set_state((short) 1);
 						// TODO : Rafraichir
@@ -503,7 +494,7 @@ public class World {
 		SocketManager.GAME_SEND_MESSAGE_TO_ALL(
 				"Recharge des Mobs en cours, des latences peuvent survenir.",
 				Server.config.getMotdColor());
-		for (Carte map : maps.values()) {
+		for (Maps map : maps.values()) {
 			map.refreshSpawns();
 		}
 		SocketManager
@@ -519,8 +510,8 @@ public class World {
 		return expLevels.get(lvl);
 	}
 
-	public IOTemplate getIOTemplate(int id) {
-		IOTemplate template = templateIO.get(id);
+	public InteractiveObjectTemplate getInteractiveObjectTemplate(int id) {
+		InteractiveObjectTemplate template = templateIO.get(id);
 		if(template == null)
 			template = World.database.getIoTemplates().load(id);
 		return template;
@@ -601,7 +592,7 @@ public class World {
 	}
 
 	public void addGuild(Guild g, boolean save) {
-		guilds.put(g.get_id(), g);
+		guilds.put(g.getId(), g);
 		if (save)
 			database.getGuildData().create(g);
 	}
@@ -622,7 +613,7 @@ public class World {
 
 	public boolean guildEmblemIsUsed(String emb) {
 		for (Guild g : guilds.values()) {
-			if (g.get_emblem().equals(emb))
+			if (g.getEmblem().equals(emb))
 				return true;
 		}
 		return false;
@@ -663,8 +654,8 @@ public class World {
 
 	public int getEncloCellIdByMapId(short i) {
 		if (getCarte(i).getMountPark() != null) {
-			if (getCarte(i).getMountPark().get_cellid() > 0) {
-				return getCarte(i).getMountPark().get_cellid();
+			if (getCarte(i).getMountPark().getCellid() > 0) {
+				return getCarte(i).getMountPark().getCellid();
 			}
 		}
 
@@ -679,9 +670,9 @@ public class World {
 		// Maison de guilde+SQL
 		House.removeHouseGuild(id);
 		// Enclo+SQL
-		Carte.MountPark.removeMountPark(id);
+		MountPark.remove(id);
 		// Percepteur+SQL
-		Percepteur.removePercepteur(id);
+		Collector.removePercepteur(id);
 		// Guilde
 		Guild g = guilds.get(id);
 		guilds.remove(id);
@@ -844,7 +835,7 @@ public class World {
 	public void AddMarried(int ordre, Player perso) {
 		Player Perso = married.get(ordre);
 		if (Perso != null) {
-			if (perso.get_GUID() == Perso.get_GUID()) // Si c'est le meme
+			if (perso.getUUID() == Perso.getUUID()) // Si c'est le meme
 														// joueur...
 				return;
 			if (Perso.isOnline())// Si perso en ligne...
@@ -861,55 +852,55 @@ public class World {
 		}
 	}
 
-	public void PriestRequest(Player perso, Carte carte, int IdPretre) {
+	public void PriestRequest(Player perso, Maps carte, int IdPretre) {
 		Player Homme = married.get(0);
 		Player Femme = married.get(1);
 		if (Homme.getWife() != 0) {
-			SocketManager.GAME_SEND_MESSAGE_TO_MAP(carte, Homme.get_name()
+			SocketManager.GAME_SEND_MESSAGE_TO_MAP(carte, Homme.getName()
 					+ " est deja marier!", Server.config.getMotdColor());
 			return;
 		}
 		if (Femme.getWife() != 0) {
-			SocketManager.GAME_SEND_MESSAGE_TO_MAP(carte, Femme.get_name()
+			SocketManager.GAME_SEND_MESSAGE_TO_MAP(carte, Femme.getName()
 					+ " est deja marier!", Server.config.getMotdColor());
 			return;
 		}
-		SocketManager.GAME_SEND_cMK_PACKET_TO_MAP(perso.get_curCarte(), "", -1,
-				"Prêtre", perso.get_name()
+		SocketManager.GAME_SEND_cMK_PACKET_TO_MAP(perso.getCurMap(), "", -1,
+				"Prêtre", perso.getName()
 						+ " acceptez-vous d'épouser "
-						+ getMarried((perso.get_sexe() == 1 ? 0 : 1))
-								.get_name() + " ?");
+						+ getMarried((perso.getSex() == 1 ? 0 : 1))
+								.getName() + " ?");
 		SocketManager.GAME_SEND_WEDDING(carte, 617,
-				(Homme == perso ? Homme.get_GUID() : Femme.get_GUID()),
-				(Homme == perso ? Femme.get_GUID() : Homme.get_GUID()),
+				(Homme == perso ? Homme.getUUID() : Femme.getUUID()),
+				(Homme == perso ? Femme.getUUID() : Homme.getUUID()),
 				IdPretre);
 	}
 
 	public void Wedding(Player Homme, Player Femme, int isOK) {
 		if (isOK > 0) {
-			SocketManager.GAME_SEND_cMK_PACKET_TO_MAP(Homme.get_curCarte(), "",
-					-1, "Prêtre", "Je déclare " + Homme.get_name() + " et "
-							+ Femme.get_name()
+			SocketManager.GAME_SEND_cMK_PACKET_TO_MAP(Homme.getCurMap(), "",
+					-1, "Prêtre", "Je déclare " + Homme.getName() + " et "
+							+ Femme.getName()
 							+ " unis par les liens sacrés du mariage.");
 			Homme.MarryTo(Femme);
 			Femme.MarryTo(Homme);
 		} else {
-			SocketManager.GAME_SEND_Im_PACKET_TO_MAP(Homme.get_curCarte(),
-					"048;" + Homme.get_name() + "~" + Femme.get_name());
+			SocketManager.GAME_SEND_Im_PACKET_TO_MAP(Homme.getCurMap(),
+					"048;" + Homme.getName() + "~" + Femme.getName());
 		}
-		married.get(0).setisOK(0);
-		married.get(1).setisOK(0);
+		married.get(0).setIsOK(0);
+		married.get(1).setIsOK(0);
 		married.clear();
 	}
 
-	public Animations getAnimation(int AnimationId) {
-		Animations animation = animations.get(AnimationId);
+	public Animation getAnimation(int AnimationId) {
+		Animation animation = animations.get(AnimationId);
 		if(animation == null)
 			animation = World.database.getAnimationData().load(AnimationId);
 		return animation;
 	}
 
-	public void addAnimation(Animations animation) {
+	public void addAnimation(Animation animation) {
 		animations.put(animation.getId(), animation);
 	}
 
@@ -925,18 +916,18 @@ public class World {
 		return houses.get(id);
 	}
 
-	public void addPerco(Percepteur perco) {
+	public void addPerco(Collector perco) {
 		collectors.put(perco.getGuid(), perco);
 	}
 
-	public Percepteur getPerco(int percoID) {
-		Percepteur spell = collectors.get(percoID);
+	public Collector getPerco(int percoID) {
+		Collector spell = collectors.get(percoID);
 		if(spell == null)
 			spell = World.database.getCollectorData().load(percoID);
 		return spell;
 	}
 
-	public Map<Integer, Percepteur> getPercos() {
+	public Map<Integer, Collector> getPercos() {
 		return collectors;
 	}
 
@@ -952,11 +943,11 @@ public class World {
 		return trunks;
 	}
 
-	public void addMountPark(Carte.MountPark mp) {
-		mountParks.put(mp.get_map().get_id(), mp);
+	public void addMountPark(MountPark mp) {
+		mountParks.put(mp.getMap().getId(), mp);
 	}
 
-	public Map<Short, Carte.MountPark> getMountPark() {
+	public Map<Short, MountPark> getMountPark() {
 		
 		return mountParks;
 	}
@@ -970,15 +961,15 @@ public class World {
 
 	public String parseMPtoGuild(int GuildID) {
 		Guild G = getGuild(GuildID);
-		byte enclosMax = (byte) Math.floor(G.get_lvl() / 10);
+		byte enclosMax = (byte) Math.floor(G.getLevel() / 10);
 		StringBuilder packet = new StringBuilder();
 		packet.append(enclosMax);
 
-		for (Entry<Short, Carte.MountPark> mp : mountParks.entrySet()) {
-			if (mp.getValue().get_guild() != null
-					&& mp.getValue().get_guild().get_id() == GuildID) {
-				packet.append("|").append(mp.getValue().get_map().get_id())
-					.append(";").append(mp.getValue().get_size())
+		for (Entry<Short, MountPark> mp : mountParks.entrySet()) {
+			if (mp.getValue().getGuild() != null
+					&& mp.getValue().getGuild().getId() == GuildID) {
+				packet.append("|").append(mp.getValue().getMap().getId())
+					.append(";").append(mp.getValue().getSize())
 					.append(";").append(mp.getValue().getObjectNumb());
 			} else {
 				continue;
@@ -989,8 +980,8 @@ public class World {
 
 	public int totalMPGuild(int GuildID) {
 		int i = 0;
-		for (Entry<Short, Carte.MountPark> mp : mountParks.entrySet()) {
-			if (mp.getValue().get_guild().get_id() == GuildID) {
+		for (Entry<Short, MountPark> mp : mountParks.entrySet()) {
+			if (mp.getValue().getGuild().getId() == GuildID) {
 				i++;
 			} else {
 				continue;

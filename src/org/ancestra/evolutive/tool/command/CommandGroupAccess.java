@@ -4,8 +4,8 @@ import java.util.ArrayList;
 
 import org.ancestra.evolutive.core.Console;
 
-
 public class CommandGroupAccess<T> {
+	
 	private ArrayList<CommandAccess<T>> commandAccess = new ArrayList<>();
 	
 	public void addAccess(CommandAccess<T> access) {

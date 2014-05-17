@@ -1,16 +1,13 @@
 package org.ancestra.evolutive.game.packet.mount;
 
-
-
 import org.ancestra.evolutive.client.Player;
 import org.ancestra.evolutive.common.SocketManager;
 import org.ancestra.evolutive.core.Server;
 import org.ancestra.evolutive.core.World;
 import org.ancestra.evolutive.game.GameClient;
-import org.ancestra.evolutive.objects.Carte.MountPark;
+import org.ancestra.evolutive.map.MountPark;
 import org.ancestra.evolutive.tool.plugin.packet.Packet;
 import org.ancestra.evolutive.tool.plugin.packet.PacketParser;
-
 
 @Packet("Rb")
 public class Buy implements PacketParser {
@@ -18,19 +15,19 @@ public class Buy implements PacketParser {
 	@Override
 	public void parse(GameClient client, String packet) {
 		SocketManager.GAME_SEND_R_PACKET(client.getPlayer(), "v");//Fermeture du panneau
-		MountPark mountPark = client.getPlayer().get_curCarte().getMountPark();
-		Player seller = World.data.getPersonnage(mountPark.get_owner());
+		MountPark mountPark = client.getPlayer().getCurMap().getMountPark();
+		Player seller = World.data.getPersonnage(mountPark.getOwner());
 		
-		if(mountPark.get_owner() == -1) {
+		if(mountPark.getOwner() == -1) {
 			SocketManager.GAME_SEND_Im_PACKET(client.getPlayer(), "196");
 			return;
 		}
-		if(mountPark.get_price() == 0) {
+		if(mountPark.getPrice() == 0) {
 			SocketManager.GAME_SEND_Im_PACKET(client.getPlayer(), "197");
 			return;
 		}
 		
-		if(client.getPlayer().get_guild() == null) {
+		if(client.getPlayer().getGuild() == null) {
 			SocketManager.GAME_SEND_Im_PACKET(client.getPlayer(), "1135");
 			return;
 		}
@@ -39,34 +36,34 @@ public class Buy implements PacketParser {
 			return;
 		}
 		
-		byte enclosMax = (byte)Math.floor(client.getPlayer().get_guild().get_lvl()/10);
-		byte TotalEncloGuild = (byte)World.data.totalMPGuild(client.getPlayer().get_guild().get_id());
+		byte enclosMax = (byte)Math.floor(client.getPlayer().getGuild().getLevel()/10);
+		byte TotalEncloGuild = (byte)World.data.totalMPGuild(client.getPlayer().getGuild().getId());
 		
 		if(TotalEncloGuild >= enclosMax) {
 			SocketManager.GAME_SEND_Im_PACKET(client.getPlayer(), "1103");
 			return;
 		}
-		if(client.getPlayer().get_kamas() < mountPark.get_price()) {
+		if(client.getPlayer().getKamas() < mountPark.getPrice()) {
 			SocketManager.GAME_SEND_Im_PACKET(client.getPlayer(), "182");
 			return;
 		}
 		
-		long NewKamas = client.getPlayer().get_kamas() - mountPark.get_price();
-		client.getPlayer().set_kamas(NewKamas);
+		long NewKamas = client.getPlayer().getKamas() - mountPark.getPrice();
+		client.getPlayer().setKamas(NewKamas);
 		
 		if(seller != null) {
-			seller.setBankKamas(seller.getBankKamas() + mountPark.get_price());
+			seller.setBankKamas(seller.getBankKamas() + mountPark.getPrice());
 			if(seller.isOnline())
-				SocketManager.GAME_SEND_MESSAGE(client.getPlayer(), "Un enclo a été vendu à "+mountPark.get_price()+".", Server.config.getMotdColor());
+				SocketManager.GAME_SEND_MESSAGE(client.getPlayer(), "Un enclo a été vendu à "+mountPark.getPrice()+".", Server.config.getMotdColor());
 		}
 		
-		mountPark.set_price(0);//On vide le prix
-		mountPark.set_owner(client.getPlayer().get_GUID());
-		mountPark.set_guild(client.getPlayer().get_guild());
+		mountPark.setPrice(0);//On vide le prix
+		mountPark.setOwner(client.getPlayer().getUUID());
+		mountPark.setGuild(client.getPlayer().getGuild());
 		World.database.getMountparkData().update(mountPark);
 		client.getPlayer().save();
 		//On rafraichit l'enclo
-		for(Player z: client.getPlayer().get_curCarte().getPersos())
+		for(Player z: client.getPlayer().getCurMap().getPlayers())
 			SocketManager.GAME_SEND_Rp_PACKET(z, mountPark);
 	}
 }

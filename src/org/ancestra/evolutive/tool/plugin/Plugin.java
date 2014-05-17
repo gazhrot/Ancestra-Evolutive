@@ -5,7 +5,6 @@ import org.ancestra.evolutive.core.Server;
 import org.ancestra.evolutive.core.World;
 import org.ancestra.evolutive.database.Database;
 
-
 public abstract class Plugin {
 	
 	public void onEnable() {}

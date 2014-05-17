@@ -1,7 +1,5 @@
 package org.ancestra.evolutive.game.packet.group;
 
-
-
 import org.ancestra.evolutive.client.Player;
 import org.ancestra.evolutive.client.other.Group;
 import org.ancestra.evolutive.common.SocketManager;
@@ -9,7 +7,6 @@ import org.ancestra.evolutive.core.World;
 import org.ancestra.evolutive.game.GameClient;
 import org.ancestra.evolutive.tool.plugin.packet.Packet;
 import org.ancestra.evolutive.tool.plugin.packet.PacketParser;
-
 
 @Packet("PG")
 public class FollowAll implements PacketParser {
@@ -35,25 +32,25 @@ public class FollowAll implements PacketParser {
 			return;
 		
 		if(packet.charAt(2) == '+') {//Suivre
-			for(Player T : group.getPersos()) {
-				if(T.get_GUID() == player.get_GUID()) 
+			for(Player T : group.getPlayers()) {
+				if(T.getUUID() == player.getUUID()) 
 					continue;
-				if(T._Follows != null)
-					T._Follows._Follower.remove(client.getPlayer().get_GUID());
+				if(T.getFollow() != null)
+					T.getFollow().getFollowers().remove(client.getPlayer().getUUID());
 				SocketManager.GAME_SEND_FLAG_PACKET(T, player);
-				SocketManager.GAME_SEND_PF(T, "+"+player.get_GUID());
-				T._Follows = player;
-				player._Follower.put(T.get_GUID(), T);
+				SocketManager.GAME_SEND_PF(T, "+"+player.getUUID());
+				T.setFollow(player);
+				player.getFollowers().put(T.getUUID(), T);
 			}
 		}else 
 		if(packet.charAt(2) == '-') {//Ne plus suivre
-			for(Player p : group.getPersos()) {
-				if(p.get_GUID() == player.get_GUID()) 
+			for(Player p : group.getPlayers()) {
+				if(p.getUUID() == player.getUUID()) 
 					continue;
 				SocketManager.GAME_SEND_DELETE_FLAG_PACKET(p);
 				SocketManager.GAME_SEND_PF(p, "-");
-				p._Follows = null;
-				player._Follower.remove(p.get_GUID());
+				p.setFollow(null);
+				player.getFollowers().remove(p.getUUID());
 			}
 		}
 	}

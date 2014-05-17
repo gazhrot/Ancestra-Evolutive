@@ -1,18 +1,15 @@
 package org.ancestra.evolutive.game.packet.exchange;
 
-
-
 import org.ancestra.evolutive.common.Constants;
 import org.ancestra.evolutive.common.SocketManager;
 import org.ancestra.evolutive.core.World;
+import org.ancestra.evolutive.entity.Mount;
 import org.ancestra.evolutive.game.GameClient;
-import org.ancestra.evolutive.objects.Dragodinde;
-import org.ancestra.evolutive.objects.Objet;
-import org.ancestra.evolutive.objects.Carte.MountPark;
-import org.ancestra.evolutive.objects.Objet.ObjTemplate;
+import org.ancestra.evolutive.map.MountPark;
+import org.ancestra.evolutive.object.Objet;
+import org.ancestra.evolutive.object.Objet.ObjTemplate;
 import org.ancestra.evolutive.tool.plugin.packet.Packet;
 import org.ancestra.evolutive.tool.plugin.packet.PacketParser;
-
 
 @Packet("Er")
 public class MountparkExchange implements PacketParser {
@@ -20,11 +17,11 @@ public class MountparkExchange implements PacketParser {
 	@Override
 	public void parse(GameClient client, String packet) {
 		//Si dans un enclos
-		if(client.getPlayer().getInMountPark() != null)
+		if(client.getPlayer().getCurMountPark() != null)
 		{
-			MountPark MP = client.getPlayer().getInMountPark();
+			MountPark MP = client.getPlayer().getCurMountPark();
 			
-			if(client.getPlayer().get_isTradingWith() > 0 || client.getPlayer().get_fight() != null)
+			if(client.getPlayer().getIsTradingWith() > 0 || client.getPlayer().getFight() != null)
 				return;
 			
 			char c = packet.charAt(2);
@@ -40,57 +37,57 @@ public class MountparkExchange implements PacketParser {
 				case 'C'://Parcho => Etable (Stocker)
 					if(guid == -1 || !client.getPlayer().hasItemGuid(guid))
 						return;
-					if(MP.get_size() <= MP.MountParkDATASize()) {
+					if(MP.getSize() <= MP.getDatas().size()) {
 						SocketManager.GAME_SEND_Im_PACKET(client.getPlayer(), "1145");
 						return;
 					}
 					
 					Objet obj = World.data.getObjet(guid);
 					int DDid = obj.getStats().getEffect(995);
-					Dragodinde DD = World.data.getDragoByID(DDid);
+					Mount DD = World.data.getDragoByID(DDid);
 					//FIXME mettre return au if pour ne pas cr�er des nouvelles dindes
 					if(DD == null) {
 						int color = Constants.getMountColorByParchoTemplate(obj.getTemplate().getID());
 						if(color <1)
 							return;
-						DD = new Dragodinde(color);
+						DD = new Mount(color);
 					}
 					//On enleve l'objet du Monde et du Perso
 					client.getPlayer().removeItem(guid);
 					World.data.removeItem(guid);
 					//on ajoute la dinde a l'�table
-					MP.addData(DD.get_id(), client.getPlayer().get_GUID());
+					MP.getDatas().put(DD.getId(), client.getPlayer().getUUID());
 					World.database.getMountparkData().update(MP);
 					//On envoie les packet
 					SocketManager.GAME_SEND_REMOVE_ITEM_PACKET(client.getPlayer(),obj.getGuid());
 					SocketManager.GAME_SEND_Ee_PACKET(client.getPlayer(), '+', DD.parse());
 				break;
 				case 'c'://Etable => Parcho(Echanger)
-					Dragodinde DD1 = World.data.getDragoByID(guid);
+					Mount DD1 = World.data.getDragoByID(guid);
 					//S'il n'a pas la dinde
-					if(DD1 == null || !MP.getData().containsKey(DD1.get_id()))return;
-					if(MP.getData().get(DD1.get_id()) != client.getPlayer().get_GUID() && 
-						World.data.getPersonnage(MP.getData().get(DD1.get_id())).get_guild() != client.getPlayer().get_guild())
+					if(DD1 == null || !MP.getDatas().containsKey(DD1.getId()))return;
+					if(MP.getDatas().get(DD1.getId()) != client.getPlayer().getUUID() && 
+						World.data.getPersonnage(MP.getDatas().get(DD1.getId())).getGuild() != client.getPlayer().getGuild())
 						return;
-					if(MP.getData().get(DD1.get_id()) != client.getPlayer().get_GUID() && 
-							World.data.getPersonnage(MP.getData().get(DD1.get_id())).get_guild() == client.getPlayer().get_guild() &&
+					if(MP.getDatas().get(DD1.getId()) != client.getPlayer().getUUID() && 
+							World.data.getPersonnage(MP.getDatas().get(DD1.getId())).getGuild() == client.getPlayer().getGuild() &&
 							!client.getPlayer().getGuildMember().canDo(Constants.G_OTHDINDE)) {
 						//M�me guilde, pas le droit
 						SocketManager.GAME_SEND_Im_PACKET(client.getPlayer(), "1101");
 						return;
 					}
 					//on retire la dinde de l'�table
-					MP.removeData(DD1.get_id());
+					MP.getDatas().remove(DD1.getId());
 					World.database.getMountparkData().update(MP);
 					//On cr�er le parcho
-					ObjTemplate T = Constants.getParchoTemplateByMountColor(DD1.get_color());
+					ObjTemplate T = Constants.getParchoTemplateByMountColor(DD1.getColor());
 					Objet obj1 = T.createNewItem(1, false);
 					//On efface les stats
 					obj1.clearStats();
 					//on ajoute la possibilit� de voir la dinde
-					obj1.getStats().addOneStat(995, DD1.get_id());
-					obj1.addTxtStat(996, client.getPlayer().get_name());
-					obj1.addTxtStat(997, DD1.get_nom());
+					obj1.getStats().addOneStat(995, DD1.getId());
+					obj1.addTxtStat(996, client.getPlayer().getName());
+					obj1.addTxtStat(997, DD1.getName());
 					
 					//On ajoute l'objet au joueur
 					World.data.addObjet(obj1, true);
@@ -98,44 +95,44 @@ public class MountparkExchange implements PacketParser {
 					
 					//Packets
 					SocketManager.GAME_SEND_Ow_PACKET(client.getPlayer());
-					SocketManager.GAME_SEND_Ee_PACKET(client.getPlayer(),'-',DD1.get_id()+"");
+					SocketManager.GAME_SEND_Ee_PACKET(client.getPlayer(),'-',DD1.getId()+"");
 				break;
 				case 'g'://Equiper
-					Dragodinde DD3 = World.data.getDragoByID(guid);
+					Mount DD3 = World.data.getDragoByID(guid);
 					//S'il n'a pas la dinde
-					if(DD3 == null || !MP.getData().containsKey(DD3.get_id()) || client.getPlayer().getMount() != null)return;
+					if(DD3 == null || !MP.getDatas().containsKey(DD3.getId()) || client.getPlayer().getMount() != null)return;
 					
-					if(MP.getData().get(DD3.get_id()) != client.getPlayer().get_GUID() && 
-							World.data.getPersonnage(MP.getData().get(DD3.get_id())).get_guild() != client.getPlayer().get_guild())
+					if(MP.getDatas().get(DD3.getId()) != client.getPlayer().getUUID() && 
+							World.data.getPersonnage(MP.getDatas().get(DD3.getId())).getGuild() != client.getPlayer().getGuild())
 						return;
-					if(MP.getData().get(DD3.get_id()) != client.getPlayer().get_GUID() && 
-							World.data.getPersonnage(MP.getData().get(DD3.get_id())).get_guild() == client.getPlayer().get_guild() &&
+					if(MP.getDatas().get(DD3.getId()) != client.getPlayer().getUUID() && 
+							World.data.getPersonnage(MP.getDatas().get(DD3.getId())).getGuild() == client.getPlayer().getGuild() &&
 							!client.getPlayer().getGuildMember().canDo(Constants.G_OTHDINDE)) {
 						//M�me guilde, pas le droit
 						SocketManager.GAME_SEND_Im_PACKET(client.getPlayer(), "1101");
 						return;
 					}
 					
-					MP.removeData(DD3.get_id());
+					MP.getDatas().remove(DD3.getId());
 					World.database.getMountparkData().update(MP);
 					client.getPlayer().setMount(DD3);
 					
 					//Packets
 					SocketManager.GAME_SEND_Re_PACKET(client.getPlayer(), "+", DD3);
-					SocketManager.GAME_SEND_Ee_PACKET(client.getPlayer(),'-',DD3.get_id()+"");
+					SocketManager.GAME_SEND_Ee_PACKET(client.getPlayer(),'-',DD3.getId()+"");
 					SocketManager.GAME_SEND_Rx_PACKET(client.getPlayer());
 				break;
 				case 'p'://Equip� => Stocker
 					//Si c'est la dinde �quip�
-					if(client.getPlayer().getMount()!=null?client.getPlayer().getMount().get_id() == guid:false)
+					if(client.getPlayer().getMount()!=null?client.getPlayer().getMount().getId() == guid:false)
 					{
 						//Si le perso est sur la monture on le fait descendre
 						if(client.getPlayer().isOnMount())client.getPlayer().toogleOnMount();
 						//Si ca n'a pas r�ussie, on s'arrete l� (Items dans le sac ?)
 						if(client.getPlayer().isOnMount())return;
 						
-						Dragodinde DD2 = client.getPlayer().getMount();
-						MP.addData(DD2.get_id(), client.getPlayer().get_GUID());
+						Mount DD2 = client.getPlayer().getMount();
+						MP.getDatas().put(DD2.getId(), client.getPlayer().getUUID());
 						World.database.getMountparkData().update(MP);
 						client.getPlayer().setMount(null);
 						

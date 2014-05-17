@@ -1,7 +1,7 @@
 package org.ancestra.evolutive.game.packet.house.kode;
 
 import org.ancestra.evolutive.game.GameClient;
-import org.ancestra.evolutive.objects.House;
+import org.ancestra.evolutive.house.House;
 import org.ancestra.evolutive.tool.plugin.packet.Packet;
 import org.ancestra.evolutive.tool.plugin.packet.PacketParser;
 

@@ -1,6 +1,5 @@
 package org.ancestra.evolutive.common;
 
-
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicReference;
@@ -9,16 +8,14 @@ import org.ancestra.evolutive.client.Player;
 import org.ancestra.evolutive.core.Console;
 import org.ancestra.evolutive.core.Server;
 import org.ancestra.evolutive.core.World;
-import org.ancestra.evolutive.objects.Carte;
-import org.ancestra.evolutive.objects.Fight;
-import org.ancestra.evolutive.objects.Fighter;
-import org.ancestra.evolutive.objects.Guild;
-import org.ancestra.evolutive.objects.Objet;
-import org.ancestra.evolutive.objects.Percepteur;
-import org.ancestra.evolutive.objects.SpellEffect;
-import org.ancestra.evolutive.objects.Guild.GuildMember;
-
-
+import org.ancestra.evolutive.entity.Collector;
+import org.ancestra.evolutive.fight.Fight;
+import org.ancestra.evolutive.fight.Fighter;
+import org.ancestra.evolutive.fight.spell.SpellEffect;
+import org.ancestra.evolutive.guild.Guild;
+import org.ancestra.evolutive.guild.GuildMember;
+import org.ancestra.evolutive.map.Maps;
+import org.ancestra.evolutive.object.Objet;
 
 public class Formulas {
 
@@ -317,7 +314,7 @@ public class Formulas {
 		// Début Formule pour les MOBs
 		if(caster.getPersonnage() == null && !caster.isPerco())
 		{
-			if(caster.getMob().getTemplate().getID() == 116)//Sacrifié Dommage = PDV*2
+			if(caster.getMob().getTemplate().getId() == 116)//Sacrifié Dommage = PDV*2
 			{
 				return (int)((num/25)*caster.getPDVMAX());
 			}else
@@ -335,7 +332,7 @@ public class Formulas {
 		}
 	}
 
-	public static int calculZaapCost(Carte map1,Carte map2)
+	public static int calculZaapCost(Maps map1,Maps map2)
 	{
 		return (int) (10*(Math.abs(map2.getX()-map1.getX())+Math.abs(map2.getY()-map1.getY())-1));
 	}
@@ -438,7 +435,7 @@ public class Formulas {
 		{
 			if(ptsMax == 0 && target.getMob() != null)
 			{
-				ptsMax= z=='a'?target.getMob().getPA():target.getMob().getPM();
+				ptsMax= z=='a'?target.getMob().getPa():target.getMob().getPm();
 			}
 			
 			float pts = z =='a'?target.getPA():target.getPM();
@@ -471,10 +468,10 @@ public class Formulas {
 		return retrait;
 	}
 	
-	public static long getXpWinPerco(Percepteur perco, ArrayList<Fighter> winners,ArrayList<Fighter> loosers,long groupXP)
+	public static long getXpWinPerco(Collector perco, ArrayList<Fighter> winners,ArrayList<Fighter> loosers,long groupXP)
 	{
 			Guild G = World.data.getGuild(perco.get_guildID());
-			float sag = G.get_Stats(Constants.STATS_ADD_SAGE);
+			float sag = G.getStat(Constants.STATS_ADD_SAGE);
 			float coef = (sag + 100)/100;
 			int taux = Server.config.getRateXpPvm();
 			long xpWin = 0;
@@ -520,7 +517,7 @@ public class Formulas {
 			if (rapport > 5)
 				rapport = 5;
 			//*/
-			int lvl = G.get_lvl();
+			int lvl = G.getLevel();
 			double rapport2 = 1 + ((double)lvl / (double)lvlWinners);
 
 			xpWin = (long) (groupXP * rapport * bonus * taux *coef * rapport2);
@@ -644,7 +641,7 @@ public class Formulas {
 			long xpWin = (long)(
 						(
 							rapport
-						*	getXpNeededAtLevel(perso.getPersonnage().get_lvl())
+						*	getXpNeededAtLevel(perso.getPersonnage().getLevel())
 						/	100
 						)
 						*	taux
@@ -652,7 +649,7 @@ public class Formulas {
 			//DEBUG
 			Console.instance.println("Taux: "+taux);
 			Console.instance.println("Rapport: "+rapport);
-			Console.instance.println("XpNeeded: "+getXpNeededAtLevel(perso.getPersonnage().get_lvl()));
+			Console.instance.println("XpNeeded: "+getXpNeededAtLevel(perso.getPersonnage().getLevel()));
 			Console.instance.println("xpWin: "+xpWin);
 			//*/
 			return xpWin;
@@ -677,7 +674,7 @@ public class Formulas {
 
 		GuildMember gm = perso.getPersonnage().getGuildMember();
 		
-		double xp = (double)xpWin.get(), Lvl = perso.get_lvl(),LvlGuild = perso.getPersonnage().get_guild().get_lvl(),pXpGive = (double)gm.getPXpGive()/100;
+		double xp = (double)xpWin.get(), Lvl = perso.get_lvl(),LvlGuild = perso.getPersonnage().getGuild().getLevel(),pXpGive = (double)gm.getXpGive()/100;
 		
 		double maxP = xp * pXpGive * 0.10;	//Le maximum donné à la guilde est 10% du montant prélevé sur l'xp du combat
 		double diff = Math.abs(Lvl - LvlGuild);	//Calcul l'écart entre le niveau du personnage et le niveau de la guilde
@@ -708,11 +705,11 @@ public class Formulas {
 		if(perso.getPersonnage().getMount() == null)return 0;
 		
 
-		int diff = Math.abs(perso.get_lvl() - perso.getPersonnage().getMount().get_level());
+		int diff = Math.abs(perso.get_lvl() - perso.getPersonnage().getMount().getLevel());
 		
 		double coeff = 0;
 		double xp = (double) xpWin.get();
-		double pToMount = (double)perso.getPersonnage().getMountXpGive() / 100 + 0.2;
+		double pToMount = (double)perso.getPersonnage().getMountXp() / 100 + 0.2;
 		
 		if(diff >= 0 && diff <= 9)
 			coeff = 0.1;
@@ -991,7 +988,7 @@ public class Formulas {
 			statC = 0;
 		int adic = 200;
 		if(soigneur.getPersonnage() != null) 
-			if(soigneur.getPersonnage().get_classe() == 7)
+			if(soigneur.getPersonnage().getClasse() == 7)
 				adic = 100;
 		return (int) (range * ((100 + statC) / adic) + soins);
 	}

@@ -8,12 +8,12 @@ import java.util.concurrent.locks.ReentrantLock;
 import org.ancestra.evolutive.core.Console;
 import org.ancestra.evolutive.core.World;
 import org.ancestra.evolutive.database.AbstractDAO;
-import org.ancestra.evolutive.objects.Dragodinde;
+import org.ancestra.evolutive.entity.Mount;
 
 
 
 
-public class MountData extends AbstractDAO<Dragodinde>{
+public class MountData extends AbstractDAO<Mount>{
 
 	public MountData(Connection connection, ReentrantLock locker) {
 		super(connection, locker);
@@ -21,7 +21,7 @@ public class MountData extends AbstractDAO<Dragodinde>{
 	}
 
 	@Override
-	public boolean create(Dragodinde obj) {
+	public boolean create(Mount obj) {
 		try {
 			String baseQuery = "REPLACE INTO `mounts_data`(`id`,`color`,`sexe`,`name`,`xp`,`level`,"
 					+ "`endurance`,`amour`,`maturite`,`serenite`,`reproductions`,`fatigue`,`items`,"
@@ -29,21 +29,21 @@ public class MountData extends AbstractDAO<Dragodinde>{
 			
 			PreparedStatement statement = connection.prepareStatement(baseQuery);
 			
-			statement.setInt(1, obj.get_id());
-			statement.setInt(2, obj.get_color());
-			statement.setInt(3, obj.get_sexe());
-			statement.setString(4, obj.get_nom());
-			statement.setLong(5, obj.get_exp());
-			statement.setInt(6, obj.get_level());
-			statement.setInt(7, obj.get_endurance());
-			statement.setInt(8, obj.get_amour());
-			statement.setInt(9, obj.get_maturite());
-			statement.setInt(10, obj.get_serenite());
-			statement.setInt(11, obj.get_reprod());
-			statement.setInt(12, obj.get_fatigue());
-			statement.setString(13, obj.getItemsId());
-			statement.setString(14, obj.get_ancetres());
-			statement.setInt(15, obj.get_energie());
+			statement.setInt(1, obj.getId());
+			statement.setInt(2, obj.getColor());
+			statement.setInt(3, obj.getSex());
+			statement.setString(4, obj.getName());
+			statement.setLong(5, obj.getExperience());
+			statement.setInt(6, obj.getLevel());
+			statement.setInt(7, obj.getEndurance());
+			statement.setInt(8, obj.getAmour());
+			statement.setInt(9, obj.getMaturite());
+			statement.setInt(10, obj.getSerenite());
+			statement.setInt(11, obj.getReproduction());
+			statement.setInt(12, obj.getFatigue());
+			statement.setString(13, obj.getObjectsId());
+			statement.setString(14, obj.getAncestor());
+			statement.setInt(15, obj.getEnergy());
 
 			execute(statement);
 			return true;
@@ -54,14 +54,14 @@ public class MountData extends AbstractDAO<Dragodinde>{
 	}
 
 	@Override
-	public boolean delete(Dragodinde obj) {
-		String baseQuery = "DELETE FROM `mounts_data` WHERE `id` = "+obj.get_id();
+	public boolean delete(Mount obj) {
+		String baseQuery = "DELETE FROM `mounts_data` WHERE `id` = "+obj.getId();
 		execute(baseQuery);
 		return true;
 	}
 
 	@Override
-	public boolean update(Dragodinde obj) {
+	public boolean update(Mount obj) {
 		try {
 			String baseQuery = "UPDATE mounts_data SET " + "`name` = ?,"
 					+ "`xp` = ?," + "`level` = ?," + "`endurance` = ?,"
@@ -71,19 +71,19 @@ public class MountData extends AbstractDAO<Dragodinde>{
 			
 			PreparedStatement statement = connection.prepareStatement(baseQuery);
 			
-			statement.setString(1, obj.get_nom());
-			statement.setLong(2, obj.get_exp());
-			statement.setInt(3, obj.get_level());
-			statement.setInt(4, obj.get_endurance());
-			statement.setInt(5, obj.get_amour());
-			statement.setInt(6, obj.get_maturite());
-			statement.setInt(7, obj.get_serenite());
-			statement.setInt(8, obj.get_reprod());
-			statement.setInt(9, obj.get_fatigue());
-			statement.setInt(10, obj.get_energie());
-			statement.setString(11, obj.get_ancetres());
-			statement.setString(12, obj.getItemsId());
-			statement.setInt(13, obj.get_id());
+			statement.setString(1, obj.getName());
+			statement.setLong(2, obj.getExperience());
+			statement.setInt(3, obj.getLevel());
+			statement.setInt(4, obj.getEndurance());
+			statement.setInt(5, obj.getAmour());
+			statement.setInt(6, obj.getMaturite());
+			statement.setInt(7, obj.getSerenite());
+			statement.setInt(8, obj.getReproduction());
+			statement.setInt(9, obj.getFatigue());
+			statement.setInt(10, obj.getEnergy());
+			statement.setString(11, obj.getAncestor());
+			statement.setString(12, obj.getObjectsId());
+			statement.setInt(13, obj.getId());
 
 			execute(statement);
 			return true;
@@ -94,13 +94,13 @@ public class MountData extends AbstractDAO<Dragodinde>{
 	}
 
 	@Override
-	public Dragodinde load(int id) {
-		Dragodinde mount = null;
+	public Mount load(int id) {
+		Mount mount = null;
 		try {
 			ResultSet result = getData("SELECT * FROM mounts_data WHERE id = "+id);
 			
 			if(result.next()) {
-				mount = new Dragodinde(result.getInt("id"), result
+				mount = new Mount(result.getInt("id"), result
 						.getInt("color"), result.getInt("sexe"),
 						result.getInt("amour"), result.getInt("endurance"), result
 								.getInt("level"), result.getLong("xp"), result

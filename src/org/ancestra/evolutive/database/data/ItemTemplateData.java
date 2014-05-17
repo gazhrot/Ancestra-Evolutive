@@ -8,8 +8,8 @@ import java.util.concurrent.locks.ReentrantLock;
 import org.ancestra.evolutive.core.Console;
 import org.ancestra.evolutive.core.World;
 import org.ancestra.evolutive.database.AbstractDAO;
-import org.ancestra.evolutive.objects.Action;
-import org.ancestra.evolutive.objects.Objet.ObjTemplate;
+import org.ancestra.evolutive.object.Objet.ObjTemplate;
+import org.ancestra.evolutive.other.Action;
 
 
 

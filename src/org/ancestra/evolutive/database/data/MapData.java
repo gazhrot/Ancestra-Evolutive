@@ -8,13 +8,10 @@ import java.util.concurrent.locks.ReentrantLock;
 import org.ancestra.evolutive.core.Console;
 import org.ancestra.evolutive.core.World;
 import org.ancestra.evolutive.database.AbstractDAO;
-import org.ancestra.evolutive.objects.Action;
-import org.ancestra.evolutive.objects.Carte;
+import org.ancestra.evolutive.map.Maps;
+import org.ancestra.evolutive.other.Action;
 
-
-
-
-public class MapData extends AbstractDAO<Carte>{
+public class MapData extends AbstractDAO<Maps>{
 
 	public MapData(Connection connection, ReentrantLock locker) {
 		super(connection, locker);
@@ -22,27 +19,27 @@ public class MapData extends AbstractDAO<Carte>{
 	}
 
 	@Override
-	public boolean create(Carte obj) {
+	public boolean create(Maps obj) {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
-	public boolean delete(Carte obj) {
+	public boolean delete(Maps obj) {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
-	public boolean update(Carte obj) {
+	public boolean update(Maps obj) {
 		try {
 			String baseQuery = "UPDATE `maps` SET " + "`places` = ?, "
 					+ "`numgroup` = ? " + "WHERE id = ?;";
 			PreparedStatement statement = connection.prepareStatement(baseQuery);
 			
-			statement.setString(1, obj.get_placesStr());
-			statement.setInt(2, obj.getMaxGroupNumb());
-			statement.setInt(3, obj.get_id());
+			statement.setString(1, obj.getPlaces());
+			statement.setInt(2, obj.getMaxGroup());
+			statement.setInt(3, obj.getId());
 
 			execute(statement);
 			return true;
@@ -53,13 +50,13 @@ public class MapData extends AbstractDAO<Carte>{
 	}
 
 	@Override
-	public Carte load(int id) {
-		Carte map = null;
+	public Maps load(int id) {
+		Maps map = null;
 		try {
 			ResultSet result = getData("SELECT * FROM maps WHERE id = "+id);
 			
 			if(result.next()) {
-				map = new Carte(result.getShort("id"), result
+				map = new Maps(result.getShort("id"), result
 						.getString("date"), result.getByte("width"), result
 						.getByte("heigth"), result.getString("key"), result
 						.getString("places"), result.getString("mapData"), result
@@ -83,7 +80,7 @@ public class MapData extends AbstractDAO<Carte>{
 			while (result.next()) {
 				if (map == null)
 					continue;
-				if (map.getCase(result.getInt("cellid")) == null)
+				if (map.getCases().get(result.getInt("cellid")) == null)
 					continue;
 				map.addStaticGroup(result.getInt("cellid"), result.getString("groupData"));
 			}
@@ -94,9 +91,9 @@ public class MapData extends AbstractDAO<Carte>{
 		return map;
 	}
 	
-	public void loadFightActions(Carte map) {
+	public void loadFightActions(Maps map) {
 		try {
-			ResultSet result = getData("SELECT * FROM endfight_action WHERE map = "+map.get_id());
+			ResultSet result = getData("SELECT * FROM endfight_action WHERE map = "+map.getId());
 			while (result.next()) {
 				
 				map.addEndFightAction(result.getInt("fighttype"),
@@ -109,17 +106,17 @@ public class MapData extends AbstractDAO<Carte>{
 		}
 	}
 	
-	public Carte loadMapByPos(int x1, int y1, int cont1) {
+	public Maps loadMapByPos(int x1, int y1, int cont1) {
 		try {
 			ResultSet result = getData("SELECT id, mappos FROM maps");
-			Carte carte = null;
+			Maps carte = null;
 			while (result.next()) {
 				String[] mappos = result.getString("mappos").split(",");
 				int x2 = -1, y2 = -1, cont2 = -1;
 				try {
 					x2 = Integer.parseInt(mappos[0]);
 					y2 = Integer.parseInt(mappos[1]); 
-					cont2 = World.data.getSubArea(Integer.parseInt(mappos[2])).get_area().get_superArea().get_id();
+					cont2 = World.data.getSubArea(Integer.parseInt(mappos[2])).getArea().getContinent().getId();
 				} catch(Exception e) {}
 				if(x1 == x2 && y1 == y2 && cont1 == cont2) {
 					carte = World.data.getCarte(result.getShort("id"));

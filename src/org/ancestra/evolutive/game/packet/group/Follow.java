@@ -8,7 +8,6 @@ import org.ancestra.evolutive.game.GameClient;
 import org.ancestra.evolutive.tool.plugin.packet.Packet;
 import org.ancestra.evolutive.tool.plugin.packet.PacketParser;
 
-
 @Packet("PF")
 public class Follow implements PacketParser {
 
@@ -34,18 +33,18 @@ public class Follow implements PacketParser {
 			return;
 		
 		if(packet.charAt(2) == '+') {//Suivre
-			if(client.getPlayer()._Follows != null)
-				client.getPlayer()._Follows._Follower.remove(client.getPlayer().get_GUID());
+			if(client.getPlayer().getFollow() != null)
+				client.getPlayer().getFollow().getFollowers().remove(client.getPlayer().getUUID());
 			SocketManager.GAME_SEND_FLAG_PACKET(client.getPlayer(), player);
-			SocketManager.GAME_SEND_PF(client.getPlayer(), "+"+player.get_GUID());
-			client.getPlayer()._Follows = player;
-			player._Follower.put(client.getPlayer().get_GUID(), client.getPlayer());
+			SocketManager.GAME_SEND_PF(client.getPlayer(), "+"+player.getUUID());
+			client.getPlayer().setFollow(player);
+			player.getFollowers().put(client.getPlayer().getUUID(), client.getPlayer());
 		}else 
 		if(packet.charAt(2) == '-') {//Ne plus suivre
 			SocketManager.GAME_SEND_DELETE_FLAG_PACKET(client.getPlayer());
 			SocketManager.GAME_SEND_PF(client.getPlayer(), "-");
-			client.getPlayer()._Follows = null;
-			player._Follower.remove(client.getPlayer().get_GUID());
+			client.getPlayer().setFollow(null);
+			player.getFollowers().remove(client.getPlayer().getUUID());
 		}
 	}
 }

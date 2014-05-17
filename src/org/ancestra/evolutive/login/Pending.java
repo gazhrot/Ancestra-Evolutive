@@ -1,10 +1,8 @@
 package org.ancestra.evolutive.login;
 
-
 import org.ancestra.evolutive.client.Account;
 import org.ancestra.evolutive.common.SocketManager;
 import org.ancestra.evolutive.tool.time.waiter.Waiter;
-
 
 public class Pending {
 
@@ -23,9 +21,9 @@ public class Pending {
         			if(account == null || account.getLoginClient() == null) 
         				return;
         			
-                	SocketManager.MULTI_SEND_Af_PACKET(account.getLoginClient(),1,LoginServer._totalAbo,LoginServer._totalNonAbo,""+1,LoginServer._queueID);
+                	SocketManager.MULTI_SEND_Af_PACKET(account.getLoginClient(),1,LoginServer.totalAbo, LoginServer.totalNonAbo,""+1,LoginServer.queueID);
                 	account.setPosition(-1);
-                	LoginServer._totalAbo--;
+                	LoginServer.totalAbo--;
         		}
         	}, 750);
         } else {
@@ -34,9 +32,9 @@ public class Pending {
         			if(account == null ||  account.getLoginClient() == null) 
         				return;
         			
-            		SocketManager.MULTI_SEND_Af_PACKET(account.getLoginClient(),1,LoginServer._totalAbo,LoginServer._totalNonAbo,""+1,LoginServer._queueID);
+            		SocketManager.MULTI_SEND_Af_PACKET(account.getLoginClient(),1,LoginServer.totalAbo,LoginServer.totalNonAbo,""+1,LoginServer.queueID);
             		account.setPosition(-1);
-            		LoginServer._totalAbo--;
+            		LoginServer.totalAbo--;
         		}
         	}, 750*account.getPosition());
         }

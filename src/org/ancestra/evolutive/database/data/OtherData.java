@@ -14,12 +14,8 @@ import org.ancestra.evolutive.core.Console;
 import org.ancestra.evolutive.core.Log;
 import org.ancestra.evolutive.core.World;
 import org.ancestra.evolutive.database.AbstractDAO;
-import org.ancestra.evolutive.objects.Objet;
-import org.ancestra.evolutive.objects.Objet.ObjTemplate;
-
-
-
-
+import org.ancestra.evolutive.object.Objet;
+import org.ancestra.evolutive.object.Objet.ObjTemplate;
 
 public class OtherData extends AbstractDAO<Object>{
 
@@ -171,7 +167,7 @@ public class OtherData extends AbstractDAO<Object>{
 							+ " n'a pas thread associe, le personnage est il hors ligne ?");
 					continue;
 				}
-				if (perso.get_fight() != null)
+				if (perso.getFight() != null)
 					continue; // Perso en combat @ Nami-Doc
 				action = result.getInt("Action");
 				nombre = result.getInt("Nombre");
@@ -180,7 +176,7 @@ public class OtherData extends AbstractDAO<Object>{
 
 				switch (action) {
 				case 1: // Monter d'un level
-					if (perso.get_lvl() == World.data.getExpLevelSize())
+					if (perso.getLevel() == World.data.getExpLevelSize())
 						continue;
 					for (int n = nombre; n > 1; n--)
 						perso.levelUp(false, true);
@@ -188,7 +184,7 @@ public class OtherData extends AbstractDAO<Object>{
 					sortie += nombre + " Niveau(x)";
 					break;
 				case 2: // Ajouter X point d'experience
-					if (perso.get_lvl() == World.data.getExpLevelSize())
+					if (perso.getLevel() == World.data.getExpLevelSize())
 						continue;
 					perso.addXp(nombre);
 					sortie += nombre + " Xp";
@@ -219,7 +215,7 @@ public class OtherData extends AbstractDAO<Object>{
 													// d'item similaire
 						World.data.addObjet(obj, true);
 					Log.addToSockLog("Objet " + nombre + " ajouter a "
-							+ perso.get_name() + " avec des stats aleatoire");
+							+ perso.getName() + " avec des stats aleatoire");
 					SocketManager
 							.GAME_SEND_MESSAGE(
 									perso,
@@ -241,7 +237,7 @@ public class OtherData extends AbstractDAO<Object>{
 													// d'item similaire
 						World.data.addObjet(obj, true);
 					Log.addToSockLog("Objet " + nombre + " ajoute a "
-							+ perso.get_name() + " avec des stats MAX");
+							+ perso.getName() + " avec des stats MAX");
 					SocketManager
 							.GAME_SEND_MESSAGE(
 									perso,
@@ -251,33 +247,33 @@ public class OtherData extends AbstractDAO<Object>{
 									couleur);
 					break;
 				case 118:// Force
-					perso.get_baseStats().addOneStat(action, nombre);
+					perso.getStats().addOneStat(action, nombre);
 					SocketManager.GAME_SEND_STATS_PACKET(perso);
 					sortie += nombre + " force";
 					break;
 				case 119:// Agilite
-					perso.get_baseStats().addOneStat(action, nombre);
+					perso.getStats().addOneStat(action, nombre);
 					SocketManager.GAME_SEND_STATS_PACKET(perso);
 					sortie += nombre + " agilite";
 					break;
 				case 123:// Chance
-					perso.get_baseStats().addOneStat(action, nombre);
+					perso.getStats().addOneStat(action, nombre);
 					SocketManager.GAME_SEND_STATS_PACKET(perso);
 					sortie += nombre + " chance";
 					break;
 				case 124:// Sagesse
-					perso.get_baseStats().addOneStat(action, nombre);
+					perso.getStats().addOneStat(action, nombre);
 					SocketManager.GAME_SEND_STATS_PACKET(perso);
 					sortie += nombre + " sagesse";
 					break;
 				case 125:// Vita
-					perso.get_baseStats().addOneStat(action, nombre);
+					perso.getStats().addOneStat(action, nombre);
 					SocketManager.GAME_SEND_STATS_PACKET(perso);
 					sortie += nombre + " vita";
 					break;
 				case 126:// Intelligence
 					int statID = action;
-					perso.get_baseStats().addOneStat(statID, nombre);
+					perso.getStats().addOneStat(statID, nombre);
 					SocketManager.GAME_SEND_STATS_PACKET(perso);
 					sortie += nombre + " intelligence";
 					break;
@@ -295,7 +291,7 @@ public class OtherData extends AbstractDAO<Object>{
 				Log.addToShopLog("(Commande " + id + ")Action " + action
 						+ " Nombre: " + nombre
 						+ " appliquee sur le personnage "
-						+ result.getInt("PlayerID") + "(" + perso.get_name() + ")");
+						+ result.getInt("PlayerID") + "(" + perso.getName() + ")");
 				try {
 					PreparedStatement statement = connection.prepareStatement("DELETE FROM live_action WHERE ID=" + id);
 					execute(statement);

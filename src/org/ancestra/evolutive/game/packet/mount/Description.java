@@ -4,8 +4,8 @@ package org.ancestra.evolutive.game.packet.mount;
 
 import org.ancestra.evolutive.common.SocketManager;
 import org.ancestra.evolutive.core.World;
+import org.ancestra.evolutive.entity.Mount;
 import org.ancestra.evolutive.game.GameClient;
-import org.ancestra.evolutive.objects.Dragodinde;
 import org.ancestra.evolutive.tool.plugin.packet.Packet;
 import org.ancestra.evolutive.tool.plugin.packet.PacketParser;
 
@@ -23,7 +23,7 @@ public class Description implements PacketParser {
 		if(id == -1)
 			return;
 		
-		Dragodinde dragodinde = World.data.getDragoByID(id);
+		Mount dragodinde = World.data.getDragoByID(id);
 		
 		if(dragodinde == null)
 			return;

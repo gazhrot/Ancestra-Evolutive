@@ -1,15 +1,12 @@
 package org.ancestra.evolutive.game.packet.guild;
 
-
-
 import org.ancestra.evolutive.common.SocketManager;
 import org.ancestra.evolutive.core.World;
 import org.ancestra.evolutive.game.GameClient;
-import org.ancestra.evolutive.objects.Guild;
-import org.ancestra.evolutive.objects.Guild.GuildMember;
+import org.ancestra.evolutive.guild.Guild;
+import org.ancestra.evolutive.guild.GuildMember;
 import org.ancestra.evolutive.tool.plugin.packet.Packet;
 import org.ancestra.evolutive.tool.plugin.packet.PacketParser;
-
 
 @Packet("gC")
 public class Create implements PacketParser {
@@ -18,11 +15,11 @@ public class Create implements PacketParser {
 	public void parse(GameClient client, String packet) {
 		if(client.getPlayer() == null)
 			return;
-		if(client.getPlayer().get_guild() != null || client.getPlayer().getGuildMember() != null) {
+		if(client.getPlayer().getGuild() != null || client.getPlayer().getGuildMember() != null) {
 			SocketManager.GAME_SEND_gC_PACKET(client.getPlayer(), "Ea");
 			return;
 		}
-		if(client.getPlayer().get_fight() != null || client.getPlayer().is_away())
+		if(client.getPlayer().getFight() != null || client.getPlayer().isAway())
 			return;
 		
 		try	{
@@ -78,7 +75,7 @@ public class Create implements PacketParser {
 				SocketManager.GAME_SEND_gC_PACKET(client.getPlayer(), "Eae");
 				return;
 			}
-			if(client.getPlayer().get_curCarte().get_id() == 2196) {//Temple de cr�ation de guilde
+			if(client.getPlayer().getCurMap().getId() == 2196) {//Temple de cr�ation de guilde
 				if(!client.getPlayer().hasItemTemplate(1575,1)) {//Guildalogemme
 					SocketManager.GAME_SEND_Im_PACKET(client.getPlayer(), "14");
 					return;
@@ -86,7 +83,7 @@ public class Create implements PacketParser {
 				client.getPlayer().removeByTemplateID(1575, 1);
 			}
 			
-			Guild guild = new Guild(client.getPlayer(),name,emblem);
+			Guild guild = new Guild(name, emblem);
 			GuildMember member = guild.addNewMember(client.getPlayer());
 			member.setAllRights(1,(byte) 0,1);//1 => Meneur (Tous droits)
 			client.getPlayer().setGuildMember(member);//On ajoute le meneur

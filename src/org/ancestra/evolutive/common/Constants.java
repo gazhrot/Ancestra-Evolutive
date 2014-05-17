@@ -9,12 +9,9 @@ import org.ancestra.evolutive.core.Log;
 import org.ancestra.evolutive.core.Server;
 import org.ancestra.evolutive.core.World;
 import org.ancestra.evolutive.enums.EmulatorInfos;
-import org.ancestra.evolutive.objects.Fighter;
-import org.ancestra.evolutive.objects.Objet.ObjTemplate;
-import org.ancestra.evolutive.objects.Sort.SortStats;
-
-
-
+import org.ancestra.evolutive.fight.Fighter;
+import org.ancestra.evolutive.fight.spell.SpellStats;
+import org.ancestra.evolutive.object.Objet.ObjTemplate;
 
 
 public class Constants
@@ -564,9 +561,9 @@ public class Constants
 		return start;
 	}
 	
-	public static TreeMap<Integer,SortStats> getStartSorts(int classID)
+	public static TreeMap<Integer,SpellStats> getStartSorts(int classID)
 	{
-		TreeMap<Integer,SortStats> start = new TreeMap<Integer,SortStats>();
+		TreeMap<Integer,SpellStats> start = new TreeMap<Integer,SpellStats>();
 		switch(classID)
 		{
 			case CLASS_FECA:
@@ -1241,7 +1238,7 @@ public class Constants
 	
 	public static void onLevelUpSpells(Player perso,int lvl)
 	{
-		switch(perso.get_classe())
+		switch(perso.getClasse())
 		{
 			case CLASS_FECA:
 				if(lvl == 3)
@@ -2314,8 +2311,8 @@ public class Constants
 		switch(mID)
 		{
 		case 2196://Création de guilde
-			if(perso.is_away())return;
-			if(perso.get_guild() != null || perso.getGuildMember() != null)
+			if(perso.isAway())return;
+			if(perso.getGuild() != null || perso.getGuildMember() != null)
 			{
 				SocketManager.GAME_SEND_gC_PACKET(perso, "Ea");
 				return;
@@ -2337,7 +2334,7 @@ public class Constants
 		int cellBack = 0;
 		int cellRight = 0;
 		int cellLeft = 0;
-		if(_perso.get_curCarte().getSubArea().get_area().get_id() == 7 || _perso.get_curCarte().getSubArea().get_area().get_id() == 11)
+		if(_perso.getCurMap().getSubArea().getArea().getId() == 7 || _perso.getCurMap().getSubArea().getArea().getId() == 11)
 		{
 			cellFront = 19;
 			cellBack = -19;
@@ -2350,27 +2347,27 @@ public class Constants
 			cellRight = 14;
 			cellLeft = -14;
 		}
-		if(_perso.get_curCarte().getCase(_perso.get_curCell().getID()+cellFront).getDroppedItem() == null
-				&& _perso.get_curCarte().GetCases().get(_perso.get_curCell().getID()+cellFront).getPersos().isEmpty()
-				&& _perso.get_curCarte().GetCases().get(_perso.get_curCell().getID()+cellFront).isWalkable(false))
+		if(_perso.getCurMap().getCases().get(_perso.getCurCell().getId()+cellFront).getObject() == null
+				&& _perso.getCurMap().getCases().get(_perso.getCurCell().getId()+cellFront).getPlayers().isEmpty()
+				&& _perso.getCurMap().getCases().get(_perso.getCurCell().getId()+cellFront).isWalkable(false))
 		{
 			return cellFront;
 		}else
-		if(_perso.get_curCarte().getCase(_perso.get_curCell().getID()-cellBack).getDroppedItem() == null
-				&& _perso.get_curCarte().GetCases().get(_perso.get_curCell().getID()-cellBack).getPersos().isEmpty()
-				&& _perso.get_curCarte().GetCases().get(_perso.get_curCell().getID()-cellBack).isWalkable(false))
+		if(_perso.getCurMap().getCases().get(_perso.getCurCell().getId()-cellBack).getObject() == null
+				&& _perso.getCurMap().getCases().get(_perso.getCurCell().getId()-cellBack).getPlayers().isEmpty()
+				&& _perso.getCurMap().getCases().get(_perso.getCurCell().getId()-cellBack).isWalkable(false))
 		{
 			return cellBack;
 		}else
-		if(_perso.get_curCarte().getCase(_perso.get_curCell().getID()+cellRight).getDroppedItem() == null
-				&& _perso.get_curCarte().GetCases().get(_perso.get_curCell().getID()+cellRight).getPersos().isEmpty()
-				&& _perso.get_curCarte().GetCases().get(_perso.get_curCell().getID()+cellRight).isWalkable(false))
+		if(_perso.getCurMap().getCases().get(_perso.getCurCell().getId()+cellRight).getObject() == null
+				&& _perso.getCurMap().getCases().get(_perso.getCurCell().getId()+cellRight).getPlayers().isEmpty()
+				&& _perso.getCurMap().getCases().get(_perso.getCurCell().getId()+cellRight).isWalkable(false))
 		{
 			return cellRight;
 		}else
-		if(_perso.get_curCarte().getCase(_perso.get_curCell().getID()-cellLeft).getDroppedItem() == null
-				&& _perso.get_curCarte().GetCases().get(_perso.get_curCell().getID()-cellLeft).getPersos().isEmpty()
-				&& _perso.get_curCarte().GetCases().get(_perso.get_curCell().getID()-cellLeft).isWalkable(false))
+		if(_perso.getCurMap().getCases().get(_perso.getCurCell().getId()-cellLeft).getObject() == null
+				&& _perso.getCurMap().getCases().get(_perso.getCurCell().getId()-cellLeft).getPlayers().isEmpty()
+				&& _perso.getCurMap().getCases().get(_perso.getCurCell().getId()-cellLeft).isWalkable(false))
 		{
 			return cellLeft;
 		}

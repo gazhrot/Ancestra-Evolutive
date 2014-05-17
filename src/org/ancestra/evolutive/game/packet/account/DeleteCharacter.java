@@ -1,6 +1,5 @@
 package org.ancestra.evolutive.game.packet.account;
 
-
 import java.util.Map;
 
 import org.ancestra.evolutive.client.Player;
@@ -8,7 +7,6 @@ import org.ancestra.evolutive.common.SocketManager;
 import org.ancestra.evolutive.game.GameClient;
 import org.ancestra.evolutive.tool.plugin.packet.Packet;
 import org.ancestra.evolutive.tool.plugin.packet.PacketParser;
-
 
 @Packet("AD")
 public class DeleteCharacter implements PacketParser {
@@ -22,7 +20,7 @@ public class DeleteCharacter implements PacketParser {
 		
 		if(players.containsKey(GUID))
 		{
-			if(players.get(GUID).get_lvl() <20 ||(players.get(GUID).get_lvl() >=20 && reponse.equals(client.getAccount().getAnswer())))
+			if(players.get(GUID).getLevel() <20 ||(players.get(GUID).getLevel() >=20 && reponse.equals(client.getAccount().getAnswer())))
 			{
 				client.getAccount().deletePerso(GUID);
 				SocketManager.GAME_SEND_PERSO_LIST(client, players);

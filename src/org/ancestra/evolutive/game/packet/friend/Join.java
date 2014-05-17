@@ -1,13 +1,11 @@
 package org.ancestra.evolutive.game.packet.friend;
 
-
 import org.ancestra.evolutive.client.Player;
 import org.ancestra.evolutive.common.SocketManager;
 import org.ancestra.evolutive.core.World;
 import org.ancestra.evolutive.game.GameClient;
 import org.ancestra.evolutive.tool.plugin.packet.Packet;
 import org.ancestra.evolutive.tool.plugin.packet.PacketParser;
-
 
 @Packet("FJ")
 public class Join implements PacketParser {
@@ -20,7 +18,7 @@ public class Join implements PacketParser {
 			return;
 		
 		if(!player.isOnline()) {
-			if(player.get_sexe() == 0) 
+			if(player.getSex() == 0) 
 				SocketManager.GAME_SEND_Im_PACKET(client.getPlayer(), "140");
 			else 
 				SocketManager.GAME_SEND_Im_PACKET(client.getPlayer(), "139");
@@ -30,23 +28,23 @@ public class Join implements PacketParser {
 		
 		switch(packet.charAt(2)) {
 			case 'S'://Teleportation
-				if(client.getPlayer().get_fight() != null)
+				if(client.getPlayer().getFight() != null)
 					return;
 				else
 					client.getPlayer().meetWife(player);
 			break;
 			case 'C'://Suivre le deplacement
 				if(packet.charAt(3) == '+') {//Si lancement de la traque
-					if(client.getPlayer()._Follows != null)
-						client.getPlayer()._Follows._Follower.remove(client.getPlayer().get_GUID());
+					if(client.getPlayer().getFollow() != null)
+						client.getPlayer().getFollow().getFollowers().remove(client.getPlayer().getUUID());
 					
 					SocketManager.GAME_SEND_FLAG_PACKET(client.getPlayer(), player);
-					client.getPlayer()._Follows = player;
-					player._Follower.put(client.getPlayer().get_GUID(), client.getPlayer());
+					client.getPlayer().setFollow(player);
+					player.getFollowers().put(client.getPlayer().getUUID(), client.getPlayer());
 				} else {//On arrete de suivre
 					SocketManager.GAME_SEND_DELETE_FLAG_PACKET(client.getPlayer());
-					client.getPlayer()._Follows = null;
-					player._Follower.remove(client.getPlayer().get_GUID());
+					client.getPlayer().setFollow(null);
+					player.getFollowers().remove(client.getPlayer().getUUID());
 				}
 			break;
 		}

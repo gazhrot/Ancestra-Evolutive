@@ -18,7 +18,12 @@ public class Events {
 	public boolean call(Event event) {
 		boolean cancelled = false;
 		for(EventListener listener : listeners.get(event.getClass())) {
-			listener.call(event);
+			try {
+				listener.call(event);
+			} catch(Exception e) {
+				e.printStackTrace();
+			}
+			
 			if(listener.isCancelled())
 				cancelled = true;
 		}

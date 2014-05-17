@@ -1,19 +1,16 @@
 package org.ancestra.evolutive.game.packet.exchange;
 
-
-
 import org.ancestra.evolutive.client.Player;
 import org.ancestra.evolutive.common.SocketManager;
 import org.ancestra.evolutive.core.World;
+import org.ancestra.evolutive.entity.Collector;
 import org.ancestra.evolutive.game.GameClient;
-import org.ancestra.evolutive.objects.HDV;
-import org.ancestra.evolutive.objects.Objet;
-import org.ancestra.evolutive.objects.Percepteur;
-import org.ancestra.evolutive.objects.Trunk;
-import org.ancestra.evolutive.objects.HDV.HdvEntry;
+import org.ancestra.evolutive.hdv.HDV;
+import org.ancestra.evolutive.hdv.HDV.HdvEntry;
+import org.ancestra.evolutive.house.Trunk;
+import org.ancestra.evolutive.object.Objet;
 import org.ancestra.evolutive.tool.plugin.packet.Packet;
 import org.ancestra.evolutive.tool.plugin.packet.PacketParser;
-
 
 @Packet("EM")
 public class MoveItemOrKamas implements PacketParser {
@@ -21,7 +18,7 @@ public class MoveItemOrKamas implements PacketParser {
 	@Override
 	public void parse(GameClient client, String packet) {
 		//Store
-		if(client.getPlayer().get_isTradingWith() == client.getPlayer().get_GUID())
+		if(client.getPlayer().getIsTradingWith() == client.getPlayer().getUUID())
 		{
 			switch(packet.charAt(2))
 			{
@@ -68,9 +65,9 @@ public class MoveItemOrKamas implements PacketParser {
 			return;
 		}
 		//Percepteur
-		if(client.getPlayer().get_isOnPercepteurID() != 0)
+		if(client.getPlayer().getIsOnCollector() != 0)
 		{
-			Percepteur perco = World.data.getPerco(client.getPlayer().get_isOnPercepteurID());
+			Collector perco = World.data.getPerco(client.getPlayer().getIsOnCollector());
 			if(perco == null || perco.get_inFight() > 0)return;
 			switch(packet.charAt(2))
 			{
@@ -115,14 +112,14 @@ public class MoveItemOrKamas implements PacketParser {
 				}
 			break;
 			}
-			client.getPlayer().get_guild().addXp(perco.getXp());
+			client.getPlayer().getGuild().addXp(perco.getXp());
 			perco.LogXpDrop(perco.getXp());
 			perco.setXp(0);
-			World.database.getGuildData().update(client.getPlayer().get_guild());
+			World.database.getGuildData().update(client.getPlayer().getGuild());
 			return;
 		}
 		//HDV
-		if(client.getPlayer().get_isTradingWith() < 0)
+		if(client.getPlayer().getIsTradingWith() < 0)
 		{
 			switch(packet.charAt(3))
 			{
@@ -140,7 +137,7 @@ public class MoveItemOrKamas implements PacketParser {
 					int price = Integer.parseInt(packet.substring(4).split("\\|")[2]);
 					if(amount <= 0 || price <= 0)return;
 					
-					HDV curHdv = World.data.getHdv(Math.abs(client.getPlayer().get_isTradingWith()));
+					HDV curHdv = World.data.getHdv(Math.abs(client.getPlayer().getIsTradingWith()));
 					int taxe = (int)(price * (curHdv.getTaxe()/100));
 					
 					
@@ -151,7 +148,7 @@ public class MoveItemOrKamas implements PacketParser {
 						SocketManager.GAME_SEND_Im_PACKET(client.getPlayer(), "058");
 						return;
 					}
-					if(client.getPlayer().get_kamas() < taxe)
+					if(client.getPlayer().getKamas() < taxe)
 					{
 						SocketManager.GAME_SEND_Im_PACKET(client.getPlayer(), "176");
 						return;
@@ -247,7 +244,7 @@ public class MoveItemOrKamas implements PacketParser {
 		//Banque
 		if(client.getPlayer().isInBank())
 		{
-			if(client.getPlayer().get_curExchange() != null)return;
+			if(client.getPlayer().getCurExchange() != null)return;
 			switch(packet.charAt(2))
 			{
 				case 'G'://Kamas
@@ -260,10 +257,10 @@ public class MoveItemOrKamas implements PacketParser {
 					
 					if(kamas > 0)//Si On ajoute des kamas a la banque
 					{
-						if(client.getPlayer().get_kamas() < kamas)kamas = client.getPlayer().get_kamas();
+						if(client.getPlayer().getKamas() < kamas)kamas = client.getPlayer().getKamas();
 
 						client.getPlayer().setBankKamas(client.getPlayer().getBankKamas()+kamas);//On ajoute les kamas a la banque
-						client.getPlayer().set_kamas(client.getPlayer().get_kamas()-kamas);//On retire les kamas du personnage
+						client.getPlayer().setKamas(client.getPlayer().getKamas()-kamas);//On retire les kamas du personnage
 						SocketManager.GAME_SEND_STATS_PACKET(client.getPlayer());
 						SocketManager.GAME_SEND_EsK_PACKET(client.getPlayer(),"G"+client.getPlayer().getBankKamas());
 					}else
@@ -273,7 +270,7 @@ public class MoveItemOrKamas implements PacketParser {
                         else if(kamas <= 0) // si - -, ça donne +
                             return;
 						client.getPlayer().setBankKamas(client.getPlayer().getBankKamas()-kamas);//On retire les kamas de la banque
-						client.getPlayer().set_kamas(client.getPlayer().get_kamas()+kamas);//On ajoute les kamas du personnage
+						client.getPlayer().setKamas(client.getPlayer().getKamas()+kamas);//On ajoute les kamas du personnage
 						SocketManager.GAME_SEND_STATS_PACKET(client.getPlayer());
 						SocketManager.GAME_SEND_EsK_PACKET(client.getPlayer(),"G"+client.getPlayer().getBankKamas());
 					}
@@ -306,12 +303,12 @@ public class MoveItemOrKamas implements PacketParser {
 			return;
 		}
 		//Coffre
-	    if(client.getPlayer().getInTrunk() != null)
+	    if(client.getPlayer().getCurTrunk() != null)
         {
-                if(client.getPlayer().get_curExchange() != null)
+                if(client.getPlayer().getCurExchange() != null)
                 	return;
                 
-                Trunk t = client.getPlayer().getInTrunk();
+                Trunk t = client.getPlayer().getCurTrunk();
                 
                 if(t == null) 
                 	return;
@@ -329,9 +326,9 @@ public class MoveItemOrKamas implements PacketParser {
                                
                         if(kamas > 0)//Si On ajoute des kamas au coffre
                         {
-                            if(client.getPlayer().get_kamas() < kamas)kamas = client.getPlayer().get_kamas();
+                            if(client.getPlayer().getKamas() < kamas)kamas = client.getPlayer().getKamas();
                             t.set_kamas(t.get_kamas() + kamas);//On ajoute les kamas au coffre
-                            client.getPlayer().set_kamas(client.getPlayer().get_kamas()-kamas);//On retire les kamas du personnage
+                            client.getPlayer().setKamas(client.getPlayer().getKamas()-kamas);//On retire les kamas du personnage
                             SocketManager.GAME_SEND_STATS_PACKET(client.getPlayer());
                         }else // On retire des kamas au coffre
                         {
@@ -340,11 +337,11 @@ public class MoveItemOrKamas implements PacketParser {
                                 return;
                         	if(t.get_kamas() < kamas)kamas = t.get_kamas();
                         	t.set_kamas(t.get_kamas()-kamas);//On retire les kamas de la banque
-                         	client.getPlayer().set_kamas(client.getPlayer().get_kamas()+kamas);//On ajoute les kamas du personnage
+                         	client.getPlayer().setKamas(client.getPlayer().getKamas()+kamas);//On ajoute les kamas du personnage
                          	SocketManager.GAME_SEND_STATS_PACKET(client.getPlayer());
                         }
                         for(Player P : World.data.getOnlinePersos())
-                        	if(P.getInTrunk() != null && client.getPlayer().getInTrunk().get_id() == P.getInTrunk().get_id())
+                        	if(P.getCurTrunk() != null && client.getPlayer().getCurTrunk().get_id() == P.getCurTrunk().get_id())
                         		SocketManager.GAME_SEND_EsK_PACKET(P,"G"+t.get_kamas());
                         World.database.getTrunkData().update(t);
                     break;
@@ -374,7 +371,7 @@ public class MoveItemOrKamas implements PacketParser {
                 }
                 return;
         }
-		if(client.getPlayer().get_curExchange() == null)
+		if(client.getPlayer().getCurExchange() == null)
 			return;
 		switch(packet.charAt(2))
 		{
@@ -384,7 +381,7 @@ public class MoveItemOrKamas implements PacketParser {
 					try	{
 						int guid = Integer.parseInt(infos[0]);
 						int qua  = Integer.parseInt(infos[1]);
-						int quaInExch = client.getPlayer().get_curExchange().getQuaItem(guid, client.getPlayer().get_GUID());
+						int quaInExch = client.getPlayer().getCurExchange().getQuaItem(guid, client.getPlayer().getUUID());
 						
 						if(!client.getPlayer().hasItemGuid(guid))
 							return;
@@ -398,7 +395,7 @@ public class MoveItemOrKamas implements PacketParser {
 						if(qua <= 0)
 							return;
 						
-						client.getPlayer().get_curExchange().addItem(guid, qua, client.getPlayer().get_GUID());
+						client.getPlayer().getCurExchange().addItem(guid, qua, client.getPlayer().getUUID());
 					} catch(NumberFormatException e) {}
 				}else {
 					try	{
@@ -415,21 +412,21 @@ public class MoveItemOrKamas implements PacketParser {
 						
 						if(obj == null)
 							return;
-						if(qua > client.getPlayer().get_curExchange().getQuaItem(guid, client.getPlayer().get_GUID()))
+						if(qua > client.getPlayer().getCurExchange().getQuaItem(guid, client.getPlayer().getUUID()))
 							return;
 						
-						client.getPlayer().get_curExchange().removeItem(guid,qua, client.getPlayer().get_GUID());
+						client.getPlayer().getCurExchange().removeItem(guid,qua, client.getPlayer().getUUID());
 					} catch(NumberFormatException e) {}
 				}
 			break;
 			case 'G'://Kamas
 				try	{
 					long numb = Integer.parseInt(packet.substring(3));
-					if(client.getPlayer().get_kamas() < numb)
-						numb = client.getPlayer().get_kamas();
+					if(client.getPlayer().getKamas() < numb)
+						numb = client.getPlayer().getKamas();
                     else if(numb <= 0)
                         return;
-					client.getPlayer().get_curExchange().setKamas(client.getPlayer().get_GUID(), numb);
+					client.getPlayer().getCurExchange().setKamas(client.getPlayer().getUUID(), numb);
 				} catch(NumberFormatException e) {}
 			break;
 		}

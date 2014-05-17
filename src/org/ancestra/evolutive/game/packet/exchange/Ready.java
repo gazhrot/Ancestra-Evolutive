@@ -4,7 +4,6 @@ import org.ancestra.evolutive.game.GameClient;
 import org.ancestra.evolutive.tool.plugin.packet.Packet;
 import org.ancestra.evolutive.tool.plugin.packet.PacketParser;
 
-
 @Packet("EK")
 public class Ready implements PacketParser {
 
@@ -15,8 +14,8 @@ public class Ready implements PacketParser {
 				return;
 			client.getPlayer().getCurJobAction().startCraft(client.getPlayer());
 		}
-		if(client.getPlayer().get_curExchange() == null)
+		if(client.getPlayer().getCurExchange() == null)
 			return;
-		client.getPlayer().get_curExchange().toogleOK(client.getPlayer().get_GUID());
+		client.getPlayer().getCurExchange().toogleOK(client.getPlayer().getUUID());
 	}
 }

@@ -2,12 +2,11 @@ package org.ancestra.evolutive.tool.command;
 
 import java.util.Deque;
 import java.util.LinkedList;
+import java.util.Map.Entry;
 
 import org.ancestra.evolutive.client.Player;
 import org.ancestra.evolutive.core.Console;
 import org.ancestra.evolutive.core.World;
-
-
 
 public class CommandParser {
 
@@ -29,15 +28,22 @@ public class CommandParser {
 						 : new String[] { line };
 			 }
 		} catch(Exception e) {
-			Console.instance.print("Erreur de syntaxe", t);
+			Console.instance.print("Erreur de syntaxe.", t);
 			return; 
 		}
 
 		if(t instanceof Player) {
-			Command<Player> command = World.data.getPlayerCommands().get(name);
-
+			Command<Player> command = null;
+			
+			for(Entry<String, Command<Player>> c: World.data.getPlayerCommands().entrySet()) {
+				if(c.getKey().equalsIgnoreCase(name) || c.getValue().getName().equalsIgnoreCase(name)) {
+					command = c.getValue();
+					break;
+				}
+			}
+			
 			if(command == null) {
-				Console.instance.print("Commande non reconnue", t);
+				Console.instance.print("Commande non reconnue.", t);
 				return; 
 			}
 
@@ -67,11 +73,11 @@ public class CommandParser {
 			Command<Console> command = World.data.getConsoleCommands().get(name);
 
 			if(command == null) {
-				Console.instance.print("Commande non reconnue", t);
+				Console.instance.print("Commande non reconnue.", t);
 				return; 
 			}
 
-			if(parameters != null) {
+			if(parameters != null && command.isSpecificParams()) {
 				Deque<String> params = new LinkedList<>();
 				for(String param: parameters)
 					params.addLast(param);
@@ -88,8 +94,9 @@ public class CommandParser {
 					} else
 						lastParameter = temporary;
 				}
-			} else 
+			} else {
 				command.execute((Console)t, parameters);
+			}
 		}
 	}
 }

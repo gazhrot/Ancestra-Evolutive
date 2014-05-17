@@ -8,11 +8,8 @@ import java.util.concurrent.locks.ReentrantLock;
 import org.ancestra.evolutive.core.Console;
 import org.ancestra.evolutive.core.World;
 import org.ancestra.evolutive.database.AbstractDAO;
-import org.ancestra.evolutive.objects.Guild;
-import org.ancestra.evolutive.objects.Guild.GuildMember;
-
-
-
+import org.ancestra.evolutive.guild.Guild;
+import org.ancestra.evolutive.guild.GuildMember;
 
 public class GuildMemberData extends AbstractDAO<GuildMember>{
 
@@ -29,7 +26,7 @@ public class GuildMemberData extends AbstractDAO<GuildMember>{
 
 	@Override
 	public boolean delete(GuildMember obj) {
-		String baseQuery = "DELETE FROM `guild_members` WHERE `guid` = "+obj.getGuid();
+		String baseQuery = "DELETE FROM `guild_members` WHERE `guid` = "+obj.getUUID();
 		execute(baseQuery);
 		return true;
 	}
@@ -46,17 +43,17 @@ public class GuildMemberData extends AbstractDAO<GuildMember>{
 
 		try {
 			PreparedStatement statement = connection.prepareStatement(baseQuery);
-			statement.setInt(1, obj.getGuid());
-			statement.setInt(2, obj.getGuild().get_id());
-			statement.setString(3, obj.getName());
-			statement.setInt(4, obj.getLvl());
-			statement.setInt(5, obj.getGfx());
+			statement.setInt(1, obj.getUUID());
+			statement.setInt(2, obj.getGuild().getId());
+			statement.setString(3, obj.getPlayer().getName());
+			statement.setInt(4, obj.getPlayer().getLevel());
+			statement.setInt(5, obj.getPlayer().getGfx());
 			statement.setInt(6, obj.getRank());
 			statement.setLong(7, obj.getXpGave());
-			statement.setInt(8, obj.getPXpGive());
-			statement.setInt(9, obj.getRights());
-			statement.setInt(10, obj.getAlign());
-			statement.setString(11, obj.getLastCo());
+			statement.setInt(8, obj.getXpGive());
+			statement.setInt(9, obj.getRight());
+			statement.setInt(10, obj.getPlayer().getAlign());
+			statement.setString(11, obj.getPlayer().getAccount().getLastConnection());
 
 			execute(statement);
 			return true;
@@ -78,12 +75,9 @@ public class GuildMemberData extends AbstractDAO<GuildMember>{
 				if (guild == null)
 					return null;
 				
-				member = guild.addMember(result.getInt("guid"), result.getString("name"),
-						result.getInt("level"), result.getInt("gfxid"),
+				member = guild.addMember(result.getInt("guid"),
 						result.getInt("rank"), result.getByte("pxp"),
-						result.getLong("xpdone"), result.getInt("rights"),
-						result.getByte("align"), result.getDate("lastConnection")
-								.toString().replaceAll("-", "~"));
+						result.getLong("xpdone"), result.getInt("rights"));
 			}
 			closeResultSet(result);
 		} catch (Exception e) {

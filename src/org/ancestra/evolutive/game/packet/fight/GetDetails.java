@@ -1,11 +1,9 @@
 package org.ancestra.evolutive.game.packet.fight;
 
-
 import org.ancestra.evolutive.common.SocketManager;
 import org.ancestra.evolutive.game.GameClient;
 import org.ancestra.evolutive.tool.plugin.packet.Packet;
 import org.ancestra.evolutive.tool.plugin.packet.PacketParser;
-
 
 @Packet("fD")
 public class GetDetails implements PacketParser {
@@ -20,6 +18,6 @@ public class GetDetails implements PacketParser {
 		if(key == -1)
 			return;
 		
-		SocketManager.GAME_SEND_FIGHT_DETAILS(client, client.getPlayer().get_curCarte().get_fights().get(key));
+		SocketManager.GAME_SEND_FIGHT_DETAILS(client, client.getPlayer().getCurMap().getFights().get(key));
 	}
 }

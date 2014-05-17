@@ -8,12 +8,12 @@ import java.util.concurrent.locks.ReentrantLock;
 import org.ancestra.evolutive.core.Console;
 import org.ancestra.evolutive.core.World;
 import org.ancestra.evolutive.database.AbstractDAO;
-import org.ancestra.evolutive.objects.Monstre;
+import org.ancestra.evolutive.entity.monster.MobTemplate;
 
 
 
 
-public class MonsterData extends AbstractDAO<Monstre>{
+public class MonsterData extends AbstractDAO<MobTemplate>{
 
 	public MonsterData(Connection connection, ReentrantLock locker) {
 		super(connection, locker);
@@ -21,26 +21,26 @@ public class MonsterData extends AbstractDAO<Monstre>{
 	}
 
 	@Override
-	public boolean create(Monstre obj) {
+	public boolean create(MobTemplate obj) {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
-	public boolean delete(Monstre obj) {
+	public boolean delete(MobTemplate obj) {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
-	public boolean update(Monstre obj) {
+	public boolean update(MobTemplate obj) {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
-	public Monstre load(int id) {
-		Monstre monster = null;
+	public MobTemplate load(int id) {
+		MobTemplate monster = null;
 		try {
 			ResultSet result = getData("SELECT * FROM monsters WHERE id = "+id);
 			
@@ -67,7 +67,7 @@ public class MonsterData extends AbstractDAO<Monstre>{
 					capturable = false;
 				
 
-				monster = new Monstre(id, gfxID, align,
+				monster = new MobTemplate(id, gfxID, align,
 						colors, grades, spells, stats, pdvs, pts, inits, mK,
 						MK, xp, IAType, capturable);
 				World.data.addMobTemplate(id, monster);

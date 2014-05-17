@@ -7,13 +7,10 @@ import java.util.concurrent.locks.ReentrantLock;
 import org.ancestra.evolutive.core.Console;
 import org.ancestra.evolutive.core.World;
 import org.ancestra.evolutive.database.AbstractDAO;
-import org.ancestra.evolutive.objects.Action;
-import org.ancestra.evolutive.objects.NPC_tmpl.NPC_reponse;
+import org.ancestra.evolutive.entity.npc.NpcAnswer;
+import org.ancestra.evolutive.other.Action;
 
-
-
-
-public class NpcAnswerData extends AbstractDAO<NPC_reponse>{
+public class NpcAnswerData extends AbstractDAO<NpcAnswer>{
 
 	public NpcAnswerData(Connection connection, ReentrantLock locker) {
 		super(connection, locker);
@@ -21,35 +18,35 @@ public class NpcAnswerData extends AbstractDAO<NPC_reponse>{
 	}
 
 	@Override
-	public boolean create(NPC_reponse obj) {
+	public boolean create(NpcAnswer obj) {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
-	public boolean delete(NPC_reponse obj) {
+	public boolean delete(NpcAnswer obj) {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
-	public boolean update(NPC_reponse obj) {
+	public boolean update(NpcAnswer obj) {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
-	public NPC_reponse load(int id) {
-		NPC_reponse answer = null;
+	public NpcAnswer load(int id) {
+		NpcAnswer answer = null;
 		try {
 			ResultSet result = getData("SELECT * FROM npc_reponses_actions WHERE ID = "+id);
 			if(result.next()) {
 				int type = result.getInt("type");
 				String args = result.getString("args");
 				
-				answer = new NPC_reponse(id);
+				answer = new NpcAnswer(id);
 				answer.addAction(new Action(type, args, ""));
-				World.data.addNPCreponse(answer);
+				World.data.addNpcAnswer(answer);
 			}
 			closeResultSet(result);
 		} catch (Exception e) {

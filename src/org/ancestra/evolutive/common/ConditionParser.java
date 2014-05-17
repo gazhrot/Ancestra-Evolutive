@@ -1,9 +1,5 @@
 package org.ancestra.evolutive.common;
 
-
-
-
-
 import org.ancestra.evolutive.client.Player;
 import org.ancestra.evolutive.core.Console;
 import org.ancestra.evolutive.core.Log;
@@ -11,7 +7,6 @@ import org.ancestra.evolutive.core.Server;
 
 import com.singularsys.jep.Jep;
 import com.singularsys.jep.JepException;
-
 
 public class ConditionParser
 {
@@ -39,28 +34,28 @@ public class ConditionParser
 			 	jep.addVariable("CC", perso.getTotalStats().getEffect(Constants.STATS_ADD_CHAN));
 			 	jep.addVariable("CS", perso.getTotalStats().getEffect(Constants.STATS_ADD_FORC));
 			 	//Stats de bases
-			 	jep.addVariable("Ci", perso.get_baseStats().getEffect(Constants.STATS_ADD_INTE));
-			 	jep.addVariable("Cs", perso.get_baseStats().getEffect(Constants.STATS_ADD_FORC));
-			 	jep.addVariable("Cv", perso.get_baseStats().getEffect(Constants.STATS_ADD_VITA));
-			 	jep.addVariable("Ca", perso.get_baseStats().getEffect(Constants.STATS_ADD_AGIL));
-			 	jep.addVariable("Cw", perso.get_baseStats().getEffect(Constants.STATS_ADD_SAGE));
-			 	jep.addVariable("Cc", perso.get_baseStats().getEffect(Constants.STATS_ADD_CHAN));
+			 	jep.addVariable("Ci", perso.getStats().getEffect(Constants.STATS_ADD_INTE));
+			 	jep.addVariable("Cs", perso.getStats().getEffect(Constants.STATS_ADD_FORC));
+			 	jep.addVariable("Cv", perso.getStats().getEffect(Constants.STATS_ADD_VITA));
+			 	jep.addVariable("Ca", perso.getStats().getEffect(Constants.STATS_ADD_AGIL));
+			 	jep.addVariable("Cw", perso.getStats().getEffect(Constants.STATS_ADD_SAGE));
+			 	jep.addVariable("Cc", perso.getStats().getEffect(Constants.STATS_ADD_CHAN));
 			 	//Autre
-			 	jep.addVariable("Ps", perso.get_align());
-			 	jep.addVariable("Pa", perso.getALvl());
+			 	jep.addVariable("Ps", perso.getAlign());
+			 	jep.addVariable("Pa", perso.getaLvl());
 			 	jep.addVariable("PP", perso.getGrade());
-			 	jep.addVariable("PL", perso.get_lvl());
-			 	jep.addVariable("PK", perso.get_kamas());
-			 	jep.addVariable("PG", perso.get_classe());
-			 	jep.addVariable("PS", perso.get_sexe());
+			 	jep.addVariable("PL", perso.getLevel());
+			 	jep.addVariable("PK", perso.getKamas());
+			 	jep.addVariable("PG", perso.getClasse());
+			 	jep.addVariable("PS", perso.getSex());
 			 	jep.addVariable("PZ", 1);//Abonnement
 			 	jep.addVariable("PX", perso.getAccount().getGmLvl());
 			 	jep.addVariable("PW", perso.getMaxPod());
-			 	jep.addVariable("PB", perso.get_curCarte().getSubArea().get_id());
+			 	jep.addVariable("PB", perso.getCurMap().getSubArea().getId());
 			 	jep.addVariable("PR", (perso.getWife()>0?1:0));
-			 	jep.addVariable("SI", perso.get_curCarte().get_id());
+			 	jep.addVariable("SI", perso.getCurMap().getId());
 			 	//Les pierres d'ames sont lancables uniquement par le lanceur.
-			 	jep.addVariable("MiS",perso.get_GUID());
+			 	jep.addVariable("MiS",perso.getUUID());
 			 	
 			 	jep.parse(req);
 			 	Object result = jep.evaluate();
@@ -283,7 +278,7 @@ public class ConditionParser
 				copyCond += "1==";
 				continue;
 			}
-			if(perso.get_name().toLowerCase().compareTo(cur) == 0)
+			if(perso.getName().toLowerCase().compareTo(cur) == 0)
 			{
 				copyCond += "1";
 			}else

@@ -7,8 +7,8 @@ import java.util.concurrent.locks.ReentrantLock;
 import org.ancestra.evolutive.core.Console;
 import org.ancestra.evolutive.core.World;
 import org.ancestra.evolutive.database.AbstractDAO;
-import org.ancestra.evolutive.objects.Drop;
-import org.ancestra.evolutive.objects.Monstre;
+import org.ancestra.evolutive.entity.monster.MobTemplate;
+import org.ancestra.evolutive.other.Drop;
 
 
 
@@ -45,10 +45,10 @@ public class DropData extends AbstractDAO<Drop>{
 			ResultSet result = getData("SELECT * FROM drops WHERE mob = "+mob);
 			
 			while (result.next()) {
-				Monstre MT = World.data.getMonstre(result.getInt("mob"));
+				MobTemplate MT = World.data.getMonstre(result.getInt("mob"));
 				drop = new Drop(result.getInt("item"), result.getInt("seuil"), result
 						.getFloat("taux"), result.getInt("max"));
-				MT.addDrop(drop);				
+				MT.getDrops().add(drop);				
 			}
 			closeResultSet(result);
 		} catch (Exception e) {

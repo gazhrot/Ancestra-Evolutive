@@ -7,7 +7,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import org.ancestra.evolutive.core.Console;
 import org.ancestra.evolutive.core.World;
 import org.ancestra.evolutive.database.AbstractDAO;
-import org.ancestra.evolutive.objects.ItemSet;
+import org.ancestra.evolutive.object.ItemSet;
 
 
 

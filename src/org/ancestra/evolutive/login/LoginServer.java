@@ -18,12 +18,12 @@ import org.apache.mina.filter.codec.textline.TextLineCodecFactory;
 import org.apache.mina.transport.socket.nio.NioProcessor;
 import org.apache.mina.transport.socket.nio.NioSocketAcceptor;
 
-
 public class LoginServer {
-	public static int _totalNonAbo = 0;//Total de connections non abo
-	public static int _totalAbo = 0;//Total de connections abo
-	public static int _queueID = -1;//Numéro de la queue
-	public static int _subscribe = 1;//File des non abonnées (0) ou abonnées (1)
+	
+	public static int totalNonAbo = 0;//Total de connections non abo
+	public static int totalAbo = 0;//Total de connections abo
+	public static int queueID = -1;//Numéro de la queue
+	public static int subscribe = 1;//File des non abonnées (0) ou abonnées (1)
 	
 	private Map<Long, LoginClient> clients = new HashMap<>();
 	private IoAcceptor acceptor;

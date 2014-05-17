@@ -2,8 +2,7 @@ package org.ancestra.evolutive.client.other;
 
 import org.ancestra.evolutive.client.Player;
 
-public class Stalk 
-{
+public class Stalk {
 	private long time;
 	private Player tracked;
 	

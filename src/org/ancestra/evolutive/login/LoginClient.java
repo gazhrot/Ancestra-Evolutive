@@ -1,6 +1,5 @@
 package org.ancestra.evolutive.login;
 
-
 import org.ancestra.evolutive.client.Account;
 import org.ancestra.evolutive.client.Client;
 import org.ancestra.evolutive.common.Constants;
@@ -10,10 +9,8 @@ import org.ancestra.evolutive.core.World;
 import org.ancestra.evolutive.enums.EmulatorInfos;
 import org.apache.mina.core.session.IoSession;
 
-
-
-
 public class LoginClient implements Client {
+	
 	private String key;
 	private int packet = 0;
 	private String name;

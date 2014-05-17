@@ -4,10 +4,10 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.util.concurrent.locks.ReentrantLock;
 
+import org.ancestra.evolutive.area.Area;
 import org.ancestra.evolutive.core.Console;
 import org.ancestra.evolutive.core.World;
 import org.ancestra.evolutive.database.AbstractDAO;
-import org.ancestra.evolutive.objects.Area;
 
 
 
@@ -47,7 +47,7 @@ public class AreaData extends AbstractDAO<Area>{
 				area = new Area(result.getInt("id"), result.getInt("superarea"), result.getString("name"));
 				World.data.addArea(area);
 				//on ajoute la zone au continent
-				area.get_superArea().addArea(area);
+				area.getContinent().addArea(area);
 			}
 			closeResultSet(result);
 		} catch(Exception e) {

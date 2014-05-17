@@ -8,11 +8,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import org.ancestra.evolutive.core.Console;
 import org.ancestra.evolutive.core.World;
 import org.ancestra.evolutive.database.AbstractDAO;
-import org.ancestra.evolutive.objects.Guild;
-
-
-
-
+import org.ancestra.evolutive.guild.Guild;
 
 public class GuildData extends AbstractDAO<Guild>{
 
@@ -26,9 +22,9 @@ public class GuildData extends AbstractDAO<Guild>{
 		String baseQuery = "INSERT INTO `guilds` VALUES (?,?,?,1,0,0,0,?,?);";
 		try {
 			PreparedStatement statement = connection.prepareStatement(baseQuery);
-			statement.setInt(1, obj.get_id());
-			statement.setString(2, obj.get_name());
-			statement.setString(3, obj.get_emblem());
+			statement.setInt(1, obj.getId());
+			statement.setString(2, obj.getName());
+			statement.setString(3, obj.getEmblem());
 			statement.setString(4, "462;0|461;0|460;0|459;0|458;0|457;0|456;0|455;0|454;0|453;0|452;0|451;0|");
 			statement.setString(5, "176;100|158;1000|124;100|");
 
@@ -42,7 +38,7 @@ public class GuildData extends AbstractDAO<Guild>{
 
 	@Override
 	public boolean delete(Guild obj) {
-		String baseQuery = "DELETE FROM `guilds` WHERE `id` = "+obj.get_id();
+		String baseQuery = "DELETE FROM `guilds` WHERE `id` = "+obj.getId();
 		execute(baseQuery);
 		return true;
 	}
@@ -57,13 +53,13 @@ public class GuildData extends AbstractDAO<Guild>{
 		try {
 			PreparedStatement statement = connection.prepareStatement(baseQuery);
 			
-			statement.setInt(1, obj.get_lvl());
-			statement.setLong(2, obj.get_xp());
-			statement.setInt(3, obj.get_Capital());
-			statement.setInt(4, obj.get_nbrPerco());
-			statement.setString(5, obj.compileSpell());
+			statement.setInt(1, obj.getLevel());
+			statement.setLong(2, obj.getExperience());
+			statement.setInt(3, obj.getCapital());
+			statement.setInt(4, obj.getNbrCollector());
+			statement.setString(5, obj.compileSpells());
 			statement.setString(6, obj.compileStats());
-			statement.setInt(7, obj.get_id());
+			statement.setInt(7, obj.getId());
 
 			execute(statement);
 			return true;

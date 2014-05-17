@@ -19,7 +19,7 @@ import org.ancestra.evolutive.database.data.GuildData;
 import org.ancestra.evolutive.database.data.GuildMemberData;
 import org.ancestra.evolutive.database.data.HdvData;
 import org.ancestra.evolutive.database.data.HouseData;
-import org.ancestra.evolutive.database.data.IOTemplateData;
+import org.ancestra.evolutive.database.data.InteractiveObjectTemplateData;
 import org.ancestra.evolutive.database.data.ItemData;
 import org.ancestra.evolutive.database.data.ItemSetData;
 import org.ancestra.evolutive.database.data.ItemTemplateData;
@@ -67,7 +67,7 @@ public class Database {
 	private ScriptedCellData scriptedCellData;
 	private SpellData spellData;
 	private HdvData hdvData;
-	private IOTemplateData ioTemplates;
+	private InteractiveObjectTemplateData ioTemplates;
 	private TrunkData trunkData;
 	private ExpData expData;
 	private OtherData otherData;
@@ -96,7 +96,7 @@ public class Database {
 		this.scriptedCellData = new ScriptedCellData(connection, locker);
 		this.spellData = new SpellData(connection, locker);
 		this.hdvData = new HdvData(connection, locker);
-		this.ioTemplates = new IOTemplateData(connection, locker);
+		this.ioTemplates = new InteractiveObjectTemplateData(connection, locker);
 		this.trunkData = new TrunkData(connection, locker);
 		this.expData = new ExpData(connection, locker);
 		this.otherData = new OtherData(connection, locker);
@@ -209,11 +209,11 @@ public class Database {
 		this.hdvData = hdvData;
 	}
 
-	public IOTemplateData getIoTemplates() {
+	public InteractiveObjectTemplateData getIoTemplates() {
 		return ioTemplates;
 	}
 
-	public void setIoTemplates(IOTemplateData ioTemplates) {
+	public void setIoTemplates(InteractiveObjectTemplateData ioTemplates) {
 		this.ioTemplates = ioTemplates;
 	}
 

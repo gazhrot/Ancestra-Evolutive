@@ -6,9 +6,8 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import org.ancestra.evolutive.core.Console;
-import org.ancestra.evolutive.objects.Carte.Case;
-
-import org.ancestra.evolutive.objects.Carte;
+import org.ancestra.evolutive.map.Maps;
+import org.ancestra.evolutive.map.Case;
 
 public class CryptManager {
 	
@@ -153,25 +152,25 @@ public class CryptManager {
 		return HASH[c];
 	}
 	
-	public static ArrayList<Case> parseStartCell(Carte map,int num)
+	public static ArrayList<Case> parseStartCell(Maps map,int num)
 	{
 		ArrayList<Case> list = null;
 		String infos = null;
-		if(!map.get_placesStr().equalsIgnoreCase("-1"))
+		if(!map.getPlaces().equalsIgnoreCase("-1"))
 		{
-			infos = map.get_placesStr().split("\\|")[num];
+			infos = map.getPlaces().split("\\|")[num];
 			int a=0;
 			list = new ArrayList<Case>();
 			while( a < infos.length())
 			{
-				list.add(map.getCase( (getIntByHashedValue(infos.charAt(a))<<6) + getIntByHashedValue( infos.charAt (a+1) ) ) );
+				list.add(map.getCases().get((getIntByHashedValue(infos.charAt(a))<<6) + getIntByHashedValue( infos.charAt (a+1) ) ) );
 				a = a+2;
 			}
 		}
 		return list;
 	}
 
-	public static Map<Integer, Case> DecompileMapData(Carte map,String dData)
+	public static Map<Integer, Case> DecompileMapData(Maps map,String dData)
 	{
 		Map<Integer, Case> cells = new TreeMap<Integer,Case>();
 		for (int f = 0; f < dData.length(); f += 10)

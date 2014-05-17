@@ -1,17 +1,14 @@
 package org.ancestra.evolutive.game.packet.guild;
 
-
-
 import org.ancestra.evolutive.client.Player;
 import org.ancestra.evolutive.common.Constants;
 import org.ancestra.evolutive.common.SocketManager;
 import org.ancestra.evolutive.core.World;
 import org.ancestra.evolutive.game.GameClient;
-import org.ancestra.evolutive.objects.Guild;
-import org.ancestra.evolutive.objects.Guild.GuildMember;
+import org.ancestra.evolutive.guild.Guild;
+import org.ancestra.evolutive.guild.GuildMember;
 import org.ancestra.evolutive.tool.plugin.packet.Packet;
 import org.ancestra.evolutive.tool.plugin.packet.PacketParser;
-
 
 @Packet("gJ")
 public class Join implements PacketParser {
@@ -23,7 +20,7 @@ public class Join implements PacketParser {
 			case 'R'://Nom perso			
 				Player P = World.data.getPersoByName(packet.substring(3));
 				
-				if(P == null || client.getPlayer().get_guild() == null) {
+				if(P == null || client.getPlayer().getGuild() == null) {
 					SocketManager.GAME_SEND_gJ_PACKET(client.getPlayer(), "Eu");
 					return;
 				}
@@ -31,11 +28,11 @@ public class Join implements PacketParser {
 					SocketManager.GAME_SEND_gJ_PACKET(client.getPlayer(), "Eu");
 					return;
 				}
-				if(P.is_away()) {
+				if(P.isAway()) {
 					SocketManager.GAME_SEND_gJ_PACKET(client.getPlayer(), "Eo");
 					return;
 				}
-				if(P.get_guild() != null) {
+				if(P.getGuild() != null) {
 					SocketManager.GAME_SEND_gJ_PACKET(client.getPlayer(), "Ea");
 					return;
 				}
@@ -43,38 +40,38 @@ public class Join implements PacketParser {
 					SocketManager.GAME_SEND_gJ_PACKET(client.getPlayer(), "Ed");
 					return;
 				}
-				if(client.getPlayer().get_guild().getMembers().size() >= (40+client.getPlayer().get_guild().get_lvl())) {//Limite membres max
-					SocketManager.GAME_SEND_Im_PACKET(client.getPlayer(), "155;"+(40+client.getPlayer().get_guild().get_lvl()));
+				if(client.getPlayer().getGuild().getMembers().size() >= (40+client.getPlayer().getGuild().getLevel())) {//Limite membres max
+					SocketManager.GAME_SEND_Im_PACKET(client.getPlayer(), "155;"+(40+client.getPlayer().getGuild().getLevel()));
 					return;
 				}
 				
-				client.getPlayer().setInvitation(P.get_GUID());
-				P.setInvitation(client.getPlayer().get_GUID());
+				client.getPlayer().setInviting(P.getUUID());
+				P.setInviting(client.getPlayer().getUUID());
 	
 				SocketManager.GAME_SEND_gJ_PACKET(client.getPlayer(),"R"+packet.substring(1));
-				SocketManager.GAME_SEND_gJ_PACKET(P,"r"+client.getPlayer().get_GUID()+"|"+client.getPlayer().get_name()+"|"+client.getPlayer().get_guild().get_name());
+				SocketManager.GAME_SEND_gJ_PACKET(P,"r"+client.getPlayer().getUUID()+"|"+client.getPlayer().getName()+"|"+client.getPlayer().getGuild().getName());
 			break;
 			case 'E'://ou Refus
-				if(packet.substring(3).equalsIgnoreCase(client.getPlayer().getInvitation()+""))
+				if(packet.substring(3).equalsIgnoreCase(client.getPlayer().getInviting()+""))
 				{
-					Player p = World.data.getPersonnage(client.getPlayer().getInvitation());
+					Player p = World.data.getPersonnage(client.getPlayer().getInviting());
 					if(p == null)return;//Pas cens� arriver
 					SocketManager.GAME_SEND_gJ_PACKET(p,"Ec");
 				}
 			break;
 			case 'K'://Accepte
-				if(packet.substring(3).equalsIgnoreCase(client.getPlayer().getInvitation()+""))
+				if(packet.substring(3).equalsIgnoreCase(client.getPlayer().getInviting()+""))
 				{
-					Player p = World.data.getPersonnage(client.getPlayer().getInvitation());
+					Player p = World.data.getPersonnage(client.getPlayer().getInviting());
 					if(p == null)return;//Pas cens� arriver
-					Guild G = p.get_guild();
+					Guild G = p.getGuild();
 					GuildMember GM = G.addNewMember(client.getPlayer());
 					World.database.getGuildMemberData().update(GM);
 					client.getPlayer().setGuildMember(GM);
-					client.getPlayer().setInvitation(-1);
-					p.setInvitation(-1);
+					client.getPlayer().setInviting(-1);
+					p.setInviting(-1);
 					//Packet
-					SocketManager.GAME_SEND_gJ_PACKET(p,"Ka"+client.getPlayer().get_name());
+					SocketManager.GAME_SEND_gJ_PACKET(p,"Ka"+client.getPlayer().getName());
 					SocketManager.GAME_SEND_gS_PACKET(client.getPlayer(), GM);
 					SocketManager.GAME_SEND_gJ_PACKET(client.getPlayer(),"Kj");
 				}

@@ -1,6 +1,5 @@
 package org.ancestra.evolutive.client;
 
-
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -15,9 +14,9 @@ import org.ancestra.evolutive.common.*;
 import org.ancestra.evolutive.core.Server;
 import org.ancestra.evolutive.core.World;
 import org.ancestra.evolutive.game.GameClient;
+import org.ancestra.evolutive.hdv.HDV.HdvEntry;
 import org.ancestra.evolutive.login.LoginClient;
-import org.ancestra.evolutive.objects.Objet;
-import org.ancestra.evolutive.objects.HDV.HdvEntry;
+import org.ancestra.evolutive.object.Objet;
 
 public class Account {
 
@@ -360,7 +359,7 @@ public class Account {
 		for(int uuid: this.friends) {
 			if(this.isFriendWith(uuid)) {
 				Player player = World.data.getPersonnage(uuid);
-				if(player != null && player.is_showFriendConnection() && player.isOnline())
+				if(player != null && player.isShowFriendConnection() && player.isOnline())
 					SocketManager.GAME_SEND_FRIEND_ONLINE(this.getCurPlayer(), player);
 			}
 		}
@@ -431,10 +430,10 @@ public class Account {
 	public boolean recoverItem(int line, int amount) {
 		if(this.getCurPlayer() == null)
 			return false;
-		if(this.getCurPlayer().get_isTradingWith() >= 0)
+		if(this.getCurPlayer().getIsTradingWith() >= 0)
 			return false;
 		
-		int hdvID = Math.abs(this.getCurPlayer().get_isTradingWith());//Récupère l'ID de l'HDV
+		int hdvID = Math.abs(this.getCurPlayer().getIsTradingWith());//Récupère l'ID de l'HDV
 		HdvEntry entry = null;
 		
 		for(HdvEntry tempEntry : this.hdvs.get(hdvID)) {//Boucle dans la liste d'entry de l'HDV pour trouver un entry avec le meme cheapestID que spécifié
@@ -496,7 +495,7 @@ public class Account {
 	}
 	
 	public boolean createPerso(String name, int sexe, int classe, int color1, int color2, int color3) {
-		Player player = Player.CREATE_PERSONNAGE(name, sexe, classe, color1, color2, color3, this);
+		Player player = Player.create(name, sexe, classe, color1, color2, color3, this);
 		if(player == null)
 			return false;
 		World.data.addPersonnage(player);
@@ -525,23 +524,23 @@ public class Account {
 
 	public void resetAllChars(boolean save) {
 		for(Player player: this.getPlayers().values()) {
-			if(player.get_curExchange() != null)
-				player.get_curExchange().cancel();
+			if(player.getCurExchange() != null)
+				player.getCurExchange().cancel();
 			if(player.getGroup() != null)
 				player.getGroup().leave(player);
-			if(player.get_fight() != null) {
-				player.get_fight().leftFight(player, null);
+			if(player.getFight() != null) {
+				player.getFight().leftFight(player, null);
 			} else {
-				player.get_curCell().removePlayer(player.get_GUID());
-				if(player.get_curCarte() != null && player.isOnline())
-					SocketManager.GAME_SEND_ERASE_ON_MAP_TO_MAP(player.get_curCarte(), player.get_GUID());
+				player.getCurCell().removePlayer(player.getUUID());
+				if(player.getCurMap() != null && player.isOnline())
+					SocketManager.GAME_SEND_ERASE_ON_MAP_TO_MAP(player.getCurMap(), player.getUUID());
 			}
 			
-			player.set_Online(false);
+			player.setOnline(false);
 			if(save)
 				player.save();
 			player.resetVars();
-			World.data.unloadPerso(player.get_GUID());
+			World.data.unloadPerso(player.getUUID());
 		}
 	}
 }

@@ -8,10 +8,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import org.ancestra.evolutive.core.Console;
 import org.ancestra.evolutive.core.World;
 import org.ancestra.evolutive.database.AbstractDAO;
-import org.ancestra.evolutive.objects.Carte.Case;
-
-
-
+import org.ancestra.evolutive.map.Case;
 
 public class ScriptedCellData extends AbstractDAO<Case>{
 
@@ -72,13 +69,13 @@ public class ScriptedCellData extends AbstractDAO<Case>{
 			while (result.next()) {
 				if (World.data.getCarte(result.getShort("MapID")) == null)
 					continue;
-				if (World.data.getCarte(result.getShort("MapID")).getCase(
+				if (World.data.getCarte(result.getShort("MapID")).getCases().get(
 						result.getInt("CellID")) == null)
 					continue;
 
 				if(result.getInt("EventID") == 1) {
 					World.data.getCarte(result.getShort("MapID"))
-							.getCase(result.getInt("CellID"))
+							.getCases().get(result.getInt("CellID"))
 							.addOnCellStopAction(result.getInt("ActionID"),
 							result.getString("ActionsArgs"),
 							result.getString("Conditions"));

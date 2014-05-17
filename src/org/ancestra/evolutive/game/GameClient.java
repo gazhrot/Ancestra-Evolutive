@@ -123,7 +123,7 @@ public class GameClient implements Client {
 			this.kick();
 		
 		if(this.getPlayer() != null)
-			this.getPlayer().refreshLastPacketTime();
+			this.getPlayer().setLastPacketTime(System.currentTimeMillis());
 		
 		if(packet.length() > 3 && packet.substring(0,4).equalsIgnoreCase("ping"))	{
 			SocketManager.GAME_SEND_PONG(this);
