@@ -153,7 +153,21 @@ Version 0.6
   > Il nous déconnecte pas lorsque l'on passe en mode marchand et nous arrivons encore a bouger une seule fois ce qui fait bugs l'affichage du mode marchand sur l'écran des autres joueurs.
   > Les points de déshonneur ne modifient pas les aîles correctement, elles devraient être trouées normalement.
 
-Version 0.7
+Version 0.7 : Ajout d'un site/forum communautaire pour Ancestra-Evolutive : http://ancestra-evolutive.org/
+
+- Revue de chaque Class de chaque package pour remettre dans les conventions internationnals.
+  --> Ce qu'il reste comme package :
+   > fight
+   > fight.spell
+   > fight.trap
+   > hdv
+   > house
+   > object
+- Suppresion de fonction inutile ainsi que certains argument.
+- Suppresion de pas mal de variable inutile ( voir GuildMember ).
+- Diverse correction de bug.
+
+
 
 
   
