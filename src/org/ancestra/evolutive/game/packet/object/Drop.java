@@ -4,7 +4,7 @@ import org.ancestra.evolutive.common.Constants;
 import org.ancestra.evolutive.common.SocketManager;
 import org.ancestra.evolutive.core.World;
 import org.ancestra.evolutive.game.GameClient;
-import org.ancestra.evolutive.object.Objet;
+import org.ancestra.evolutive.object.Object;
 import org.ancestra.evolutive.tool.plugin.packet.Packet;
 import org.ancestra.evolutive.tool.plugin.packet.PacketParser;
 
@@ -23,7 +23,7 @@ public class Drop implements PacketParser {
 		if(guid == -1 || qua <= 0 || !client.getPlayer().hasItemGuid(guid) || client.getPlayer().getFight() != null || client.getPlayer().isAway())
 			return;
 		
-		Objet obj = World.data.getObjet(guid);
+		Object obj = World.data.getObjet(guid);
 		client.getPlayer().setCurCell(client.getPlayer().getCurCell());
 		int cellPosition = Constants.getNearCellidUnused(client.getPlayer());
 		
@@ -46,14 +46,14 @@ public class Drop implements PacketParser {
 			SocketManager.GAME_SEND_REMOVE_ITEM_PACKET(client.getPlayer(), guid);
 		}else {
 			obj.setQuantity(obj.getQuantity() - qua);
-			Objet obj2 = Objet.getCloneObjet(obj, qua);
+			Object obj2 = Object.getClone(obj, qua);
 			obj2.setPosition(Constants.ITEM_POS_NO_EQUIPED);
 			client.getPlayer().getCurMap().getCases().get(client.getPlayer().getCurCell().getId()+cellPosition).setObject(obj2);
 			SocketManager.GAME_SEND_OBJECT_QUANTITY_PACKET(client.getPlayer(), obj);
 		}
 		
 		SocketManager.GAME_SEND_Ow_PACKET(client.getPlayer());
-		SocketManager.GAME_SEND_GDO_PACKET_TO_MAP(client.getPlayer().getCurMap(),'+',client.getPlayer().getCurMap().getCases().get(client.getPlayer().getCurCell().getId()+cellPosition).getId(),obj.getTemplate().getID(),0);
+		SocketManager.GAME_SEND_GDO_PACKET_TO_MAP(client.getPlayer().getCurMap(),'+',client.getPlayer().getCurMap().getCases().get(client.getPlayer().getCurCell().getId()+cellPosition).getId(),obj.getTemplate().getId(),0);
 		SocketManager.GAME_SEND_STATS_PACKET(client.getPlayer());
 	}
 }

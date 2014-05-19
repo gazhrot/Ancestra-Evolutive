@@ -15,7 +15,7 @@ import org.ancestra.evolutive.fight.spell.SpellEffect;
 import org.ancestra.evolutive.guild.Guild;
 import org.ancestra.evolutive.guild.GuildMember;
 import org.ancestra.evolutive.map.Maps;
-import org.ancestra.evolutive.object.Objet;
+import org.ancestra.evolutive.object.Object;
 
 public class Formulas {
 
@@ -785,7 +785,7 @@ public class Formulas {
 		return base * Server.config.getRateHonor();
 	}
 	
-	public static Couple<Integer, Integer> decompPierreAme(Objet toDecomp)
+	public static Couple<Integer, Integer> decompPierreAme(Object toDecomp)
 	{
 		Couple<Integer, Integer> toReturn;
 		String[] stats = toDecomp.parseStatsString().split("#");

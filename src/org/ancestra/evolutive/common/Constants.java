@@ -11,8 +11,7 @@ import org.ancestra.evolutive.core.World;
 import org.ancestra.evolutive.enums.EmulatorInfos;
 import org.ancestra.evolutive.fight.Fighter;
 import org.ancestra.evolutive.fight.spell.SpellStats;
-import org.ancestra.evolutive.object.Objet.ObjTemplate;
-
+import org.ancestra.evolutive.object.ObjectTemplate;
 
 public class Constants
 {
@@ -1143,7 +1142,7 @@ public class Constants
 		return aggro;
 	}
 
-	public static boolean isValidPlaceForItem(ObjTemplate template, int place)
+	public static boolean isValidPlaceForItem(ObjectTemplate template, int place)
 	{
 		switch(template.getType())
 		{
@@ -2150,7 +2149,7 @@ public class Constants
 		}
 		return stats;
 	}
-	public static ObjTemplate getParchoTemplateByMountColor(int color)
+	public static ObjectTemplate getParchoTemplateByMountColor(int color)
 	{
 		switch(color)
 		{
@@ -2301,7 +2300,7 @@ public class Constants
 	}
 	public static int getMountColorByParchoTemplate(int tID)
 	{
-		for(int a = 1;a<100;a++)if(getParchoTemplateByMountColor(a)!=null)if(getParchoTemplateByMountColor(a).getID() == tID)return a; 
+		for(int a = 1;a<100;a++)if(getParchoTemplateByMountColor(a)!=null)if(getParchoTemplateByMountColor(a).getId() == tID)return a; 
 		return -1;
 	}
 	

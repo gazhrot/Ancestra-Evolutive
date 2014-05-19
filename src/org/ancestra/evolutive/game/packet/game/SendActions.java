@@ -110,14 +110,14 @@ public class SendActions implements PacketParser {
 			switch(action)
 			{
 				case 81://V�rouiller maison
-					house.Lock(client.getPlayer());
+					house.lock(client.getPlayer());
 				break;
 				case 97://Acheter maison
-					house.BuyIt(client.getPlayer());
+					house.buyIt(client.getPlayer());
 				break;
 				case 98://Vendre
 				case 108://Modifier prix de vente
-					house.SellIt(client.getPlayer());
+					house.sellIt(client.getPlayer());
 				break;
 			}
 		}

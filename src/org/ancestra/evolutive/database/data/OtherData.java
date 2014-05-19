@@ -14,8 +14,8 @@ import org.ancestra.evolutive.core.Console;
 import org.ancestra.evolutive.core.Log;
 import org.ancestra.evolutive.core.World;
 import org.ancestra.evolutive.database.AbstractDAO;
-import org.ancestra.evolutive.object.Objet;
-import org.ancestra.evolutive.object.Objet.ObjTemplate;
+import org.ancestra.evolutive.object.Object;
+import org.ancestra.evolutive.object.ObjectTemplate;
 
 public class OtherData extends AbstractDAO<Object>{
 
@@ -138,8 +138,8 @@ public class OtherData extends AbstractDAO<Object>{
 		int action, nombre, id;
 		String sortie, couleur = "DF0101";
 									
-		ObjTemplate t;
-		Objet obj;
+		ObjectTemplate t;
+		Object obj;
 		/* FIN */
 		try {
 			ResultSet result = getData("SELECT * from live_action;");

@@ -8,13 +8,10 @@ import java.util.concurrent.locks.ReentrantLock;
 import org.ancestra.evolutive.core.Console;
 import org.ancestra.evolutive.core.World;
 import org.ancestra.evolutive.database.AbstractDAO;
-import org.ancestra.evolutive.object.Objet.ObjTemplate;
+import org.ancestra.evolutive.object.ObjectTemplate;
 import org.ancestra.evolutive.other.Action;
 
-
-
-
-public class ItemTemplateData extends AbstractDAO<ObjTemplate>{
+public class ItemTemplateData extends AbstractDAO<ObjectTemplate>{
 
 	public ItemTemplateData(Connection connection, ReentrantLock locker) {
 		super(connection, locker);
@@ -22,19 +19,19 @@ public class ItemTemplateData extends AbstractDAO<ObjTemplate>{
 	}
 
 	@Override
-	public boolean create(ObjTemplate obj) {
+	public boolean create(ObjectTemplate obj) {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
-	public boolean delete(ObjTemplate obj) {
+	public boolean delete(ObjectTemplate obj) {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
-	public boolean update(ObjTemplate obj) {
+	public boolean update(ObjectTemplate obj) {
 		try {
 			String baseQuery = "UPDATE `item_template`"
 					+ " SET sold = ?, avgPrice = ?" + " WHERE id = ?";
@@ -42,7 +39,7 @@ public class ItemTemplateData extends AbstractDAO<ObjTemplate>{
 
 			statement.setLong(1, obj.getSold());
 			statement.setInt(2, obj.getAvgPrice());
-			statement.setInt(3, obj.getID());
+			statement.setInt(3, obj.getId());
 			
 			execute(statement);
 			
@@ -54,13 +51,13 @@ public class ItemTemplateData extends AbstractDAO<ObjTemplate>{
 	}
 
 	@Override
-	public ObjTemplate load(int id) {
-		ObjTemplate template = null;
+	public ObjectTemplate load(int id) {
+		ObjectTemplate template = null;
 		try {
 			ResultSet result = getData("SELECT * FROM item_template WHERE id = "+id);
 			
 			if(result.next()) {
-				template = new ObjTemplate(result.getInt("id"), result
+				template = new ObjectTemplate(result.getInt("id"), result
 						.getString("statsTemplate"), result.getString("name"), result
 						.getInt("type"), result.getInt("level"), result.getInt("pod"),
 						result.getInt("prix"), result.getInt("panoplie"), result
@@ -86,7 +83,7 @@ public class ItemTemplateData extends AbstractDAO<ObjTemplate>{
 				String args = result.getString("args");
 				if (World.data.getObjTemplate(id) == null)
 					continue;
-				World.data.getObjTemplate(id).addAction(
+				World.data.getObjTemplate(id).getActions().add(
 						new Action(type, args, ""));
 			}
 			closeResultSet(result);

@@ -5,8 +5,8 @@ import org.ancestra.evolutive.common.SocketManager;
 import org.ancestra.evolutive.core.Log;
 import org.ancestra.evolutive.core.World;
 import org.ancestra.evolutive.game.GameClient;
-import org.ancestra.evolutive.object.Objet;
-import org.ancestra.evolutive.object.Objet.ObjTemplate;
+import org.ancestra.evolutive.object.Object;
+import org.ancestra.evolutive.object.ObjectTemplate;
 import org.ancestra.evolutive.tool.plugin.packet.Packet;
 import org.ancestra.evolutive.tool.plugin.packet.PacketParser;
 
@@ -33,7 +33,7 @@ public class Buy implements PacketParser {
                     return;
                 }
                
-                Objet itemStore = World.data.getObjet(itemID);
+                Object itemStore = World.data.getObjet(itemID);
                 
                 if(itemStore == null) 
                 	return;
@@ -47,15 +47,15 @@ public class Buy implements PacketParser {
                 if(price > client.getPlayer().getKamas())
                 	return;
                 if(qua == itemStore.getQuantity()) {
-                	seller.getStores().remove(itemStore.getGuid());
+                	seller.getStores().remove(itemStore.getId());
                 	client.getPlayer().addObjet(itemStore, true);
                 }else {
-                	seller.getStores().remove(itemStore.getGuid());
+                	seller.getStores().remove(itemStore.getId());
                 	itemStore.setQuantity(itemStore.getQuantity()-qua);
                 	World.database.getItemData().update(itemStore);
-                	seller.addStoreItem(itemStore.getGuid(), price1);
+                	seller.addStoreItem(itemStore.getId(), price1);
                 	
-                	Objet clone = Objet.getCloneObjet(itemStore, qua);
+                	Object clone = Object.getClone(itemStore, qua);
                     World.database.getItemData().update(clone);
                     client.getPlayer().addObjet(clone, true);
                 }
@@ -86,7 +86,7 @@ public class Buy implements PacketParser {
 			if(qua <= 0) 
 				return;
 			
-			ObjTemplate template = World.data.getObjTemplate(tempID);
+			ObjectTemplate template = World.data.getObjTemplate(tempID);
 			
 			if(template == null) {//Si l'objet demand� n'existe pas(ne devrait pas arriv�)
 				Log.addToLog(client.getPlayer().getName()+" tente d'acheter l'itemTemplate "+tempID+" qui est inexistant");
@@ -99,14 +99,14 @@ public class Buy implements PacketParser {
 				return;
 			}
 
-			int prix = template.getPrix() * qua;
+			int prix = template.getPrice() * qua;
 			if(client.getPlayer().getKamas() < prix) {
 				Log.addToLog(client.getPlayer().getName()+" tente d'acheter l'itemTemplate "+tempID+" mais n'a pas l'argent necessaire");
 				SocketManager.GAME_SEND_BUY_ERROR_PACKET(client);
 				return;
 			}
 			
-			Objet newObj = template.createNewItem(qua,false);
+			Object newObj = template.createNewItem(qua,false);
 			long newKamas = client.getPlayer().getKamas() - prix;
 			client.getPlayer().setKamas(newKamas);
 			if(client.getPlayer().addObjet(newObj,true))

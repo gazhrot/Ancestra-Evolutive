@@ -153,9 +153,9 @@ public class Guild {
 	}
 	
 	public void removeMember(Player player) {
-		House house = House.get_HouseByPerso(player);
+		House house = House.getHouseByPlayer(player);
 		if(house != null)
-			if(House.HouseOnGuild(this.getId()) > 0)
+			if(House.onGuild(this.getId()) > 0)
 				World.database.getHouseData().update(house, 0, 0);
 
 		this.members.remove(player.getUUID());

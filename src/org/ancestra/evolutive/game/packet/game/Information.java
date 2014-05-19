@@ -21,7 +21,7 @@ public class Information implements PacketParser {
 		//Enclos
 		SocketManager.GAME_SEND_Rp_PACKET(client.getPlayer(), client.getPlayer().getCurMap().getMountPark());
 		//Maisons
-		House.LoadHouse(client.getPlayer(), client.getPlayer().getCurMap().getId());
+		House.load(client.getPlayer(), client.getPlayer().getCurMap().getId());
 		//Objets sur la carte
 		SocketManager.GAME_SEND_MAP_GMS_PACKETS(client.getPlayer().getCurMap(), client.getPlayer());
 		SocketManager.GAME_SEND_MAP_MOBS_GMS_PACKETS(client.getPlayer().getAccount().getGameClient(), client.getPlayer().getCurMap());

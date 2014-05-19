@@ -5,8 +5,8 @@ import org.ancestra.evolutive.common.ConditionParser;
 import org.ancestra.evolutive.common.SocketManager;
 import org.ancestra.evolutive.core.World;
 import org.ancestra.evolutive.game.GameClient;
-import org.ancestra.evolutive.object.Objet;
-import org.ancestra.evolutive.object.Objet.ObjTemplate;
+import org.ancestra.evolutive.object.Object;
+import org.ancestra.evolutive.object.ObjectTemplate;
 import org.ancestra.evolutive.tool.plugin.packet.Packet;
 import org.ancestra.evolutive.tool.plugin.packet.PacketParser;
 
@@ -38,12 +38,12 @@ public class Use implements PacketParser {
 		if(Target != null && (Target.getFight() != null || Target.isAway()))
 			return;
 		
-		Objet obj = World.data.getObjet(guid);
+		Object obj = World.data.getObjet(guid);
 		
 		if(obj == null) 
 			return;
 		
-		ObjTemplate T = obj.getTemplate();
+		ObjectTemplate T = obj.getTemplate();
 		
 		if(!obj.getTemplate().getConditions().equalsIgnoreCase("") && !ConditionParser.validConditions(client.getPlayer(),obj.getTemplate().getConditions())) {
 			SocketManager.GAME_SEND_Im_PACKET(client.getPlayer(), "119|43");

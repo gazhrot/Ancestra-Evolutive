@@ -16,7 +16,7 @@ import org.ancestra.evolutive.game.GameAction;
 import org.ancestra.evolutive.house.House;
 import org.ancestra.evolutive.house.Trunk;
 import org.ancestra.evolutive.job.JobConstant;
-import org.ancestra.evolutive.object.Objet;
+import org.ancestra.evolutive.object.Object;
 import org.ancestra.evolutive.other.Action;
 
 public class Case {
@@ -26,13 +26,12 @@ public class Case {
 	private boolean walkable = true;
 	private boolean LoS = true;
 	private InteractiveObject interactiveObject;
-	private Objet object;
+	private Object object;
 	private ArrayList<Action> onCellStop;
 	private Map<Integer, Player> players;
 	private Map<Integer, Fighter> fighters;
 	
-	public Case(Maps map, int id, boolean walkable, boolean LoS, int interactiveObject)
-	{
+	public Case(Maps map, int id, boolean walkable, boolean LoS, int interactiveObject) {
 		this.map = map.getId();
 		this.id = id;
 		this.walkable = walkable;
@@ -91,11 +90,11 @@ public class Case {
 		this.interactiveObject = interactiveObject;
 	}
 	
-	public Objet getObject() {
+	public Object getObject() {
 		return object;
 	}
 
-	public void setObject(Objet object) {
+	public void setObject(Object object) {
 		this.object = object;
 	}
 
@@ -294,40 +293,40 @@ public class Case {
 				House h = House.get_house_id_by_coord(perso.getCurMap().getId(), CcellID);
 				if(h == null)return;
 				perso.setCurHouse(h);
-				h.Lock(perso);
+				h.lock(perso);
 			break;
 			case 84://Rentrer dans une maison
 				House h2 = House.get_house_id_by_coord(perso.getCurMap().getId(), CcellID);
 				if(h2 == null)return;
 				perso.setCurHouse(h2);
-				h2.HopIn(perso);
+				h2.open(perso);
 			break;
 			case 97://Acheter maison
 				House h3 = House.get_house_id_by_coord(perso.getCurMap().getId(), CcellID);
 				if(h3 == null)return;
 				perso.setCurHouse(h3);
-				h3.BuyIt(perso);
+				h3.buyIt(perso);
 			break;
 			
             case 104://Ouvrir coffre privé
-            	Trunk trunk = Trunk.get_trunk_id_by_coord(perso.getCurMap().getId(), CcellID);
+            	Trunk trunk = Trunk.getTrunkByPos(perso.getCurMap().getId(), CcellID);
             	if(trunk == null)
                 {
                 	Log.addToLog("Game: INVALID TRUNK ON MAP : "+perso.getCurMap().getId()+" CELLID : "+CcellID);
                 	return;
                 }
                 perso.setCurTrunk(trunk);
-                trunk.HopIn(perso);
+                trunk.open(perso);
             break;
             case 105://Vérouiller coffre
-                Trunk t = Trunk.get_trunk_id_by_coord(perso.getCurMap().getId(), CcellID);
+                Trunk t = Trunk.getTrunkByPos(perso.getCurMap().getId(), CcellID);
                 if(t == null)
                 {
                 	Log.addToLog("Game: INVALID TRUNK ON MAP : "+perso.getCurMap().getId()+" CELLID : "+CcellID);
                 	return;
                 }
                 perso.setCurTrunk(t);
-                t.Lock(perso);
+                t.lock(perso);
             break;
             
 			case 98://Vendre
@@ -335,7 +334,7 @@ public class Case {
 				House h4 = House.get_house_id_by_coord(perso.getCurMap().getId(), CcellID);
 				if(h4 == null)return;
 				perso.setCurHouse(h4);
-				h4.SellIt(perso);
+				h4.sellIt(perso);
 			break;
 			
 			default:
@@ -379,7 +378,7 @@ public class Case {
 				this.interactiveObject.startTimer();
 				SocketManager.GAME_SEND_GDF_PACKET_TO_MAP(perso.getCurMap(),this);
 				int qua = Formulas.getRandomValue(1, 10);//On a entre 1 et 10 eaux
-				Objet obj = World.data.getObjTemplate(311).createNewItem(qua, false);
+				Object obj = World.data.getObjTemplate(311).createNewItem(qua, false);
 				if(perso.addObjet(obj, true))
 					World.data.addObjet(obj,true);
 				SocketManager.GAME_SEND_IQ_PACKET(perso,perso.getUUID(),qua);

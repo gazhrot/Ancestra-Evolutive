@@ -18,7 +18,7 @@ import org.ancestra.evolutive.fight.Fighter;
 import org.ancestra.evolutive.fight.spell.SpellEffect;
 import org.ancestra.evolutive.fight.spell.SpellStats;
 import org.ancestra.evolutive.fight.trap.Glyphe;
-import org.ancestra.evolutive.fight.trap.Piege;
+import org.ancestra.evolutive.fight.trap.Trap;
 import org.ancestra.evolutive.map.Maps;
 import org.ancestra.evolutive.map.Case;
 
@@ -264,7 +264,7 @@ public class SpellEffect {
 							try {
 								Thread.sleep(300);
 							} catch (Exception e) {}
-							for(Piege p : fight.get_traps()) {
+							for(Trap p : fight.get_traps()) {
 								int dd = Pathfinding.getDistanceBetween(fight.get_map(), p.get_cell().getId(), newCellIDD);
 								if (dd <= p.get_size()) {
 									p.onTraped(target);
@@ -799,7 +799,7 @@ public class SpellEffect {
 					if(target.isHide()) target.unHide(spell);
 				}
 				//unhide des pièges
-				for(Piege p : fight.get_traps())
+				for(Trap p : fight.get_traps())
 				{
 					p.set_isunHide(caster);
 					p.appear(caster);
@@ -1051,9 +1051,9 @@ public class SpellEffect {
 			target.set_fightCell(cell);
 			target.get_fightCell(false).addFighter(target);
 			
-			ArrayList<Piege> P = (new ArrayList<Piege>());
+			ArrayList<Trap> P = (new ArrayList<Trap>());
 			P.addAll(fight.get_traps());
-			for(Piege p : P)
+			for(Trap p : P)
 			{
 				int dist = Pathfinding.getDistanceBetween(fight.get_map(),p.get_cell().getId(),target.get_fightCell(false).getId());
 				//on active le piege
@@ -1104,9 +1104,9 @@ public class SpellEffect {
 			//on ajoute les fighters aux cases
 			target.get_fightCell(false).addFighter(target);
 			caster.get_fightCell(false).addFighter(caster);
-			ArrayList<Piege> P = (new ArrayList<Piege>());
+			ArrayList<Trap> P = (new ArrayList<Trap>());
 			P.addAll(fight.get_traps());
-			for(Piege p : P)
+			for(Trap p : P)
 			{
 				int dist = Pathfinding.getDistanceBetween(fight.get_map(),p.get_cell().getId(),target.get_fightCell(false).getId());
 				int dist2 = Pathfinding.getDistanceBetween(fight.get_map(),p.get_cell().getId(),caster.get_fightCell(false).getId());
@@ -1932,7 +1932,7 @@ public class SpellEffect {
 			if(cell.getFirstFighter() != null)return;//Si la case est prise par un joueur
 			
 			//Si la case est prise par le centre d'un piege
-			for(Piege p :fight.get_traps())if(p.get_cell().getId() == cell.getId())return;
+			for(Trap p :fight.get_traps())if(p.get_cell().getId() == cell.getId())return;
 
 			String[] infos = args.split(";");
 			int spellID = Short.parseShort(infos[0]);
@@ -1940,7 +1940,7 @@ public class SpellEffect {
 			String po = World.data.getSort(spell).getStatsByLevel(spellLvl).getPorteeType();
 			byte size = (byte) CryptManager.getIntByHashedValue(po.charAt(1));
 			SpellStats TS = World.data.getSort(spellID).getStatsByLevel(level);
-			Piege g = new Piege(fight,caster,cell,size,TS,spell);
+			Trap g = new Trap(fight,caster,cell,size,TS,spell);
 			fight.get_traps().add(g);
 			int unk = g.get_color();
 			int team = caster.getTeam()+1;
@@ -2055,9 +2055,9 @@ public class SpellEffect {
 			String gtl = fight.getGTL();
 			SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, 180, caster.getGUID() + "", gm);
 			SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, 999, caster.getGUID()+"", gtl);
-			ArrayList<Piege> P = (new ArrayList<Piege>());
+			ArrayList<Trap> P = (new ArrayList<Trap>());
 			P.addAll(fight.get_traps());
-			for(Piege p : P)
+			for(Trap p : P)
 			{
 				int dist = Pathfinding.getDistanceBetween(fight.get_map(),p.get_cell().getId(),F.get_fightCell(false).getId());
 				//on active le piege
@@ -2101,9 +2101,9 @@ public class SpellEffect {
 			SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, 181, caster.getGUID() + "", gm);
 			SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, 999, caster.getGUID()+"", gtl);
 			caster._nbInvoc++;
-			ArrayList<Piege> P = (new ArrayList<Piege>());
+			ArrayList<Trap> P = (new ArrayList<Trap>());
 			P.addAll(fight.get_traps());
-			for(Piege p : P)
+			for(Trap p : P)
 			{
 				int dist = Pathfinding.getDistanceBetween(fight.get_map(),p.get_cell().getId(),F.get_fightCell(false).getId());
 				//on active le piege
@@ -2608,9 +2608,9 @@ public class SpellEffect {
 				caster.set_fightCell(cell);
 				caster.get_fightCell(false).addFighter(caster);
 				
-				ArrayList<Piege> P = (new ArrayList<Piege>());
+				ArrayList<Trap> P = (new ArrayList<Trap>());
 				P.addAll(fight.get_traps());
-				for(Piege p : P) {
+				for(Trap p : P) {
 					int dist = Pathfinding.getDistanceBetween(fight.get_map(),p.get_cell().getId(),caster.get_fightCell(false).getId());
 					//on active le piege
 					if(dist <= p.get_size())p.onTraped(caster);
@@ -2744,9 +2744,9 @@ public class SpellEffect {
 					target.get_fightCell(false).addFighter(target);
 					SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, 5, caster.getGUID()+"", target.getGUID()+","+newCellID);
 					
-					ArrayList<Piege> P = (new ArrayList<Piege>());
+					ArrayList<Trap> P = (new ArrayList<Trap>());
 					P.addAll(fight.get_traps());
-					for(Piege p : P)
+					for(Trap p : P)
 					{
 						int dist = Pathfinding.getDistanceBetween(fight.get_map(),p.get_cell().getId(),target.get_fightCell(false).getId());
 						//on active le piege
@@ -2845,9 +2845,9 @@ public class SpellEffect {
 					target.get_fightCell(false).addFighter(target);
 					SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, 5, caster.getGUID()+"", target.getGUID()+","+newCellID);
 					
-					ArrayList<Piege> P = (new ArrayList<Piege>());
+					ArrayList<Trap> P = (new ArrayList<Trap>());
 					P.addAll(fight.get_traps());
-					for(Piege p : P)
+					for(Trap p : P)
 					{
 						int dist = Pathfinding.getDistanceBetween(fight.get_map(),p.get_cell().getId(),target.get_fightCell(false).getId());
 						//on active le piege

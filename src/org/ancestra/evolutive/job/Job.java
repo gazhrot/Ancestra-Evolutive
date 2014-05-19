@@ -6,10 +6,8 @@ import java.util.Map.Entry;
 import java.util.TreeMap;
 
 import org.ancestra.evolutive.core.World;
-import org.ancestra.evolutive.object.Objet;
-import org.ancestra.evolutive.object.Objet.ObjTemplate;
-
-
+import org.ancestra.evolutive.object.Object;
+import org.ancestra.evolutive.object.ObjectTemplate;
 
 public class Job {
 
@@ -67,8 +65,8 @@ public class Job {
 	}
 	
 	public static int getBaseMaxJet(int templateID, String statsModif) {
-		ObjTemplate t = World.data.getObjTemplate(templateID);
-		String[] splitted = t.getStrTemplate().split(",");
+		ObjectTemplate t = World.data.getObjTemplate(templateID);
+		String[] splitted = t.getStrStats().split(",");
 		for(String s : splitted) {
 			String[] stats = s.split("#");
 			if(stats[0].compareTo(statsModif) > 0) {//Effets n'existe pas de base
@@ -84,7 +82,7 @@ public class Job {
 		return 0;
 	}
 	
-	public static int getActualJet(Objet obj, String statsModif) {
+	public static int getActualJet(Object obj, String statsModif) {
 		for(Entry<Integer,Integer> entry : obj.getStats().getEffects().entrySet()) {
 			if(Integer.toHexString(entry.getKey()).compareTo(statsModif) > 0) {//Effets inutiles
 				continue;
@@ -96,7 +94,7 @@ public class Job {
 		return 0;
 	}
 	
-	public static byte viewActualStatsItem(Objet obj, String stats)//retourne vrai si le stats est actuellement sur l'item
+	public static byte viewActualStatsItem(Object obj, String stats)//retourne vrai si le stats est actuellement sur l'item
 	{
 		if (!obj.parseStatsString().isEmpty()) 
 		{
@@ -132,10 +130,10 @@ public class Job {
 		}
 	}
 	
-	public static byte viewBaseStatsItem(Objet obj, String ItemStats)//retourne vrai si le stats existe de base sur l'item
+	public static byte viewBaseStatsItem(Object obj, String ItemStats)//retourne vrai si le stats existe de base sur l'item
 	{
 		
-		String[] splitted = obj.getTemplate().getStrTemplate().split(",");
+		String[] splitted = obj.getTemplate().getStrStats().split("\\,");
 		for(String s : splitted)
 		{
 			String[] stats = s.split("#");

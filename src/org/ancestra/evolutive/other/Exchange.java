@@ -7,7 +7,7 @@ import org.ancestra.evolutive.common.Couple;
 import org.ancestra.evolutive.common.SocketManager;
 import org.ancestra.evolutive.core.World;
 
-import org.ancestra.evolutive.object.Objet;
+import org.ancestra.evolutive.object.Object;
 
 public class Exchange
 {
@@ -120,7 +120,7 @@ public class Exchange
 				couple.second = 0;//On met la quantité a 0 pour éviter les problemes
 				continue;
 			}	
-			Objet obj = World.data.getObjet(couple.first);
+			Object obj = World.data.getObjet(couple.first);
 			if((obj.getQuantity() - couple.second) <1)//S'il ne reste plus d'item apres l'échange
 			{
 				perso1.removeItem(couple.first);
@@ -132,7 +132,7 @@ public class Exchange
 			{
 				obj.setQuantity(obj.getQuantity()-couple.second);
 				SocketManager.GAME_SEND_OBJECT_QUANTITY_PACKET(perso1, obj);
-				Objet newObj = Objet.getCloneObjet(obj, couple.second);
+				Object newObj = Object.getClone(obj, couple.second);
 				if(perso2.addObjet(newObj, true))//Si le joueur n'avait pas d'item similaire
 					World.data.addObjet(newObj,true);//On ajoute l'item au World
 			}
@@ -145,7 +145,7 @@ public class Exchange
 				couple.second = 0;//On met la quantité a 0 pour éviter les problemes
 				continue;
 			}	
-			Objet obj = World.data.getObjet(couple.first);
+			Object obj = World.data.getObjet(couple.first);
 			if((obj.getQuantity() - couple.second) <1)//S'il ne reste plus d'item apres l'échange
 			{
 				perso2.removeItem(couple.first);
@@ -157,7 +157,7 @@ public class Exchange
 			{
 				obj.setQuantity(obj.getQuantity()-couple.second);
 				SocketManager.GAME_SEND_OBJECT_QUANTITY_PACKET(perso2, obj);
-				Objet newObj = Objet.getCloneObjet(obj, couple.second);
+				Object newObj = Object.getClone(obj, couple.second);
 				if(perso1.addObjet(newObj, true))//Si le joueur n'avait pas d'item similaire
 					World.data.addObjet(newObj,true);//On ajoute l'item au World
 			}
@@ -182,7 +182,7 @@ public class Exchange
 		ok1 = false;
 		ok2 = false;
 		
-		Objet obj = World.data.getObjet(guid);
+		Object obj = World.data.getObjet(guid);
 		int i = 0;
 		
 		if(perso1.getUUID() == pguid) i = 1;
@@ -191,7 +191,7 @@ public class Exchange
 		if(qua == 1) qua = 1;
 		String str = guid+"|"+qua;
 		if(obj == null)return;
-		String add = "|"+obj.getTemplate().getID()+"|"+obj.parseStatsString();
+		String add = "|"+obj.getTemplate().getId()+"|"+obj.parseStatsString();
 		SocketManager.GAME_SEND_EXCHANGE_OK(perso1.getAccount().getGameClient(),ok1,perso1.getUUID());
 		SocketManager.GAME_SEND_EXCHANGE_OK(perso2.getAccount().getGameClient(),ok1,perso1.getUUID());
 		SocketManager.GAME_SEND_EXCHANGE_OK(perso1.getAccount().getGameClient(),ok2,perso2.getUUID());
@@ -241,9 +241,9 @@ public class Exchange
 		SocketManager.GAME_SEND_EXCHANGE_OK(perso1.getAccount().getGameClient(),ok2,perso2.getUUID());
 		SocketManager.GAME_SEND_EXCHANGE_OK(perso2.getAccount().getGameClient(),ok2,perso2.getUUID());
 		
-		Objet obj = World.data.getObjet(guid);
+		Object obj = World.data.getObjet(guid);
 		if(obj == null)return;
-		String add = "|"+obj.getTemplate().getID()+"|"+obj.parseStatsString();
+		String add = "|"+obj.getTemplate().getId()+"|"+obj.parseStatsString();
 		if(i == 1)
 		{
 			Couple<Integer,Integer> couple = getCoupleInList(items1,guid);

@@ -16,16 +16,16 @@ public class Code implements PacketParser {
 			case '0'://Envoi du code
 				packet = packet.substring(4);
 				if(client.getPlayer().getCurTrunk() != null)
-					Trunk.OpenTrunk(client.getPlayer(), packet, false);
+					Trunk.open(client.getPlayer(), packet, false);
 				else
-					House.OpenHouse(client.getPlayer(), packet, false);
+					House.open(client.getPlayer(), packet, false);
 			break;
 			case '1'://Changement du code
 				packet = packet.substring(4);
 				if(client.getPlayer().getCurTrunk() != null)
-					Trunk.LockTrunk(client.getPlayer(), packet);
+					Trunk.lock(client.getPlayer(), packet);
 				else
-				    House.LockHouse(client.getPlayer(), packet);
+				    House.lock(client.getPlayer(), packet);
 			break;
 		}
 	}

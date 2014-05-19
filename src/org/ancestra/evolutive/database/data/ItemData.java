@@ -8,12 +8,9 @@ import java.util.concurrent.locks.ReentrantLock;
 import org.ancestra.evolutive.core.Console;
 import org.ancestra.evolutive.core.World;
 import org.ancestra.evolutive.database.AbstractDAO;
-import org.ancestra.evolutive.object.Objet;
+import org.ancestra.evolutive.object.Object;
 
-
-
-
-public class ItemData extends AbstractDAO<Objet>{
+public class ItemData extends AbstractDAO<Object>{
 
 	public ItemData(Connection connection, ReentrantLock locker) {
 		super(connection, locker);
@@ -21,17 +18,17 @@ public class ItemData extends AbstractDAO<Objet>{
 	}
 
 	@Override
-	public boolean create(Objet obj) {
+	public boolean create(Object obj) {
 		try {
 			String baseQuery = "INSERT INTO `items` VALUES(?,?,?,?,?);";
 
 			PreparedStatement statement = connection.prepareStatement(baseQuery);
 
-			statement.setInt(1, obj.getGuid());
-			statement.setInt(2, obj.getTemplate().getID());
+			statement.setInt(1, obj.getId());
+			statement.setInt(2, obj.getTemplate().getId());
 			statement.setInt(3, obj.getQuantity());
 			statement.setInt(4, obj.getPosition());
-			statement.setString(5, obj.parseToSave());
+			statement.setString(5, obj.parseStatsString());
 
 			execute(statement);
 			return true;
@@ -42,24 +39,24 @@ public class ItemData extends AbstractDAO<Objet>{
 	}
 
 	@Override
-	public boolean delete(Objet obj) {
-		String baseQuery = "DELETE FROM items WHERE guid = "+obj.getGuid();
+	public boolean delete(Object obj) {
+		String baseQuery = "DELETE FROM items WHERE guid = "+obj.getId();
 		execute(baseQuery);
 		return true;
 	}
 
 	@Override
-	public boolean update(Objet obj) {
+	public boolean update(Object obj) {
 		try {
 			String baseQuery = "REPLACE INTO `items` VALUES(?,?,?,?,?);";
 
 			PreparedStatement statement = connection.prepareStatement(baseQuery);
 
-			statement.setInt(1, obj.getGuid());
-			statement.setInt(2, obj.getTemplate().getID());
+			statement.setInt(1, obj.getId());
+			statement.setInt(2, obj.getTemplate().getId());
 			statement.setInt(3, obj.getQuantity());
 			statement.setInt(4, obj.getPosition());
-			statement.setString(5, obj.parseToSave());
+			statement.setString(5, obj.parseStatsString());
 
 			execute(statement);
 			return true;
@@ -70,8 +67,8 @@ public class ItemData extends AbstractDAO<Objet>{
 	}
 
 	@Override
-	public Objet load(int id) {
-		Objet item = null;
+	public Object load(int id) {
+		Object item = null;
 		try {
 			ResultSet RS = getData("SELECT * FROM items WHERE guid = "+id);
 			
@@ -81,7 +78,7 @@ public class ItemData extends AbstractDAO<Objet>{
 				int qua = RS.getInt("qua");
 				int pos = RS.getInt("pos");
 				String stats = RS.getString("stats");
-				item = new Objet(guid, tempID, qua, pos, stats);
+				item = new Object(guid, tempID, qua, pos, stats);
 				
 				World.data.addObjet(item, false);
 			}

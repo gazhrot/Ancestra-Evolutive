@@ -23,7 +23,7 @@ public class GoToHouse implements PacketParser {
 		int HouseID = Integer.parseInt(packet);
 		House h = World.data.getHouses().get(HouseID);
 		if(h == null) return;
-		if(client.getPlayer().getGuild().getId() != h.get_guild_id()) 
+		if(client.getPlayer().getGuild().getId() != h.getGuildId()) 
 		{
 			SocketManager.GAME_SEND_Im_PACKET(client.getPlayer(), "1135");
 			return;
@@ -36,7 +36,7 @@ public class GoToHouse implements PacketParser {
 		if (client.getPlayer().hasItemTemplate(8883, 1))
 		{
 			client.getPlayer().removeByTemplateID(8883,1);
-			client.getPlayer().teleport((short)h.get_mapid(), h.get_caseid());
+			client.getPlayer().teleport((short)h.getToMapid(), h.getToCellid());
 		}else
 		{
 			SocketManager.GAME_SEND_Im_PACKET(client.getPlayer(), "1137");

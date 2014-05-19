@@ -14,9 +14,9 @@ import org.ancestra.evolutive.common.*;
 import org.ancestra.evolutive.core.Server;
 import org.ancestra.evolutive.core.World;
 import org.ancestra.evolutive.game.GameClient;
-import org.ancestra.evolutive.hdv.HDV.HdvEntry;
+import org.ancestra.evolutive.hdv.HdvEntry;
 import org.ancestra.evolutive.login.LoginClient;
-import org.ancestra.evolutive.object.Objet;
+import org.ancestra.evolutive.object.Object;
 
 public class Account {
 
@@ -45,7 +45,7 @@ public class Account {
 	private int position = -1;
 	
 	private long bankKamas = 0;
-	private Map<Integer, Objet> bankItems = new TreeMap<>();
+	private Map<Integer, Object> bankItems = new TreeMap<>();
 	private ArrayList<Integer> friends = new ArrayList<>();
 	private ArrayList<Integer> enemys = new ArrayList<>();
 	private Map<Integer, ArrayList<HdvEntry>> hdvs;// Contient les items des HDV format : <hdvID,<cheapestID>>
@@ -76,11 +76,11 @@ public class Account {
 			
 			String[] infos = item.split(":");
 			int guid = Integer.parseInt(infos[0]);
-			Objet obj = World.data.getObjet(guid);
+			Object obj = World.data.getObjet(guid);
 			
 			if(obj == null)
 				continue;
-			this.bankItems.put(obj.getGuid(), obj);
+			this.bankItems.put(obj.getId(), obj);
 		}
 		
 		for(String str : friends.split("\\;")) {
@@ -285,12 +285,12 @@ public class Account {
 		StringBuilder str = new StringBuilder();
 		if(this.bankItems.isEmpty())
 			return "";
-		for(Entry<Integer,Objet> entry : this.bankItems.entrySet())
-			str.append(entry.getValue().getGuid()).append("|");
+		for(Entry<Integer, Object> entry : this.bankItems.entrySet())
+			str.append(entry.getValue().getId()).append("|");
 		return str.toString();
 	}
 	
-	public Map<Integer, Objet> getBank() {
+	public Map<Integer, Object> getBank() {
 		return bankItems;
 	}
 
@@ -309,7 +309,7 @@ public class Account {
 	}
 	
 	public void removeFriend(int guid) {
-		if(this.friends.remove((Object) guid))
+		if(this.friends.remove((java.lang.Object) guid))
 			World.database.getAccountData().update(this);
 		SocketManager.GAME_SEND_FD_PACKET(this.getCurPlayer(), "K");
 	}
@@ -381,7 +381,7 @@ public class Account {
 	}
 	
 	public void removeEnemy(int guid) {
-		if(this.enemys.remove((Object) guid))
+		if(this.enemys.remove((java.lang.Object) guid))
 			World.database.getAccountData().update(this);
 		SocketManager.GAME_SEND_iD_COMMANDE(this.getCurPlayer(), "K");
 	}
@@ -437,7 +437,7 @@ public class Account {
 		HdvEntry entry = null;
 		
 		for(HdvEntry tempEntry : this.hdvs.get(hdvID)) {//Boucle dans la liste d'entry de l'HDV pour trouver un entry avec le meme cheapestID que spécifié
-			if(tempEntry.getLigneID() == line) {//Si la boucle trouve un objet avec le meme cheapestID, arrete la boucle
+			if(tempEntry.getLine() == line) {//Si la boucle trouve un objet avec le meme cheapestID, arrete la boucle
 				entry = tempEntry;
 				break;
 			}
@@ -447,11 +447,11 @@ public class Account {
 		
 		this.hdvs.get(hdvID).remove(entry);//Retire l'item de la liste des objets a vendre du compte
 
-		Objet obj = entry.getObjet();
+		Object obj = entry.getObject();
 		
 		boolean b = this.getCurPlayer().addObjet(obj,true);//False = Meme item dans l'inventaire donc augmente la qua
 		if(!b)
-			World.data.removeItem(obj.getGuid());
+			World.data.removeItem(obj.getId());
 		
 		World.data.getHdv(hdvID).delEntry(entry);//Retire l'item de l'HDV
 		return true;		

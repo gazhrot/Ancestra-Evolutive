@@ -7,12 +7,12 @@ import java.util.concurrent.locks.ReentrantLock;
 import org.ancestra.evolutive.core.Console;
 import org.ancestra.evolutive.core.World;
 import org.ancestra.evolutive.database.AbstractDAO;
-import org.ancestra.evolutive.object.ItemSet;
+import org.ancestra.evolutive.object.ObjectSet;
 
 
 
 
-public class ItemSetData extends AbstractDAO<ItemSet>{
+public class ItemSetData extends AbstractDAO<ObjectSet>{
 
 	public ItemSetData(Connection connection, ReentrantLock locker) {
 		super(connection, locker);
@@ -20,31 +20,31 @@ public class ItemSetData extends AbstractDAO<ItemSet>{
 	}
 
 	@Override
-	public boolean create(ItemSet obj) {
+	public boolean create(ObjectSet obj) {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
-	public boolean delete(ItemSet obj) {
+	public boolean delete(ObjectSet obj) {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
-	public boolean update(ItemSet obj) {
+	public boolean update(ObjectSet obj) {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
-	public ItemSet load(int id) {
-		ItemSet set = null;
+	public ObjectSet load(int id) {
+		ObjectSet set = null;
 		try {
 			ResultSet result = getData("SELECT * FROM itemsets WHERE id = "+id);
 			
 			if(result.next()) {
-				set = new ItemSet(result.getInt("id"), result
+				set = new ObjectSet(result.getInt("id"), result
 						.getString("items"), result.getString("bonus"));
 				World.data.addItemSet(set);
 			}

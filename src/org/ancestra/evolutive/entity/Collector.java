@@ -13,7 +13,7 @@ import org.ancestra.evolutive.fight.Fighter;
 import org.ancestra.evolutive.guild.Guild;
 
 import org.ancestra.evolutive.map.Maps;
-import org.ancestra.evolutive.object.Objet;
+import org.ancestra.evolutive.object.Object;
 
 public class Collector
 {
@@ -26,14 +26,14 @@ public class Collector
 	private short _N2 = 0;
 	private byte _inFight = 0;
 	private int _inFightID = -1;
-	private Map<Integer,Objet> _objets = new TreeMap<Integer,Objet>();
+	private Map<Integer,Object> _objets = new TreeMap<Integer,Object>();
 	private long _kamas = 0;
 	private long _xp = 0;
 	private boolean _inExchange = false;
 	//Timer
 	private int _timeTurn = 45000;
 	//Les logs
-	private Map<Integer,Objet> _LogObjets = new TreeMap<Integer,Objet>();
+	private Map<Integer,Object> _LogObjets = new TreeMap<Integer,Object>();
 	private long _LogXP = 0;
 	
 	public Collector(int guid, short map, int cellID, byte orientation, int GuildID, 
@@ -52,9 +52,9 @@ public class Collector
 			if(item.equals(""))continue;
 			String[] infos = item.split(":");
 			int id = Integer.parseInt(infos[0]);
-			Objet obj = World.data.getObjet(id);
+			Object obj = World.data.getObjet(id);
 			if(obj == null)continue;
-			_objets.put(obj.getGuid(), obj);
+			_objets.put(obj.getId(), obj);
 		}
 		_xp = xp;
 		_kamas = kamas;
@@ -80,7 +80,7 @@ public class Collector
 		this._xp = xp;
 	}
 	
-	public Map<Integer, Objet> getObjets() 
+	public Map<Integer, Object> getObjets() 
 	{
 		return _objets;
 	}
@@ -157,10 +157,10 @@ public class Collector
 	
 	public void DelPerco(int percoGuid)
 	{
-		for(Objet obj : _objets.values())
+		for(Object obj : _objets.values())
 		{
 			//On supprime les objets non ramasser/drop
-			World.data.removeItem(obj.getGuid());
+			World.data.removeItem(obj.getId());
 		}
 		World.data.getPercos().remove(percoGuid);
 	}
@@ -378,7 +378,7 @@ public class Collector
 		StringBuilder items = new StringBuilder();
 		if(!_objets.isEmpty())
 		{
-			for(Objet obj : _objets.values())
+			for(Object obj : _objets.values())
 			{
 				items.append("O").append(obj.parseItem()).append(";");
 			}
@@ -390,9 +390,9 @@ public class Collector
 	public String parseItemPercepteur()
 	{
 		String items = "";
-		for(Objet obj : _objets.values())
+		for(Object obj : _objets.values())
 		{
-			items+= obj.getGuid()+"|";
+			items+= obj.getId()+"|";
 		}
 		return items;
 	}
@@ -400,8 +400,8 @@ public class Collector
 	
 	public void removeFromPercepteur(Player P, int guid, int qua)
 	{
-		Objet PercoObj = World.data.getObjet(guid);
-		Objet PersoObj = P.getSimilarItem(PercoObj);
+		Object PercoObj = World.data.getObjet(guid);
+		Object PersoObj = P.getSimilarItem(PercoObj);
 		
 		int newQua = PercoObj.getQuantity() - qua;
 		
@@ -423,7 +423,7 @@ public class Collector
 			}else //S'il reste des objets
 			{
 				//On crée une copy de l'item
-				PersoObj = Objet.getCloneObjet(PercoObj, qua);
+				PersoObj = Object.getClone(PercoObj, qua);
 				//On l'ajoute au monde
 				World.data.addObjet(PersoObj, true);
 				//On retire X objet
@@ -433,7 +433,7 @@ public class Collector
 				
 				//On envoie les packets
 				SocketManager.GAME_SEND_OAKO_PACKET(P,PersoObj);
-				String str = "O+"+PercoObj.getGuid()+"|"+PercoObj.getQuantity()+"|"+PercoObj.getTemplate().getID()+"|"+PercoObj.parseStatsString();
+				String str = "O+"+PercoObj.getId()+"|"+PercoObj.getQuantity()+"|"+PercoObj.getTemplate().getId()+"|"+PercoObj.parseStatsString();
 				SocketManager.GAME_SEND_EsK_PACKET(P, str);
 				
 			}
@@ -445,7 +445,7 @@ public class Collector
 			{
 				//On retire l'item
 				this.removeObjet(guid);
-				World.data.removeItem(PercoObj.getGuid());
+				World.data.removeItem(PercoObj.getId());
 				//On Modifie la quantité de l'item du sac du joueur
 				PersoObj.setQuantity(PersoObj.getQuantity() + PercoObj.getQuantity());
 				
@@ -464,7 +464,7 @@ public class Collector
 				
 				//On envoie les packets
 				SocketManager.GAME_SEND_OBJECT_QUANTITY_PACKET(P,PersoObj);
-				String str = "O+"+PercoObj.getGuid()+"|"+PercoObj.getQuantity()+"|"+PercoObj.getTemplate().getID()+"|"+PercoObj.parseStatsString();
+				String str = "O+"+PercoObj.getId()+"|"+PercoObj.getQuantity()+"|"+PercoObj.getTemplate().getId()+"|"+PercoObj.parseStatsString();
 				SocketManager.GAME_SEND_EsK_PACKET(P, str);
 				
 			}
@@ -478,7 +478,7 @@ public class Collector
 		_LogXP += Xp;
 	}
 	
-	public void LogObjetDrop(int guid, Objet obj)
+	public void LogObjetDrop(int guid, Object obj)
 	{
 		_LogObjets.put(guid, obj);
 	}
@@ -493,18 +493,18 @@ public class Collector
 		StringBuilder str = new StringBuilder();
 		boolean isFirst = true;
 		if(_LogObjets.isEmpty()) return "";
-		for(Objet obj : _LogObjets.values())
+		for(Object obj : _LogObjets.values())
 		{
 			if(!isFirst) str.append(";");
-			 str.append(obj.getTemplate().getID()).append(",").append(obj.getQuantity());
+			 str.append(obj.getTemplate().getId()).append(",").append(obj.getQuantity());
 			isFirst = false;
 		}
 		return str.toString();
 	}
 	
-	public void addObjet(Objet newObj)
+	public void addObjet(Object newObj)
 	{
-		_objets.put(newObj.getGuid(), newObj);
+		_objets.put(newObj.getId(), newObj);
 	}
 	
 	public void set_Exchange(boolean Exchange)

@@ -2,9 +2,9 @@ package org.ancestra.evolutive.fight;
 
 import org.ancestra.evolutive.map.Maps;
 import org.ancestra.evolutive.map.Case;
-import org.ancestra.evolutive.object.Objet;
-import org.ancestra.evolutive.object.PierreAme;
-import org.ancestra.evolutive.object.Objet.ObjTemplate;
+import org.ancestra.evolutive.object.Object;
+import org.ancestra.evolutive.object.SoulStone;
+import org.ancestra.evolutive.object.ObjectTemplate;
 import org.ancestra.evolutive.other.Drop;
 
 import java.awt.event.ActionEvent;
@@ -43,7 +43,7 @@ import org.ancestra.evolutive.fight.spell.LaunchedSpell;
 import org.ancestra.evolutive.fight.spell.SpellEffect;
 import org.ancestra.evolutive.fight.spell.SpellStats;
 import org.ancestra.evolutive.fight.trap.Glyphe;
-import org.ancestra.evolutive.fight.trap.Piege;
+import org.ancestra.evolutive.fight.trap.Trap;
 import org.ancestra.evolutive.game.GameAction;
 import org.ancestra.evolutive.game.GameClient;
 import org.ancestra.evolutive.guild.Guild;
@@ -71,14 +71,14 @@ public class Fight {
 	private String _curAction = "";
 	private List<Fighter> _ordreJeu = new ArrayList<>();
 	private List<Glyphe> _glyphs = new ArrayList<>();
-	private List<Piege> _traps = new ArrayList<>();
+	private List<Trap> _traps = new ArrayList<>();
 	private MobGroup _mobGroup;
 	private Collector _perco;
 	
 	private List<Fighter> _captureur = new CopyOnWriteArrayList<>();	
 	private boolean isCapturable = false;
 	private int captWinner = -1;
-	private PierreAme pierrePleine;
+	private SoulStone pierrePleine;
 	//waiter
 	private Waiter waiter = new Waiter();
 	//protector
@@ -456,7 +456,7 @@ public class Fight {
 		return _map;
 	}
 
-	public List<Piege> get_traps() {
+	public List<Trap> get_traps() {
 		return _traps;
 	}
 
@@ -1321,9 +1321,9 @@ public class Fight {
         	SocketManager.GAME_SEND_GAMEACTION_TO_FIGHT(Fight.this,7,get_curAction());
         	
     		set_curAction("");
-    		ArrayList<Piege> P = new ArrayList<Piege>();
+    		ArrayList<Trap> P = new ArrayList<Trap>();
     		P.addAll(_traps);
-    		for(Piege p : P)
+    		for(Trap p : P)
     		{
     			Fighter F = _ordreJeu.get(_curPlayer);
     			int dist = Pathfinding.getDistanceBetween(_map,p.get_cell().getId(),F.get_fightCell(false).getId());
@@ -1344,9 +1344,9 @@ public class Fight {
 		SocketManager.GAME_SEND_GAMEACTION_TO_FIGHT(Fight.this,7,get_curAction());
 		SocketManager.GAME_SEND_GAF_PACKET_TO_FIGHT(Fight.this,7,2,_ordreJeu.get(_curPlayer).getGUID());
 		//copie
-		ArrayList<Piege> P = (new ArrayList<Piege>());
+		ArrayList<Trap> P = (new ArrayList<Trap>());
 		P.addAll(_traps);
-		for(Piege p : P)
+		for(Trap p : P)
 		{
 			Fighter F = getFighterByPerso(perso);
 			int dist = Pathfinding.getDistanceBetween(_map,p.get_cell().getId(),F.get_fightCell(false).getId());
@@ -1708,7 +1708,7 @@ public class Fight {
 		        	if(F.get_lvl() > maxLvl)	//Trouve le monstre au plus haut lvl du groupe (pour la puissance de la pierre)
 		        		maxLvl = F.get_lvl();
 		        }
-		        pierrePleine = new PierreAme(World.data.getNewItemGuid(),1,7010,Constants.ITEM_POS_NO_EQUIPED,pierreStats);	//Crée la pierre d'âme
+		        pierrePleine = new SoulStone(World.data.getNewItemGuid(),1,7010,Constants.ITEM_POS_NO_EQUIPED,pierreStats);	//Crée la pierre d'âme
 		        
 		        for(Fighter F : TEAM1)	//Récupère les captureur
 		        {
@@ -1742,7 +1742,7 @@ public class Fight {
 			    			if(Formulas.getRandomValue(1, 100) <= captChance)	//Si le joueur obtiens la capture
 			    			{
 			    				//Retire la pierre vide au personnage et lui envoie ce changement
-			    				int pierreVide = f.getPersonnage().getObjetByPos(Constants.ITEM_POS_ARME).getGuid();
+			    				int pierreVide = f.getPersonnage().getObjetByPos(Constants.ITEM_POS_ARME).getId();
 			    				f.getPersonnage().deleteItem(pierreVide);
 			    				SocketManager.GAME_SEND_REMOVE_ITEM_PACKET(f.getPersonnage(), pierreVide);
 			    				
@@ -1791,10 +1791,10 @@ public class Fight {
         			int jet = Formulas.getRandomValue(0, 100*100);
         			if(jet < t)
         			{
-        				ObjTemplate OT = World.data.getObjTemplate(D.get_itemID());
+        				ObjectTemplate OT = World.data.getObjTemplate(D.get_itemID());
         				if(OT == null)continue;
         				//on ajoute a la liste
-        				itemWon.put(OT.getID(),(itemWon.get(OT.getID())==null?0:itemWon.get(OT.getID()))+1);
+        				itemWon.put(OT.getId(),(itemWon.get(OT.getId())==null?0:itemWon.get(OT.getId()))+1);
         				
         				D.setMax(D.get_max()-1);
         				if(D.get_max() == 0)possibleDrops.remove(D);
@@ -1803,17 +1803,17 @@ public class Fight {
         		if(i._id == captWinner && pierrePleine != null)	//S'il à capturé le groupe
         		{
         			if(drops.length() >0)drops += ",";
-        			drops += pierrePleine.getTemplate().getID()+"~"+1;
+        			drops += pierrePleine.getTemplate().getId()+"~"+1;
         			if(i.getPersonnage().addObjet(pierrePleine, false))
         				World.data.addObjet(pierrePleine, true);
         		}
         		for(Entry<Integer,Integer> entry : itemWon.entrySet())
         		{
-        			ObjTemplate OT = World.data.getObjTemplate(entry.getKey());
+        			ObjectTemplate OT = World.data.getObjTemplate(entry.getKey());
         			if(OT == null)continue;
         			if(drops.length() >0)drops += ",";
         			drops += entry.getKey()+"~"+entry.getValue();
-        			Objet obj = OT.createNewItem(entry.getValue(), false);
+        			Object obj = OT.createNewItem(entry.getValue(), false);
         			if(i.getPersonnage().addObjet(obj, true))
         				World.data.addObjet(obj, true);
         		}
@@ -1969,10 +1969,10 @@ public class Fight {
     			int jet = Formulas.getRandomValue(0, 100*100);
     			if(jet < t)
     			{
-    				ObjTemplate OT = World.data.getObjTemplate(D.get_itemID());
+    				ObjectTemplate OT = World.data.getObjTemplate(D.get_itemID());
     				if(OT == null)continue;
     				//on ajoute a la liste
-    				itemWon.put(OT.getID(),(itemWon.get(OT.getID())==null?0:itemWon.get(OT.getID()))+1);
+    				itemWon.put(OT.getId(),(itemWon.get(OT.getId())==null?0:itemWon.get(OT.getId()))+1);
     				
     				D.setMax(D.get_max()-1);
     				if(D.get_max() == 0)possibleDrops.remove(D);
@@ -1980,11 +1980,11 @@ public class Fight {
     		}
     		for(Entry<Integer,Integer> entry : itemWon.entrySet())
     		{
-    			ObjTemplate OT = World.data.getObjTemplate(entry.getKey());
+    			ObjectTemplate OT = World.data.getObjTemplate(entry.getKey());
     			if(OT == null)continue;
     			if(drops.length() >0)drops += ",";
     			drops += entry.getKey()+"~"+entry.getValue();
-    			Objet obj = OT.createNewItem(entry.getValue(), false);
+    			Object obj = OT.createNewItem(entry.getValue(), false);
     			p.addObjet(obj);
     			World.data.addObjet(obj, true);
     		}
@@ -2307,9 +2307,9 @@ public class Fight {
 		}
 		
 		//on supprime les pieges du joueur
-		ArrayList<Piege> Ps = new ArrayList<Piege>();
+		ArrayList<Trap> Ps = new ArrayList<Trap>();
 		Ps.addAll(_traps);
-		for(Piege p : Ps)
+		for(Trap p : Ps)
 		{
 			if(p.get_caster().getGUID() == target.getGUID())
 			{
@@ -2384,7 +2384,7 @@ public class Fight {
 			verifIfTeamAllDead();
 		}else
 		{
-			Objet arme = perso.getObjetByPos(Constants.ITEM_POS_ARME);
+			Object arme = perso.getObjetByPos(Constants.ITEM_POS_ARME);
 			
 			//Pierre d'âmes = EC
 			if(arme.getTemplate().getType() == 83)
@@ -2396,7 +2396,7 @@ public class Fight {
 				return;
 			}
 			
-			int PACost = arme.getTemplate().getPACost();
+			int PACost = arme.getTemplate().getPaCost();
 			
 			if(get_curFighterPA() < PACost)//S'il n'a pas assez de PA
 			{

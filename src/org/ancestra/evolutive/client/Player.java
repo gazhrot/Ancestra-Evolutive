@@ -45,8 +45,8 @@ import org.ancestra.evolutive.map.Maps;
 import org.ancestra.evolutive.map.Case;
 import org.ancestra.evolutive.map.InteractiveObject;
 import org.ancestra.evolutive.map.MountPark;
-import org.ancestra.evolutive.object.ItemSet;
-import org.ancestra.evolutive.object.Objet;
+import org.ancestra.evolutive.object.ObjectSet;
+import org.ancestra.evolutive.object.Object;
 import org.ancestra.evolutive.other.Exchange;
 import org.ancestra.evolutive.tool.time.waiter.Waiter;
 
@@ -146,7 +146,7 @@ public class Player {
 	public Map<Integer,Player> followers = new TreeMap<>();
 	private ArrayList<Short> zaaps = new ArrayList<>();
 	private Map<Integer, SpellEffect> buffs = new TreeMap<>(); 
-	private Map<Integer, Objet> objects = new TreeMap<>();
+	private Map<Integer, Object> objects = new TreeMap<>();
 	private Map<Integer, JobStat> jobs = new TreeMap<>();
 	private Map<Integer , Integer> stores = new TreeMap<>();//<ObjID, Prix>	
 	
@@ -913,7 +913,7 @@ public class Player {
 		return buffs;
 	}
 
-	public Map<Integer, Objet> getObjects() {
+	public Map<Integer, Object> getObjects() {
 		return objects;
 	}
 
@@ -973,12 +973,12 @@ public class Player {
 				continue;
 			}
 			
-			Objet object = World.data.getObjet(id);
+			Object object = World.data.getObjet(id);
 			
 			if(object == null)
 				continue;
 			
-			this.objects.put(object.getGuid(), object);
+			this.objects.put(object.getId(), object);
 		}
 	}
 	
@@ -995,12 +995,12 @@ public class Player {
 					continue;
 				}
 				
-				Objet object = World.data.getObjet(id);
+				Object object = World.data.getObjet(id);
 				
 				if(object == null)
 					continue;
 				
-				this.stores.put(object.getGuid(), price);
+				this.stores.put(object.getId(), price);
 			}
 		}
 	}
@@ -1211,11 +1211,11 @@ public class Player {
 			SocketManager.GAME_SEND_JS_PACKET(this, list);
 			SocketManager.GAME_SEND_JX_PACKET(this, list);
 			SocketManager.GAME_SEND_JO_PACKET(this, list);
-			Objet obj = getObjetByPos(Constants.ITEM_POS_ARME);
+			Object obj = getObjetByPos(Constants.ITEM_POS_ARME);
 			
 			if(obj != null)
 				for(JobStat sm : list)
-					if(sm.getTemplate().isValidTool(obj.getTemplate().getID()))
+					if(sm.getTemplate().isValidTool(obj.getTemplate().getId()))
 						SocketManager.GAME_SEND_OT_PACKET(this.getAccount().getGameClient(),sm.getTemplate().getId());
 		}
 		//Fin métier
@@ -1351,19 +1351,19 @@ public class Player {
 	public String getGMStuffString() {
 		StringBuilder str = new StringBuilder();
 		if(getObjetByPos(Constants.ITEM_POS_ARME) != null)
-		 	str.append(Integer.toHexString(getObjetByPos(Constants.ITEM_POS_ARME).getTemplate().getID()));	
+		 	str.append(Integer.toHexString(getObjetByPos(Constants.ITEM_POS_ARME).getTemplate().getId()));	
 		str.append(",");
 		if(getObjetByPos(Constants.ITEM_POS_COIFFE) != null)
-			str.append(Integer.toHexString(getObjetByPos(Constants.ITEM_POS_COIFFE).getTemplate().getID()));	
+			str.append(Integer.toHexString(getObjetByPos(Constants.ITEM_POS_COIFFE).getTemplate().getId()));	
 		str.append(",");
 		if(getObjetByPos(Constants.ITEM_POS_CAPE) != null)
-			str.append(Integer.toHexString(getObjetByPos(Constants.ITEM_POS_CAPE).getTemplate().getID()));	
+			str.append(Integer.toHexString(getObjetByPos(Constants.ITEM_POS_CAPE).getTemplate().getId()));	
 		str.append(",");
 		if(getObjetByPos(Constants.ITEM_POS_FAMILIER) != null)
-			str.append(Integer.toHexString(getObjetByPos(Constants.ITEM_POS_FAMILIER).getTemplate().getID()));	
+			str.append(Integer.toHexString(getObjetByPos(Constants.ITEM_POS_FAMILIER).getTemplate().getId()));	
 		str.append(",");
 		if(getObjetByPos(Constants.ITEM_POS_BOUCLIER) != null)
-			str.append(Integer.toHexString(getObjetByPos(Constants.ITEM_POS_BOUCLIER).getTemplate().getID()));	
+			str.append(Integer.toHexString(getObjetByPos(Constants.ITEM_POS_BOUCLIER).getTemplate().getId()));	
 		return str.toString();
 	}
 
@@ -1458,14 +1458,14 @@ public class Player {
 		Stats stats = new Stats(false,null);
 		ArrayList<Integer> itemSetApplied = new ArrayList<Integer>();
 		
-		for(Entry<Integer, Objet> entry : this.objects.entrySet()) {
+		for(Entry<Integer, Object> entry : this.objects.entrySet()) {
 			if(entry.getValue().getPosition() != Constants.ITEM_POS_NO_EQUIPED) {
 				stats = Stats.cumulStat(stats,entry.getValue().getStats());
-				int panID = entry.getValue().getTemplate().getPanopID();
+				int panID = entry.getValue().getTemplate().getSet();
 				//Si panoplie, et si l'effet de pano n'a pas encore été ajouté
 				if(panID > 0 && !itemSetApplied.contains(panID)) {
 					itemSetApplied.add(panID);
-					ItemSet IS = World.data.getItemSet(panID);
+					ObjectSet IS = World.data.getItemSet(panID);
 					//Si la pano existe
 					if(IS != null)
 						stats = Stats.cumulStat(stats, IS.getBonusStatByItemNumb(this.getNumbEquipedItemOfPanoplie(panID)));
@@ -1536,7 +1536,7 @@ public class Player {
         
         int total = 0;
 		for(Entry<Integer,Integer> obj : this.stores.entrySet()) {
-        	Objet object = World.data.getObjet(obj.getKey());
+        	Object object = World.data.getObjet(obj.getKey());
         	if(object != null)
         		total += object.getTemplate().getPod() * object.getQuantity();
         }
@@ -1546,7 +1546,7 @@ public class Player {
 	
 	public int getPodUsed() {
 		int pod = 0;
-		for(Entry<Integer,Objet> entry : this.objects.entrySet())
+		for(Entry<Integer,Object> entry : this.objects.entrySet())
 			pod += entry.getValue().getTemplate().getPod() * entry.getValue().getQuantity();
 		pod += this.getPodsInStore();
 		return pod;
@@ -1669,16 +1669,16 @@ public class Player {
 		if(this.objects.isEmpty())
 			return "";
 		
-		for(Entry<Integer,Objet> entry : this.objects.entrySet()) 
-			str.append(entry.getValue().getGuid()).append("|");
+		for(Entry<Integer,Object> entry : this.objects.entrySet()) 
+			str.append(entry.getValue().getId()).append("|");
 
 		return str.toString();
 	}
 	
-	public boolean addObjet(Objet newObj, boolean stackIfSimilar) {
-		for(Entry<Integer,Objet> entry : this.objects.entrySet()) {
-			Objet obj = entry.getValue();
-			if(obj.getTemplate().getID() == newObj.getTemplate().getID() && obj.getStats().isSameStats(newObj.getStats())
+	public boolean addObjet(Object newObj, boolean stackIfSimilar) {
+		for(Entry<Integer,Object> entry : this.objects.entrySet()) {
+			Object obj = entry.getValue();
+			if(obj.getTemplate().getId() == newObj.getTemplate().getId() && obj.getStats().isSameStats(newObj.getStats())
 					&& stackIfSimilar && newObj.getTemplate().getType() != 85 && obj.getPosition() == Constants.ITEM_POS_NO_EQUIPED) {
 				obj.setQuantity(obj.getQuantity()+newObj.getQuantity());//On ajoute QUA item a la quantité de l'objet existant
 				World.database.getItemData().update(obj);
@@ -1687,17 +1687,17 @@ public class Player {
 				return false;
 			}
 		}
-		this.objects.put(newObj.getGuid(), newObj);
+		this.objects.put(newObj.getId(), newObj);
 		SocketManager.GAME_SEND_OAKO_PACKET(this,newObj);
 		return true;
 	}
 	
-	public void addObjet(Objet newObj)
+	public void addObjet(Object newObj)
 	{
-		this.objects.put(newObj.getGuid(), newObj);
+		this.objects.put(newObj.getId(), newObj);
 	}
 	
-	public Map<Integer,Objet> getItems()
+	public Map<Integer,Object> getItems()
 	{
 		return this.objects;
 	}
@@ -1706,7 +1706,7 @@ public class Player {
 	{
 		StringBuilder str = new StringBuilder();
 		if(this.objects.isEmpty())return "";
-		for(Objet  obj : this.objects.values())
+		for(Object  obj : this.objects.values())
 		{ 
 			str.append(obj.parseItem());
 		}
@@ -1756,7 +1756,7 @@ public class Player {
 	public int storeAllBuy() {
 		int total = 0;
 		for(java.util.Map.Entry<Integer, Integer> value : this.stores.entrySet()) {
-			Objet O = World.data.getObjet(value.getKey());
+			Object O = World.data.getObjet(value.getKey());
 			int multiple = O.getQuantity();
 			int add = value.getValue() * multiple;
 			total += add;
@@ -1771,11 +1771,11 @@ public class Player {
 		if(this.objects.get(guid).getQuantity() < qua)//Si il a moins d'item que ce qu'on veut Del
 			qua = this.objects.get(guid).getQuantity();
 		
-		int prix = qua * (this.objects.get(guid).getTemplate().getPrix()/10);//Calcul du prix de vente (prix d'achat/10)
+		int prix = qua * (this.objects.get(guid).getTemplate().getPrice()/10);//Calcul du prix de vente (prix d'achat/10)
 		int newQua =  this.objects.get(guid).getQuantity() - qua;
 		if(newQua <= 0)//Ne devrait pas etre <0, S'il n'y a plus d'item apres la vente 
 		{
-			Objet o = this.objects.get(guid);
+			Object o = this.objects.get(guid);
 			this.objects.remove(guid);
 			World.data.removeItem(guid);
 			World.database.getItemData().delete(o);
@@ -1798,7 +1798,7 @@ public class Player {
 	}
 	public void removeItem(int guid, int nombre,boolean send,boolean deleteFromWorld)
 	{
-		Objet obj = this.objects.get(guid);
+		Object obj = this.objects.get(guid);
 		
 		if(nombre > obj.getQuantity())
 			nombre = obj.getQuantity();
@@ -1814,12 +1814,12 @@ public class Player {
 			}else
 			{
 				//on supprime de l'inventaire et du Monde
-				this.objects.remove(obj.getGuid());
+				this.objects.remove(obj.getId());
 				if(deleteFromWorld)
-					World.data.removeItem(obj.getGuid());
+					World.data.removeItem(obj.getId());
 				//on envoie le packet si connecté
 				if(send && this.isOnline)
-					SocketManager.GAME_SEND_REMOVE_ITEM_PACKET(this, obj.getGuid());
+					SocketManager.GAME_SEND_REMOVE_ITEM_PACKET(this, obj.getId());
 			}
 		}
 	}
@@ -1828,13 +1828,13 @@ public class Player {
 		this.objects.remove(guid);
 		World.data.removeItem(guid);
 	}
-	public Objet getObjetByPos(int pos)
+	public Object getObjetByPos(int pos)
 	{
 		if(pos == Constants.ITEM_POS_NO_EQUIPED)return null;
 		
-		for(Entry<Integer,Objet> entry : this.objects.entrySet())
+		for(Entry<Integer,Object> entry : this.objects.entrySet())
 		{
-			Objet obj = entry.getValue();
+			Object obj = entry.getValue();
 			if(obj.getPosition() == pos)
 				return obj;
 		}
@@ -1897,15 +1897,15 @@ public class Player {
 		this.kamas += l;
 	}
 
-	public Objet getSimilarItem(Objet exObj)
+	public Object getSimilarItem(Object exObj)
 	{
-		for(Entry<Integer,Objet> entry : this.objects.entrySet())
+		for(Entry<Integer,Object> entry : this.objects.entrySet())
 		{
-			Objet obj = entry.getValue();
+			Object obj = entry.getValue();
 			
-			if(obj.getTemplate().getID() == exObj.getTemplate().getID()
+			if(obj.getTemplate().getId() == exObj.getTemplate().getId()
 				&& obj.getStats().isSameStats(exObj.getStats())
-				&& obj.getGuid() != exObj.getGuid()
+				&& obj.getId() != exObj.getId()
 				&& obj.getPosition() == Constants.ITEM_POS_NO_EQUIPED)
 			return obj;
 		}
@@ -1949,9 +1949,9 @@ public class Player {
 			//Packet JO (Job Option)
 			SocketManager.GAME_SEND_JO_PACKET(this,list);
 			
-			Objet obj = getObjetByPos(Constants.ITEM_POS_ARME);
+			Object obj = getObjetByPos(Constants.ITEM_POS_ARME);
 			if(obj != null)
-				if(sm.getTemplate().isValidTool(obj.getTemplate().getID()))
+				if(sm.getTemplate().isValidTool(obj.getTemplate().getId()))
 					SocketManager.GAME_SEND_OT_PACKET(this.getAccount().getGameClient(),m.getId());
 		}
 		return pos;
@@ -1964,8 +1964,8 @@ public class Player {
 
 	public boolean hasEquiped(int id)
 	{
-		for(Entry<Integer,Objet> entry : this.objects.entrySet())
-			if(entry.getValue().getTemplate().getID() == id && entry.getValue().getPosition() != Constants.ITEM_POS_NO_EQUIPED)
+		for(Entry<Integer,Object> entry : this.objects.entrySet())
+			if(entry.getValue().getTemplate().getId() == id && entry.getValue().getPosition() != Constants.ITEM_POS_NO_EQUIPED)
 				return true;
 		return false;
 	}
@@ -1991,10 +1991,10 @@ public class Player {
 	public int getNumbEquipedItemOfPanoplie(int panID)
 	{
 		int nb = 0;
-		for(Entry<Integer, Objet> i : this.objects.entrySet()) {
+		for(Entry<Integer, Object> i : this.objects.entrySet()) {
 			if(i.getValue().getPosition() == Constants.ITEM_POS_NO_EQUIPED)
 				continue;
-			if(i.getValue().getTemplate().getPanopID() == panID)
+			if(i.getValue().getTemplate().getSet() == panID)
 				nb++;
 		}
 		return nb;
@@ -2116,7 +2116,7 @@ public class Player {
 	public String parseBankPacket()
 	{
 		StringBuilder packet = new StringBuilder();
-		for(Entry<Integer, Objet> entry : this.getAccount().getBank().entrySet())
+		for(Entry<Integer, Object> entry : this.getAccount().getBank().entrySet())
 			packet.append("O").append(entry.getValue().parseItem()).append(";");
 		if(getBankKamas() != 0)
 			packet.append("G").append(getBankKamas());
@@ -2135,7 +2135,7 @@ public class Player {
 
 	public void addInBank(int guid, int qua)
 	{
-		Objet PersoObj = World.data.getObjet(guid);
+		Object PersoObj = World.data.getObjet(guid);
 		//Si le joueur n'a pas l'item dans son sac ...
 		if(this.objects.get(guid) == null)
 		{
@@ -2145,7 +2145,7 @@ public class Player {
 		//Si c'est un item équipé ...
 		if(PersoObj.getPosition() != Constants.ITEM_POS_NO_EQUIPED)return;
 		
-		Objet BankObj = getSimilarBankItem(PersoObj);
+		Object BankObj = getSimilarBankItem(PersoObj);
 		int newQua = PersoObj.getQuantity() - qua;
 		if(BankObj == null)//S'il n'y pas d'item du meme Template
 		{
@@ -2153,10 +2153,10 @@ public class Player {
 			if(newQua <= 0)
 			{
 				//On enleve l'objet du sac du joueur
-				removeItem(PersoObj.getGuid());
+				removeItem(PersoObj.getId());
 				//On met l'objet du sac dans la banque, avec la meme quantité
-				this.getAccount().getBank().put(PersoObj.getGuid(), PersoObj);
-				String str = "O+"+PersoObj.getGuid()+"|"+PersoObj.getQuantity()+"|"+PersoObj.getTemplate().getID()+"|"+PersoObj.parseStatsString();
+				this.getAccount().getBank().put(PersoObj.getId(), PersoObj);
+				String str = "O+"+PersoObj.getId()+"|"+PersoObj.getQuantity()+"|"+PersoObj.getTemplate().getId()+"|"+PersoObj.parseStatsString();
 				SocketManager.GAME_SEND_EsK_PACKET(this, str);
 				SocketManager.GAME_SEND_REMOVE_ITEM_PACKET(this, guid);
 				
@@ -2166,12 +2166,12 @@ public class Player {
 				//on modifie la quantité d'item du sac
 				PersoObj.setQuantity(newQua);
 				//On ajoute l'objet a la banque et au monde
-				BankObj = Objet.getCloneObjet(PersoObj, qua);
+				BankObj = Object.getClone(PersoObj, qua);
 				World.data.addObjet(BankObj, true);
-				this.getAccount().getBank().put(BankObj.getGuid(), BankObj);
+				this.getAccount().getBank().put(BankObj.getId(), BankObj);
 				
 				//Envoie des packets
-				String str = "O+"+BankObj.getGuid()+"|"+BankObj.getQuantity()+"|"+BankObj.getTemplate().getID()+"|"+BankObj.parseStatsString();
+				String str = "O+"+BankObj.getId()+"|"+BankObj.getQuantity()+"|"+BankObj.getTemplate().getId()+"|"+BankObj.parseStatsString();
 				SocketManager.GAME_SEND_EsK_PACKET(this, str);
 				SocketManager.GAME_SEND_OBJECT_QUANTITY_PACKET(this, PersoObj);
 				
@@ -2182,13 +2182,13 @@ public class Player {
 			if(newQua <= 0)
 			{
 				//On enleve l'objet du sac du joueur
-				removeItem(PersoObj.getGuid());
+				removeItem(PersoObj.getId());
 				//On enleve l'objet du monde
-				World.data.removeItem(PersoObj.getGuid());
+				World.data.removeItem(PersoObj.getId());
 				//On ajoute la quantité a l'objet en banque
 				BankObj.setQuantity(BankObj.getQuantity() + PersoObj.getQuantity());
 				//on envoie l'ajout a la banque de l'objet
-				String str = "O+"+BankObj.getGuid()+"|"+BankObj.getQuantity()+"|"+BankObj.getTemplate().getID()+"|"+BankObj.parseStatsString();
+				String str = "O+"+BankObj.getId()+"|"+BankObj.getQuantity()+"|"+BankObj.getTemplate().getId()+"|"+BankObj.parseStatsString();
 				SocketManager.GAME_SEND_EsK_PACKET(this, str);
 				//on envoie la supression de l'objet du sac au joueur
 				SocketManager.GAME_SEND_REMOVE_ITEM_PACKET(this, guid);
@@ -2198,7 +2198,7 @@ public class Player {
 				//on modifie la quantité d'item du sac
 				PersoObj.setQuantity(newQua);
 				BankObj.setQuantity(BankObj.getQuantity() + qua);
-				String str = "O+"+BankObj.getGuid()+"|"+BankObj.getQuantity()+"|"+BankObj.getTemplate().getID()+"|"+BankObj.parseStatsString();
+				String str = "O+"+BankObj.getId()+"|"+BankObj.getQuantity()+"|"+BankObj.getTemplate().getId()+"|"+BankObj.parseStatsString();
 				SocketManager.GAME_SEND_EsK_PACKET(this, str);
 				SocketManager.GAME_SEND_OBJECT_QUANTITY_PACKET(this, PersoObj);
 				
@@ -2208,13 +2208,13 @@ public class Player {
 		World.database.getAccountData().update(this.getAccount());
 	}
 
-	private Objet getSimilarBankItem(Objet obj)
+	private Object getSimilarBankItem(Object obj)
 	{
-		for(Objet value : this.getAccount().getBank().values())
+		for(Object value : this.getAccount().getBank().values())
 		{
 			if(value.getTemplate().getType() == 85)
 				continue;
-			if(value.getTemplate().getID() == obj.getTemplate().getID() && value.getStats().isSameStats(obj.getStats()))
+			if(value.getTemplate().getId() == obj.getTemplate().getId() && value.getStats().isSameStats(obj.getStats()))
 				return value;
 		}
 		return null;
@@ -2222,7 +2222,7 @@ public class Player {
 
 	public void removeFromBank(int guid, int qua)
 	{
-		Objet BankObj = World.data.getObjet(guid);
+		Object BankObj = World.data.getObjet(guid);
 		//Si le joueur n'a pas l'item dans sa banque ...
 		if(this.getAccount().getBank().get(guid) == null)
 		{
@@ -2230,7 +2230,7 @@ public class Player {
 			return;
 		}
 		
-		Objet PersoObj = getSimilarItem(BankObj);
+		Object PersoObj = getSimilarItem(BankObj);
 		
 		int newQua = BankObj.getQuantity() - qua;
 		
@@ -2252,17 +2252,17 @@ public class Player {
 			}else //S'il reste des objets en banque
 			{
 				//On crée une copy de l'item en banque
-				PersoObj = Objet.getCloneObjet(BankObj, qua);
+				PersoObj = Object.getClone(BankObj, qua);
 				//On l'ajoute au monde
 				World.data.addObjet(PersoObj, true);
 				//On retire X objet de la banque
 				BankObj.setQuantity(newQua);
 				//On l'ajoute au joueur
-				this.objects.put(PersoObj.getGuid(), PersoObj);
+				this.objects.put(PersoObj.getId(), PersoObj);
 				
 				//On envoie les packets
 				SocketManager.GAME_SEND_OAKO_PACKET(this,PersoObj);
-				String str = "O+"+BankObj.getGuid()+"|"+BankObj.getQuantity()+"|"+BankObj.getTemplate().getID()+"|"+BankObj.parseStatsString();
+				String str = "O+"+BankObj.getId()+"|"+BankObj.getQuantity()+"|"+BankObj.getTemplate().getId()+"|"+BankObj.parseStatsString();
 				SocketManager.GAME_SEND_EsK_PACKET(this, str);
 				
 			}
@@ -2273,8 +2273,8 @@ public class Player {
 			if(newQua <= 0)
 			{
 				//On retire l'item de la banque
-				this.getAccount().getBank().remove(BankObj.getGuid());
-				World.data.removeItem(BankObj.getGuid());
+				this.getAccount().getBank().remove(BankObj.getId());
+				World.data.removeItem(BankObj.getId());
 				//On Modifie la quantité de l'item du sac du joueur
 				PersoObj.setQuantity(PersoObj.getQuantity() + BankObj.getQuantity());
 				
@@ -2293,7 +2293,7 @@ public class Player {
 				
 				//On envoie les packets
 				SocketManager.GAME_SEND_OBJECT_QUANTITY_PACKET(this,PersoObj);
-				String str = "O+"+BankObj.getGuid()+"|"+BankObj.getQuantity()+"|"+BankObj.getTemplate().getID()+"|"+BankObj.parseStatsString();
+				String str = "O+"+BankObj.getId()+"|"+BankObj.getQuantity()+"|"+BankObj.getTemplate().getId()+"|"+BankObj.parseStatsString();
 				SocketManager.GAME_SEND_EsK_PACKET(this, str);
 				
 			}
@@ -2336,17 +2336,17 @@ public class Player {
 	public void removeByTemplateID(int tID, int count)
 	{
 		//Copie de la liste pour eviter les modif concurrentes
-		ArrayList<Objet> list = new ArrayList<Objet>();
+		ArrayList<Object> list = new ArrayList<Object>();
 		list.addAll(this.objects.values());
 		
-		ArrayList<Objet> remove = new ArrayList<Objet>();
+		ArrayList<Object> remove = new ArrayList<Object>();
 		int tempCount = count;
 		
 		//on verifie pour chaque objet
-		for(Objet obj : list)
+		for(Object obj : list)
 		{
 			//Si mauvais TemplateID, on passe
-			if(obj.getTemplate().getID() != tID)continue;
+			if(obj.getTemplate().getId() != tID)continue;
 			
 			if(obj.getQuantity() >= count)
 			{
@@ -2359,11 +2359,11 @@ public class Player {
 				}else
 				{
 					//on supprime de l'inventaire et du Monde
-					this.objects.remove(obj.getGuid());
-					World.data.removeItem(obj.getGuid());
+					this.objects.remove(obj.getId());
+					World.data.removeItem(obj.getId());
 					//on envoie le packet si connecté
 					if(this.isOnline)
-						SocketManager.GAME_SEND_REMOVE_ITEM_PACKET(this, obj.getGuid());
+						SocketManager.GAME_SEND_REMOVE_ITEM_PACKET(this, obj.getId());
 				}
 				return;
 			}
@@ -2380,14 +2380,14 @@ public class Player {
 					}
 					else remove.add(obj);
 					
-					for(Objet o : remove)
+					for(Object o : remove)
 					{
 						//on supprime de l'inventaire et du Monde
-						this.objects.remove(o.getGuid());
-						World.data.removeItem(o.getGuid());
+						this.objects.remove(o.getId());
+						World.data.removeItem(o.getId());
 						//on envoie le packet si connecté
 						if(this.isOnline)
-							SocketManager.GAME_SEND_REMOVE_ITEM_PACKET(this, o.getGuid());
+							SocketManager.GAME_SEND_REMOVE_ITEM_PACKET(this, o.getId());
 					}
 				}else
 				{
@@ -2534,7 +2534,7 @@ public class Player {
 	public void toogleOnMount()
 	{
 		this.setOnMount(!this.isOnMount());
-		Objet obj = getObjetByPos(Constants.ITEM_POS_FAMILIER);
+		Object obj = getObjetByPos(Constants.ITEM_POS_FAMILIER);
 		
 		if(this.isOnMount() && obj != null)	{
 			obj.setPosition(Constants.ITEM_POS_NO_EQUIPED);
@@ -2805,10 +2805,10 @@ public class Player {
 		
 	public boolean hasItemTemplate(int i, int q)
 	{
-		for(Objet obj : this.objects.values())
+		for(Object obj : this.objects.values())
 		{
 			if(obj.getPosition() != Constants.ITEM_POS_NO_EQUIPED)continue;
-			if(obj.getTemplate().getID() != i)continue;
+			if(obj.getTemplate().getId() != i)continue;
 			if(obj.getQuantity() >= q)return true;
 		}
 		return false;
@@ -2900,7 +2900,7 @@ public class Player {
 		boolean isFirstDe = true;
 		boolean isFirstDf = true;
 		boolean isFirstFA = true;
-		for(Objet obj : this.objects.values())
+		for(Object obj : this.objects.values())
 		{
 			if(obj.getPosition() == Constants.ITEM_POS_NO_EQUIPED)continue;
 			if(obj.getPosition() == Constants.ITEM_POS_AMULETTE)
@@ -3212,9 +3212,9 @@ public class Player {
         if(this.getStores().isEmpty())return "";
         for(Entry<Integer,Integer> obj : this.getStores().entrySet()) 
         {
-        	Objet O = World.data.getObjet(obj.getKey());
+        	Object O = World.data.getObjet(obj.getKey());
         	if(O == null) continue;
-        	list.append(O.getGuid()).append(";").append(O.getQuantity()).append(";").append(O.getTemplate().getID()).append(";").append(O.parseStatsString()).append(";").append(obj.getValue()).append("|");
+        	list.append(O.getId()).append(";").append(O.getQuantity()).append(";").append(O.getTemplate().getId()).append(";").append(O.parseStatsString()).append(";").append(obj.getValue()).append("|");
         }
         return (list.length()>0?list.toString().substring(0, list.length()-1):list.toString());
     }
@@ -3231,7 +3231,7 @@ public class Player {
     
     public void addinStore(int ObjID, int price, int qua)
     {
-		Objet PersoObj = World.data.getObjet(ObjID);
+		Object PersoObj = World.data.getObjet(ObjID);
 		//Si le joueur n'a pas l'item dans son sac ...
 		if(this.getStores().get(ObjID) != null)
 		{
@@ -3248,7 +3248,7 @@ public class Player {
 		//Si c'est un item équipé ...
 		if(PersoObj.getPosition() != Constants.ITEM_POS_NO_EQUIPED)return;
 		
-		Objet SimilarObj = getSimilarStoreItem(PersoObj);
+		Object SimilarObj = getSimilarStoreItem(PersoObj);
 		int newQua = PersoObj.getQuantity() - qua;
 		if(SimilarObj == null)//S'il n'y pas d'item du meme Template
 		{
@@ -3256,10 +3256,10 @@ public class Player {
 			if(newQua <= 0)
 			{
 				//On enleve l'objet du sac du joueur
-				removeItem(PersoObj.getGuid());
+				removeItem(PersoObj.getId());
 				//On met l'objet du sac dans le store, avec la meme quantité
-				this.getStores().put(PersoObj.getGuid(), price);
-				SocketManager.GAME_SEND_REMOVE_ITEM_PACKET(this, PersoObj.getGuid());
+				this.getStores().put(PersoObj.getId(), price);
+				SocketManager.GAME_SEND_REMOVE_ITEM_PACKET(this, PersoObj.getId());
                 SocketManager.GAME_SEND_ITEM_LIST_PACKET_SELLER(this, this);
 			}
 			else//S'il reste des objets au joueur
@@ -3267,9 +3267,9 @@ public class Player {
 				//on modifie la quantité d'item du sac
 				PersoObj.setQuantity(newQua);
 				//On ajoute l'objet a la banque et au monde
-				SimilarObj = Objet.getCloneObjet(PersoObj, qua);
+				SimilarObj = Object.getClone(PersoObj, qua);
 				World.data.addObjet(SimilarObj, true);
-				this.getStores().put(SimilarObj.getGuid(), price);
+				this.getStores().put(SimilarObj.getId(), price);
 				
 				//Envoie des packets
 				SocketManager.GAME_SEND_ITEM_LIST_PACKET_SELLER(this, this);
@@ -3282,24 +3282,24 @@ public class Player {
 			if(newQua <= 0)
 			{
 				//On enleve l'objet du sac du joueur
-				removeItem(PersoObj.getGuid());
+				removeItem(PersoObj.getId());
 				//On enleve l'objet du monde
-				World.data.removeItem(PersoObj.getGuid());
+				World.data.removeItem(PersoObj.getId());
 				//On ajoute la quantité a l'objet en banque
 				SimilarObj.setQuantity(SimilarObj.getQuantity() + PersoObj.getQuantity());
-				this.getStores().remove(SimilarObj.getGuid());
-				this.getStores().put(SimilarObj.getGuid(), price);
+				this.getStores().remove(SimilarObj.getId());
+				this.getStores().put(SimilarObj.getId(), price);
 				//on envoie l'ajout a la banque de l'objet
 				SocketManager.GAME_SEND_ITEM_LIST_PACKET_SELLER(this, this);
 				//on envoie la supression de l'objet du sac au joueur
-				SocketManager.GAME_SEND_REMOVE_ITEM_PACKET(this, PersoObj.getGuid());
+				SocketManager.GAME_SEND_REMOVE_ITEM_PACKET(this, PersoObj.getId());
 			}else //S'il restait des objets
 			{
 				//on modifie la quantité d'item du sac
 				PersoObj.setQuantity(newQua);
 				SimilarObj.setQuantity(SimilarObj.getQuantity() + qua);
-				this.getStores().remove(SimilarObj.getGuid());
-				this.getStores().put(SimilarObj.getGuid(), price);
+				this.getStores().remove(SimilarObj.getId());
+				this.getStores().put(SimilarObj.getId(), price);
 				SocketManager.GAME_SEND_ITEM_LIST_PACKET_SELLER(this, this);
 				SocketManager.GAME_SEND_OBJECT_QUANTITY_PACKET(this, PersoObj);
 				
@@ -3309,14 +3309,14 @@ public class Player {
 		save();
     }
 
-	private Objet getSimilarStoreItem(Objet obj)
+	private Object getSimilarStoreItem(Object obj)
 	{
 		for(Entry<Integer, Integer> value : this.getStores().entrySet())
 		{
-			Objet obj2 = World.data.getObjet(value.getKey());
+			Object obj2 = World.data.getObjet(value.getKey());
 			if(obj2.getTemplate().getType() == 85)
 				continue;
-			if(obj2.getTemplate().getID() == obj.getTemplate().getID() && obj2.getStats().isSameStats(obj.getStats()))
+			if(obj2.getTemplate().getId() == obj.getTemplate().getId() && obj2.getStats().isSameStats(obj.getStats()))
 				return obj2;
 		}
 		return null;
@@ -3324,7 +3324,7 @@ public class Player {
 	
 	public void removeFromStore(int guid, int qua)
 	{
-		Objet SimilarObj = World.data.getObjet(guid);
+		Object SimilarObj = World.data.getObjet(guid);
 		//Si le joueur n'a pas l'item dans son store ...
 		if(this.getStores().get(guid) == null)
 		{
@@ -3332,7 +3332,7 @@ public class Player {
 			return;
 		}
 		
-		Objet PersoObj = getSimilarItem(SimilarObj);
+		Object PersoObj = getSimilarItem(SimilarObj);
 		
 		int newQua = SimilarObj.getQuantity() - qua;
 		
@@ -3358,8 +3358,8 @@ public class Player {
 			if(newQua <= 0)
 			{
 				//On retire l'item de la banque
-				this.getStores().remove(SimilarObj.getGuid());
-				World.data.removeItem(SimilarObj.getGuid());
+				this.getStores().remove(SimilarObj.getId());
+				World.data.removeItem(SimilarObj.getId());
 				//On Modifie la quantité de l'item du sac du joueur
 				PersoObj.setQuantity(PersoObj.getQuantity() + SimilarObj.getQuantity());
 				

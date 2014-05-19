@@ -8,7 +8,7 @@ import org.ancestra.evolutive.common.SocketManager;
 import org.ancestra.evolutive.core.World;
 import org.ancestra.evolutive.game.GameClient;
 import org.ancestra.evolutive.job.JobStat;
-import org.ancestra.evolutive.object.Objet;
+import org.ancestra.evolutive.object.Object;
 import org.ancestra.evolutive.tool.plugin.packet.Packet;
 import org.ancestra.evolutive.tool.plugin.packet.PacketParser;
 
@@ -27,7 +27,7 @@ public class Move implements PacketParser {
 			} catch(Exception e)	{
 				qua = 1;
 			}
-			Objet obj = World.data.getObjet(guid);
+			Object obj = World.data.getObjet(guid);
 			
 			if(!client.getPlayer().hasItemGuid(guid) || obj == null)
 				return;
@@ -54,19 +54,19 @@ public class Move implements PacketParser {
 				return;
 			}
 			//On ne peut �quiper 2 items de panoplies identiques, ou 2 Dofus identiques
-			if(pos != Constants.ITEM_POS_NO_EQUIPED && (obj.getTemplate().getPanopID() != -1 || obj.getTemplate().getType() == Constants.ITEM_TYPE_DOFUS )&& client.getPlayer().hasEquiped(obj.getTemplate().getID()))
+			if(pos != Constants.ITEM_POS_NO_EQUIPED && (obj.getTemplate().getSet() != -1 || obj.getTemplate().getType() == Constants.ITEM_TYPE_DOFUS )&& client.getPlayer().hasEquiped(obj.getTemplate().getId()))
 				return;
 			
-			Objet exObj = client.getPlayer().getObjetByPos(pos);//Objet a l'ancienne position
+			Object exObj = client.getPlayer().getObjetByPos(pos);//Objet a l'ancienne position
 			if(exObj != null)//S'il y avait d�ja un objet sur cette place on d�s�quipe
 			{
-				Objet obj2;
+				Object obj2;
 				if((obj2 = client.getPlayer().getSimilarItem(exObj)) != null) {//On le poss�de deja
 					obj2.setQuantity(obj2.getQuantity()+exObj.getQuantity());
 					SocketManager.GAME_SEND_OBJECT_QUANTITY_PACKET(client.getPlayer(), obj2);
-					World.data.removeItem(exObj.getGuid());
-					client.getPlayer().removeItem(exObj.getGuid());
-					SocketManager.GAME_SEND_REMOVE_ITEM_PACKET(client.getPlayer(), exObj.getGuid());
+					World.data.removeItem(exObj.getId());
+					client.getPlayer().removeItem(exObj.getId());
+					SocketManager.GAME_SEND_REMOVE_ITEM_PACKET(client.getPlayer(), exObj.getId());
 				}else {//On ne le poss�de pas
 					exObj.setPosition(Constants.ITEM_POS_NO_EQUIPED);
 					SocketManager.GAME_SEND_OBJET_MOVE_PACKET(client.getPlayer(),exObj);
@@ -75,10 +75,11 @@ public class Move implements PacketParser {
 					SocketManager.GAME_SEND_OT_PACKET(client, -1);
 				
 				//Si objet de panoplie
-				if(exObj.getTemplate().getPanopID() > 0)SocketManager.GAME_SEND_OS_PACKET(client.getPlayer(),exObj.getTemplate().getPanopID());
+				if(exObj.getTemplate().getSet() > 0)
+					SocketManager.GAME_SEND_OS_PACKET(client.getPlayer(),exObj.getTemplate().getSet());
 			}else//getNumbEquipedItemOfPanoplie(exObj.getTemplate().getPanopID()
 			{
-				Objet obj2;
+				Object obj2;
 				//On a un objet similaire
 				if((obj2 = client.getPlayer().getSimilarItem(obj)) != null)
 				{
@@ -93,9 +94,9 @@ public class Move implements PacketParser {
 						SocketManager.GAME_SEND_OBJECT_QUANTITY_PACKET(client.getPlayer(), obj);
 					}else//Sinon on supprime
 					{
-						World.data.removeItem(obj.getGuid());
-						client.getPlayer().removeItem(obj.getGuid());
-						SocketManager.GAME_SEND_REMOVE_ITEM_PACKET(client.getPlayer(), obj.getGuid());
+						World.data.removeItem(obj.getId());
+						client.getPlayer().removeItem(obj.getId());
+						SocketManager.GAME_SEND_REMOVE_ITEM_PACKET(client.getPlayer(), obj.getId());
 					}
 				}else {//Pas d'objets similaires
 					obj.setPosition(pos);
@@ -107,7 +108,7 @@ public class Move implements PacketParser {
 						if(obj.getQuantity() - qua > 0)//Si il en reste
 						{
 							int newItemQua = obj.getQuantity()-qua;
-							Objet newItem = Objet.getCloneObjet(obj,newItemQua);
+							Object newItem = Object.getClone(obj,newItemQua);
 							client.getPlayer().addObjet(newItem,false);
 							World.data.addObjet(newItem,true);
 							obj.setQuantity(qua);
@@ -138,12 +139,12 @@ public class Move implements PacketParser {
 			
 			if(pos == Constants.ITEM_POS_ARME && client.getPlayer().getObjetByPos(Constants.ITEM_POS_ARME) != null)
 				for(Entry<Integer, JobStat> e : client.getPlayer().getMetiers().entrySet())
-					if(e.getValue().getTemplate().isValidTool(client.getPlayer().getObjetByPos(Constants.ITEM_POS_ARME).getTemplate().getID()))
+					if(e.getValue().getTemplate().isValidTool(client.getPlayer().getObjetByPos(Constants.ITEM_POS_ARME).getTemplate().getId()))
 						SocketManager.GAME_SEND_OT_PACKET(client,e.getValue().getTemplate().getId());
 
 			//Si objet de panoplie
-			if(obj.getTemplate().getPanopID() > 0)
-				SocketManager.GAME_SEND_OS_PACKET(client.getPlayer(),obj.getTemplate().getPanopID());
+			if(obj.getTemplate().getSet() > 0)
+				SocketManager.GAME_SEND_OS_PACKET(client.getPlayer(),obj.getTemplate().getSet());
 			if(client.getPlayer().getFight() != null)
 				SocketManager.GAME_SEND_ON_EQUIP_ITEM_FIGHT(client.getPlayer(), client.getPlayer().getFight().getFighterByPerso(client.getPlayer()), client.getPlayer().getFight());
 		}catch(Exception e)	{

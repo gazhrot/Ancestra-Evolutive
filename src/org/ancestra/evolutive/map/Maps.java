@@ -1,7 +1,7 @@
 package org.ancestra.evolutive.map;
 
 import org.ancestra.evolutive.map.Maps;
-import org.ancestra.evolutive.object.Objet;
+import org.ancestra.evolutive.object.Object;
 import org.ancestra.evolutive.other.Action;
 
 import java.util.ArrayList;
@@ -495,7 +495,7 @@ public class Maps {
 		if(this.getCases().get(cell) == null)
 			return;
 		
-		Objet obj = this.getCases().get(cell).getObject();
+		Object obj = this.getCases().get(cell).getObject();
 		
 		if(obj != null) {
 			this.getCases().get(cell).setObject(null);
@@ -573,7 +573,7 @@ public class Maps {
 	public void sendFloorItems(Player player) {
 		for(Case cell: this.getCases().values())
 			if(cell.getObject() != null)
-				SocketManager.GAME_SEND_GDO_PACKET(player, '+', cell.getId(), cell.getObject().getTemplate().getID(), 0);
+				SocketManager.GAME_SEND_GDO_PACKET(player, '+', cell.getId(), cell.getObject().getTemplate().getId(), 0);
 	}
 
 	public int getStoreCount() {

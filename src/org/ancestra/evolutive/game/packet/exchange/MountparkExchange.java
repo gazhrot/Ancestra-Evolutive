@@ -6,8 +6,8 @@ import org.ancestra.evolutive.core.World;
 import org.ancestra.evolutive.entity.Mount;
 import org.ancestra.evolutive.game.GameClient;
 import org.ancestra.evolutive.map.MountPark;
-import org.ancestra.evolutive.object.Objet;
-import org.ancestra.evolutive.object.Objet.ObjTemplate;
+import org.ancestra.evolutive.object.Object;
+import org.ancestra.evolutive.object.ObjectTemplate;
 import org.ancestra.evolutive.tool.plugin.packet.Packet;
 import org.ancestra.evolutive.tool.plugin.packet.PacketParser;
 
@@ -42,12 +42,12 @@ public class MountparkExchange implements PacketParser {
 						return;
 					}
 					
-					Objet obj = World.data.getObjet(guid);
+					Object obj = World.data.getObjet(guid);
 					int DDid = obj.getStats().getEffect(995);
 					Mount DD = World.data.getDragoByID(DDid);
 					//FIXME mettre return au if pour ne pas cr�er des nouvelles dindes
 					if(DD == null) {
-						int color = Constants.getMountColorByParchoTemplate(obj.getTemplate().getID());
+						int color = Constants.getMountColorByParchoTemplate(obj.getTemplate().getId());
 						if(color <1)
 							return;
 						DD = new Mount(color);
@@ -59,7 +59,7 @@ public class MountparkExchange implements PacketParser {
 					MP.getDatas().put(DD.getId(), client.getPlayer().getUUID());
 					World.database.getMountparkData().update(MP);
 					//On envoie les packet
-					SocketManager.GAME_SEND_REMOVE_ITEM_PACKET(client.getPlayer(),obj.getGuid());
+					SocketManager.GAME_SEND_REMOVE_ITEM_PACKET(client.getPlayer(),obj.getId());
 					SocketManager.GAME_SEND_Ee_PACKET(client.getPlayer(), '+', DD.parse());
 				break;
 				case 'c'://Etable => Parcho(Echanger)
@@ -80,14 +80,14 @@ public class MountparkExchange implements PacketParser {
 					MP.getDatas().remove(DD1.getId());
 					World.database.getMountparkData().update(MP);
 					//On cr�er le parcho
-					ObjTemplate T = Constants.getParchoTemplateByMountColor(DD1.getColor());
-					Objet obj1 = T.createNewItem(1, false);
+					ObjectTemplate T = Constants.getParchoTemplateByMountColor(DD1.getColor());
+					Object obj1 = T.createNewItem(1, false);
 					//On efface les stats
 					obj1.clearStats();
 					//on ajoute la possibilit� de voir la dinde
 					obj1.getStats().addOneStat(995, DD1.getId());
-					obj1.addTxtStat(996, client.getPlayer().getName());
-					obj1.addTxtStat(997, DD1.getName());
+					obj1.getTxtStats().put(996, client.getPlayer().getName());
+					obj1.getTxtStats().put(997, DD1.getName());
 					
 					//On ajoute l'objet au joueur
 					World.data.addObjet(obj1, true);

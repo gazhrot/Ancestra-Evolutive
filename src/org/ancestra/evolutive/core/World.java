@@ -20,10 +20,10 @@ import org.ancestra.evolutive.fight.spell.Spell;
 import org.ancestra.evolutive.map.Maps;
 import org.ancestra.evolutive.map.MountPark;
 import org.ancestra.evolutive.map.InteractiveObject.InteractiveObjectTemplate;
-import org.ancestra.evolutive.object.ItemSet;
-import org.ancestra.evolutive.object.Objet;
-import org.ancestra.evolutive.object.PierreAme;
-import org.ancestra.evolutive.object.Objet.ObjTemplate;
+import org.ancestra.evolutive.object.ObjectSet;
+import org.ancestra.evolutive.object.ObjectTemplate;
+import org.ancestra.evolutive.object.Object;
+import org.ancestra.evolutive.object.SoulStone;
 import org.ancestra.evolutive.other.ExpLevel;
 import org.ancestra.evolutive.tool.command.Command;
 import org.ancestra.evolutive.tool.plugin.PluginLoader;
@@ -52,8 +52,8 @@ import org.ancestra.evolutive.common.SocketManager;
 import org.ancestra.evolutive.database.Database;
 import org.ancestra.evolutive.game.GameClient;
 import org.ancestra.evolutive.guild.Guild;
-import org.ancestra.evolutive.hdv.HDV;
-import org.ancestra.evolutive.hdv.HDV.HdvEntry;
+import org.ancestra.evolutive.hdv.Hdv;
+import org.ancestra.evolutive.hdv.HdvEntry;
 import org.ancestra.evolutive.house.House;
 import org.ancestra.evolutive.house.Trunk;
 import org.ancestra.evolutive.job.Job;
@@ -70,10 +70,10 @@ public class World {
 	private Map<Integer, Account> accounts = new HashMap<>();
 	private Map<Integer, Player> players = new HashMap<>();
 	private Map<Short, Maps> maps = new HashMap<>();
-	private Map<Integer, Objet> objects = new HashMap<>();
+	private Map<Integer, Object> objects = new HashMap<>();
 	private Map<Integer, ExpLevel> expLevels = new HashMap<>();
 	private Map<Integer, Spell> spells = new HashMap<>();
-	private Map<Integer, ObjTemplate> templateObjects = new HashMap<>();
+	private Map<Integer, ObjectTemplate> templateObjects = new HashMap<>();
 	private Map<Integer, MobTemplate> templateMobs = new HashMap<>();
 	private Map<Integer, NpcTemplate> npcTemplates = new HashMap<>();
 	private Map<Integer, NpcQuestion> npcQuestions = new HashMap<>();
@@ -85,9 +85,9 @@ public class World {
 	private Map<Integer, SubArea> subAreas = new HashMap<>();
 	private Map<Integer, Job> jobs = new HashMap<>();
 	private Map<Integer, ArrayList<Couple<Integer, Integer>>> crafts = new HashMap<>();
-	private Map<Integer, ItemSet> setItems = new HashMap<>();
+	private Map<Integer, ObjectSet> setItems = new HashMap<>();
 	private Map<Integer, Guild> guilds = new HashMap<>();
-	private Map<Integer, HDV> hdvs = new HashMap<>();
+	private Map<Integer, Hdv> hdvs = new HashMap<>();
 	private Map<Integer, Map<Integer, ArrayList<HdvEntry>>> hdvItems = new HashMap<>();
 	private Map<Integer, Player> married = new HashMap<>();
 	private Map<Integer, Animation> animations = new HashMap<>();
@@ -307,8 +307,8 @@ public class World {
 		spells.put(sort.getSpellID(), sort);
 	}
 
-	public void addObjTemplate(ObjTemplate obj) {
-		templateObjects.put(obj.getID(), obj);
+	public void addObjTemplate(ObjectTemplate obj) {
+		templateObjects.put(obj.getId(), obj);
 	}
 
 	public Spell getSort(int id) {
@@ -318,8 +318,8 @@ public class World {
 		return spell;
 	}
 
-	public ObjTemplate getObjTemplate(int id) {
-		ObjTemplate template = templateObjects.get(id);
+	public ObjectTemplate getObjTemplate(int id) {
+		ObjectTemplate template = templateObjects.get(id);
 		if(template == null)
 			template = World.database.getItemTemplateData().load(id);
 		return template;
@@ -353,21 +353,21 @@ public class World {
 		return online;
 	}
 
-	public void addObjet(Objet item, boolean saveSQL) {
-		objects.put(item.getGuid(), item);
+	public void addObjet(Object item, boolean saveSQL) {
+		objects.put(item.getId(), item);
 		if (saveSQL)
 			World.database.getItemData().create(item);
 	}
 
-	public Objet getObjet(int guid) {
-		Objet item = objects.get(guid);
+	public Object getObjet(int guid) {
+		Object item = objects.get(guid);
 		if(item == null)
 			item = World.database.getItemData().load(guid);
 		return item;
 	}
 
 	public void removeItem(int guid) {
-		Objet o = objects.get(guid);
+		Object o = objects.get(guid);
 		objects.remove(guid);
 		database.getItemData().delete(o);
 	}
@@ -429,14 +429,14 @@ public class World {
 
 					Log.addToLog("Sauvegarde des maisons...");
 					for (House house : houses.values()) {
-						if (house.get_owner_id() > 0) {
+						if (house.getOwner() > 0) {
 							database.getHouseData().update(house);
 						}
 					}
 
 					Log.addToLog("Sauvegarde des coffres...");
 					for (Trunk t : trunks.values()) {
-						if (t.get_owner_id() > 0) {
+						if (t.getOwner() > 0) {
 							database.getTrunkData().update(t);
 						}
 					}
@@ -449,8 +449,8 @@ public class World {
 					}
 
 					Log.addToLog("Sauvegarde des hdvs...");
-					for (HDV curHdv : hdvs.values()) {
-						database.getHdvData().updateHdvItems(curHdv.getHdvID());
+					for (Hdv curHdv : hdvs.values()) {
+						database.getHdvData().updateHdvItems(curHdv.getId());
 					}
 
 					Log.addToLog("Sauvegarde effectuee !");
@@ -568,12 +568,12 @@ public class World {
 		return null;
 	}
 
-	public void addItemSet(ItemSet itemSet) {
+	public void addItemSet(ObjectSet itemSet) {
 		setItems.put(itemSet.getId(), itemSet);
 	}
 
-	public ItemSet getItemSet(int tID) {
-		ItemSet set = setItems.get(tID);
+	public ObjectSet getItemSet(int tID) {
+		ObjectSet set = setItems.get(tID);
 		if(set == null)
 			set = World.database.getItemSetData().load(tID);
 		return set;
@@ -691,7 +691,7 @@ public class World {
 	public void unloadPerso(int g) {
 		Player toRem = players.get(g);
 		if (!toRem.getItems().isEmpty()) {
-			for (Entry<Integer, Objet> curObj : toRem.getItems().entrySet()) {
+			for (Entry<Integer, Object> curObj : toRem.getItems().entrySet()) {
 				objects.remove(curObj.getKey());
 			}
 		}
@@ -719,7 +719,7 @@ public class World {
 		return false;
 	}
 
-	public Objet newObjet(int Guid, int template, int qua, int pos,
+	public Object newObjet(int Guid, int template, int qua, int pos,
 			String strStats) {
 		if (getObjTemplate(template) == null) {
 			Console.instance.println("ItemTemplate " + template
@@ -728,9 +728,9 @@ public class World {
 		}
 
 		if (getObjTemplate(template).getType() == 85)
-			return new PierreAme(Guid, qua, template, pos, strStats);
+			return new SoulStone(Guid, qua, template, pos, strStats);
 		else
-			return new Objet(Guid, template, qua, pos, strStats);
+			return new Object(Guid, template, qua, pos, strStats);
 	}
 
 	public short get_state() {
@@ -749,8 +749,8 @@ public class World {
 		gmAccess = GmAccess;
 	}
 
-	public HDV getHdv(int mapID) {
-		HDV object = hdvs.get(mapID);
+	public Hdv getHdv(int mapID) {
+		Hdv object = hdvs.get(mapID);
 		if(object == null)
 			object = World.database.getHdvData().load(mapID);
 		return object;
@@ -814,8 +814,8 @@ public class World {
 		return size;
 	}
 
-	public void addHdv(HDV toAdd) {
-		hdvs.put(toAdd.getHdvID(), toAdd);
+	public void addHdv(Hdv toAdd) {
+		hdvs.put(toAdd.getId(), toAdd);
 	}
 
 	public Map<Integer, ArrayList<HdvEntry>> getMyItems(int compteID) {
@@ -824,7 +824,7 @@ public class World {
 		return hdvItems.get(compteID);
 	}
 
-	public Collection<ObjTemplate> getObjTemplates() {
+	public Collection<ObjectTemplate> getObjTemplates() {
 		return templateObjects.values();
 	}
 
@@ -905,7 +905,7 @@ public class World {
 	}
 
 	public void addHouse(House house) {
-		houses.put(house.get_id(), house);
+		houses.put(house.getId(), house);
 	}
 
 	public Map<Integer, House> getHouses() {
@@ -932,7 +932,7 @@ public class World {
 	}
 
 	public void addTrunk(Trunk trunk) {
-		trunks.put(trunk.get_id(), trunk);
+		trunks.put(trunk.getId(), trunk);
 	}
 
 	public Trunk getTrunk(int id) {

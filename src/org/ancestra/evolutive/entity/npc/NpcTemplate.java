@@ -4,9 +4,10 @@ import java.util.ArrayList;
 
 import org.ancestra.evolutive.core.World;
 import org.ancestra.evolutive.entity.npc.NpcTemplate;
-import org.ancestra.evolutive.object.Objet.ObjTemplate;
+import org.ancestra.evolutive.object.ObjectTemplate;
 
 public class NpcTemplate {
+	
 	private int id;
 	private int bonus;
 	private int gfx;
@@ -20,7 +21,7 @@ public class NpcTemplate {
 	private int extraClip;
 	private int customArtWork;
 	private int initQuestion;
-	private ArrayList<ObjTemplate> objects = new ArrayList<ObjTemplate>();
+	private ArrayList<ObjectTemplate> objects = new ArrayList<>();
 		
 	public NpcTemplate(int id, int bonus, int gfx, int scaleX, int scaleY, int sex, int color1,	int color2, 
 			int color3, String acces, int extraClip, int customArtWork, int initQuestion, String objects) {
@@ -43,7 +44,7 @@ public class NpcTemplate {
 		
 		for(String obj : objects.split("\\,")) {
 			try	{
-				ObjTemplate template = World.data.getObjTemplate(Integer.parseInt(obj));
+				ObjectTemplate template = World.data.getObjTemplate(Integer.parseInt(obj));
 				
 				if(template == null)
 					continue;
@@ -157,7 +158,7 @@ public class NpcTemplate {
 		this.initQuestion = initQuestion;
 	}
 	
-	public ArrayList<ObjTemplate> getObjects() {
+	public ArrayList<ObjectTemplate> getObjects() {
 		return objects;
 	}
 	
@@ -167,13 +168,13 @@ public class NpcTemplate {
 		
 		StringBuilder items = new StringBuilder();
 		
-		for(ObjTemplate obj : this.getObjects())
+		for(ObjectTemplate obj : this.getObjects())
 			items.append(obj.parseItemTemplateStats()).append("|");
 		
 		return items.toString();
 	}
 
-	public boolean addObject(ObjTemplate template) {
+	public boolean addObject(ObjectTemplate template) {
 		if(this.getObjects().contains(template))
 			return false;
 		this.getObjects().add(template);
@@ -181,11 +182,11 @@ public class NpcTemplate {
 	}
 	
 	public boolean removeObject(int id) {
-		ArrayList<ObjTemplate> objects = new ArrayList<ObjTemplate>();
+		ArrayList<ObjectTemplate> objects = new ArrayList<>();
 		boolean remove = false;
 		
-		for(ObjTemplate template: this.getObjects()) {
-			if(template.getID() == id) {
+		for(ObjectTemplate template: this.getObjects()) {
+			if(template.getId() == id) {
 				remove = true;
 				continue;
 			}
@@ -197,8 +198,8 @@ public class NpcTemplate {
 	}
 	
 	public boolean haveObject(int id) {
-		for(ObjTemplate template : this.getObjects())
-			if(template.getID() == id)
+		for(ObjectTemplate template : this.getObjects())
+			if(template.getId() == id)
 				return true;		
 		return false;
 	}

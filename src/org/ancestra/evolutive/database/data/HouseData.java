@@ -13,10 +13,6 @@ import org.ancestra.evolutive.database.AbstractDAO;
 import org.ancestra.evolutive.house.House;
 import org.ancestra.evolutive.house.Trunk;
 
-
-
-
-
 public class HouseData extends AbstractDAO<House>{
 
 	public HouseData(Connection connection, ReentrantLock locker) {
@@ -50,13 +46,13 @@ public class HouseData extends AbstractDAO<House>{
 					+ "`key` = ?," + "`guild_rights` = ?" + " WHERE id = ?;";
 			PreparedStatement statement = connection.prepareStatement(baseQuery);
 			
-			statement.setInt(1, obj.get_owner_id());
-			statement.setInt(2, obj.get_sale());
-			statement.setInt(3, obj.get_guild_id());
-			statement.setInt(4, obj.get_access());
-			statement.setString(5, obj.get_key());
-			statement.setInt(6, obj.get_guild_rights());
-			statement.setInt(7, obj.get_id());
+			statement.setInt(1, obj.getOwner());
+			statement.setInt(2, obj.getSale());
+			statement.setInt(3, obj.getGuildId());
+			statement.setInt(4, obj.getAccess());
+			statement.setString(5, obj.getKey());
+			statement.setInt(6, obj.getGuildRights());
+			statement.setInt(7, obj.getId());
 
 			execute(statement);
 			return true;
@@ -70,15 +66,15 @@ public class HouseData extends AbstractDAO<House>{
 		try {
 			String query = "UPDATE `houses` SET `sale`='0', " +
 					"`owner_id`= "+player.getAccount().getUUID()+", `guild_id`='0', `access`='0'," +
-					" `key`='-', `guild_rights`='0' WHERE `id` = "+house.get_id();
+					" `key`='-', `guild_rights`='0' WHERE `id` = "+house.getId();
 			execute(query);
 			
-			house.set_sale(0);
-			house.set_owner_id(player.getAccount().getUUID());
-			house.set_guild_id(0);
-			house.set_access(0);
-			house.set_key("-");
-			house.set_guild_rights(0);
+			house.setSale(0);
+			house.setOwner(player.getAccount().getUUID());
+			house.setGuildId(0);
+			house.setAccess(0);
+			house.setKey("-");
+			house.setGuildRights(0);
 		} catch (Exception e) {
 			Console.instance.writeln("SQL ERROR(HouseData): "+e.getMessage());
 		}
@@ -86,8 +82,8 @@ public class HouseData extends AbstractDAO<House>{
 		
 		ArrayList<Trunk> trunks = Trunk.getTrunksByHouse(house);
 		for (Trunk trunk : trunks) {
-			trunk.set_owner_id(player.getAccount().getUUID());
-			trunk.set_key("-");
+			trunk.setOwner(player.getAccount().getUUID());
+			trunk.setKey("-");
 		}
 
 		try {
@@ -95,7 +91,7 @@ public class HouseData extends AbstractDAO<House>{
 			PreparedStatement statement = connection.prepareStatement(query);
 			
 			statement.setInt(1, player.getAccount().getUUID());
-			statement.setInt(2, house.get_id());
+			statement.setInt(2, house.getId());
 			
 			execute(statement);
 			return true;
@@ -106,13 +102,13 @@ public class HouseData extends AbstractDAO<House>{
 	}
 	
 	public boolean update(House house, int price) {
-		house.set_sale(price);
+		house.setSale(price);
 		
 		String query = "UPDATE `houses` SET `sale`=? WHERE `id` = ?;";
 		try {
 			PreparedStatement statement = connection.prepareStatement(query);
 			statement.setInt(1, price);
-			statement.setInt(2, house.get_id());
+			statement.setInt(2, house.getId());
 
 			execute(statement);
 			return true;
@@ -128,12 +124,12 @@ public class HouseData extends AbstractDAO<House>{
 			PreparedStatement statement = connection.prepareStatement(query);
 			
 			statement.setString(1, packet);
-			statement.setInt(2, house.get_id());
+			statement.setInt(2, house.getId());
 			statement.setInt(3, player.getAccount().getUUID());
 
 			execute(statement);
 
-			house.set_key(packet);
+			house.setKey(packet);
 			return true;
 		} catch (Exception e) {
 			Console.instance.writeln("SQL ERROR(HouseData): "+e.getMessage());
@@ -147,12 +143,12 @@ public class HouseData extends AbstractDAO<House>{
 			PreparedStatement statement = connection.prepareStatement(query);
 			statement.setInt(1, guild);
 			statement.setInt(2, rights);
-			statement.setInt(3, house.get_id());
+			statement.setInt(3, house.getId());
 
 			execute(statement);
 			
-			house.set_guild_id(guild);
-			house.set_guild_rights(rights);
+			house.setGuildId(guild);
+			house.setGuildRights(rights);
 			return true;
 		} catch (Exception e) {
 			Console.instance.writeln("SQL ERROR(HouseData): "+e.getMessage());

@@ -5,8 +5,8 @@ import java.util.ArrayList;
 import org.ancestra.evolutive.client.Player;
 import org.ancestra.evolutive.other.Action;
 
-public class NpcAnswer
-{
+public class NpcAnswer {
+	
 	private int id;
 	private ArrayList<Action> actions = new ArrayList<Action>();
 	

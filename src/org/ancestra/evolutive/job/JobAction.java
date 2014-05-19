@@ -18,8 +18,8 @@ import org.ancestra.evolutive.fight.spell.SpellEffect;
 import org.ancestra.evolutive.game.GameAction;
 import org.ancestra.evolutive.map.Case;
 import org.ancestra.evolutive.map.InteractiveObject;
-import org.ancestra.evolutive.object.Objet;
-import org.ancestra.evolutive.object.Objet.ObjTemplate;
+import org.ancestra.evolutive.object.Object;
+import org.ancestra.evolutive.object.ObjectTemplate;
 
 public class JobAction {
 	
@@ -42,8 +42,7 @@ public class JobAction {
 	private JobStat SM;
 	private JobCraft jobCraft;
 	
-	public JobAction(int sk, int min, int max, boolean craft, int arg, int xpWin)
-	{
+	public JobAction(int sk, int min, int max, boolean craft, int arg, int xpWin) {
 		this.id = sk;
 		this.min = min;
 		this.max = max;
@@ -102,11 +101,11 @@ public class JobAction {
 		this.player = P;
 		if(P.getObjetByPos(Constants.ITEM_POS_ARME) != null && SM.getTemplate().getId() == 36)
 		{
-			if(World.data.getMetier(36).isValidTool(P.getObjetByPos(Constants.ITEM_POS_ARME).getTemplate().getID()))
+			if(World.data.getMetier(36).isValidTool(P.getObjetByPos(Constants.ITEM_POS_ARME).getTemplate().getId()))
 			{
 				int dist = Pathfinding.getDistanceBetween(P.getCurMap(), P.getCurCell().getId(), cell.getId());
 				int distItem = 0;
-				switch(P.getObjetByPos(Constants.ITEM_POS_ARME).getTemplate().getID())
+				switch(P.getObjetByPos(Constants.ITEM_POS_ARME).getTemplate().getId())
 				{
 					case 8541://1 to 1
 					case 6661:
@@ -184,10 +183,10 @@ public class JobAction {
 			int qua = (this.max>this.min?Formulas.getRandomValue(this.min, this.max):this.min);
 			int tID = JobConstant.getObjectByJobSkill(this.id);
 							
-			ObjTemplate T = World.data.getObjTemplate(tID);
+			ObjectTemplate T = World.data.getObjTemplate(tID);
 			if(T == null)
 				return;
-			Objet O = T.createNewItem(qua, false);
+			Object O = T.createNewItem(qua, false);
 			//Si retourne true, on l'ajoute au monde
 			if(P.addObjet(O, true))
 				World.data.addObjet(O, true);
@@ -254,7 +253,7 @@ public class JobAction {
 				return;
 			}
 			//Si l'objet n'existe pas
-			Objet obj = World.data.getObjet(e.getKey());
+			Object obj = World.data.getObjet(e.getKey());
 			if(obj == null)
 			{
 				SocketManager.GAME_SEND_Ec_PACKET(this.player,"EI");
@@ -284,7 +283,7 @@ public class JobAction {
 				SocketManager.GAME_SEND_OBJECT_QUANTITY_PACKET(this.player, obj);
 			}
 			//on ajoute le couple tID/qua a la liste des ingrédients pour la recherche
-			items.put(obj.getTemplate().getID(), e.getValue());
+			items.put(obj.getTemplate().getId(), e.getValue());
 		}
 		//On retire les items a ignorer pour la recette
 		//Rune de signature
@@ -316,26 +315,26 @@ public class JobAction {
 			SocketManager.GAME_SEND_Im_PACKET(this.player, "0118");
 		}else
 		{
-			Objet newObj = World.data.getObjTemplate(tID).createNewItem(1, false);
+			Object newObj = World.data.getObjTemplate(tID).createNewItem(1, false);
 			//Si signé on ajoute la ligne de Stat "Fabriqué par:"
-			if(signed)newObj.addTxtStat(988, this.player.getName());
+			if(signed)newObj.getTxtStats().put(988, this.player.getName());
 			boolean add = true;
-			int guid = newObj.getGuid();
+			int guid = newObj.getId();
 			
-			for(Entry<Integer, Objet> entry : this.player.getItems().entrySet())
+			for(Entry<Integer, Object> entry : this.player.getItems().entrySet())
 			{
-				Objet obj = entry.getValue();
-				if(obj.getTemplate().getID() == newObj.getTemplate().getID() && obj.getStats().isSameStats(newObj.getStats()) && obj.getPosition() == Constants.ITEM_POS_NO_EQUIPED)//Si meme Template et Memes Stats et Objet non équipé
+				Object obj = entry.getValue();
+				if(obj.getTemplate().getId() == newObj.getTemplate().getId() && obj.getStats().isSameStats(newObj.getStats()) && obj.getPosition() == Constants.ITEM_POS_NO_EQUIPED)//Si meme Template et Memes Stats et Objet non équipé
 				{
 					obj.setQuantity(obj.getQuantity()+newObj.getQuantity());//On ajoute QUA item a la quantité de l'objet existant
 					SocketManager.GAME_SEND_OBJECT_QUANTITY_PACKET(this.player,obj);
 					add = false;
-					guid = obj.getGuid();
+					guid = obj.getId();
 				}
 			}
 			if(add)
 			{
-				this.player.getItems().put(newObj.getGuid(), newObj);
+				this.player.getItems().put(newObj.getId(), newObj);
 				SocketManager.GAME_SEND_OAKO_PACKET(this.player,newObj);
 				World.data.addObjet(newObj, true);
 			}
@@ -390,19 +389,19 @@ public class JobAction {
 	//TODO: Refresh des runes dans le bloc gauche du panel FM et non fouttre un clear directement.
 	private void doFmCraft() {
 		boolean isSigningRune = false;
-		Objet objectFm = null, signingRune = null, runeOrPotion = null;
+		Object objectFm = null, signingRune = null, runeOrPotion = null;
 		int lvlElementRune = 0, statsID = -1, lvlQuaStatsRune = 0, statsAdd = 0, deleteID = -1, poid = 0;
 		boolean bonusRune = false;
 		String statsObjectFm = "-1";
 		for (int idIngredient : this.ingredients.keySet()) {
-			Objet ing = World.data.getObjet(idIngredient);
+			Object ing = World.data.getObjet(idIngredient);
 			if (ing == null || !this.player.hasItemGuid(idIngredient)) {
 				SocketManager.GAME_SEND_Ec_PACKET(this.player, "EI");
 				SocketManager.GAME_SEND_IO_PACKET_TO_MAP(this.player.getCurMap(), this.player.getUUID(), "-");
 				this.ingredients.clear();
 				return;
 			}
-			int templateID = ing.getTemplate().getID();
+			int templateID = ing.getTemplate().getId();
 			switch (templateID) {
 				case 1333 :
 					statsID = 99;
@@ -903,11 +902,11 @@ public class JobAction {
 				default :
 					int type = ing.getTemplate().getType();
 					if ((type >= 1 && type <= 11) || (type >= 16 && type <= 22) || type == 81 || type == 102 || type == 114
-					|| ing.getTemplate().getPACost() > 0) {
+					|| ing.getTemplate().getPaCost() > 0) {
 						objectFm = ing;
-						SocketManager.GAME_SEND_EXCHANGE_OTHER_MOVE_OK_FM(this.player.getAccount().getGameClient(), 'O',"+", objectFm.getGuid() + "|" + 1);
+						SocketManager.GAME_SEND_EXCHANGE_OTHER_MOVE_OK_FM(this.player.getAccount().getGameClient(), 'O',"+", objectFm.getId() + "|" + 1);
 						deleteID = idIngredient;
-						Objet newObj = Objet.getCloneObjet(objectFm, 1);
+						Object newObj = Object.getClone(objectFm, 1);
 						if (objectFm.getQuantity() > 1) {
 							int newQuant = objectFm.getQuantity() - 1;
 							objectFm.setQuantity(newQuant);
@@ -933,10 +932,10 @@ public class JobAction {
 		if (deleteID != -1) {
 			this.ingredients.remove(deleteID);
 		}
-		ObjTemplate objTemplate = objectFm.getTemplate();
+		ObjectTemplate objTemplate = objectFm.getTemplate();
 		int chance = 0;
 		int lvlJob = job.get_lvl();
-		int objTemaplateID = objTemplate.getID();
+		int objTemaplateID = objTemplate.getId();
 		String statStringObj = objectFm.parseStatsString();
 		if (lvlElementRune > 0 && lvlQuaStatsRune == 0) {
 			chance = Formulas.calculChanceByElement(lvlJob, objTemplate.getLevel(), lvlElementRune);
@@ -989,9 +988,9 @@ public class JobAction {
 			if (signingRune != null) {
 				int newQua = signingRune.getQuantity() - 1;
 				if (newQua <= 0) {
-					this.player.removeItem(signingRune.getGuid());
-					World.data.removeItem(signingRune.getGuid());
-					SocketManager.GAME_SEND_DELETE_STATS_ITEM_FM(this.player, signingRune.getGuid());
+					this.player.removeItem(signingRune.getId());
+					World.data.removeItem(signingRune.getId());
+					SocketManager.GAME_SEND_DELETE_STATS_ITEM_FM(this.player, signingRune.getId());
 				} else {
 					signingRune.setQuantity(newQua);
 					SocketManager.GAME_SEND_OBJECT_QUANTITY_PACKET(this.player, signingRune);
@@ -1000,9 +999,9 @@ public class JobAction {
 			if (runeOrPotion != null) {
 				int newQua = runeOrPotion.getQuantity() - 1;
 				if (newQua <= 0) {
-					this.player.removeItem(runeOrPotion.getGuid());
-					World.data.removeItem(runeOrPotion.getGuid());
-					SocketManager.GAME_SEND_DELETE_STATS_ITEM_FM(this.player, runeOrPotion.getGuid());
+					this.player.removeItem(runeOrPotion.getId());
+					World.data.removeItem(runeOrPotion.getId());
+					SocketManager.GAME_SEND_DELETE_STATS_ITEM_FM(this.player, runeOrPotion.getId());
 				} else {
 					runeOrPotion.setQuantity(newQua);
 					SocketManager.GAME_SEND_OBJECT_QUANTITY_PACKET(this.player, runeOrPotion);
@@ -1018,7 +1017,7 @@ public class JobAction {
 				SocketManager.GAME_SEND_OAKO_PACKET(this.player, objectFm);
 				SocketManager.GAME_SEND_Ow_PACKET(this.player);
 				
-				String data = objectFm.getGuid() + "|1|" + objectFm.getTemplate().getID() + "|" + objectFm.parseStatsString();
+				String data = objectFm.getId() + "|1|" + objectFm.getTemplate().getId() + "|" + objectFm.parseStatsString();
 				if (!this.isRepeat)
 					this.reConfigingRunes = -1;
 				if (this.reConfigingRunes != 0 || this.broken)
@@ -1038,7 +1037,7 @@ public class JobAction {
 			else if (lvlElementRune == 50)
 				coef = 85;
 			if (isSigningRune) {
-				objectFm.addTxtStat(985, this.player.getName());
+				objectFm.getTxtStats().put(985, this.player.getName());
 			}
 			if (lvlElementRune > 0 && lvlQuaStatsRune == 0) {
 				for (SpellEffect effect : objectFm.getEffects()) {
@@ -1110,9 +1109,9 @@ public class JobAction {
 			if (signingRune != null) {
 				int newQua = signingRune.getQuantity() - 1;
 				if (newQua <= 0) {
-					this.player.removeItem(signingRune.getGuid());
-					World.data.removeItem(signingRune.getGuid());
-					SocketManager.GAME_SEND_REMOVE_ITEM_PACKET(this.player, signingRune.getGuid());
+					this.player.removeItem(signingRune.getId());
+					World.data.removeItem(signingRune.getId());
+					SocketManager.GAME_SEND_REMOVE_ITEM_PACKET(this.player, signingRune.getId());
 				} else {
 					signingRune.setQuantity(newQua);
 					SocketManager.GAME_SEND_OBJECT_QUANTITY_PACKET(this.player, signingRune);
@@ -1121,9 +1120,9 @@ public class JobAction {
 			if (runeOrPotion != null) {
 				int newQua = runeOrPotion.getQuantity() - 1;
 				if (newQua <= 0) {
-					this.player.removeItem(runeOrPotion.getGuid());
-					World.data.removeItem(runeOrPotion.getGuid());
-					SocketManager.GAME_SEND_REMOVE_ITEM_PACKET(this.player, runeOrPotion.getGuid());
+					this.player.removeItem(runeOrPotion.getId());
+					World.data.removeItem(runeOrPotion.getId());
+					SocketManager.GAME_SEND_REMOVE_ITEM_PACKET(this.player, runeOrPotion.getId());
 				} else {
 					runeOrPotion.setQuantity(newQua);
 					SocketManager.GAME_SEND_OBJECT_QUANTITY_PACKET(this.player, runeOrPotion);
@@ -1134,7 +1133,7 @@ public class JobAction {
 			SocketManager.GAME_SEND_Ow_PACKET(this.player);
 			SocketManager.GAME_SEND_OAKO_PACKET(this.player, objectFm);
 			
-			String data = objectFm.getGuid() + "|1|" + objectFm.getTemplate().getID() + "|" + objectFm.parseStatsString();
+			String data = objectFm.getId() + "|1|" + objectFm.getTemplate().getId() + "|" + objectFm.parseStatsString();
 			if (!this.isRepeat)
 				this.reConfigingRunes = -1;
 			if (this.reConfigingRunes != 0 || this.broken)
@@ -1145,13 +1144,13 @@ public class JobAction {
 		}
 		this.lastCraft.clear();
 		this.lastCraft.putAll(this.ingredients);
-		this.lastCraft.put(objectFm.getGuid(), 1);
+		this.lastCraft.put(objectFm.getId(), 1);
 		this.ingredients.clear();
 	}
 	
-	public static int getStatBaseMaxs(ObjTemplate objMod, String statsModif)
+	public static int getStatBaseMaxs(ObjectTemplate objMod, String statsModif)
 	{
-		String[] split = objMod.getStrTemplate().split(",");
+		String[] split = objMod.getStrStats().split("\\,");
 		for (String s : split)
 		{
 			String[] stats = s.split("#");
@@ -1174,7 +1173,7 @@ public class JobAction {
 		int weight = 0;
 		int alt = 0;
 		String statsTemplate = "";
-		statsTemplate = World.data.getObjTemplate(objTemplateID).getStrTemplate();
+		statsTemplate = World.data.getObjTemplate(objTemplateID).getStrStats();
 		if (statsTemplate == null || statsTemplate.isEmpty())
 			return 0;
 		String[] split = statsTemplate.split(",");
@@ -1250,7 +1249,7 @@ public class JobAction {
 		return alt;
 	}
 
-	public static int currentWeithStats(Objet obj, String statsModif)
+	public static int currentWeithStats(Object obj, String statsModif)
 	{
 		for (Entry<Integer, Integer> entry : obj.getStats().getEffects().entrySet())
 		{
@@ -1315,7 +1314,7 @@ public class JobAction {
 		return 0;
 	}
 
-	public static int currentTotalWeigthBase(String statsModelo, Objet obj) 
+	public static int currentTotalWeigthBase(String statsModelo, Object obj) 
 	{
 		int Weigth = 0;
 		int Alto = 0;

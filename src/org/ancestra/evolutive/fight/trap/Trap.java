@@ -9,7 +9,7 @@ import org.ancestra.evolutive.fight.Fighter;
 import org.ancestra.evolutive.fight.spell.SpellStats;
 import org.ancestra.evolutive.map.Case;
 
-public class Piege
+public class Trap
 {
 	private Fighter _caster;
 	private Case _cell;
@@ -21,7 +21,7 @@ public class Piege
 	private boolean _isunHide = true;
 	private int _teamUnHide = -1;
 	
-	public Piege(Fight fight, Fighter caster, Case cell, byte size, SpellStats trapSpell, int spell)
+	public Trap(Fight fight, Fighter caster, Case cell, byte size, SpellStats trapSpell, int spell)
 	{
 		_fight = fight;
 		_caster = caster;
