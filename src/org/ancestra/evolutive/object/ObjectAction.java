@@ -1,9 +1,8 @@
 package org.ancestra.evolutive.object;
 
-
 public class ObjectAction {
 
-	private String type;
+	/*private String type;
 	private String args;
 	private String cond;
 	private boolean send = true;
@@ -15,7 +14,7 @@ public class ObjectAction {
 		this.cond = cond;
 	}
 
-	/*public void apply(Player player, Player target, int objet, int cellid)
+	public void apply(Player player, Player target, int objet, int cellid)
 	{
 		if(player == null)
 			return;

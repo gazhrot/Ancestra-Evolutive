@@ -122,7 +122,6 @@ public class Player {
 	private int isOnCollector = 0;
 	private int isOK = 0;
 	
-	
 	/** Other **/
 	private Waiter waiter = new Waiter();
 	private Player follow = null;

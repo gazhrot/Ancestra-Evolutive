@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
+import java.util.TimeZone;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -2899,7 +2900,10 @@ public class Fight {
 	{
 		StringBuilder infos = new StringBuilder();
 		infos.append(_id).append(";");
-		long time = System.currentTimeMillis()-_startTime;
+		//long time = System.currentTimeMillis()-_startTime;
+		//infos.append((_startTime  == 0?"-1":time)).append(";");
+
+		long time = _startTime + TimeZone.getDefault().getRawOffset();
 		infos.append((_startTime  == 0?"-1":time)).append(";");
 		//Team1
 		infos.append("0,");//0 car toujours joueur :)

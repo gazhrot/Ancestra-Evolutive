@@ -282,7 +282,6 @@ public class Fighter
 					str.append(",").append(_perso.getDeshonor()>0?1:0).append(';');
 				else
 					str.append(";");
-				str.append(_perso.getUUID()).append(";");
 				str.append((_perso.getColor1()==-1?"-1":Integer.toHexString(_perso.getColor1()))).append(";");
 				str.append((_perso.getColor2()==-1?"-1":Integer.toHexString(_perso.getColor2()))).append(";");
 				str.append((_perso.getColor3()==-1?"-1":Integer.toHexString(_perso.getColor3()))).append(";");
