@@ -13,35 +13,36 @@ import org.ancestra.evolutive.tool.packetfilter.PacketFilter;
 import org.ancestra.evolutive.tool.plugin.packet.PacketParser;
 import org.apache.mina.core.session.IoSession;
 import org.slf4j.LoggerFactory;
+import org.slf4j.Marker;
+import org.slf4j.MarkerFactory;
 
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 public class GameClient implements Client {
 	
-	private IoSession session;
+	private final IoSession session;
 	private Account account;
 	private Player player;
 	private Commands command;
-	private Logger logger = (Logger)LoggerFactory.getLogger(Client.class);
+	Logger logger = (Logger)LoggerFactory.getLogger(Client.class);
 
-	private Map<Integer, GameAction> actions = new TreeMap<>();
+	private Map<Integer, GameAction> actions = new ConcurrentHashMap<>();
 	private PacketFilter filter = new PacketFilter(10, 500, TimeUnit.MILLISECONDS);
 	public long timeLastTradeMsg = 0, timeLastRecrutmentMsg = 0, timeLastAlignMsg = 0;
 	
 	public GameClient(IoSession session) {
 		this.session = session;
+        logger = (Logger)LoggerFactory.getLogger("gsession" + session.getId());
+        logger.info("has been created");
 	}	
 
 	@Override
 	public IoSession getSession() {
 		return session;
-	}
-
-	public void setSession(IoSession ioSession) {
-		this.session = ioSession;
 	}
 
 	public Account getAccount() {
@@ -50,7 +51,7 @@ public class GameClient implements Client {
 
 	public void setAccount(Account account) {
 		this.account = account;
-        //logger = (Logger)LoggerFactory.getLogger(player.getName());
+        logger = (Logger)LoggerFactory.getLogger("[account]" + account.getName());
 	}
 
 	public Player getPlayer() {
@@ -59,6 +60,7 @@ public class GameClient implements Client {
 
 	public void setPlayer(Player player) {
 		this.player = player;
+        logger = (Logger)LoggerFactory.getLogger("[player]" + player.getName());
 	}
 	
 	public Commands getCommand() {
@@ -86,7 +88,7 @@ public class GameClient implements Client {
 	}
 	
 	public void addAction(GameAction GA) {
-        logger.trace("Create action id : "+GA.getId());
+        logger.trace("Create action id : "+GA.getId() + "action {},args {}",GA.getAction(),GA.getArgs());
         this.getActions().put(GA.getId(), GA);
 	}
 	

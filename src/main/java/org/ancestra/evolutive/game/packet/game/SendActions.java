@@ -25,11 +25,12 @@ import java.util.concurrent.locks.ReentrantLock;
 public class SendActions implements PacketParser {
 
 	public static ReentrantLock locker = new ReentrantLock();
-	
+
 	@Override
 	public void parse(GameClient client, String packet) {
-		if(client.getPlayer() != null)
-			parseGameActionPacket(client, packet);
+		if(client.getPlayer() != null) {
+            parseGameActionPacket(client, packet);
+        }
 	}
 	
 	public static void parseGameActionPacket(GameClient client, String packet)
@@ -196,6 +197,9 @@ public class SendActions implements PacketParser {
 				return;
 			GA.setArgs(cell+";"+action);
 			client.getPlayer().getAccount().getGameClient().addAction(GA);
+            if(client.getActions().size() == 1){
+                client.getPlayer().getCurCell().startAction(client.getPlayer(),GA);
+            }
 		}
 	
 		public static void game_tryCac(GameClient client, String packet)
@@ -349,6 +353,7 @@ public class SendActions implements PacketParser {
 					}
 					SocketManager.GAME_SEND_GA_PACKET(client, "", "0", "", "");
 					client.removeAction(GA);
+
 					return;
 				}
 				

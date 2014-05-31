@@ -29,8 +29,6 @@ public class Main {
 		logger.debug(EmulatorInfos.HARD_NAME.toString());
 
 		Server.config.initialize();
-		console.writeln(" ~ Connexion a la base de donnees : "+Server.config.getHost());
-		
 		if(!World.database.initializeConnection()) {
 			console.writeln("> Identifiants de connexion invalides");
 			console.writeln("> Redemarrage...");

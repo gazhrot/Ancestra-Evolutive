@@ -20,7 +20,7 @@ public class Area {
 		if(this.continent == null) {
 			this.continent = new Continent(continent);
 			World.data.addContinent(this.continent);
-		}
+        }
 	}
 
 	public int getId() {

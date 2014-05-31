@@ -1,5 +1,7 @@
 package org.ancestra.evolutive.game;
 
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
 import org.ancestra.evolutive.client.Account;
 import org.ancestra.evolutive.client.Player;
 import org.ancestra.evolutive.common.SocketManager;
@@ -14,6 +16,7 @@ import org.apache.mina.filter.codec.textline.LineDelimiter;
 import org.apache.mina.filter.codec.textline.TextLineCodecFactory;
 import org.apache.mina.transport.socket.nio.NioProcessor;
 import org.apache.mina.transport.socket.nio.NioSocketAcceptor;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -48,13 +51,15 @@ public class GameServer {
 	}
 	
 	public void initialize() {
-		try { 
+        Logger logger = (Logger)LoggerFactory.getLogger("org.apache.mina");
+        try {
 			acceptor.bind(new InetSocketAddress(Server.config.getGamePort()));
 			startTime = System.currentTimeMillis();
 		} catch (IOException e) {
-			Console.instance.writeln("NioSocket ERROR: "+e.getMessage());
+			logger.error("NioSocket ERROR: ", e);
 			System.exit(1);
 		}
+        logger.setLevel(Level.OFF);
 	}
 	
 	public void close() {

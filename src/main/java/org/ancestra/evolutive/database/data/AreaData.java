@@ -64,11 +64,12 @@ public class AreaData extends AbstractDAO<Area>{
     }
 
     protected Area loadFromResultSet(ResultSet resultSet) throws SQLException {
+        Area area = null;
         if(resultSet.next()) {
-            Area area = new Area(resultSet.getInt("id"), resultSet.getInt("superarea"), resultSet.getString("name"));
+            area = new Area(resultSet.getInt("id"), resultSet.getInt("superarea"), resultSet.getString("name"));
             World.data.addArea(area);
             area.getContinent().addArea(area);
         }
-        return null;
+        return area;
     }
 }

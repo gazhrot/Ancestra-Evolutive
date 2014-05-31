@@ -71,4 +71,4 @@ local.properties
 
 # TeXlipse plugin
 .texlipse
-
+.config

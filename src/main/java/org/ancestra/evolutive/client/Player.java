@@ -1,5 +1,8 @@
 package org.ancestra.evolutive.client;
 
+import org.ancestra.evolutive.area.Area;
+import org.ancestra.evolutive.area.Continent;
+import org.ancestra.evolutive.area.SubArea;
 import org.ancestra.evolutive.client.other.Group;
 import org.ancestra.evolutive.client.other.Stalk;
 import org.ancestra.evolutive.client.other.Stats;
@@ -2000,7 +2003,6 @@ public class Player {
 		//Si case invalide
 		if(!this.getCurMap().getCases().get(cellID).canDoAction(action))return;
 		this.getCurMap().getCases().get(cellID).startAction(this,GA);
-	//	this.getAccount().getGameClient().removeAction(GA);
 	}
 
 	public void finishActionOnCell(GameAction GA)
@@ -2640,14 +2642,14 @@ public class Player {
 
 	public String parseZaapList()//Pour le packet WC
 	{
-		String map = this.getCurMap().getId()+"";
+		String map = Integer.toString(this.getCurMap().getId());
 		try {
 			map = this.savePos.split(",")[0];
 		} catch(Exception e) {}
 		
 		StringBuilder str = new StringBuilder();
 		str.append(map);
-		int SubAreaID = this.getCurMap().getSubArea().getArea().getContinent().getId();
+        int SubAreaID = this.getCurMap().getSubArea().getArea().getContinent().getId();
 		for(short i : this.zaaps) {
 			if(World.data.getCarte(i) == null)
 				continue;

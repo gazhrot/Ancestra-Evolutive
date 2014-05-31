@@ -41,8 +41,8 @@ public class ActionAck implements PacketParser {
 			return;
 		
 		boolean isOk = packet.charAt(2) == 'K';
-		
-		switch(GA.getAction())
+
+        switch(GA.getAction())
 		{
 			case 1://Deplacement
 				if(isOk) {//Hors Combat
@@ -73,6 +73,7 @@ public class ActionAck implements PacketParser {
 						
 						for(GameAction action: client.getActions().values()) 
 							client.getPlayer().startActionOnCell(action);
+                        client.removeAction(GA);
 					} else { 
 						client.getPlayer().getFight().onGK(client.getPlayer());
 						return;
@@ -94,12 +95,33 @@ public class ActionAck implements PacketParser {
 					client.getPlayer().setOrientation(CryptManager.getIntByHashedValue(path.charAt(path.length()-3)));
 					client.getPlayer().getCurCell().addPlayer(client.getPlayer());
 					SocketManager.GAME_SEND_BN(client);
+                    client.getActions().clear();
 				}
 			break;
 			case 500://Action Sur Map
-				client.getPlayer().finishActionOnCell(GA);
+				if(isOk){
+                    client.getPlayer().finishActionOnCell(GA);
+                } else {
+                    //Si le joueur s'arrete sur une case
+                    int newCellID = -1;
+
+                    try	{
+                        newCellID = Integer.parseInt(infos[1]);
+                    } catch(Exception e) {return;}
+
+                    if(newCellID == -1)
+                        return;
+
+                    String path = GA.getArgs();
+                    client.getPlayer().getCurCell().removePlayer(client.getPlayer().getUUID());
+                    client.getPlayer().setCurCell(client.getPlayer().getCurMap().getCases().get(newCellID));
+                    client.getPlayer().setOrientation(CryptManager.getIntByHashedValue(path.charAt(path.length()-3)));
+                    client.getPlayer().getCurCell().addPlayer(client.getPlayer());
+                    SocketManager.GAME_SEND_BN(client);
+                    client.getActions().clear();
+                }
 			break;
 		}
-		client.removeAction(GA);
+
 	}
 }

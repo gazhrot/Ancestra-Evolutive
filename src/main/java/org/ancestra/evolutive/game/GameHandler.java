@@ -27,20 +27,15 @@ public class GameHandler implements IoHandler {
 			if(Server.config.getGameServer().getClients().size() 
 					> Server.config.getGameServer().getMaxPlayer())
 				Server.config.getGameServer().updateMaxPlayer();
-			
-			Console.instance.println("gSession "+arg0.getId()+" : created");
 		}
 	}
 	
 	@Override
 	public void messageReceived(IoSession arg0, Object arg1) throws Exception {
-		String packet = (String) arg1;
-
-		String[] toParse = packet.split("\n");
-		
-		for(int i=toParse.length ; i > 0 ; i--) {
-			Server.config.getGameServer().getClients().get(arg0.getId()).parsePacket(toParse[toParse.length-i]);
-			Console.instance.println("gSession "+arg0.getId()+" : recv < "+toParse[toParse.length-i]);
+		GameClient client = Server.config.getGameServer().getClients().get(arg0.getId());
+		for(String str : ((String)arg1).split("\n")) {
+            client.logger.debug(" recv < "+str);
+            client.parsePacket(str);
 		}
 	}
 	
@@ -53,21 +48,23 @@ public class GameHandler implements IoHandler {
 
 	@Override
 	public void exceptionCaught(IoSession arg0, Throwable arg1)throws Exception {
-		Console.instance.println("gSession "+arg0.getId()+" : exception "+arg1.getMessage());
+        GameClient client = Server.config.getGameServer().getClients().get(arg0.getId());
+        client.logger.error("exception ",arg1);
 		Server.config.getGameServer().getClients().get(arg0.getId()).kick();
 	}
 
 	@Override
 	public void messageSent(IoSession arg0, Object arg1) throws Exception {
-		Console.instance.println("gSession "+arg0.getId()+" : sent > "+arg1.toString());
+        GameClient client = Server.config.getGameServer().getClients().get(arg0.getId());
+        client.logger.debug(" send > {}", arg1);
 	}
 
 	@Override
 	public void sessionIdle(IoSession arg0, IdleStatus arg1) throws Exception {
-		Console.instance.println("rSession "+arg0.getId()+" : disconnected ("+arg1.toString()+")");
-		
-		GameClient client = Server.config.getGameServer().getClients().get(arg0.getId());
-		SocketManager.REALM_SEND_MESSAGE(client,"01|"); 
+        GameClient client = Server.config.getGameServer().getClients().get(arg0.getId());
+
+        client.logger.info(" disconnected for inactivity ",arg1);
+		SocketManager.REALM_SEND_MESSAGE(client,"01|");
 		client.kick();
 		Server.config.getGameServer().getClients().remove(client.getSession().getId());
 	}

@@ -34,8 +34,6 @@ public class Console extends Thread {
 			return;
 		String date = Calendar.HOUR_OF_DAY+":"+Calendar.MINUTE+":"+Calendar.SECOND;
 		string = "["+date+"] : "+string;
-		if(Server.config.isDebug())
-			System.out.println(string);
 		Log.addToLog(string);
 	}
 	
@@ -44,8 +42,6 @@ public class Console extends Thread {
 			return;
 		String date = Calendar.HOUR_OF_DAY+":"+Calendar.MINUTE+":"+Calendar.SECOND;
 		string = "["+date+"] : "+string;
-		if(Server.config.isDebug())
-			System.out.print(string);
 		Log.addToLog(string);
 	}
 	
@@ -54,7 +50,6 @@ public class Console extends Thread {
 			return;
 		String date = Calendar.HOUR_OF_DAY+":"+Calendar.MINUTE+":"+Calendar.SECOND;
 		string = "["+date+"] : "+string;
-		System.out.print(string);
 		Log.addToLog(string);
 	}
 	
@@ -63,7 +58,6 @@ public class Console extends Thread {
 			return;
 		String date = Calendar.HOUR_OF_DAY+":"+Calendar.MINUTE+":"+Calendar.SECOND;
 		string = String.valueOf("["+date+"] : "+string);
-		System.out.println(string);
 		Log.addToLog(string);
 	}
 	
