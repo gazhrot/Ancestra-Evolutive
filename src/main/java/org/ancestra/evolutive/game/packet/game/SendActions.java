@@ -197,8 +197,8 @@ public class SendActions implements PacketParser {
 				return;
 			GA.setArgs(cell+";"+action);
 			client.getPlayer().getAccount().getGameClient().addAction(GA);
-            if(client.getActions().size() == 1){
-                client.getPlayer().getCurCell().startAction(client.getPlayer(),GA);
+            if(client.getLastPacketSent().equals("GA;0")){
+                client.getPlayer().getCurMap().getCases().get(cell).startAction(client.getPlayer(),GA);
             }
 		}
 	

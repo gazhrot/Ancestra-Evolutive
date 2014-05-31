@@ -57,6 +57,7 @@ public class GameHandler implements IoHandler {
 	public void messageSent(IoSession arg0, Object arg1) throws Exception {
         GameClient client = Server.config.getGameServer().getClients().get(arg0.getId());
         client.logger.debug(" send > {}", arg1);
+        client.setLastPacketSent((String)arg1);
 	}
 
 	@Override

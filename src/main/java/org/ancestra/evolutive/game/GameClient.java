@@ -28,7 +28,10 @@ public class GameClient implements Client {
 	private Account account;
 	private Player player;
 	private Commands command;
+
+    private String lastPacketSent = "";
 	Logger logger = (Logger)LoggerFactory.getLogger(Client.class);
+
 
 	private Map<Integer, GameAction> actions = new ConcurrentHashMap<>();
 	private PacketFilter filter = new PacketFilter(10, 500, TimeUnit.MILLISECONDS);
@@ -155,4 +158,12 @@ public class GameClient implements Client {
     		this.getSession().close(true);
 		} catch(Exception e1) {e1.printStackTrace();}
 	}
+
+    public String getLastPacketSent() {
+        return lastPacketSent;
+    }
+
+    public void setLastPacketSent(String lastPacketSent) {
+        this.lastPacketSent = lastPacketSent;
+    }
 }
