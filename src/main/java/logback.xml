@@ -6,6 +6,9 @@
         </encoder>
     </appender>
 
+    <logger name="org.apache.mina" level="OFF"/>
+    <logger name="com.zaxxer.hikari.pool.HikariPool" level="OFF"/>
+
     <root level="trace">
         <appender-ref ref="LogbackClassic" />
     </root>

@@ -59,7 +59,6 @@ public class GameServer {
 			logger.error("NioSocket ERROR: ", e);
 			System.exit(1);
 		}
-        logger.setLevel(Level.OFF);
 	}
 	
 	public void close() {

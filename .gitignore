@@ -72,3 +72,5 @@ local.properties
 # TeXlipse plugin
 .texlipse
 .config
+config.conf
+src/main/java/logback.xml
