@@ -86,10 +86,16 @@ public class Database {
         config.addDataSourceProperty("user",Server.config.getUser());
         config.addDataSourceProperty("password",Server.config.getPass());
         if(config.isInitializationFailFast()){
-            logger.error("Can't connect to database");
+            logger.error("Can t connect to database");
             System.exit(101);
         }
-        dataSource = new HikariDataSource(config);
+        try{
+            dataSource = new HikariDataSource(config);
+        }
+        catch (Exception e) {
+            logger.error("wrong username or password");
+            System.exit(101);
+        }
         logger.info("Database connection established");
         this.initializeData();
         return true;

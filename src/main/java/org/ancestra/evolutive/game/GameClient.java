@@ -28,9 +28,9 @@ public class GameClient implements Client {
 	private Account account;
 	private Player player;
 	private Commands command;
-
     private String lastPacketSent = "";
-	Logger logger = (Logger)LoggerFactory.getLogger(Client.class);
+
+    Logger logger = (Logger)LoggerFactory.getLogger(Client.class);
 
 
 	private Map<Integer, GameAction> actions = new ConcurrentHashMap<>();
@@ -41,6 +41,7 @@ public class GameClient implements Client {
 		this.session = session;
         logger = (Logger)LoggerFactory.getLogger("gsession" + session.getId());
         logger.info("has been created");
+        send("hello");
 	}	
 
 	@Override
@@ -48,9 +49,14 @@ public class GameClient implements Client {
 		return session;
 	}
 
+    @Override
 	public Account getAccount() {
 		return account;
 	}
+
+    public void send(String message) {
+        this.session.write(message);
+    }
 
 	public void setAccount(Account account) {
 		this.account = account;
@@ -62,8 +68,10 @@ public class GameClient implements Client {
 	}
 
 	public void setPlayer(Player player) {
-		this.player = player;
-        logger = (Logger)LoggerFactory.getLogger("[player]" + player.getName());
+		if(this.player == null){
+            this.player = player;
+            logger = (Logger)LoggerFactory.getLogger("[player]" + player.getName());
+        }
 	}
 	
 	public Commands getCommand() {

@@ -41,8 +41,7 @@ public class GameServer {
 	private IoAcceptor acceptor;
 	
 	public GameServer() {
-		Executor worker = Executors.newCachedThreadPool();
-		acceptor = new NioSocketAcceptor(worker, new NioProcessor(worker));
+		acceptor = new NioSocketAcceptor();
 		acceptor.getFilterChain().addLast("game-codec-filter", 
 				new ProtocolCodecFilter(
 				new TextLineCodecFactory(Charset.forName("UTF8"), LineDelimiter.NUL, 
@@ -56,18 +55,16 @@ public class GameServer {
 			acceptor.bind(new InetSocketAddress(Server.config.getGamePort()));
 			startTime = System.currentTimeMillis();
 		} catch (IOException e) {
-			logger.error("NioSocket ERROR: ", e);
+			logger.error("Can t launch server", e);
 			System.exit(1);
 		}
 	}
 	
 	public void close() {
 		 this.acceptor.unbind();
-
 		 for (IoSession session : acceptor.getManagedSessions().values())
 			 if (session.isConnected() || !session.isClosing()) 
 				 session.close(true);
-
 		 this.acceptor.dispose();
 	}
 	
@@ -133,7 +130,6 @@ public class GameServer {
 	public Map<Long, GameClient> getClients() {
 		return clients;
 	}
-	
 
 	public long getStartTime()
 	{

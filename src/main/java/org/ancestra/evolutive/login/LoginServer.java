@@ -1,36 +1,34 @@
 package org.ancestra.evolutive.login;
 
-import org.ancestra.evolutive.core.Console;
+import ch.qos.logback.classic.Logger;
 import org.ancestra.evolutive.core.Server;
 import org.apache.mina.core.service.IoAcceptor;
 import org.apache.mina.core.session.IoSession;
 import org.apache.mina.filter.codec.ProtocolCodecFilter;
 import org.apache.mina.filter.codec.textline.LineDelimiter;
 import org.apache.mina.filter.codec.textline.TextLineCodecFactory;
-import org.apache.mina.transport.socket.nio.NioProcessor;
 import org.apache.mina.transport.socket.nio.NioSocketAcceptor;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
 
 public class LoginServer {
 	
 	public static int totalNonAbo = 0;//Total de connections non abo
 	public static int totalAbo = 0;//Total de connections abo
-	public static int queueID = -1;//Num�ro de la queue
-	public static int subscribe = 1;//File des non abonn�es (0) ou abonn�es (1)
+	public static int queueID = -1;//Numero de la queue
+	public static int subscribe = 1;//File des non abonnes (0) ou abonnees (1)
 	
-	private Map<Long, LoginClient> clients = new HashMap<>();
-	private IoAcceptor acceptor;
+	private final Map<Long, LoginClient> clients = new HashMap<>();
+	private final Logger logger = (Logger) LoggerFactory.getLogger("RealmServer");
+    private final IoAcceptor acceptor;
 	
 	public LoginServer() {
-		Executor worker = Executors.newCachedThreadPool();
-		acceptor = new NioSocketAcceptor(worker, new NioProcessor(worker));
+		acceptor = new NioSocketAcceptor();
 		acceptor.getFilterChain().addLast("realm-codec-filter", 
 				new ProtocolCodecFilter(
 				new TextLineCodecFactory(Charset.forName("UTF8"), LineDelimiter.NUL, 
@@ -42,7 +40,7 @@ public class LoginServer {
 		try { 
 			acceptor.bind(new InetSocketAddress(Server.config.getRealmPort()));
 		} catch (IOException e) {
-			Console.instance.writeln("NioSocket ERROR: "+e.getMessage());
+			logger.error("Can t create realm ", e);
 			System.exit(1);
 		}
 	}

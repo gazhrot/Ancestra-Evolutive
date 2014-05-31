@@ -115,12 +115,8 @@ public class Account {
 		return name;
 	}
 	
-	public String getPassword() {
-		return password;
-	}
-	
 	public boolean isValidPass(String pass, String hash) {
-		return pass.equals(CryptManager.CryptPassword(hash, this.getPassword()));
+		return pass.equals(CryptManager.CryptPassword(hash, this.password));
 	}
 	
 	public String getPseudo() {
@@ -486,13 +482,7 @@ public class Account {
 		}
 		return players;
 	}
-	
 
-	public static boolean login(String name, String pass, String key) {
-		if(World.data.getCompteByName(name) != null && World.data.getCompteByName(name).isValidPass(pass,key))
-			return true;
-		return false;
-	}
 	
 	public boolean createPerso(String name, int sexe, int classe, int color1, int color2, int color3) {
 		Player player = Player.create(name, sexe, classe, color1, color2, color3, this);

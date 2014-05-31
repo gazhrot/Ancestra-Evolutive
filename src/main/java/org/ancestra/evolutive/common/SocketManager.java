@@ -45,32 +45,7 @@ public class SocketManager {
 		out.getSession().write(packet);
 	}
 	
-	public static String REALM_SEND_HC_PACKET(Client _out)
-	{
-		
-		String alphabet = "abcdefghijklmnopqrstuvwxyz";
-		StringBuilder hashkey = new StringBuilder();
-		
-        Random rand = new Random();
-        
-        for (int i=0; i<32; i++)
-        {
-               hashkey.append(alphabet.charAt(rand.nextInt(alphabet.length())));
-        }
-        String packet = "HC"+hashkey;
-		send(_out,packet);
-		if(Server.config.isDebug())
-			Log.addToSockLog("Realm: Send>>"+packet);
-		return hashkey.toString();
-	}
-	
-	public static void REALM_SEND_REQUIRED_VERSION(Client _out)
-	{
-		String packet = "AlEv" +EmulatorInfos.CLIENT_RELEASE.toString();
-		send(_out,packet);
-		if(Server.config.isDebug())
-			Log.addToSockLog("Conn: Send>>"+packet);
-	}
+
 	
 	public static void REALM_SEND_LOGIN_ERROR(Client _out)
 	{
@@ -113,14 +88,6 @@ public class SocketManager {
 		send(_out,packet);
 		if(Server.config.isDebug())
 			Log.addToSockLog("Conn: Send>>"+packet);
-	}
-
-	public static void REALM_SEND_ALREADY_CONNECTED(Client _out)
-	{
-		String packet = "AlEc";
-		send(_out,packet);
-		if(Server.config.isDebug())
-			Log.addToSockLog("Conn: Send>>"+packet);	
 	}
 
 	public static void REALM_SEND_POLICY_FILE(Client _out)
