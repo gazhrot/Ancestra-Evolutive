@@ -37,6 +37,7 @@ public class InteractiveObject {
 		else this.walkable = this.getTemplate().isWalkable() && this.state == JobConstant.IOBJECT_STATE_FULL;
 		
 		respawnTimer = new Timer(respawnTime, new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				respawnTimer.stop();
 				state = Constants.IOBJECT_STATE_FULLING;

@@ -12,7 +12,7 @@ public class GetDetails implements PacketParser {
 	public void parse(GameClient client, String packet) {
 		int key = -1;
 		try {
-			key = Integer.parseInt(packet.substring(2).replace(((int)0x0)+"", ""));
+			key = Integer.parseInt(packet.substring(2).replace(0x0+"", ""));
 		} catch(Exception e) {}
 		
 		if(key == -1)

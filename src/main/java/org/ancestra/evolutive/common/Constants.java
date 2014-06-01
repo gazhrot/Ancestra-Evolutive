@@ -1137,7 +1137,7 @@ public class Constants
 	public static int getAggroByLevel(int lvl)
 	{
 		int aggro = 0;
-		aggro = (int)(lvl/50);
+		aggro = (lvl/50);
 		if(lvl>500)
 			aggro = 3;
 		return aggro;
@@ -1783,31 +1783,31 @@ public class Constants
 			break;
 			//Dor�e
 			case 18:
-			stats.addOneStat(STATS_ADD_VITA, (int)(lvl/2)); 
+			stats.addOneStat(STATS_ADD_VITA, (lvl/2)); 
 			stats.addOneStat(STATS_ADD_SAGE, (int)(lvl/2.50)); // 100/2.50 = 40
 			break;
 			//Rousse-Amande
 			case 38:
 			stats.addOneStat(STATS_ADD_INIT, lvl*5); // 100*5 = 500
 			stats.addOneStat(STATS_ADD_VITA, lvl); 
-			stats.addOneStat(STATS_CREATURE, (int)(lvl/50)); // 100/50 = 2
+			stats.addOneStat(STATS_CREATURE, (lvl/50)); // 100/50 = 2
 			break;
 			//Rousse-Dor�e
 			case 46:
 			stats.addOneStat(STATS_ADD_VITA, lvl);
-			stats.addOneStat(STATS_ADD_SAGE, (int)(lvl/4)); //100/4 = 25
+			stats.addOneStat(STATS_ADD_SAGE, (lvl/4)); //100/4 = 25
 		    break;
 			//Amande-Dor�e
 			case 33:
 			stats.addOneStat(STATS_ADD_INIT, lvl*5);
-			stats.addOneStat(STATS_ADD_SAGE, (int)(lvl/4));
-			stats.addOneStat(STATS_ADD_VITA, (int)(lvl/2));
-			stats.addOneStat(STATS_CREATURE, (int)(lvl/100)); // 100/100 = 1
+			stats.addOneStat(STATS_ADD_SAGE, (lvl/4));
+			stats.addOneStat(STATS_ADD_VITA, (lvl/2));
+			stats.addOneStat(STATS_CREATURE, (lvl/100)); // 100/100 = 1
 			break;
 			//Indigo |
 			case 17:
 			stats.addOneStat(STATS_ADD_CHAN, (int)(lvl/1.25));
-			stats.addOneStat(STATS_ADD_VITA, (int)(lvl/2));
+			stats.addOneStat(STATS_ADD_VITA, (lvl/2));
 			break;
 			//Rousse-Indigo
 			case 62:
@@ -1822,80 +1822,80 @@ public class Constants
 			//Amande-Indigo
 			case 36:
 			stats.addOneStat(STATS_ADD_INIT, lvl*5);
-			stats.addOneStat(STATS_ADD_VITA, (int)(lvl/2)); 
+			stats.addOneStat(STATS_ADD_VITA, (lvl/2)); 
 			stats.addOneStat(STATS_ADD_CHAN, (int)(lvl/1.65));
-			stats.addOneStat(STATS_CREATURE, (int)(lvl/100));
+			stats.addOneStat(STATS_CREATURE, (lvl/100));
 			break;
 			//Pourpre | Stade 4
 			case 19:
 			stats.addOneStat(STATS_ADD_FORC, (int)(lvl/1.25));
-			stats.addOneStat(STATS_ADD_VITA, (int)(lvl/2));
+			stats.addOneStat(STATS_ADD_VITA, (lvl/2));
 			break;
 			//Orchid�e
 			case 22:
 			stats.addOneStat(STATS_ADD_INTE, (int)(lvl/1.25));
-			stats.addOneStat(STATS_ADD_VITA, (int)(lvl/2));
+			stats.addOneStat(STATS_ADD_VITA, (lvl/2));
 			break;
 			//Dor�e-Orchid�e |
 			case 48:
 			stats.addOneStat(STATS_ADD_VITA, (lvl));
-			stats.addOneStat(STATS_ADD_SAGE, (int)(lvl/4));
+			stats.addOneStat(STATS_ADD_SAGE, (lvl/4));
 		    stats.addOneStat(STATS_ADD_INTE, (int)(lvl/1.65));
 			break;
 			//Indigo-Pourpre
 			case 65:
 			stats.addOneStat(STATS_ADD_VITA, (lvl));
-			stats.addOneStat(STATS_ADD_CHAN, (int)(lvl/2));
-			stats.addOneStat(STATS_ADD_FORC, (int)(lvl/2));
+			stats.addOneStat(STATS_ADD_CHAN, (lvl/2));
+			stats.addOneStat(STATS_ADD_FORC, (lvl/2));
 			break;
 			//Indigo-Orchid�e
 			case 67:
 			stats.addOneStat(STATS_ADD_VITA, (lvl));
-			stats.addOneStat(STATS_ADD_CHAN, (int)(lvl/2));
-			stats.addOneStat(STATS_ADD_INTE, (int)(lvl/2));
+			stats.addOneStat(STATS_ADD_CHAN, (lvl/2));
+			stats.addOneStat(STATS_ADD_INTE, (lvl/2));
 			break;
 			//Eb�ne-Pourpre
 			case 54:
 			stats.addOneStat(STATS_ADD_VITA, (lvl));
-			stats.addOneStat(STATS_ADD_FORC, (int)(lvl/2));
-			stats.addOneStat(STATS_ADD_AGIL, (int)(lvl/2));
+			stats.addOneStat(STATS_ADD_FORC, (lvl/2));
+			stats.addOneStat(STATS_ADD_AGIL, (lvl/2));
 			break;
 			//Eb�ne-Orchid�e
 			case 53:
 			stats.addOneStat(STATS_ADD_VITA, (lvl));
-			stats.addOneStat(STATS_ADD_AGIL, (int)(lvl/2));
-			stats.addOneStat(STATS_ADD_INTE, (int)(lvl/2));
+			stats.addOneStat(STATS_ADD_AGIL, (lvl/2));
+			stats.addOneStat(STATS_ADD_INTE, (lvl/2));
 			break;
 			//Pourpre-Orchid�e
 			case 76:
 			stats.addOneStat(STATS_ADD_VITA, (lvl));
-			stats.addOneStat(STATS_ADD_INTE, (int)(lvl/2));
-			stats.addOneStat(STATS_ADD_FORC, (int)(lvl/2));
+			stats.addOneStat(STATS_ADD_INTE, (lvl/2));
+			stats.addOneStat(STATS_ADD_FORC, (lvl/2));
 			break;
 			// Amande-Ebene	| Nami-start
 			case 37:
 			stats.addOneStat(STATS_ADD_INIT, lvl*5);
-			stats.addOneStat(STATS_ADD_VITA, (int)(lvl/2)); 
+			stats.addOneStat(STATS_ADD_VITA, (lvl/2)); 
 			stats.addOneStat(STATS_ADD_AGIL, (int)(lvl/1.65));
-			stats.addOneStat(STATS_CREATURE, (int)(lvl/100));
+			stats.addOneStat(STATS_CREATURE, (lvl/100));
 			break;
 			// Amande-Rousse
 			case 44:
 			stats.addOneStat(STATS_ADD_VITA, lvl);
-			stats.addOneStat(STATS_ADD_SAGE, (int)(lvl/4));
+			stats.addOneStat(STATS_ADD_SAGE, (lvl/4));
 			stats.addOneStat(STATS_ADD_CHAN, (int)(lvl/1.65));
 			break;
 			// Dor�e-Eb�ne
 			case 42:
 			stats.addOneStat(STATS_ADD_VITA, lvl);
-			stats.addOneStat(STATS_ADD_SAGE, (int)(lvl/4));
+			stats.addOneStat(STATS_ADD_SAGE, (lvl/4));
 			stats.addOneStat(STATS_ADD_AGIL, (int)(lvl/1.65));
 			break;
 			// Indigo-Eb�ne
 			case 51:
 			stats.addOneStat(STATS_ADD_VITA, lvl);
-			stats.addOneStat(STATS_ADD_CHAN, (int)(lvl/2));
-			stats.addOneStat(STATS_ADD_AGIL, (int)(lvl/2));
+			stats.addOneStat(STATS_ADD_CHAN, (lvl/2));
+			stats.addOneStat(STATS_ADD_AGIL, (lvl/2));
 			break;
 			// Rousse-Pourpre
 			case 71:
@@ -1910,61 +1910,61 @@ public class Constants
 			// Amande-Pourpre
 			case 41:
 			stats.addOneStat(STATS_ADD_INIT, lvl*5);
-			stats.addOneStat(STATS_ADD_VITA, (int)(lvl/2)); 
+			stats.addOneStat(STATS_ADD_VITA, (lvl/2)); 
 			stats.addOneStat(STATS_ADD_FORC, (int)(lvl/1.65));
-			stats.addOneStat(STATS_CREATURE, (int)(lvl/100));
+			stats.addOneStat(STATS_CREATURE, (lvl/100));
 			break;
 			// Amande-Orchid�e
 			case 40:
 			stats.addOneStat(STATS_ADD_INIT, lvl*5);
-			stats.addOneStat(STATS_ADD_VITA, (int)(lvl/2)); 
+			stats.addOneStat(STATS_ADD_VITA, (lvl/2)); 
 			stats.addOneStat(STATS_ADD_INTE, (int)(lvl/1.65));
-			stats.addOneStat(STATS_CREATURE, (int)(lvl/100));
+			stats.addOneStat(STATS_CREATURE, (lvl/100));
 			break;
 			// Dor�e-Pourpre
 			case 49:
 			stats.addOneStat(STATS_ADD_VITA, lvl);
-			stats.addOneStat(STATS_ADD_SAGE, (int)(lvl/4));
+			stats.addOneStat(STATS_ADD_SAGE, (lvl/4));
 			stats.addOneStat(STATS_ADD_FORC, (int)(lvl/1.65));
 			break;
 			// Ivoire
 			case 16:
-			stats.addOneStat(STATS_ADD_VITA, (int)(lvl/2));
-			stats.addOneStat(STATS_ADD_PERDOM, (int)(lvl/2));
+			stats.addOneStat(STATS_ADD_VITA, (lvl/2));
+			stats.addOneStat(STATS_ADD_PERDOM, (lvl/2));
 			break;
 	        // Turquoise
 			case 15:
-			stats.addOneStat(STATS_ADD_VITA, (int)(lvl/2));
+			stats.addOneStat(STATS_ADD_VITA, (lvl/2));
 			stats.addOneStat(STATS_ADD_PROS, (int)(lvl/1.25));
 			break;
 			//Rousse-Ivoire
 			case 11:
-			stats.addOneStat(STATS_ADD_VITA, (int)(lvl*2)); // 100*2 = 200
+			stats.addOneStat(STATS_ADD_VITA, (lvl*2)); // 100*2 = 200
 			stats.addOneStat(STATS_ADD_PERDOM, (int)(lvl/2.5)); // = 40
 			break;
 			//Rousse-Turquoise
 			case 69:
-			stats.addOneStat(STATS_ADD_VITA, (int)(lvl*2));
+			stats.addOneStat(STATS_ADD_VITA, (lvl*2));
 			stats.addOneStat(STATS_ADD_PROS, (int)(lvl/2.50));
 			break;
 			//Amande-Turquoise
 			case 39:
 			stats.addOneStat(STATS_ADD_INIT, lvl*5);
-			stats.addOneStat(STATS_ADD_VITA, (int)(lvl/2));
+			stats.addOneStat(STATS_ADD_VITA, (lvl/2));
 			stats.addOneStat(STATS_ADD_PROS, (int)(lvl/2.50));
-			stats.addOneStat(STATS_CREATURE, (int)(lvl/100));
+			stats.addOneStat(STATS_CREATURE, (lvl/100));
 			break;
 			//Dor�e-Ivoire
 			case 45:
 			stats.addOneStat(STATS_ADD_VITA, lvl);
 			stats.addOneStat(STATS_ADD_PERDOM, (int)(lvl/2.5));
-			stats.addOneStat(STATS_ADD_SAGE, (int)(lvl/4));
+			stats.addOneStat(STATS_ADD_SAGE, (lvl/4));
 			break;
 			//Dor�e-Turquoise
 			case 47:
 			stats.addOneStat(STATS_ADD_VITA, lvl);
 			stats.addOneStat(STATS_ADD_PROS, (int)(lvl/2.50));
-			stats.addOneStat(STATS_ADD_SAGE, (int)(lvl/4));
+			stats.addOneStat(STATS_ADD_SAGE, (lvl/4));
 			break;
 			//Indigo-Ivoire
 			case 61:
@@ -2017,135 +2017,135 @@ public class Constants
 			// Emeraude
 			case 21:
 			stats.addOneStat(STATS_ADD_VITA, lvl*2);
-			stats.addOneStat(STATS_ADD_PM, (int)(lvl/100));
+			stats.addOneStat(STATS_ADD_PM, (lvl/100));
 			break;
 			// Prune
 			case 23:
 			stats.addOneStat(STATS_ADD_VITA, lvl*2); // 100*2 = 200
-			stats.addOneStat(STATS_ADD_PO, (int)(lvl/50));
+			stats.addOneStat(STATS_ADD_PO, (lvl/50));
 			break;
 			//Emeraude-Rousse
 			case 57:
 			stats.addOneStat(STATS_ADD_VITA, lvl*3); // 100*3 = 300
-			stats.addOneStat(STATS_ADD_PM, (int)(lvl/100));
+			stats.addOneStat(STATS_ADD_PM, (lvl/100));
 			break;
 			//Rousse-Prune
 			case 84:
 			stats.addOneStat(STATS_ADD_VITA, lvl*3);
-			stats.addOneStat(STATS_ADD_PO, (int)(lvl/100));
+			stats.addOneStat(STATS_ADD_PO, (lvl/100));
 			break;
 			//Amande-Emeraude
 			case 35:
 			stats.addOneStat(STATS_ADD_VITA, lvl);
-			stats.addOneStat(STATS_ADD_PM, (int)(lvl/100));
-			stats.addOneStat(STATS_CREATURE, (int)(lvl/100));
+			stats.addOneStat(STATS_ADD_PM, (lvl/100));
+			stats.addOneStat(STATS_CREATURE, (lvl/100));
 			stats.addOneStat(STATS_ADD_INIT, lvl*5);
 			break;
 			//Amande-Prune
 			case 77:
 			stats.addOneStat(STATS_ADD_VITA, lvl*2);
 			stats.addOneStat(STATS_ADD_INIT, lvl*5);
-			stats.addOneStat(STATS_ADD_PO, (int)(lvl/100));
-			stats.addOneStat(STATS_CREATURE, (int)(lvl/100));
+			stats.addOneStat(STATS_ADD_PO, (lvl/100));
+			stats.addOneStat(STATS_CREATURE, (lvl/100));
 			break;
 			//Dor�e-Emeraude
 			case 43:
 			stats.addOneStat(STATS_ADD_VITA, lvl);
-			stats.addOneStat(STATS_ADD_SAGE, (int)(lvl/4));
-			stats.addOneStat(STATS_ADD_PM, (int)(lvl/100));
+			stats.addOneStat(STATS_ADD_SAGE, (lvl/4));
+			stats.addOneStat(STATS_ADD_PM, (lvl/100));
 			break;
 			//Dor�e-Prune
 			case 78:
 			stats.addOneStat(STATS_ADD_VITA, lvl*2);
-			stats.addOneStat(STATS_ADD_SAGE, (int)(lvl/4));
-			stats.addOneStat(STATS_ADD_PO, (int)(lvl/100));
+			stats.addOneStat(STATS_ADD_SAGE, (lvl/4));
+			stats.addOneStat(STATS_ADD_PO, (lvl/100));
 			break;
 			//Indigo-Emeraude
 			case 55:
 			stats.addOneStat(STATS_ADD_VITA, lvl);
 			stats.addOneStat(STATS_ADD_CHAN, (int)(lvl/3.33));
-			stats.addOneStat(STATS_ADD_PM, (int)(lvl/100));
+			stats.addOneStat(STATS_ADD_PM, (lvl/100));
 			break;
 			//Indigo-Prune
 			case 82:
 			stats.addOneStat(STATS_ADD_VITA, lvl*2);
 			stats.addOneStat(STATS_ADD_CHAN, (int)(lvl/1.65));
-			stats.addOneStat(STATS_ADD_PO, (int)(lvl/100));
+			stats.addOneStat(STATS_ADD_PO, (lvl/100));
 			break;
 			//Eb�ne-Emeraude
 			case 50:
 			stats.addOneStat(STATS_ADD_VITA, lvl);
 			stats.addOneStat(STATS_ADD_AGIL, (int)(lvl/3.33));
-			stats.addOneStat(STATS_ADD_PM, (int)(lvl/100));
+			stats.addOneStat(STATS_ADD_PM, (lvl/100));
 			break;
 			//Eb�ne-Prune
 			case 79:
 			stats.addOneStat(STATS_ADD_VITA, lvl*2);
 			stats.addOneStat(STATS_ADD_AGIL, (int)(lvl/1.65));
-			stats.addOneStat(STATS_ADD_PO, (int)(lvl/100));
+			stats.addOneStat(STATS_ADD_PO, (lvl/100));
 			break;
 			//Pourpre-Emeraude
 			case 60:
 			stats.addOneStat(STATS_ADD_VITA, lvl);
 			stats.addOneStat(STATS_ADD_FORC, (int)(lvl/3.33));
-			stats.addOneStat(STATS_ADD_PM, (int)(lvl/100));
+			stats.addOneStat(STATS_ADD_PM, (lvl/100));
 			break;
 			//Pourpre-Prune
 			case 87:
 			stats.addOneStat(STATS_ADD_VITA, lvl*2);
 			stats.addOneStat(STATS_ADD_FORC, (int)(lvl/1.65));
-			stats.addOneStat(STATS_ADD_PO, (int)(lvl/100));
+			stats.addOneStat(STATS_ADD_PO, (lvl/100));
 			break;
 			//Orchid�e-Emeraude
 			case 59:
 			stats.addOneStat(STATS_ADD_VITA, lvl);
 			stats.addOneStat(STATS_ADD_INTE, (int)(lvl/3.33));
-			stats.addOneStat(STATS_ADD_PM, (int)(lvl/100));
+			stats.addOneStat(STATS_ADD_PM, (lvl/100));
 			break;
 			//Orchid�e-Prune
 			case 86:
 			stats.addOneStat(STATS_ADD_VITA, lvl*2);
 			stats.addOneStat(STATS_ADD_INTE, (int)(lvl/1.65));
-			stats.addOneStat(STATS_ADD_PO, (int)(lvl/100));
+			stats.addOneStat(STATS_ADD_PO, (lvl/100));
 			break;
 			//Ivoire-Emeraude
 			case 56:
 			stats.addOneStat(STATS_ADD_VITA, lvl);
 			stats.addOneStat(STATS_ADD_PERDOM, (int)(lvl/3.33));
-			stats.addOneStat(STATS_ADD_PM, (int)(lvl/100));
+			stats.addOneStat(STATS_ADD_PM, (lvl/100));
 			break;
 			//Ivoire-Prune
 			case 83:
 			stats.addOneStat(STATS_ADD_VITA, lvl*2);
 			stats.addOneStat(STATS_ADD_PERDOM, (int)(lvl/1.65));
-			stats.addOneStat(STATS_ADD_PO, (int)(lvl/100));
+			stats.addOneStat(STATS_ADD_PO, (lvl/100));
 			break;
 			//Turquoise-Emeraude
 			case 58:
 			stats.addOneStat(STATS_ADD_VITA, lvl);
 			stats.addOneStat(STATS_ADD_PROS, (int)(lvl/3.33));
-			stats.addOneStat(STATS_ADD_PM, (int)(lvl/100));
+			stats.addOneStat(STATS_ADD_PM, (lvl/100));
 			break;
 			//Turquoise-Prune
 			case 85:
 			stats.addOneStat(STATS_ADD_VITA, lvl*2);
 			stats.addOneStat(STATS_ADD_PROS, (int)(lvl/1.65));
-			stats.addOneStat(STATS_ADD_PO, (int)(lvl/100));
+			stats.addOneStat(STATS_ADD_PO, (lvl/100));
 			break;
 			//Emeraude-Prune
 			case 80:
 		    stats.addOneStat(STATS_ADD_VITA, lvl*2);
-			stats.addOneStat(STATS_ADD_PM, (int)(lvl/100));
-			stats.addOneStat(STATS_ADD_PO, (int)(lvl/100));
+			stats.addOneStat(STATS_ADD_PM, (lvl/100));
+			stats.addOneStat(STATS_ADD_PO, (lvl/100));
 			break;
 			//Armure
 			case 88:
-			stats.addOneStat(STATS_ADD_PERDOM, (int)(lvl/2));
-			stats.addOneStat(STATS_ADD_RP_AIR, (int)(lvl/20));
-			stats.addOneStat(STATS_ADD_RP_EAU, (int)(lvl/20));
-			stats.addOneStat(STATS_ADD_RP_TER, (int)(lvl/20));
-			stats.addOneStat(STATS_ADD_RP_FEU, (int)(lvl/20));
-			stats.addOneStat(STATS_ADD_RP_NEU, (int)(lvl/20));
+			stats.addOneStat(STATS_ADD_PERDOM, (lvl/2));
+			stats.addOneStat(STATS_ADD_RP_AIR, (lvl/20));
+			stats.addOneStat(STATS_ADD_RP_EAU, (lvl/20));
+			stats.addOneStat(STATS_ADD_RP_TER, (lvl/20));
+			stats.addOneStat(STATS_ADD_RP_FEU, (lvl/20));
+			stats.addOneStat(STATS_ADD_RP_NEU, (lvl/20));
 			break;
 		}
 		return stats;

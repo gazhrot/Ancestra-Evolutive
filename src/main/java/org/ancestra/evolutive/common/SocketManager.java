@@ -11,7 +11,6 @@ import org.ancestra.evolutive.entity.Collector;
 import org.ancestra.evolutive.entity.Mount;
 import org.ancestra.evolutive.entity.monster.MobGroup;
 import org.ancestra.evolutive.entity.npc.Npc;
-import org.ancestra.evolutive.enums.EmulatorInfos;
 import org.ancestra.evolutive.fight.Fight;
 import org.ancestra.evolutive.fight.Fighter;
 import org.ancestra.evolutive.game.GameClient;
@@ -33,7 +32,6 @@ import org.ancestra.evolutive.object.Objet.ObjTemplate;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Random;
 
 public class SocketManager {
 	

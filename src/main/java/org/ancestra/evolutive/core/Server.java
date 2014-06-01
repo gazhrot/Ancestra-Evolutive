@@ -468,6 +468,7 @@ public class Server {
 	    }
 	   
 		FileFilter filter = new FileFilter() {
+			@Override
 			public boolean accept(File file) {
 				return file.getName().endsWith(".jar");
 			}

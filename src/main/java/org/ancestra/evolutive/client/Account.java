@@ -240,6 +240,7 @@ public class Account {
 			return;
 		if(this.muteTimer == null && time > 0) {
 			this.muteTimer = new Timer(time*1000,new ActionListener() {
+				@Override
 				public void actionPerformed(ActionEvent arg0) {
 					mute(false,0);
 					muteTimer.stop();

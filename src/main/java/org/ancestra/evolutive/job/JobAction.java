@@ -1048,8 +1048,8 @@ public class JobAction {
 					try {
 						int min = Integer.parseInt(infos[0], 16);
 						int max = Integer.parseInt(infos[1], 16);
-						int newMin = (int) ((min * coef) / 100);
-						int newMax = (int) ((max * coef) / 100);
+						int newMin = ((min * coef) / 100);
+						int newMax = ((max * coef) / 100);
 						if (newMin == 0)
 							newMin = 1;
 						String newRange = "1d" + (newMax - newMin + 1) + "+" + (newMin - 1);

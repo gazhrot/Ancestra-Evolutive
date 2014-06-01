@@ -1,6 +1,5 @@
 package org.ancestra.evolutive.login;
 
-import ch.qos.logback.classic.Logger;
 import org.ancestra.evolutive.core.Server;
 import org.apache.mina.core.service.IoAcceptor;
 import org.apache.mina.core.session.IoSession;
@@ -9,6 +8,8 @@ import org.apache.mina.filter.codec.textline.LineDelimiter;
 import org.apache.mina.filter.codec.textline.TextLineCodecFactory;
 import org.apache.mina.transport.socket.nio.NioSocketAcceptor;
 import org.slf4j.LoggerFactory;
+
+import ch.qos.logback.classic.Logger;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;

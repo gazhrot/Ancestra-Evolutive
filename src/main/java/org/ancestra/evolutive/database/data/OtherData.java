@@ -15,7 +15,6 @@ import org.ancestra.evolutive.object.Objet.ObjTemplate;
 import org.slf4j.LoggerFactory;
 
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.util.ArrayList;
 
 public class OtherData extends AbstractDAO<Object>{

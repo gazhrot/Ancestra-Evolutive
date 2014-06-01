@@ -1,8 +1,5 @@
 package org.ancestra.evolutive.client;
 
-import org.ancestra.evolutive.area.Area;
-import org.ancestra.evolutive.area.Continent;
-import org.ancestra.evolutive.area.SubArea;
 import org.ancestra.evolutive.client.other.Group;
 import org.ancestra.evolutive.client.other.Stalk;
 import org.ancestra.evolutive.client.other.Stats;
@@ -197,6 +194,7 @@ public class Player {
 			this.setGhosts();
 		
 		this.sitTimer = new Timer(2000, new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				regenLife();
 			}
@@ -256,7 +254,7 @@ public class Player {
 				(byte)0,
 				(byte)0,
 				"*#%!pi$:?",
-				(short)Constants.getStartMap(classe),
+				Constants.getStartMap(classe),
 				Constants.getStartCell(classe),
 				"",
 				"",
@@ -1835,7 +1833,7 @@ public class Player {
 	public void refreshStats()
 	{
 		int before = this.maxPdv;
-		double actPdvPer = (100*(double)this.pdv)/(double)this.maxPdv;
+		double actPdvPer = (100*(double)this.pdv)/this.maxPdv;
 		this.maxPdv = (this.getLevel() - 1) * 5 + Constants.getBasePdv(this.getClasse().getId()) + getTotalStats().getEffect(Constants.STATS_ADD_VITA);
 		if(before == this.maxPdv)
 			this.pdv = (int) Math.round(this.maxPdv*actPdvPer/100);

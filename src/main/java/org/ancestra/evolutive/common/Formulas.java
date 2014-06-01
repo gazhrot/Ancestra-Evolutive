@@ -75,7 +75,7 @@ public class Formulas {
 		int statC = caster.getTotalStats().getEffect(Constants.STATS_ADD_INTE);
 		int soins = caster.getTotalStats().getEffect(Constants.STATS_ADD_SOIN);
 		if(statC<0)statC=0;
-		return (int)(jet * (100 + statC) / 100 + soins);
+		return (jet * (100 + statC) / 100 + soins);
 	}
 	
 	public static int calculFinalDommage(Fight fight,Fighter caster,Fighter target,int statID,int jet,boolean isHeal, boolean isCaC, int spellid)
@@ -289,7 +289,7 @@ public class Formulas {
 		}
 		
 		if(!isHeal)num -= resfT;//resis fixe
-		int reduc =	(int)((num/(float)100)*respT);//Reduc %resis
+		int reduc =	(int)((num/100)*respT);//Reduc %resis
 		if(!isHeal)num -= reduc;
 		
 		int armor = getArmorResist(target,statID);
@@ -321,7 +321,7 @@ public class Formulas {
 
 	public static int calculZaapCost(Maps map1,Maps map2)
 	{
-		return (int) (10*(Math.abs(map2.getX()-map1.getX())+Math.abs(map2.getY()-map1.getY())-1));
+		return (10*(Math.abs(map2.getX()-map1.getX())+Math.abs(map2.getY()-map1.getY())-1));
 	}
 	private static int getArmorResist(Fighter target, int statID)
 	{
@@ -380,7 +380,7 @@ public class Formulas {
 				break;
 			}
 			int value = SE.getValue();
-			int a = value * (100 + (int)(intell/2) + (int)(carac/2))/100;
+			int a = value * (100 + (intell/2) + (carac/2))/100;
 			armor += a;
 		}
 		for(SpellEffect SE : target.getBuffsByEffectID(105))
@@ -404,7 +404,7 @@ public class Formulas {
 				break;
 			}
 			int value = SE.getValue();
-			int a = value * (100 + (int)(intell/2) + (int)(carac/2))/100;
+			int a = value * (100 + (intell/2) + (carac/2))/100;
 			armor += a;
 		}
 		return armor;
@@ -431,10 +431,10 @@ public class Formulas {
 			if(esquiveT == 0)esquiveT=1;
 			if(esquiveC == 0)esquiveC=1;
 
-			float a = (float)(esquiveC/esquiveT);
+			float a = (esquiveC/esquiveT);
 			float b = (ptsAct/ptsMax);
 
-			float pourcentage = (float)(a*b*50);
+			float pourcentage = (a*b*50);
 			int chance = (int)Math.ceil(pourcentage);
 			
 			/*
@@ -661,7 +661,7 @@ public class Formulas {
 
 		GuildMember gm = perso.getPersonnage().getGuildMember();
 		
-		double xp = (double)xpWin.get(), Lvl = perso.get_lvl(),LvlGuild = perso.getPersonnage().getGuild().getLevel(),pXpGive = (double)gm.getXpGive()/100;
+		double xp = xpWin.get(), Lvl = perso.get_lvl(),LvlGuild = perso.getPersonnage().getGuild().getLevel(),pXpGive = (double)gm.getXpGive()/100;
 		
 		double maxP = xp * pXpGive * 0.10;	//Le maximum donn� � la guilde est 10% du montant pr�lev� sur l'xp du combat
 		double diff = Math.abs(Lvl - LvlGuild);	//Calcul l'�cart entre le niveau du personnage et le niveau de la guilde
@@ -683,7 +683,7 @@ public class Formulas {
 			toGuild = maxP;
 		}
 		xpWin.set((long)(xp - xp*pXpGive));
-		return (long) Math.round(toGuild);
+		return Math.round(toGuild);
 	}
 	
 	public static long getMountXpWin(Fighter perso, AtomicReference<Long> xpWin)
@@ -695,7 +695,7 @@ public class Formulas {
 		int diff = Math.abs(perso.get_lvl() - perso.getPersonnage().getMount().getLevel());
 		
 		double coeff = 0;
-		double xp = (double) xpWin.get();
+		double xp = xpWin.get();
 		double pToMount = (double)perso.getPersonnage().getMountXp() / 100 + 0.2;
 		
 		if(diff >= 0 && diff <= 9)
@@ -718,7 +718,7 @@ public class Formulas {
 		if(pToMount > 0.2)
 			xpWin.set((long)(xp - (xp*(pToMount-0.2))));
 		
-		return (long)Math.round(xp * pToMount * coeff);
+		return Math.round(xp * pToMount * coeff);
 	}
 
 	public static int getKamasWin(Fighter i, ArrayList<Fighter> winners, int maxk, int mink)
@@ -741,7 +741,7 @@ public class Formulas {
 		if(lvlP == 1)K = 100;
 		else if (lvlP == 25)K = 175;
 		else if (lvlP == 50)K = 350;
-		return (int)((lvlM*100)/(K + lvlA));
+		return ((lvlM*100)/(K + lvlA));
 	}
 
 	public static int calculHonorWin(ArrayList<Fighter> winners,ArrayList<Fighter> loosers,Fighter F)
@@ -767,7 +767,7 @@ public class Formulas {
 		
 		if(totalLevelWin-totalLevelLoose > Server.config.getAverageLevelPvp()) return 0;
 
-		int base = (int)(100 * (float)(totalGradeLoose/totalGradeWin))/winners.size();
+		int base = (int)(100 * (totalGradeLoose/totalGradeWin))/winners.size();
 		if(loosers.contains(F))base = -base;
 		return base * Server.config.getRateHonor();
 	}
@@ -977,6 +977,6 @@ public class Formulas {
 		if(soigneur.getPersonnage() != null) 
 			if(soigneur.getPersonnage().getClasse() == Classe.ENIRIPSA)
 				adic = 100;
-		return (int) (range * ((100 + statC) / adic) + soins);
+		return (range * ((100 + statC) / adic) + soins);
 	}
 }

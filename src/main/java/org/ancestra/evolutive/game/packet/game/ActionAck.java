@@ -17,6 +17,7 @@ public class ActionAck implements PacketParser {
 		if(client.getPlayer().isNeedEndFightAction()) {
 			final GameClient needed = client;
 			client.getPlayer().getWaiter().addNext(new Runnable() {
+				@Override
 				public void run() {
 					needed.getPlayer().getCurMap().applyEndFightAction(Constants.FIGHT_TYPE_PVM, needed.getPlayer());
 					needed.getPlayer().refreshMapAfterFight();

@@ -258,6 +258,7 @@ public class MobGroup {
 	public void startTimer() {
 		this.timer = new Timer();
 		this.timer.schedule(new TimerTask() {
+			@Override
 			public void run() {
 				condition = "";
 			}

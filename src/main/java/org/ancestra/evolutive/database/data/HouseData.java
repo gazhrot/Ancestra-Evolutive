@@ -11,12 +11,7 @@ import org.ancestra.evolutive.house.Trunk;
 import org.slf4j.LoggerFactory;
 
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.util.ArrayList;
-
-
-
-
 
 public class HouseData extends AbstractDAO<House>{
 

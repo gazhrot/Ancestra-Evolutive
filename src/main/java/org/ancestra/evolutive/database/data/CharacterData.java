@@ -5,9 +5,10 @@ import com.zaxxer.hikari.HikariDataSource;
 import org.ancestra.evolutive.client.Account;
 import org.ancestra.evolutive.client.Player;
 import org.ancestra.evolutive.common.Constants;
-import org.ancestra.evolutive.core.Console;
 import org.ancestra.evolutive.core.World;
 import org.ancestra.evolutive.database.AbstractDAO;
+import org.ancestra.evolutive.guild.Guild;
+import org.ancestra.evolutive.guild.GuildMember;
 import org.ancestra.evolutive.object.Objet;
 import org.slf4j.LoggerFactory;
 
@@ -313,8 +314,14 @@ public class CharacterData extends AbstractDAO<Player>{
             player.VerifAndChangeItemPlace();
             World.data.addPersonnage(player);
             int guildId = World.database.getGuildMemberData().getGuildByPlayer(player.getUUID());
-            if(guildId >= 0)
-                player.setGuildMember(World.data.getGuild(guildId).getMember(resultSet.getInt("guid")));
+            if(guildId >= 0) {
+            	Guild guild =  World.data.getGuild(guildId);
+            	if(guild != null) {
+            		GuildMember member = guild.getMember(resultSet.getInt("guid"));
+            		if(member != null)
+            			player.setGuildMember(member);
+            	}
+            }  
         }
         return player;
     }

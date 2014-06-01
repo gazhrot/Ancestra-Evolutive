@@ -11,16 +11,16 @@ import org.ancestra.evolutive.enums.EmulatorInfos;
 import org.apache.mina.core.session.IoSession;
 import org.slf4j.LoggerFactory;
 
-
 public class LoginClient implements Client {
+	
 	private String key;
 	private int packetCount = 0;
 	private String name;
 	private Account account = null;
 	private IoSession session;
-	Logger logger = (Logger) LoggerFactory.getLogger(Client.class);
+	Logger logger = (Logger) LoggerFactory.getLogger(LoginClient.class);
 
-	public LoginClient(IoSession session,String key) {
+	public LoginClient(IoSession session, String key) {
 		this.session = session;
         this.key = key;
         logger = (Logger)LoggerFactory.getLogger("rsession" + session.getId());

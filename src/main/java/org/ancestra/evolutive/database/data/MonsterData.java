@@ -9,10 +9,6 @@ import org.ancestra.evolutive.entity.monster.MobTemplate;
 import org.slf4j.LoggerFactory;
 
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-
-
-
 
 public class MonsterData extends AbstractDAO<MobTemplate>{
 

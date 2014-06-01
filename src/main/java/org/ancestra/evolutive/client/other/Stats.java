@@ -91,15 +91,15 @@ public class Stats {
 		{
 			case Constants.STATS_ADD_AFLEE:
 				if(this.effects.get(Constants.STATS_REM_AFLEE)!= null)
-					value -= (int)(getEffect(Constants.STATS_REM_AFLEE));
+					value -= (getEffect(Constants.STATS_REM_AFLEE));
 				if(this.effects.get(Constants.STATS_ADD_SAGE) != null)
-					value += (int)(getEffect(Constants.STATS_ADD_SAGE)/4);
+					value += (getEffect(Constants.STATS_ADD_SAGE)/4);
 			break;
 			case Constants.STATS_ADD_MFLEE:
 				if(this.effects.get(Constants.STATS_REM_MFLEE)!= null)
-					value -= (int)(getEffect(Constants.STATS_REM_MFLEE));
+					value -= (getEffect(Constants.STATS_REM_MFLEE));
 				if(this.effects.get(Constants.STATS_ADD_SAGE) != null)
-					value += (int)(getEffect(Constants.STATS_ADD_SAGE)/4);
+					value += (getEffect(Constants.STATS_ADD_SAGE)/4);
 			break;
 			case Constants.STATS_ADD_INIT:
 				if(this.effects.get(Constants.STATS_REM_INIT)!= null)

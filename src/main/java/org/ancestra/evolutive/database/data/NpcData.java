@@ -10,7 +10,6 @@ import org.ancestra.evolutive.map.Maps;
 import org.slf4j.LoggerFactory;
 
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 
 public class NpcData extends AbstractDAO<Npc>{
 

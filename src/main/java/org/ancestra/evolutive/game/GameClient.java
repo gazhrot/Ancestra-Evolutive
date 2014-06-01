@@ -7,18 +7,14 @@ import org.ancestra.evolutive.client.Player;
 import org.ancestra.evolutive.common.Commands;
 import org.ancestra.evolutive.common.Constants;
 import org.ancestra.evolutive.common.SocketManager;
-import org.ancestra.evolutive.core.Console;
 import org.ancestra.evolutive.core.World;
 import org.ancestra.evolutive.tool.packetfilter.PacketFilter;
 import org.ancestra.evolutive.tool.plugin.packet.PacketParser;
 import org.apache.mina.core.session.IoSession;
 import org.slf4j.LoggerFactory;
-import org.slf4j.Marker;
-import org.slf4j.MarkerFactory;
 
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
@@ -54,7 +50,8 @@ public class GameClient implements Client {
 		return account;
 	}
 
-    public void send(String message) {
+    @Override
+	public void send(String message) {
         this.session.write(message);
     }
 
@@ -123,7 +120,7 @@ public class GameClient implements Client {
 			} catch(Exception e) { continue; }
 		}
 		
-		String prefix = (String) packet.substring(0, 2);	
+		String prefix = packet.substring(0, 2);	
 		PacketParser parser = World.data.getPacketJar().get(prefix);
 		
 		if(parser != null)

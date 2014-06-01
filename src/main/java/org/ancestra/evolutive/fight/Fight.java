@@ -80,7 +80,8 @@ public class Fight {
 	    ActionListener action = new ActionListener ()
 	      {
 	    	int Time = timer;
-	        public void actionPerformed (ActionEvent event)
+	        @Override
+			public void actionPerformed (ActionEvent event)
 	        {
 	        	Time = Time-1000;
 	        	if(perco != null) perco.remove_timeTurn(1000);
@@ -623,6 +624,7 @@ public class Fight {
 		set_turnTimer(null);
 		set_turnTimer(new Timer(Constants.TIME_BY_TURN,new ActionListener()
 			{
+				@Override
 				public void actionPerformed(ActionEvent e)
 				{
 					endTurn();
@@ -638,6 +640,7 @@ public class Fight {
 			
 		}
 		getWaiter().addNext(new Runnable() {
+			@Override
 			public void run() {
 				startTurn();
 			}
@@ -754,6 +757,7 @@ public class Fight {
 				return;
 			
 			getWaiter().addNext(new Runnable() {
+				@Override
 				public void run() {
 					try {
 					/**	_ordreJeu.get(_curPlayer).setCanPlay(false);
@@ -785,7 +789,7 @@ public class Fight {
 								int pdom = SE.getCaster().getTotalStats().getEffect(Constants.STATS_ADD_PERDOM);
 								if(pdom < 0)pdom = 0;
 								//on applique le boost
-								dgt = (int)(((100+inte+pdom)/100) * dgt);
+								dgt = (((100+inte+pdom)/100) * dgt);
 							}
 							if(_ordreJeu.get(_curPlayer).hasBuff(184)) {
 								SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(Fight.this, 7, 105, _ordreJeu.get(_curPlayer).getGUID()+"", _ordreJeu.get(_curPlayer).getGUID()+","+_ordreJeu.get(_curPlayer).getBuff(184).getValue());
@@ -1042,6 +1046,7 @@ public class Fight {
 	
 	public void joinPercepteurFight(final Player perso, int guid, final int percoID) {	
 		perso.getWaiter().addNext(new Runnable() {
+			@Override
 			public void run() {
 				Fighter current_Join = null;
 				Case cell = getRandomCell(_start1);
@@ -2082,6 +2087,7 @@ public class Fight {
 			final ArrayList<Fighter> fWinTeam = winTeam;
 			final ArrayList<Fighter> fLooseTeam = looseTeam;
 			getWaiter().addNext(new Runnable() {
+				@Override
 				public void run() {
 					//Pour les gagnants, on active les endFight actions
 					for(final Fighter F : fWinTeam)
@@ -2100,7 +2106,7 @@ public class Fight {
 							}
 							F._Perco.set_inFight((byte)0);
 							F._Perco.set_inFightID((byte)-1);
-							for(Player z : World.data.getCarte((short)F._Perco.get_mapID()).getPlayers())
+							for(Player z : World.data.getCarte(F._Perco.get_mapID()).getPlayers())
 							{
 								if(z == null) continue;
 								SocketManager.GAME_SEND_MAP_PERCO_GMS_PACKETS(z.getAccount().getGameClient(), z.getCurMap());
@@ -2155,6 +2161,7 @@ public class Fight {
 						if(_type != Constants.FIGHT_TYPE_CHALLENGE)
 						{
 							F.getPersonnage().getWaiter().addNext(new Runnable() {
+								@Override
 								public void run() {
 									int EnergyLoos = Formulas.getLoosEnergy(F.get_lvl(), _type==1, _type==5);
 									int Energy = F.getPersonnage().getEnergy() - EnergyLoos;
@@ -2755,7 +2762,7 @@ public class Fight {
 									}
 									_perco.set_inFight((byte)0);
 									_perco.set_inFightID((byte)-1);
-									for(Player z : World.data.getCarte((short)_perco.get_mapID()).getPlayers())
+									for(Player z : World.data.getCarte(_perco.get_mapID()).getPlayers())
 									{
 										if(z == null) continue;
 										SocketManager.GAME_SEND_MAP_PERCO_GMS_PACKETS(z.getAccount().getGameClient(), z.getCurMap());

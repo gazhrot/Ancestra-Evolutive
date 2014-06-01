@@ -51,7 +51,7 @@ public class AddCollector implements PacketParser {
 				String str = "";
 				str += "S"+perco.get_N1()+","+perco.get_N2()+"|";
 				str += perco.get_mapID()+"|";
-				str += World.data.getCarte((short)perco.get_mapID()).getX()+"|"+World.data.getCarte((short)perco.get_mapID()).getY()+"|"+client.getPlayer().getName();
+				str += World.data.getCarte(perco.get_mapID()).getX()+"|"+World.data.getCarte(perco.get_mapID()).getY()+"|"+client.getPlayer().getName();
 				SocketManager.GAME_SEND_gT_PACKET(z, str);
 			}
 		}

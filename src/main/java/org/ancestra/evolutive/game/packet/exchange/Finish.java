@@ -55,7 +55,7 @@ public class Finish implements PacketParser {
 					SocketManager.GAME_SEND_gITM_PACKET(z, Collector.parsetoGuild(z.getGuild().getId()));
 					String str = "";
 					str += "G"+perco.get_N1()+","+perco.get_N2();
-					str += "|.|"+World.data.getCarte((short)perco.get_mapID()).getX()+"|"+World.data.getCarte((short)perco.get_mapID()).getY()+"|";
+					str += "|.|"+World.data.getCarte(perco.get_mapID()).getX()+"|"+World.data.getCarte(perco.get_mapID()).getY()+"|";
 					str += client.getPlayer().getName()+"|";
 					str += perco.get_LogXp()+";";
 					str += perco.get_LogItems();

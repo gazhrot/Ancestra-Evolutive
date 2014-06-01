@@ -2,7 +2,6 @@ package org.ancestra.evolutive.database.data;
 
 import ch.qos.logback.classic.Logger;
 import com.zaxxer.hikari.HikariDataSource;
-import org.ancestra.evolutive.core.Console;
 import org.ancestra.evolutive.core.World;
 import org.ancestra.evolutive.database.AbstractDAO;
 import org.ancestra.evolutive.other.ExpLevel;
@@ -11,7 +10,6 @@ import org.slf4j.LoggerFactory;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-
 
 public class ExpData extends AbstractDAO<ExpLevel>{
 

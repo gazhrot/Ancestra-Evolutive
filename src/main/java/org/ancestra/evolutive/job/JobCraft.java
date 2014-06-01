@@ -21,7 +21,8 @@ public class JobCraft {
 		this.jobAction = JA;
 		this.perso1 = perso;
 		new ScheduledHandler(1, TimeUnit.SECONDS) {
-            public void run() {
+            @Override
+			public void run() {
     			if(itsOk)
     				jobAction.craft();
     			if(!itsOk) {

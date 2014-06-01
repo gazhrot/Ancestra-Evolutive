@@ -524,7 +524,7 @@ public class Objet {
 				{
 					float a = (float)((entry.getValue()*poid)/100);
 					if(a < 1) a = 1;
-					float chute = (float)(entry.getValue()+a);
+					float chute = (entry.getValue()+a);
 					newstats = (int)Math.floor(chute);
 					//On limite la chute du n�gatif a sont maximum
 					if(newstats > Job.getBaseMaxJet(obj.getTemplate().getID(), Integer.toHexString(entry.getKey())))

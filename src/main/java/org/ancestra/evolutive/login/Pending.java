@@ -17,7 +17,8 @@ public class Pending {
         if(account.getPosition() <= 1)
         {
         	waiter.addNext(new Runnable() {
-        		public void run() {
+        		@Override
+				public void run() {
         			if(account == null || account.getLoginClient() == null) 
         				return;
         			
@@ -28,7 +29,8 @@ public class Pending {
         	}, 750);
         } else {
         	waiter.addNext(new Runnable() {
-        		public void run() {
+        		@Override
+				public void run() {
         			if(account == null ||  account.getLoginClient() == null) 
         				return;
         			

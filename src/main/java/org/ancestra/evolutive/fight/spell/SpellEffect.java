@@ -977,9 +977,9 @@ public class SpellEffect {
 			double val = ((double)Formulas.getRandomJet(jet)/(double)100);
 			int pdvMax = caster.getPdvMaxOutFight();
 			double pVie = (double)caster.getPDV() / (double)caster.getPDVMAX();
-			double rad = (double)2 * Math.PI * (double)(pVie - 0.5);
+			double rad = 2 * Math.PI * (pVie - 0.5);
 			double cos = Math.cos(rad);
-			double taux = (Math.pow((cos+1),2))/(double)4;
+			double taux = (Math.pow((cos+1),2))/4;
 			double dgtMax = val * pdvMax;
 			int dgt = (int) (taux * dgtMax);
 			
@@ -2687,7 +2687,7 @@ public class SpellEffect {
 					finalDommage = -(finalDommage);
 					SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, 100, caster.getGUID()+"", target.getGUID()+","+finalDommage);
 					//Vol de vie
-					int heal = (int)(-finalDommage)/2;
+					int heal = (-finalDommage)/2;
 					if((caster.getPDV()+heal) > caster.getPDVMAX())
 						heal = caster.getPDVMAX()-caster.getPDV();
 					caster.removePDV(-heal);
@@ -2800,7 +2800,7 @@ public class SpellEffect {
 					{
 						int a = -newCellID;
 						int coef = Formulas.getRandomJet("1d8+8");
-						double b = (caster.get_lvl()/(double)(50.00));
+						double b = (caster.get_lvl()/(50.00));
 						if(b<0.1)b= 0.1;
 						double c = b*a;//Calcule des d�gats de pouss�
 						int finalDommage = (int)(coef * c);
@@ -2888,7 +2888,7 @@ public class SpellEffect {
 				target.removePDV(finalDommage);
 				finalDommage = -(finalDommage);
 				SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, 100, caster.getGUID()+"", target.getGUID()+","+finalDommage);
-				int heal = (int)(-finalDommage)/2;
+				int heal = (-finalDommage)/2;
 				if((caster.getPDV()+heal) > caster.getPDVMAX())
 					heal = caster.getPDVMAX()-caster.getPDV();
 				caster.removePDV(-heal);
@@ -2924,7 +2924,7 @@ public class SpellEffect {
 					target.removePDV(finalDommage);
 					finalDommage = -(finalDommage);
 					SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, 100, caster.getGUID()+"", target.getGUID()+","+finalDommage);
-					int heal = (int)(-finalDommage)/2;
+					int heal = (-finalDommage)/2;
 					if((caster.getPDV()+heal) > caster.getPDVMAX())
 						heal = caster.getPDVMAX()-caster.getPDV();
 					caster.removePDV(-heal);
@@ -2967,7 +2967,7 @@ public class SpellEffect {
 				target.removePDV(finalDommage);
 				finalDommage = -(finalDommage);
 				SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, 100, caster.getGUID()+"", target.getGUID()+","+finalDommage);
-				int heal = (int)(-finalDommage)/2;
+				int heal = (-finalDommage)/2;
 				if((caster.getPDV()+heal) > caster.getPDVMAX())
 					heal = caster.getPDVMAX()-caster.getPDV();
 				caster.removePDV(-heal);
@@ -3003,7 +3003,7 @@ public class SpellEffect {
 					finalDommage = -(finalDommage);
 					SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, 100, caster.getGUID()+"", target.getGUID()+","+finalDommage);
 					
-					int heal = (int)(-finalDommage)/2;
+					int heal = (-finalDommage)/2;
 					if((caster.getPDV()+heal) > caster.getPDVMAX())
 						heal = caster.getPDVMAX()-caster.getPDV();
 					caster.removePDV(-heal);
@@ -3046,7 +3046,7 @@ public class SpellEffect {
 				target.removePDV(finalDommage);
 				finalDommage = -(finalDommage);
 				SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, 100, caster.getGUID()+"", target.getGUID()+","+finalDommage);
-				int heal = (int)(-finalDommage)/2;
+				int heal = (-finalDommage)/2;
 				if((caster.getPDV()+heal) > caster.getPDVMAX())
 					heal = caster.getPDVMAX()-caster.getPDV();
 				caster.removePDV(-heal);
@@ -3082,7 +3082,7 @@ public class SpellEffect {
 					finalDommage = -(finalDommage);
 					SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, 100, caster.getGUID()+"", target.getGUID()+","+finalDommage);
 					
-					int heal = (int)(-finalDommage)/2;
+					int heal = (-finalDommage)/2;
 					if((caster.getPDV()+heal) > caster.getPDVMAX())
 						heal = caster.getPDVMAX()-caster.getPDV();
 					caster.removePDV(-heal);
@@ -3125,7 +3125,7 @@ public class SpellEffect {
 				target.removePDV(finalDommage);
 				finalDommage = -(finalDommage);
 				SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, 100, caster.getGUID()+"", target.getGUID()+","+finalDommage);
-				int heal = (int)(-finalDommage)/2;
+				int heal = (-finalDommage)/2;
 				if((caster.getPDV()+heal) > caster.getPDVMAX())
 					heal = caster.getPDVMAX()-caster.getPDV();
 				caster.removePDV(-heal);
@@ -3160,7 +3160,7 @@ public class SpellEffect {
 					target.removePDV(finalDommage);
 					finalDommage = -(finalDommage);
 					SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, 100, caster.getGUID()+"", target.getGUID()+","+finalDommage);
-					int heal = (int)(-finalDommage)/2;
+					int heal = (-finalDommage)/2;
 					if((caster.getPDV()+heal) > caster.getPDVMAX())
 						heal = caster.getPDVMAX()-caster.getPDV();
 					caster.removePDV(-heal);
@@ -3219,7 +3219,7 @@ public class SpellEffect {
 				target.removePDV(finalDommage);
 				finalDommage = -(finalDommage);
 				SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, 100, caster.getGUID()+"", target.getGUID()+","+finalDommage);
-				int heal = (int)(-finalDommage)/2;
+				int heal = (-finalDommage)/2;
 				if((caster.getPDV()+heal) > caster.getPDVMAX())
 					heal = caster.getPDVMAX()-caster.getPDV();
 				caster.removePDV(-heal);
@@ -3255,7 +3255,7 @@ public class SpellEffect {
 					finalDommage = -(finalDommage);
 					SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, 100, caster.getGUID()+"", target.getGUID()+","+finalDommage);
 
-					int heal = (int)(-finalDommage)/2;
+					int heal = (-finalDommage)/2;
 					if((caster.getPDV()+heal) > caster.getPDVMAX())
 						heal = caster.getPDVMAX()-caster.getPDV();
 					caster.removePDV(-heal);
@@ -4194,6 +4194,7 @@ public class SpellEffect {
 				}
 				final Fighter fFighter = target;
 				fight.getWaiter().addNext(new Runnable() {
+					@Override
 					public void run() {
 						fight.onFighterDie(fFighter);
 					}
