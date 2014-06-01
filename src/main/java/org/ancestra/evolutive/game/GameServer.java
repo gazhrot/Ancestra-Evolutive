@@ -1,11 +1,9 @@
 package org.ancestra.evolutive.game;
 
-import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import org.ancestra.evolutive.client.Account;
 import org.ancestra.evolutive.client.Player;
 import org.ancestra.evolutive.common.SocketManager;
-import org.ancestra.evolutive.core.Console;
 import org.ancestra.evolutive.core.Log;
 import org.ancestra.evolutive.core.Server;
 import org.ancestra.evolutive.core.World;
@@ -14,7 +12,6 @@ import org.apache.mina.core.session.IoSession;
 import org.apache.mina.filter.codec.ProtocolCodecFilter;
 import org.apache.mina.filter.codec.textline.LineDelimiter;
 import org.apache.mina.filter.codec.textline.TextLineCodecFactory;
-import org.apache.mina.transport.socket.nio.NioProcessor;
 import org.apache.mina.transport.socket.nio.NioSocketAcceptor;
 import org.slf4j.LoggerFactory;
 
@@ -27,8 +24,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
@@ -91,6 +86,7 @@ public class GameServer {
 		ScheduledExecutorService scheduler = World.data.getScheduler();
 		
 		scheduler.scheduleWithFixedDelay(new Runnable() {
+			@Override
 			public void run() {
 				if(!Server.config.isSaving())
 					World.data.saveData(-1);
@@ -98,6 +94,7 @@ public class GameServer {
 		}, Server.config.getSaveTime(), Server.config.getSaveTime(), TimeUnit.MILLISECONDS);
 		
 		scheduler.scheduleWithFixedDelay(new Runnable() {
+			@Override
 			public void run() {
 				World.database.getOtherData().reloadLiveActions();
 				Log.addToLog("Les live actions ont ete appliquees");
@@ -105,6 +102,7 @@ public class GameServer {
 		}, Server.config.getLoadDelay(), Server.config.getLoadDelay(), TimeUnit.MILLISECONDS);
 		
 		scheduler.scheduleWithFixedDelay(new Runnable() {
+			@Override
 			public void run() {
 				World.data.RefreshAllMob();
 				Log.addToLog("La recharge des mobs est finie");
@@ -112,6 +110,7 @@ public class GameServer {
 		}, Server.config.getReloadMobDelay(), Server.config.getReloadMobDelay(), TimeUnit.MILLISECONDS);
 		
 		scheduler.scheduleWithFixedDelay(new Runnable() {
+			@Override
 			public void run() {
 				for(Player player: World.data.getOnlinePersos()) {
                     if(player.getLastPacketTime() + 600000 < System.currentTimeMillis()) {
@@ -131,18 +130,15 @@ public class GameServer {
 		return clients;
 	}
 
-	public long getStartTime()
-	{
+	public long getStartTime() {
 		return startTime;
 	}
 	
-	public int getMaxPlayer()
-	{
+	public int getMaxPlayer() {
 		return maxConnections;
 	}
 	
-	public int getPlayerNumber()
-	{
+	public int getPlayerNumber() {
 		return clients.size();
 	}
 	
@@ -158,12 +154,12 @@ public class GameServer {
 		return null;
 	}
 	
-	public synchronized void delWaitingCompte(Account _compte) {
-		waitingClients.remove(_compte);
+	public synchronized void delWaitingCompte(Account account) {
+		waitingClients.remove(account);
 	}
 	
-	public synchronized void addWaitingCompte(Account _compte) {
-		waitingClients.add(_compte);
+	public synchronized void addWaitingCompte(Account account) {
+		waitingClients.add(account);
 	}
 	
 	public static String getServerTime() {

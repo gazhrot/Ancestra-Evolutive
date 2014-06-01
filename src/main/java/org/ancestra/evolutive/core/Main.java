@@ -7,14 +7,13 @@ import org.ancestra.evolutive.login.LoginServer;
 import org.ancestra.evolutive.tool.plugin.PluginLoader;
 import org.slf4j.LoggerFactory;
 
-import java.util.logging.LogManager;
-
 public class Main {
 	private static Logger logger = (Logger) LoggerFactory.getLogger(Main.class);
 
 	static {
 		Runtime.getRuntime().addShutdownHook(new Thread() {
-            public void run() {
+            @Override
+			public void run() {
                 closeServers();
             }
         });
@@ -63,6 +62,7 @@ public class Main {
 
 	public static void closeServers() {
 		World.data.getWorker().execute(new Runnable() {
+			@Override
 			public void run() {
 				if(Server.config.isRunning()) {
 					Console.instance.writeln(" <> Fermeture du jeu <>");

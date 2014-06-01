@@ -21,6 +21,7 @@ public class PierreAme extends Objet{
 		parseStringToStats(strStats);
 	}
 	
+	@Override
 	public void parseStringToStats(String monsters) //Dans le format "monstreID,lvl|monstreID,lvl..."
 	{
 		String[] split = monsters.split("\\|");
@@ -37,6 +38,7 @@ public class PierreAme extends Objet{
 		}
 	}
 	
+	@Override
 	public String parseStatsString()
 	{
 		StringBuilder stats = new StringBuilder();
@@ -76,6 +78,7 @@ public class PierreAme extends Objet{
 		return toReturn.toString();
 	}
 	
+	@Override
 	public String parseToSave()
 	{
 		StringBuilder toReturn = new StringBuilder();

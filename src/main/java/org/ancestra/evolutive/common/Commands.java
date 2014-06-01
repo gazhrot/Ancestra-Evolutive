@@ -38,7 +38,8 @@ public class Commands {
 	    ActionListener action = new ActionListener ()
 	    {
 	    	int Time = time;
-	        public void actionPerformed (ActionEvent event)
+	        @Override
+			public void actionPerformed (ActionEvent event)
 	        {
 	        	Time = Time-1;
 	        	if(Time == 1)
@@ -1641,7 +1642,7 @@ public class Commands {
 			
 			if(LockValue > 2) LockValue = 2;
 			if(LockValue < 0) LockValue = 0;
-			World.data.set_state((short)LockValue);
+			World.data.set_state(LockValue);
 			if(LockValue == 1)
 			{
 				SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out, "Serveur accessible.");

@@ -2,16 +2,13 @@ package org.ancestra.evolutive.database.data;
 
 import ch.qos.logback.classic.Logger;
 import com.zaxxer.hikari.HikariDataSource;
-import com.zaxxer.hikari.HikariDataSource;
 import org.ancestra.evolutive.area.Area;
-import org.ancestra.evolutive.core.Console;
 import org.ancestra.evolutive.core.World;
 import org.ancestra.evolutive.database.AbstractDAO;
 import org.slf4j.LoggerFactory;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-
 
 public class AreaData extends AbstractDAO<Area>{
 

@@ -173,14 +173,14 @@ public class JobConstant {
 			return 2;
 		if(lvl == 100)
 			return 9;
-		return (int)(lvl/20)+3;
+		return (lvl/20)+3;
 	}
 	
 	public static int getChanceForMaxCase(int lvl)
 	{
 		if(lvl < 10)
 			return 50;
-		return  54 + (int)((lvl/10)-1)*5;
+		return  54 + ((lvl/10)-1)*5;
 	}
 
 	public static boolean isJobAction(int a)

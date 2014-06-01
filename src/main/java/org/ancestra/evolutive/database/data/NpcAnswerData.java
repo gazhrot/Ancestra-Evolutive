@@ -9,8 +9,6 @@ import org.ancestra.evolutive.entity.npc.NpcAnswer;
 import org.ancestra.evolutive.other.Action;
 import org.slf4j.LoggerFactory;
 
-import java.sql.ResultSet;
-
 public class NpcAnswerData extends AbstractDAO<NpcAnswer>{
 
 	public NpcAnswerData(HikariDataSource source) {

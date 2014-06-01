@@ -3,7 +3,6 @@ package org.ancestra.evolutive.login;
 import org.ancestra.evolutive.common.Constants;
 import org.ancestra.evolutive.common.SocketManager;
 import org.ancestra.evolutive.core.Console;
-import org.ancestra.evolutive.core.Log;
 import org.ancestra.evolutive.core.Server;
 import org.ancestra.evolutive.tool.packetfilter.PacketFilter;
 import org.apache.mina.core.service.IoHandler;

@@ -8,11 +8,6 @@ import org.ancestra.evolutive.database.AbstractDAO;
 import org.ancestra.evolutive.job.Job;
 import org.slf4j.LoggerFactory;
 
-import java.sql.ResultSet;
-
-
-
-
 public class JobData extends AbstractDAO<Job>{
 
 	public JobData(HikariDataSource source) {

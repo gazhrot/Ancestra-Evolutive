@@ -216,7 +216,7 @@ public class Collector
 		{
 			 if(perco.getValue().get_guildID() == GuildID)
     		 {
-				 	Maps map = World.data.getCarte((short)perco.getValue().get_mapID());
+				 	Maps map = World.data.getCarte(perco.getValue().get_mapID());
 				 	if(isFirst) packet.append("+");
 	    			if(!isFirst) packet.append("|");
 	    			packet.append(perco.getValue().getGuid()).append(";").append(perco.getValue().get_N1()).append(",").append(perco.getValue().get_N2()).append(";");
@@ -523,7 +523,7 @@ public class Collector
 			{
 				Collector collector = perco.getValue();
 				World.data.getPercos().remove(perco.getKey());
-				for(Player p : World.data.getCarte((short) perco.getValue().get_mapID()).getPlayers())
+				for(Player p : World.data.getCarte(perco.getValue().get_mapID()).getPlayers())
 				{
 					SocketManager.GAME_SEND_ERASE_ON_MAP_TO_MAP(p.getCurMap(), perco.getValue().getGuid());//Suppression visuelle
 				}

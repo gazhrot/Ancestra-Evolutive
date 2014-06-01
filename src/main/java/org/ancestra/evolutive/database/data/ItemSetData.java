@@ -8,11 +8,6 @@ import org.ancestra.evolutive.database.AbstractDAO;
 import org.ancestra.evolutive.object.ItemSet;
 import org.slf4j.LoggerFactory;
 
-import java.sql.ResultSet;
-
-
-
-
 public class ItemSetData extends AbstractDAO<ItemSet>{
 
 	public ItemSetData(HikariDataSource source) {

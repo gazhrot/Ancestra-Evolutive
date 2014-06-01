@@ -8,8 +8,6 @@ import org.ancestra.evolutive.database.AbstractDAO;
 import org.ancestra.evolutive.map.InteractiveObject.InteractiveObjectTemplate;
 import org.slf4j.LoggerFactory;
 
-import java.sql.ResultSet;
-
 public class InteractiveObjectTemplateData extends AbstractDAO<InteractiveObjectTemplate>{
 
 	public InteractiveObjectTemplateData(HikariDataSource source) {

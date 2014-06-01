@@ -432,7 +432,7 @@ public class Pathfinding {
 	public static int getCellYCoord(Maps map, int cellID)
 	{
 		int w = map.getWidth();
-		int loc5 = (int)(cellID/ ((w*2) -1));
+		int loc5 = (cellID/ ((w*2) -1));
 		int loc6 = cellID - loc5 * ((w * 2) -1);
 		int loc7 = loc6 % w;
 		return (loc5 - loc7);

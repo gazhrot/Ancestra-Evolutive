@@ -8,11 +8,6 @@ import org.ancestra.evolutive.database.AbstractDAO;
 import org.ancestra.evolutive.entity.npc.NpcTemplate;
 import org.slf4j.LoggerFactory;
 
-import java.sql.ResultSet;
-
-
-
-
 public class NpcTemplateData extends AbstractDAO<NpcTemplate>{
 
 	public NpcTemplateData(HikariDataSource source) {

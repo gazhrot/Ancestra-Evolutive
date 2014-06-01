@@ -3,9 +3,6 @@ package org.ancestra.evolutive.core;
 import ch.qos.logback.classic.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
-import java.util.Calendar;
-
 public class Log {
 
     private static Logger gameLogger = (Logger) LoggerFactory.getLogger("Game");

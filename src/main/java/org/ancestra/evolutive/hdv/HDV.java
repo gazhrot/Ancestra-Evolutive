@@ -373,7 +373,7 @@ public class HDV {
 		public byte getAmount(boolean parseToRealNumber)
 		{
 			if(parseToRealNumber)
-				return (byte)(Math.pow(10,(double)_amount) / 10);
+				return (byte)(Math.pow(10,_amount) / 10);
 			else
 				return this._amount;
 		}
@@ -418,9 +418,10 @@ public class HDV {
 			return _ligneID+divider+count+divider+_obj.getTemplate().getID()+divider+_obj.parseStatsString()+divider+_price+divider+"350";//350 = temps restant
 		}
 		*/
+		@Override
 		public int compareTo(HdvEntry o)
 		{
-			HdvEntry e = (HdvEntry)o;
+			HdvEntry e = o;
 			int celuiCi = this.getPrice();
 			int autre = e.getPrice();
 			if(autre > celuiCi)

@@ -24,12 +24,12 @@ public class CryptManager {
             char PPass = Password.charAt(i);
             char PKey = Key.charAt(i);
 
-            int APass = (int)PPass / 16;
+            int APass = PPass / 16;
 
-            int AKey = (int)PPass % 16;
+            int AKey = PPass % 16;
 
-            int ANB = (APass + (int)PKey) % HASH.length;
-            int ANB2 = (AKey + (int)PKey) % HASH.length;
+            int ANB = (APass + PKey) % HASH.length;
+            int ANB2 = (AKey + PKey) % HASH.length;
 
             _Crypted += HASH[ANB];
             _Crypted += HASH[ANB2];
@@ -44,7 +44,7 @@ public class CryptManager {
         String Chaine = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_";
         for(l1 = 0; l1<= (pass.length()-1);l1+=2)
         {
-        	l3 = (int)key.charAt((l1/2));
+        	l3 = key.charAt((l1/2));
             l2 = Chaine.indexOf(pass.charAt(l1));
             l4 = (64 + l2) - l3;
             int l11 = l1+1;
@@ -92,7 +92,7 @@ public class CryptManager {
 		for(int a = 2;a>=0;a--)
 		{
 			nbr64 += HASH[(int)(P/(java.lang.Math.pow(64,a)))];
-			P = (int)(P%(int)(java.lang.Math.pow(64,a)));
+			P = (P%(int)(java.lang.Math.pow(64,a)));
 		}
 		return nbr64;
 	}
