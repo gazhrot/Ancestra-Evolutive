@@ -74,3 +74,4 @@ local.properties
 .config
 config.conf
 src/main/java/logback.xml
+bonjour.xml
