@@ -265,7 +265,7 @@ public class Server {
 			});
 			
 			//ajout message de succ�s
-			command.addSuccessMessage("Vous avez bien �t� t�l�port� � votre derni�re position sauvegard�e");
+			command.addSuccessMessage("Vous avez bien ete teleporte a votre derniere position sauvegardee");
 			//ajout aux commmandes
 			playerCommands.put(name, command);
 		}

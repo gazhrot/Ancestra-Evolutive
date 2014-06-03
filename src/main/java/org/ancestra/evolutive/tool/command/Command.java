@@ -1,35 +1,39 @@
 package org.ancestra.evolutive.tool.command;
 
+import ch.qos.logback.classic.Logger;
 import org.ancestra.evolutive.client.Player;
 import org.ancestra.evolutive.core.Console;
 import org.ancestra.evolutive.tool.time.restricter.TimeRestricter;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public abstract class Command<T> {
 	
-	private String name;
-	private Map<String, Parameter<T>> parameters = new HashMap<>();
-	private CommandGroupAccess<T> commandGroupAccess = new CommandGroupAccess<>();
-	private StringBuilder successMessages = new StringBuilder();
-	private TimeRestricter restricter;
-	private boolean specificParams = false;
-	
+	private final String name;
+    private final boolean specificParams;
+    private Map<String, Parameter<T>> parameters = new HashMap<>();
+    private CommandGroupAccess<T> commandGroupAccess = new CommandGroupAccess<>();
+    private StringBuilder successMessages = new StringBuilder();
+    private TimeRestricter restricter;
+    protected Logger logger;
+
+
 	public abstract void action(T t, String[] args);
 	
 	public Command(String name) {
-		this.name = name.toLowerCase();
+		this(name, false);
 	}
 	
 	public Command(String name, boolean specific) {
 		this.name = name.toLowerCase();
 		this.specificParams = specific;
+        logger = (Logger) LoggerFactory.getLogger("Command " + name);
 	}
 	
-	public Parameter<T> addParameter(Parameter<T> parameter) {
+	public void addParameter(Parameter<T> parameter) {
 		this.parameters.put(parameter.getName(), parameter);
-		return parameter;
 	}
 	
 	public void addAccess(CommandAccess<T> access) {
@@ -43,10 +47,11 @@ public abstract class Command<T> {
 	public void execute(T t, String[] args) {
 		if(this.commandGroupAccess.authorizes(t)) {
 			if(t instanceof Player && 
-					this.restricter != null && !this.restricter.authorizes((Player)t))
-				return;
+					this.restricter != null && !this.restricter.authorizes((Player)t)) {
+                return;
+            }
 			this.action(t, args);
-			Console.instance.print(this.successMessages.toString(), t);
+			logger.info(this.successMessages.toString(), t);
 		}
 	}
 	
@@ -65,9 +70,5 @@ public abstract class Command<T> {
 
 	public boolean isSpecificParams() {
 		return specificParams;
-	}
-
-	public void setSpecificParams(boolean specificParams) {
-		this.specificParams = specificParams;
 	}
 }
