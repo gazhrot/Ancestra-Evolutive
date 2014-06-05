@@ -319,7 +319,7 @@ public class IA implements Runnable {
 				int cellf = f.get_fightCell(true).getId();
 				if(cellf == cell[0] || cellf == cell[1] || cellf == cell[2] || cellf == cell[3] || cellf == cell[4] || cellf == cell[5] || cellf == cell[6] || cellf == cell[7] || cellf == cell[8] || cellf == cell[9])continue;					
 				int d = 0;
-				d = Pathfinding.getDistanceBetween(fight.get_map(), F.get_fightCell(true).getId(), f.get_fightCell(true).getId());
+				d = Pathfinding.getDistanceBetween(fight.getMap(), F.get_fightCell(true).getId(), f.get_fightCell(true).getId());
 				if(d == 0)continue;
 				if(d < dist[i])
 				{
@@ -345,7 +345,7 @@ public class IA implements Runnable {
 			int infl = 0, inflF = 0;
 			for(int a = 0; a < 10 && dist[a] != 0; a++)
 			{
-				dist2[a] = Pathfinding.getDistanceBetween(fight.get_map(), curCase, cell[a]);
+				dist2[a] = Pathfinding.getDistanceBetween(fight.getMap(), curCase, cell[a]);
 				if(dist2[a] > dist[a])
 					infl++;
 			}
@@ -361,7 +361,7 @@ public class IA implements Runnable {
 			
 			for(int a = 0; a < 10 && dist[a] != 0; a++)
 			{
-				dist2[a] = Pathfinding.getDistanceBetween(fight.get_map(), curCase, cell[a]);
+				dist2[a] = Pathfinding.getDistanceBetween(fight.getMap(), curCase, cell[a]);
 				if(dist2[a] > dist[a])
 					infl++;
 			}
@@ -376,7 +376,7 @@ public class IA implements Runnable {
 			infl = 0;
 			for(int a = 0; a < 10 && dist[a] != 0; a++)
 			{
-				dist2[a] = Pathfinding.getDistanceBetween(fight.get_map(), curCase, cell[a]);
+				dist2[a] = Pathfinding.getDistanceBetween(fight.getMap(), curCase, cell[a]);
 				if(dist2[a] > dist[a])
 					infl++;
 			}
@@ -391,7 +391,7 @@ public class IA implements Runnable {
 			infl = 0;
 			for(int a = 0; a < 10 && dist[a] != 0; a++)
 			{
-				dist2[a] = Pathfinding.getDistanceBetween(fight.get_map(), curCase, cell[a]);
+				dist2[a] = Pathfinding.getDistanceBetween(fight.getMap(), curCase, cell[a]);
 				if(dist2[a] > dist[a])
 					infl++;
 			}
@@ -403,9 +403,9 @@ public class IA implements Runnable {
 			}
 		}
 		Console.instance.println("Test MOVEFAR : cell = " + destCase);
-		if(destCase < 0 || destCase > 478 || destCase == F.get_fightCell(true).getId() || !fight.get_map().getCases().get(destCase).isWalkable(false))return false;
+		if(destCase < 0 || destCase > 478 || destCase == F.get_fightCell(true).getId() || !fight.getMap().getCases().get(destCase).isWalkable(false))return false;
 		if(F.getPM() <= 0)return false;
-		ArrayList<Case> path = Pathfinding.getShortestPathBetween(fight.get_map(),F.get_fightCell(true).getId(),destCase, 0);
+		ArrayList<Case> path = Pathfinding.getShortestPathBetween(fight.getMap(),F.get_fightCell(true).getId(),destCase, 0);
 		if(path == null)return false;
 		
 		// DEBUG PATHFINDING
@@ -430,7 +430,7 @@ public class IA implements Runnable {
 		int curDir = 0;
 		for(Case c : finalPath)
 		{
-			char d = Pathfinding.getDirBetweenTwoCase(curCaseID, c.getId(), fight.get_map(), true);
+			char d = Pathfinding.getDirBetweenTwoCase(curCaseID, c.getId(), fight.getMap(), true);
 			if(d == 0)return false;//Ne devrait pas arriver :O
 			if(curDir != d)
 			{
@@ -471,7 +471,7 @@ public class IA implements Runnable {
 		Fighter nearest = getNearestEnnemy(fight, fighter);
 		if(nearest == null)
 			return false;
-		int nearestCell = Pathfinding.getNearestCellAround(fight.get_map(),fighter.get_fightCell(true).getId(),nearest.get_fightCell(true).getId(),null);
+		int nearestCell = Pathfinding.getNearestCellAround(fight.getMap(),fighter.get_fightCell(true).getId(),nearest.get_fightCell(true).getId(),null);
 		if(nearestCell == -1)
 			return false;
 		SpellStats spell = getInvocSpell(fight,fighter,nearestCell);
@@ -487,7 +487,7 @@ public class IA implements Runnable {
 		if(fighter.getMob() == null)return null;
 		for(Entry<Integer, SpellStats> SS : fighter.getMob().getSpells().entrySet())
 		{
-			if(!fight.CanCastSpell(fighter, SS.getValue(), fight.get_map().getCases().get(nearestCell), -1))
+			if(!fight.CanCastSpell(fighter, SS.getValue(), fight.getMap().getCases().get(nearestCell), -1))
 				continue;
 			for(SpellEffect SE : SS.getValue().getEffects())
 			{
@@ -678,14 +678,14 @@ public class IA implements Runnable {
 		
 		if(Server.config.isDebug()) Log.addToLog("Tentative d'approche par "+F.getPacketsName()+" de "+T.getPacketsName());
 		
-		int cellID = Pathfinding.getNearestCellAround(fight.get_map(),T.get_fightCell(true).getId(),F.get_fightCell(true).getId(),null);
+		int cellID = Pathfinding.getNearestCellAround(fight.getMap(),T.get_fightCell(true).getId(),F.get_fightCell(true).getId(),null);
 		//On demande le chemin plus court
 		if(cellID == -1)
 		{
 			Map<Integer,Fighter> ennemys = getLowHpEnnemyList(fight,F);
 			for(Entry<Integer, Fighter> target : ennemys.entrySet())
 			{
-				int cellID2 = Pathfinding.getNearestCellAround(fight.get_map(),target.getValue().get_fightCell(true).getId(),F.get_fightCell(true).getId(),null);
+				int cellID2 = Pathfinding.getNearestCellAround(fight.getMap(),target.getValue().get_fightCell(true).getId(),F.get_fightCell(true).getId(),null);
 				if(cellID2 != -1)
 				{
 					cellID = cellID2;
@@ -693,7 +693,7 @@ public class IA implements Runnable {
 				}
 			}
 		}
-		ArrayList<Case> path = Pathfinding.getShortestPathBetween(fight.get_map(),F.get_fightCell(true).getId(),cellID,0);
+		ArrayList<Case> path = Pathfinding.getShortestPathBetween(fight.getMap(),F.get_fightCell(true).getId(),cellID,0);
 		if(path == null || path.isEmpty())return false;
 		// DEBUG PATHFINDING
 		/*Console.instance.println("DEBUG PATHFINDING:");
@@ -717,7 +717,7 @@ public class IA implements Runnable {
 		int curDir = 0;
 		for(Case c : finalPath)
 		{
-			char d = Pathfinding.getDirBetweenTwoCase(curCaseID, c.getId(), fight.get_map(), true);
+			char d = Pathfinding.getDirBetweenTwoCase(curCaseID, c.getId(), fight.getMap(), true);
 			if(d == 0)return false;//Ne devrait pas arriver :O
 			if(curDir != d)
 			{
@@ -749,7 +749,7 @@ public class IA implements Runnable {
 			if(f == fighter)continue;
 			if(f.getTeam2() == fighter.getTeam2())//Si c'est un ami
 			{
-				int d = Pathfinding.getDistanceBetween(fight.get_map(), fighter.get_fightCell(true).getId(), f.get_fightCell(true).getId());
+				int d = Pathfinding.getDistanceBetween(fight.getMap(), fighter.get_fightCell(true).getId(), f.get_fightCell(true).getId());
 				if( d < dist)
 				{
 					dist = d;
@@ -769,7 +769,7 @@ public class IA implements Runnable {
 			if(f.isDead())continue;
 			if(f.getTeam2() != fighter.getTeam2())//Si c'est un ennemis
 			{
-				int d = Pathfinding.getDistanceBetween(fight.get_map(), fighter.get_fightCell(true).getId(), f.get_fightCell(true).getId());
+				int d = Pathfinding.getDistanceBetween(fight.getMap(), fighter.get_fightCell(true).getId(), f.get_fightCell(true).getId());
 				if( d < dist)
 				{
 					dist = d;
@@ -917,7 +917,7 @@ public class IA implements Runnable {
 		ArrayList<Integer> cells = Pathfinding.getListCaseFromFighter(fight,fighter);
 		if(cells == null)
 			return false;
-		int distMin = Pathfinding.getDistanceBetween(fight.get_map(), fighter.get_fightCell(true).getId(), getNearestEnnemy(fight,fighter).get_fightCell(true).getId());
+		int distMin = Pathfinding.getDistanceBetween(fight.getMap(), fighter.get_fightCell(true).getId(), getNearestEnnemy(fight,fighter).get_fightCell(true).getId());
 		ArrayList <SpellStats> sorts = getLaunchableSort(fighter,fight,distMin);
 		if(sorts == null)
 			return false;
@@ -943,9 +943,9 @@ public class IA implements Runnable {
 					{
 						int nbTarget = targetVal / 1000;
 						int cellID = targetVal - nbTarget * 1000;
-						if(fight.get_map().getCases().get(cellID) != null)
+						if(fight.getMap().getCases().get(cellID) != null)
 						{
-							if(fight.CanCastSpell(fighter,S,fight.get_map().getCases().get(cellID),i))
+							if(fight.CanCastSpell(fighter,S,fight.getMap().getCases().get(cellID),i))
 							{
 								CellDest = i;
 								found = true;
@@ -963,7 +963,7 @@ public class IA implements Runnable {
 		}
 		if(CellDest == 0)
 			return false;
-		ArrayList<Case> path = Pathfinding.getShortestPathBetween(fight.get_map(),fighter.get_fightCell(true).getId(),CellDest, 0);
+		ArrayList<Case> path = Pathfinding.getShortestPathBetween(fight.getMap(),fighter.get_fightCell(true).getId(),CellDest, 0);
 		if(path == null)return false;
 		String pathstr = "";
 		try{
@@ -971,7 +971,7 @@ public class IA implements Runnable {
 		int curDir = 0;
 		for(Case c : path)
 		{
-			char d = Pathfinding.getDirBetweenTwoCase(curCaseID, c.getId(), fight.get_map(), true);
+			char d = Pathfinding.getDirBetweenTwoCase(curCaseID, c.getId(), fight.getMap(), true);
 			if(d == 0)return false;//Ne devrait pas arriver :O
 			if(curDir != d)
 			{
@@ -1066,7 +1066,7 @@ public class IA implements Runnable {
 		Map<Integer,Fighter> potentialsT = getLowHpEnnemyList(fight,fighter);
 		for(Entry<Integer,Fighter> T : potentialsT.entrySet())
 		{
-			int dist = Pathfinding.getDistanceBetween(fight.get_map(), fighter.get_fightCell(true).getId(), T.getValue().get_fightCell(true).getId());
+			int dist = Pathfinding.getDistanceBetween(fight.getMap(), fighter.get_fightCell(true).getId(), T.getValue().get_fightCell(true).getId());
 			if(dist < distMax)
 				targets.add(T.getValue());
 		}
@@ -1205,11 +1205,11 @@ public class IA implements Runnable {
 				arg2 = table[spell.getMaxPO()];
 			}
 			String args = Character.toString(arg1) + Character.toString(arg2);
-			possibleLaunch = Pathfinding.getCellListFromAreaString(fight.get_map(),launchCell,launchCell,args,0,false);
+			possibleLaunch = Pathfinding.getCellListFromAreaString(fight.getMap(),launchCell,launchCell,args,0,false);
 		}
 		else
 		{
-			possibleLaunch.add(fight.get_map().getCases().get(launchCell));
+			possibleLaunch.add(fight.getMap().getCases().get(launchCell));
 		}
 		
 		if(possibleLaunch == null)
@@ -1235,7 +1235,7 @@ public class IA implements Runnable {
 						if(SE.getValue() == -1)
 							continue;
 						int POnum = num *2;
-						ArrayList<Case> cells = Pathfinding.getCellListFromAreaString(fight.get_map(),cell.getId(),launchCell,spell.getPorteeType(),POnum,false);
+						ArrayList<Case> cells = Pathfinding.getCellListFromAreaString(fight.getMap(),cell.getId(),launchCell,spell.getPorteeType(),POnum,false);
 						for(Case c : cells)
 						{
 							if(c.getFirstFighter() == null)

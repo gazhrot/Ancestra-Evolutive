@@ -1,6 +1,7 @@
 package org.ancestra.evolutive.game.packet.account;
 
 
+import org.ancestra.evolutive.client.Account;
 import org.ancestra.evolutive.common.SocketManager;
 import org.ancestra.evolutive.core.Server;
 import org.ancestra.evolutive.core.World;
@@ -66,7 +67,7 @@ public class AddCharacter implements PacketParser {
 		else if(client.getAccount().createPerso(infos[0], Integer.parseInt(infos[2]), Integer.parseInt(infos[1]),
 				Integer.parseInt(infos[3]), Integer.parseInt(infos[4]),	Integer.parseInt(infos[5]))) {
 			SocketManager.GAME_SEND_CREATE_OK(client);
-			SocketManager.GAME_SEND_PERSO_LIST(client, client.getAccount().getPlayers());
+            client.send(client.getAccount().getAccountHelper().getPlayersList());
 		} else {
 			SocketManager.GAME_SEND_CREATE_FAILED(client);
 		}	

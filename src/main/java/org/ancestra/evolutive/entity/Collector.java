@@ -13,8 +13,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
-public class Collector
-{
+public class Collector {
 	private int _guid;
 	private short _MapID;
 	private int _cellID;
@@ -35,8 +34,7 @@ public class Collector
 	private long _LogXP = 0;
 	
 	public Collector(int guid, short map, int cellID, byte orientation, int GuildID, 
-			short N1, short N2, String items, long kamas, long xp)
-	{
+			short N1, short N2, String items, long kamas, long xp) {
 		_guid = guid;
 		_MapID = map;
 		_cellID = cellID;
@@ -327,7 +325,7 @@ public class Collector
 		{
 			//Je boucle les combats de la map bien qu'inutile :/
 			//Mais cela �viter le bug F.getValue().getFighters(1) == null
-				if(F.getValue().get_id() == fightid)
+				if(F.getValue().getId() == fightid)
 				{
 					for(Fighter f : F.getValue().getFighters(1))//Attaque
 					{
@@ -351,7 +349,7 @@ public class Collector
 		{
 			//Je boucle les combats de la map bien qu'inutile :/
 			//Mais cela �viter le bug F.getValue().getFighters(2) == null
-				if(F.getValue().get_id() == fightid)
+				if(F.getValue().getId() == fightid)
 				{
 					for(Fighter f : F.getValue().getFighters(2))//Defense
 					{

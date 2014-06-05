@@ -36,7 +36,7 @@ public class JoinFight implements PacketParser {
 				short map = -1;
 				
 				try {		
-					map = World.data.getCarte(collector.get_mapID()).getFights().get(fight).get_map().getId();
+					map = World.data.getCarte(collector.get_mapID()).getFights().get(fight).getMap().getId();
 				} catch(Exception e) {}
 				
 				int cell = -1;

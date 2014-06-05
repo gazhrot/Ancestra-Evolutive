@@ -8,6 +8,10 @@ import org.ancestra.evolutive.database.data.*;
 import org.ancestra.evolutive.database.data.CharacterData;
 import org.slf4j.LoggerFactory;
 
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
+
 
 public class Database {
 	//connection
@@ -84,17 +88,14 @@ public class Database {
         config.addDataSourceProperty("port",Server.config.getPort());
         config.addDataSourceProperty("databaseName",Server.config.getDatabaseName());
         config.addDataSourceProperty("user",Server.config.getUser());
-        config.addDataSourceProperty("password",Server.config.getPass());
-        if(config.isInitializationFailFast()){
-            logger.error("Can t connect to database");
-            System.exit(101);
-        }
-        try{
-            dataSource = new HikariDataSource(config);
-        }
-        catch (Exception e) {
-            logger.error("wrong username or password");
-            System.exit(101);
+        config.addDataSourceProperty("password", Server.config.getPass());
+
+
+        dataSource = new HikariDataSource(config);
+        if(!testConnection(dataSource)){
+            logger.error("Pleaz check your username and password and database connection");
+            logger.debug("If you're using a modified dbb you should look at test query in config.conf");
+            System.exit(0);
         }
         logger.info("Database connection established");
         this.initializeData();
@@ -224,4 +225,14 @@ public class Database {
 	public void setDropData(DropData dropData) {
 		this.dropData = dropData;
 	}
+
+    private boolean testConnection(HikariDataSource dataSource){
+        try {
+            Connection connection = dataSource.getConnection();
+            connection.close();
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
 }

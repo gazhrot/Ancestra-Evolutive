@@ -25,6 +25,7 @@ public class Account {
 	private String password;
 	private String pseudo;
 	private String key;
+    private AccountHelper accountHelper;
 	
 	private String question;
 	private String answer;
@@ -94,7 +95,9 @@ public class Account {
 				this.enemys.add(Integer.parseInt(str));
 			} catch(Exception e) {}
 		}
-	}
+        accountHelper = new AccountHelper(this);
+
+    }
 	
 	public void updateInfos(int UUID, String name, String password, String pseudo, String question, String answer, int gmLvl, boolean banned) {
 		this.UUID = UUID;
@@ -110,7 +113,7 @@ public class Account {
 	public int getUUID() {
 		return UUID;
 	}
-	
+
 	public String getName() {
 		return name;
 	}
@@ -146,7 +149,11 @@ public class Account {
 	public void setBanned(boolean banned) {
 		this.banned = banned;
 	}
-	
+
+    public AccountHelper getAccountHelper() {
+        return accountHelper;
+    }
+
 	public int getGmLvl() {
 		return gmLvl;
 	}
@@ -493,10 +500,24 @@ public class Account {
 		return true;
 	}
 
-	public void deletePerso(int uuid) {
-		if(!this.getPlayers().containsKey(uuid))
-			return;
-		World.data.deletePerso(this.getPlayers().get(uuid));
+    /**
+     * Efface le personnage du joueur correspondant
+     * @param id Identifiant du player a supprimer
+     * @param answer Reponse a la question secrete
+     *               (n'est demandee que si le personnage a un niveau => a 20)
+     * @return true si le delete a fonctionner
+     * false sinon
+     */
+	public boolean deletePlayer(int id,String answer) {
+        Player playerToDelete = getPlayers().get(id);
+		if(this.getPlayers().containsKey(id)) {
+            if (playerToDelete.getLevel() < 20 || answer.equals(answer)) {
+                World.data.deletePerso(this.getPlayers().get(id));
+                this.getPlayers().remove(id);
+                return true;
+            }
+        }
+        return false;
 	}
 	
 	public void disconnect() {

@@ -228,7 +228,7 @@ public class SpellStats {
 			{
 				POnum += effects.size()*2;//On zaap la partie du String des effets hors CC
 			} 
-			ArrayList<Case> cells = Pathfinding.getCellListFromAreaString(fight.get_map(),cell.getId(),perso.get_fightCell(false).getId(),porteeType,POnum,isCC);
+			ArrayList<Case> cells = Pathfinding.getCellListFromAreaString(fight.getMap(),cell.getId(),perso.get_fightCell(false).getId(),porteeType,POnum,isCC);
 			
 			ArrayList<Case> finalCells = new ArrayList<Case>();
 			

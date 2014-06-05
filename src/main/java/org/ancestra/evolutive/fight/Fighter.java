@@ -71,7 +71,7 @@ public class Fighter
 		_PDVMAX = mob.getMaxPdv();
 		_PDV = mob.getPdv();
 		_gfxID = getDefaultGfx();
-        logger = (Logger) LoggerFactory.getLogger("Fight " + f.get_map() + ",Monster ID " + mob.getTemplate().getId());
+        logger = (Logger) LoggerFactory.getLogger("Fight " + f.getMap() + ",Monster ID " + mob.getTemplate().getId());
     }
 	
 	public Fighter(Fight f, Player perso)
@@ -90,7 +90,7 @@ public class Fighter
 		_PDVMAX = perso.getMaxPdv();
 		_PDV = perso.getPdv();
 		_gfxID = getDefaultGfx();
-        logger = (Logger) LoggerFactory.getLogger("Fight " + f.get_map() + ",Player " + perso.getName());
+        logger = (Logger) LoggerFactory.getLogger("Fight " + f.getMap() + ",Player " + perso.getName());
 	}
 
 	public Fighter(Fight f, Collector collector) {
@@ -102,7 +102,7 @@ public class Fighter
 		_PDVMAX = (World.data.getGuild(collector.get_guildID()).getLevel()*100);
 		_PDV = (World.data.getGuild(collector.get_guildID()).getLevel()*100);
 		_gfxID = 6000;
-        logger = (Logger) LoggerFactory.getLogger("Fight " + f.get_map() + ",Monster ID " + collector.get_guildID());
+        logger = (Logger) LoggerFactory.getLogger("Fight " + f.getMap() + ",Monster ID " + collector.get_guildID());
 	}
 
 	public ArrayList<LaunchedSpell> getLaunchedSorts()
@@ -319,7 +319,7 @@ public class Fighter
 			case 5://Perco
 				str.append("-6;");//Perco
 				str.append("6000^100;");//GFXID^Size
-				Guild G = World.data.getGuild(Collector.GetPercoGuildID(_fight.get_mapOld().getId()));
+				Guild G = World.data.getGuild(Collector.GetPercoGuildID(_fight.getOldMap().getId()));
 				str.append(G.getLevel()).append(";");
 				str.append("1;");//FIXME
 				str.append("2;4;");//FIXME

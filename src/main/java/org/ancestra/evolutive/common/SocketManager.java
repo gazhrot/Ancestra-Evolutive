@@ -100,37 +100,6 @@ public class SocketManager {
 			Log.addToSockLog("Game: Send>>"+packet);
 	}
 	
-	public static void REALM_SEND_PERSO_LIST(Client _out, int number)
-	{
-		String packet = "AxK31536000000";//Temps d'abonnement
-		if(number>0)
-			packet+= "|1," + number;//ServeurID
-		
-		send(_out,packet);
-		if(Server.config.isDebug())
-			Log.addToSockLog("Conn: Send>>"+packet);	
-	}
-	
-	public static void REALM_SEND_GAME_SERVER_IP(Client _out,int guid,boolean isHost)
-	{
-		String packet = "A";
-		if(Server.config.isUseIp())
-		{
-			String ip = Server.config.isIpLoopBack() && isHost
-					? CryptManager.CryptIP("127.0.0.1")+CryptManager.CryptPort(Server.config.getGamePort())
-					:  Server.config.getGameServerIpCrypted();
-			packet += "XK"+ip+guid;
-		}else
-		{
-			String ip = Server.config.isIpLoopBack() && isHost?"127.0.0.1":Server.config.getIp();
-			packet += "YK"+ip+":"+Server.config.getGamePort()+";"+guid;
-		}
-		send(_out,packet);
-		if(Server.config.isDebug())
-			Log.addToSockLog("Conn: Send>>"+packet);
-		
-	}
-	
 	public static void GAME_SEND_HELLOGAME_PACKET(Client out)
 	{
 		String packet = "HG";
@@ -170,22 +139,6 @@ public class SocketManager {
 		if(Server.config.isDebug())
 			Log.addToSockLog("Game: Send>>"+packet);
 	}
-	
-	public static void GAME_SEND_PERSO_LIST(Client out,
-			Map<Integer, Player> persos)
-	{
-		StringBuilder packet = new StringBuilder();
-		packet.append("ALK31536000000|").append(persos.size());
-		for(Entry<Integer,Player > entry : persos.entrySet())
-		{
-			packet.append(entry.getValue().parseALK());
-			
-		}
-		send(out,packet.toString());
-		if(Server.config.isDebug())
-			Log.addToSockLog("Game: Send>>"+packet.toString());
-		
-	}
 
 	public static void GAME_SEND_NAME_ALREADY_EXIST(Client out)
 	{
@@ -212,13 +165,7 @@ public class SocketManager {
 			Log.addToSockLog("Game: Send>>"+packet);
 	}
 
-	public static void GAME_SEND_DELETE_PERSO_FAILED(Client out)
-	{
-		String packet = "ADE";
-		send(out,packet);
-		if(Server.config.isDebug())
-			Log.addToSockLog("Game: Send>>"+packet);
-	}
+
 
 	public static void GAME_SEND_CREATE_FAILED(Client out)
 	{
@@ -456,7 +403,7 @@ public class SocketManager {
 			send(f.getFighters(2).get(z).getPersonnage().getAccount().getGameClient(),packet);
 		}
 		if(Server.config.isDebug())
-			Log.addToSockLog("Game: Fighter ID "+f.get_id()+": Send>>"+packet);
+			Log.addToSockLog("Game: Fighter ID "+f.getId()+": Send>>"+packet);
 	}
 	
 	public static void GAME_SEND_ON_FIGHTER_KICK(Fight f, int guid, int team)
@@ -468,7 +415,7 @@ public class SocketManager {
 			send(F.getPersonnage().getAccount().getGameClient(),packet);
 		}
 		if(Server.config.isDebug())
-			Log.addToSockLog("Game: Fighter ID "+f.get_id()+": Send>>"+packet);
+			Log.addToSockLog("Game: Fighter ID "+f.getId()+": Send>>"+packet);
 	}
 	
 	public static void GAME_SEND_ALTER_FIGHTER_MOUNT(Fight fight, Fighter fighter, int guid, int team, int otherteam)
@@ -489,7 +436,7 @@ public class SocketManager {
 			}
 		}
 		if(Server.config.isDebug())
-			Log.addToSockLog("Game: Fight ID "+fight.get_id()+": Send>>"+packet);
+			Log.addToSockLog("Game: Fight ID "+fight.getId()+": Send>>"+packet);
 	}
 
 	public static void GAME_SEND_ADD_PLAYER_TO_MAP(Maps map, Player perso)
@@ -1684,7 +1631,7 @@ public class SocketManager {
 	{
 		if(fight == null)return;
 		StringBuilder packet = new StringBuilder();
-		packet.append("fD").append(fight.get_id()).append("|");
+		packet.append("fD").append(fight.getId()).append("|");
 		for(Fighter f : fight.getFighters(1))packet.append(f.getPacketsName()).append("~").append(f.get_lvl()).append(";");
 		packet.append("|");
 		for(Fighter f : fight.getFighters(2))packet.append(f.getPacketsName()).append("~").append(f.get_lvl()).append(";");
@@ -1720,7 +1667,7 @@ public class SocketManager {
 	public static void GAME_SEND_GDF_PACKET_TO_MAP_TO_FIGHT(Fight fight) {
 		String packet = "GDF|";
 		
-		for(Case c: fight.get_map().getCases().values()) 
+		for(Case c: fight.getMap().getCases().values())
 			packet += getGdf(c.getId());
 		ArrayList<Fighter> players = new ArrayList<>();
 		

@@ -265,7 +265,7 @@ public class Pathfinding {
 	public static ArrayList<Fighter> getCiblesByZoneByWeapon(Fight fight,int type,Case cell,int castCellID)
 	{
 		ArrayList<Fighter> cibles = new ArrayList<Fighter>();
-		char c = getDirBetweenTwoCase(castCellID,cell.getId(),fight.get_map(),true);
+		char c = getDirBetweenTwoCase(castCellID,cell.getId(),fight.getMap(),true);
 		if(c == 0)
 		{
 			//On cible quand meme le fighter sur la case
@@ -277,13 +277,13 @@ public class Pathfinding {
 		{
 			//Cases devant celle ou l'on vise
 			case Constants.ITEM_TYPE_MARTEAU:
-				Fighter f = getFighter2CellBefore(castCellID,c,fight.get_map());
+				Fighter f = getFighter2CellBefore(castCellID,c,fight.getMap());
 				if(f != null)
 					cibles.add(f);
-				Fighter g = get1StFighterOnCellFromDirection(fight.get_map(),castCellID,(char)(c-1)); 
+				Fighter g = get1StFighterOnCellFromDirection(fight.getMap(),castCellID,(char)(c-1));
 				if(g != null)
 					cibles.add(g);//Ajoute case a gauche
-				Fighter h = get1StFighterOnCellFromDirection(fight.get_map(),castCellID,(char)(c+1)); 
+				Fighter h = get1StFighterOnCellFromDirection(fight.getMap(),castCellID,(char)(c+1));
 				if(h != null)
 					cibles.add(h);//Ajoute case a droite
 				Fighter i = cell.getFirstFighter();
@@ -291,10 +291,10 @@ public class Pathfinding {
 					cibles.add(i);
 			break;
 			case Constants.ITEM_TYPE_BATON:
-				Fighter j = get1StFighterOnCellFromDirection(fight.get_map(),castCellID,(char)(c-1)); 
+				Fighter j = get1StFighterOnCellFromDirection(fight.getMap(),castCellID,(char)(c-1));
 				if(j != null)
 					cibles.add(j);//Ajoute case a gauche
-				Fighter k = get1StFighterOnCellFromDirection(fight.get_map(),castCellID,(char)(c+1)); 
+				Fighter k = get1StFighterOnCellFromDirection(fight.getMap(),castCellID,(char)(c+1));
 				if(k != null)
 					cibles.add(k);//Ajoute case a droite
 				
@@ -709,9 +709,9 @@ public class Pathfinding {
 			else 
 			{
 				int curCell = getCellFromPath(start,curPath);
-				if(fight.get_map().getCases().get(curCell) != null && fight.get_map().getCases().get(curCell).isWalkable(true)
-						&& fight.get_map().getCases().get(curCell) != null
-						&& fight.get_map().getCases().get(curCell).getFirstFighter() == null)
+				if(fight.getMap().getCases().get(curCell) != null && fight.getMap().getCases().get(curCell).isWalkable(true)
+						&& fight.getMap().getCases().get(curCell) != null
+						&& fight.getMap().getCases().get(curCell).getFirstFighter() == null)
 				{
 					if(!cells.contains(curCell))
 					{
@@ -756,7 +756,7 @@ public class Pathfinding {
 			dist = 100;
 			for(int i : copie)
 			{
-				int d = getDistanceBetween(fight.get_map(), fighter.get_fightCell(true).getId(), i);
+				int d = getDistanceBetween(fight.getMap(), fighter.get_fightCell(true).getId(), i);
 				if(dist > d)
 				{
 					dist = d;
@@ -845,7 +845,7 @@ public class Pathfinding {
 					&& map.getCases().get(nextCase).getFighters().isEmpty()) {
 				id = nextCase;
 				for(Piege p : fight.get_traps()) {
-					int dist = Pathfinding.getDistanceBetween(fight.get_map(), p.get_cell().getId(), id);
+					int dist = Pathfinding.getDistanceBetween(fight.getMap(), p.get_cell().getId(), id);
 					if (dist <= p.get_size()) {
 						p.onTraped(target);
 						return id;

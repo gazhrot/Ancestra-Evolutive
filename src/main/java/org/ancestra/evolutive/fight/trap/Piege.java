@@ -112,7 +112,7 @@ public class Piege
 			{
 				for(char d : dirs)
 				{
-					Case cell = _fight.get_map().getCases().get(Pathfinding.GetCaseIDFromDirrection(aCell.getId(), d, _fight.get_map(), true));
+					Case cell = _fight.getMap().getCases().get(Pathfinding.GetCaseIDFromDirrection(aCell.getId(), d, _fight.getMap(), true));
 					if(cell == null)continue;
 					if(!cells.contains(cell))
 					{
