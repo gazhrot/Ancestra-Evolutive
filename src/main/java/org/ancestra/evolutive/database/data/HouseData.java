@@ -6,11 +6,14 @@ import org.ancestra.evolutive.client.Player;
 import org.ancestra.evolutive.core.Console;
 import org.ancestra.evolutive.core.World;
 import org.ancestra.evolutive.database.AbstractDAO;
+import org.ancestra.evolutive.guild.Guild;
 import org.ancestra.evolutive.house.House;
 import org.ancestra.evolutive.house.Trunk;
 import org.slf4j.LoggerFactory;
 
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class HouseData extends AbstractDAO<House>{
@@ -32,32 +35,34 @@ public class HouseData extends AbstractDAO<House>{
 		return false;
 	}
 	
-	public boolean reset(int guild) {
-		String query = "UPDATE `houses` SET `guild_rights`='0', `guild_id`='0' WHERE `guild_id`= "+guild;
+	public boolean reset(Guild guild) {
+		String query = "UPDATE `houses` SET `guild_rights`='0', `guild_id`='0' WHERE `guild_id`= "+guild.getId();
 		execute(query);
+        logger.debug("house from guild {}(id : {}) has been reset",guild.getName(),guild.getId());
 		return true;
 	}
 
 	@Override
-	public boolean update(House obj) {
+	public boolean update(House house) {
 		try {
 			String baseQuery = "UPDATE `houses` SET " + "`owner_id` = ?,"
 					+ "`sale` = ?," + "`guild_id` = ?," + "`access` = ?,"
 					+ "`key` = ?," + "`guild_rights` = ?" + " WHERE id = ?;";
 			PreparedStatement statement = getPreparedStatement(baseQuery);
 			
-			statement.setInt(1, obj.get_owner_id());
-			statement.setInt(2, obj.get_sale());
-			statement.setInt(3, obj.get_guild_id());
-			statement.setInt(4, obj.get_access());
-			statement.setString(5, obj.get_key());
-			statement.setInt(6, obj.get_guild_rights());
-			statement.setInt(7, obj.get_id());
+			statement.setInt(1, house.get_owner_id());
+			statement.setInt(2, house.get_sale());
+			statement.setInt(3, house.get_guild_id());
+			statement.setInt(4, house.get_access());
+			statement.setString(5, house.get_key());
+			statement.setInt(6, house.get_guild_rights());
+			statement.setInt(7, house.get_id());
 
 			execute(statement);
+            logger.debug("house id {} has been updated",house.get_id());
 			return true;
 		} catch (Exception e) {
-			Console.instance.writeln("SQL ERROR(HouseData): "+e.getMessage());
+            logger.error("can t update house id {}", house.get_id(), e);
 		}
 		return false;
 	}
@@ -76,7 +81,7 @@ public class HouseData extends AbstractDAO<House>{
 			house.set_key("-");
 			house.set_guild_rights(0);
 		} catch (Exception e) {
-			Console.instance.writeln("SQL ERROR(HouseData): "+e.getMessage());
+            logger.error("can t update house id {}", house.get_id(), e);
 		}
 
 		
@@ -94,9 +99,10 @@ public class HouseData extends AbstractDAO<House>{
 			statement.setInt(2, house.get_id());
 			
 			execute(statement);
+            logger.debug("house id {} has been updated",house.get_id());
 			return true;
 		} catch (Exception e) {
-			Console.instance.writeln("SQL ERROR(HouseData): "+e.getMessage());
+            logger.error("can t update house id {}", house.get_id(), e);
 		}
 		return false;
 	}
@@ -111,9 +117,10 @@ public class HouseData extends AbstractDAO<House>{
 			statement.setInt(2, house.get_id());
 
 			execute(statement);
+            logger.debug("house id {} has been updated",house.get_id());
 			return true;
 		} catch (Exception e) {
-			Console.instance.writeln("SQL ERROR(HouseData): "+e.getMessage());
+			logger.error("can t update house id {}", house.get_id(), e);
 		}
 		return false;
 	}
@@ -130,9 +137,10 @@ public class HouseData extends AbstractDAO<House>{
 			execute(statement);
 
 			house.set_key(packet);
+            logger.debug("house id {} has been updated",house.get_id());
 			return true;
 		} catch (Exception e) {
-			Console.instance.writeln("SQL ERROR(HouseData): "+e.getMessage());
+			logger.error("can t update house id {}", house.get_id(), e);
 		}
 		return false;
 	}
@@ -149,9 +157,10 @@ public class HouseData extends AbstractDAO<House>{
 			
 			house.set_guild_id(guild);
 			house.set_guild_rights(rights);
+            logger.debug("house id {} has been updated",house.get_id());
 			return true;
 		} catch (Exception e) {
-			Console.instance.writeln("SQL ERROR(HouseData): "+e.getMessage());
+			logger.error("can t update house id {} ", house.get_id(), e);
 		}
 		return false;
 	}
@@ -161,20 +170,26 @@ public class HouseData extends AbstractDAO<House>{
 		House house = null;
 		try {
 			Result result = getData("SELECT * FROM houses WHERE id = "+id);
-			
-			if(result.resultSet.next()) {
-				house = new House(result.resultSet.getInt("id"), result.resultSet
-						.getShort("map_id"), result.resultSet.getInt("cell_id"), result.resultSet
-						.getInt("owner_id"), result.resultSet.getInt("sale"), result.resultSet
-						.getInt("guild_id"), result.resultSet.getInt("access"), result.resultSet
-						.getString("key"), result.resultSet.getInt("guild_rights"), result.resultSet
-						.getInt("mapid"), result.resultSet.getInt("caseid"));
-				World.data.addHouse(house);
-			}
+			house = load(result.resultSet);
 			close(result);
+            logger.debug("house id {} has been loaded",id);
 		} catch (Exception e) {
-			Console.instance.writeln("SQL ERROR(HouseData): "+e.getMessage());
+			logger.error("can t load house id {}", id, e);
 		}
 		return house;
 	}
+
+    protected House load(ResultSet result) throws SQLException {
+        House house = null;
+        if(result.next()) {
+            house = new House(result.getInt("id"), result
+                    .getShort("map_id"), result.getInt("cell_id"),
+                    result.getInt("owner_id"), result.getInt("sale"),
+                    result.getInt("guild_id"), result.getInt("access"),
+                    result.getString("key"), result.getInt("guild_rights"),
+                    result.getInt("mapid"), result.getInt("caseid"));
+            World.data.addHouse(house);
+        }
+        return house;
+    }
 }

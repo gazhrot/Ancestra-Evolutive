@@ -895,7 +895,9 @@ public class World {
 	}
 
 	public void addHouse(House house) {
-		houses.put(house.get_id(), house);
+        if(house != null) {
+            houses.put(house.get_id(), house);
+        }
 	}
 
 	public Map<Integer, House> getHouses() {
