@@ -138,7 +138,7 @@ public class MoveItemOrKamas implements PacketParser {
 					if(amount <= 0 || price <= 0)return;
 					
 					HDV curHdv = World.data.getHdv(Math.abs(client.getPlayer().getIsTradingWith()));
-					int taxe = (int)(price * (curHdv.getTaxe()/100));
+					int taxe = (int)(price * (curHdv.getTaxe()/10));
 					
 					
 					if(!client.getPlayer().hasItemGuid(itmID))//V�rifie si le personnage a bien l'item sp�cifi� et l'argent pour payer la taxe
