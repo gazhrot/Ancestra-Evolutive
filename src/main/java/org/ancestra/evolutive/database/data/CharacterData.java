@@ -22,7 +22,7 @@ public class CharacterData extends AbstractDAO<Player>{
 
 	public CharacterData(HikariDataSource source) {
 		super(source);
-        logger = (Logger) LoggerFactory.getLogger("Character factory");
+        logger = (Logger) LoggerFactory.getLogger("factory.Character");
 	}
 
 	@Override

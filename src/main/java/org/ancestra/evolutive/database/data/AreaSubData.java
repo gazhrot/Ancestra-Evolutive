@@ -14,7 +14,7 @@ public class AreaSubData extends AbstractDAO<SubArea> {
 
 	public AreaSubData(HikariDataSource source) {
 		super(source);
-        logger = (Logger) LoggerFactory.getLogger("subarea factory");
+        logger = (Logger) LoggerFactory.getLogger("factory.Subarea");
 	}
 
 	@Override

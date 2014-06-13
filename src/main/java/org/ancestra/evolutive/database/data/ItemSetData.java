@@ -12,7 +12,7 @@ public class ItemSetData extends AbstractDAO<ItemSet>{
 
 	public ItemSetData(HikariDataSource source) {
 		super(source);
-        logger = (Logger) LoggerFactory.getLogger("Item Set factory");
+        logger = (Logger) LoggerFactory.getLogger("factory.ItemSet");
 	}
 
 	@Override

@@ -12,7 +12,7 @@ public class JobData extends AbstractDAO<Job>{
 
 	public JobData(HikariDataSource source) {
 		super(source);
-        logger = (Logger) LoggerFactory.getLogger("Job factory");
+        logger = (Logger) LoggerFactory.getLogger("factory.Job");
 	}
 
 	@Override

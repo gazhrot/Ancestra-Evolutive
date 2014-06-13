@@ -14,7 +14,7 @@ public class MonsterData extends AbstractDAO<MobTemplate>{
 
 	public MonsterData(HikariDataSource source) {
 		super(source);
-        logger = (Logger) LoggerFactory.getLogger("Monster factory");
+        logger = (Logger) LoggerFactory.getLogger("factory.Monster");
 	}
 
 	@Override

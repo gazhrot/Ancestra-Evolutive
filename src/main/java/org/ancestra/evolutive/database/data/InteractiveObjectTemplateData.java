@@ -12,7 +12,7 @@ public class InteractiveObjectTemplateData extends AbstractDAO<InteractiveObject
 
 	public InteractiveObjectTemplateData(HikariDataSource source) {
 		super(source);
-        logger = (Logger) LoggerFactory.getLogger("Interactive Object factory");
+        logger = (Logger) LoggerFactory.getLogger("factory.InteractiveObject");
 	}
 
 	@Override

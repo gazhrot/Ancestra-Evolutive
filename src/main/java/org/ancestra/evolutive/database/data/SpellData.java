@@ -15,7 +15,7 @@ public class SpellData extends AbstractDAO<Spell>{
 
 	public SpellData(HikariDataSource source) {
 		super(source);
-        logger = (Logger) LoggerFactory.getLogger("Spell factory");
+        logger = (Logger) LoggerFactory.getLogger("factory.Spell");
 	}
 
 	@Override

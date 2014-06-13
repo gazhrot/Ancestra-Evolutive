@@ -16,7 +16,7 @@ public class AccountData extends AbstractDAO<Account>{
 	
 	public AccountData(HikariDataSource source) {
 		super(source);
-		logger = (Logger)LoggerFactory.getLogger("Account factory");
+		logger = (Logger)LoggerFactory.getLogger("factory.Account");
 	}
 
 	@Override

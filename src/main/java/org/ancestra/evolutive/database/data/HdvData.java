@@ -18,7 +18,7 @@ public class HdvData extends AbstractDAO<HDV>{
 
 	public HdvData(HikariDataSource source) {
 		super(source);
-        logger = (Logger) LoggerFactory.getLogger("HDV factory");
+        logger = (Logger) LoggerFactory.getLogger("factory.HDV");
 	}
 
 	@Override

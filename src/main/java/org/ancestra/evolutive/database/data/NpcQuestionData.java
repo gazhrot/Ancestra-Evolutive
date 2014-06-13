@@ -14,7 +14,7 @@ public class NpcQuestionData extends AbstractDAO<NpcQuestion>{
 
 	public NpcQuestionData(HikariDataSource source) {
 		super(source);
-        logger = (Logger) LoggerFactory.getLogger("NPC Question factory");
+        logger = (Logger) LoggerFactory.getLogger("factory.NPCQuestion");
 	}
 
 	@Override

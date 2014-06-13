@@ -16,7 +16,7 @@ public class GuildData extends AbstractDAO<Guild>{
 
 	public GuildData(HikariDataSource source) {
 		super(source);
-        logger = (Logger) LoggerFactory.getLogger("Guild factory");
+        logger = (Logger) LoggerFactory.getLogger("factory.Guild");
 	}
 
 	@Override

@@ -18,7 +18,7 @@ public class ItemData extends AbstractDAO<Objet>{
 
 	public ItemData(HikariDataSource source) {
 		super(source);
-        logger = (Logger) LoggerFactory.getLogger("Item factory");
+        logger = (Logger) LoggerFactory.getLogger("factory.Item");
 	}
 
 	@Override

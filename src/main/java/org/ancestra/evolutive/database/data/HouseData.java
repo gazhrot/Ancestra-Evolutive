@@ -20,7 +20,7 @@ public class HouseData extends AbstractDAO<House>{
 
 	public HouseData(HikariDataSource source) {
 		super(source);
-        logger = (Logger) LoggerFactory.getLogger("House factory");
+        logger = (Logger) LoggerFactory.getLogger("factory.House");
 	}
 
 	@Override

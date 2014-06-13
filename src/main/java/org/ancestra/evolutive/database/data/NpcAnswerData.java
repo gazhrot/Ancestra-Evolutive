@@ -13,7 +13,7 @@ public class NpcAnswerData extends AbstractDAO<NpcAnswer>{
 
 	public NpcAnswerData(HikariDataSource source) {
 		super(source);
-        logger = (Logger) LoggerFactory.getLogger("NPC Answer factory");
+        logger = (Logger) LoggerFactory.getLogger("factory.NPCAnswer");
 	}
 
 	@Override

@@ -12,7 +12,7 @@ public class NpcTemplateData extends AbstractDAO<NpcTemplate>{
 
 	public NpcTemplateData(HikariDataSource source) {
 		super(source);
-        logger = (Logger) LoggerFactory.getLogger("NPC Template factory");
+        logger = (Logger) LoggerFactory.getLogger("factory.NPCTemplate");
 	}
 
 	@Override

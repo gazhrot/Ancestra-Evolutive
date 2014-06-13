@@ -15,7 +15,7 @@ public class ItemTemplateData extends AbstractDAO<ObjTemplate>{
 
 	public ItemTemplateData(HikariDataSource source) {
 		super(source);
-        logger = (Logger) LoggerFactory.getLogger("Item Template factory");
+        logger = (Logger) LoggerFactory.getLogger("factory.ItemTemplate");
 	}
 
 	@Override

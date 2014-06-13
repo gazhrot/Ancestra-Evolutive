@@ -14,7 +14,7 @@ public class MountData extends AbstractDAO<Mount>{
 
 	public MountData(HikariDataSource source) {
 		super(source);
-        logger = (Logger) LoggerFactory.getLogger("Mount factory");
+        logger = (Logger) LoggerFactory.getLogger("factory.Mount");
 	}
 
 	@Override

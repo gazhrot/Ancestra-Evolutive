@@ -19,7 +19,7 @@ public class CollectorData extends AbstractDAO<Collector>{
 
 	public CollectorData(HikariDataSource source) {
 		super(source);
-        logger = (Logger) LoggerFactory.getLogger("Collector factory");
+        logger = (Logger) LoggerFactory.getLogger("factory.Collector");
 	}
 
 	@Override

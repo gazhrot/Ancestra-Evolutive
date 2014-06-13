@@ -21,7 +21,7 @@ public class OtherData extends AbstractDAO<Object>{
 
 	public OtherData(HikariDataSource source) {
 		super(source);
-        logger = (Logger) LoggerFactory.getLogger("Other factory");
+        logger = (Logger) LoggerFactory.getLogger("factory.Other");
 	}
 	
 	@Override

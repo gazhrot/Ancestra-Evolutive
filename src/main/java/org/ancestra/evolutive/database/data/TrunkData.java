@@ -17,7 +17,7 @@ public class TrunkData extends AbstractDAO<Trunk>{
 
 	public TrunkData(HikariDataSource source) {
 		super(source);
-        logger = (Logger) LoggerFactory.getLogger("Trunk factory");
+        logger = (Logger) LoggerFactory.getLogger("factory.Trunk");
 	}
 
 	@Override

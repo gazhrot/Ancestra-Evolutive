@@ -16,7 +16,7 @@ public class DropData extends AbstractDAO<ArrayList<Drop>>{
 
 	public DropData(HikariDataSource source) {
 		super(source);
-        logger = (Logger) LoggerFactory.getLogger("Drop factory");
+        logger = (Logger) LoggerFactory.getLogger("factory.Drop");
 	}
 
     @Override

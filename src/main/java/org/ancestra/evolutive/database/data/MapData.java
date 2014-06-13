@@ -15,7 +15,7 @@ public class MapData extends AbstractDAO<Maps>{
 
 	public MapData(HikariDataSource source) {
 		super(source);
-        logger = (Logger) LoggerFactory.getLogger("Map factory");
+        logger = (Logger) LoggerFactory.getLogger("factory.Map");
 	}
 
 	@Override

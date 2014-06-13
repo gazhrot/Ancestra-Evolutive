@@ -15,7 +15,7 @@ public class ExpData extends AbstractDAO<ExpLevel>{
 
 	public ExpData(HikariDataSource source) {
 		super(source);
-        logger = (Logger) LoggerFactory.getLogger("Exp factory");
+        logger = (Logger) LoggerFactory.getLogger("factory.Experience");
 	}
 
 	@Override

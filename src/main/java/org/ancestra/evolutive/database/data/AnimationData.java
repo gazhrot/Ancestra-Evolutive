@@ -15,7 +15,7 @@ public class AnimationData extends AbstractDAO<Animation> {
 
 	public AnimationData(HikariDataSource source) {
 		super(source);
-		logger = (Logger)LoggerFactory.getLogger("Animation factory");
+		logger = (Logger)LoggerFactory.getLogger("factory.Animation");
 	}
 
 	@Override

@@ -14,7 +14,7 @@ public class ScriptedCellData extends AbstractDAO<Case>{
 
 	public ScriptedCellData(HikariDataSource source) {
 		super(source);
-        logger = (Logger) LoggerFactory.getLogger("ScriptedCell factory");
+        logger = (Logger) LoggerFactory.getLogger("factory.ScriptedCell");
 	}
 
 	@Override

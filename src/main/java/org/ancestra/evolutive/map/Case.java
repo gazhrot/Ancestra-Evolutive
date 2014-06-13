@@ -1,5 +1,6 @@
 package org.ancestra.evolutive.map;
 
+import ch.qos.logback.classic.Logger;
 import org.ancestra.evolutive.client.Player;
 import org.ancestra.evolutive.common.Constants;
 import org.ancestra.evolutive.common.Formulas;
@@ -13,6 +14,7 @@ import org.ancestra.evolutive.house.Trunk;
 import org.ancestra.evolutive.job.JobConstant;
 import org.ancestra.evolutive.object.Objet;
 import org.ancestra.evolutive.other.Action;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -20,7 +22,8 @@ import java.util.Map.Entry;
 import java.util.TreeMap;
 
 public class Case {
-	
+
+    private Logger logger;
 	private int id;
 	private short map;
 	private boolean walkable = true;
@@ -33,8 +36,9 @@ public class Case {
 	
 	public Case(Maps map, int id, boolean walkable, boolean LoS, int interactiveObject)
 	{
-		this.map = map.getId();
+        this.map = map.getId();
 		this.id = id;
+        this.logger = (Logger)LoggerFactory.getLogger("Maps : "+map.getId() +" Case : " + id);
 		this.walkable = walkable;
 		this.LoS = LoS;
 		if(interactiveObject != -1)
@@ -338,7 +342,7 @@ public class Case {
 			break;
 			
 			default:
-				Log.addToLog("Case.startAction non definie pour l'actionID = "+actionID);
+				logger.info("Case.startAction non definie pour l'actionID = "+actionID);
 			break;
 		}
 	}

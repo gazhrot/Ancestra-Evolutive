@@ -1689,8 +1689,7 @@ public class SocketManager {
 		if(!s2.equals(""))packet += ";"+s2;
 		
 		for(Player z : map.getPlayers()) send(z,packet);
-		if(Server.config.isDebug())
-			Log.addToSockLog("Game: Map: Send>>"+packet);
+
 	}
 
 	public static void GAME_SEND_EL_BANK_PACKET(Player perso)
