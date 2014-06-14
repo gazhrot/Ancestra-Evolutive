@@ -13,6 +13,7 @@ import java.util.Map.Entry;
 
 public class MobGroup extends Creature {
 	private static final Random random = new Random();
+    private static final int defaultMaxGroup = 8;
 
     private int align = -1;
 	private int aggroDistance = 0;
@@ -32,7 +33,7 @@ public class MobGroup extends Creature {
      */
 	public MobGroup(int id,int align, ArrayList<MobGrade> possibles, Maps map, Case cell, int maxSize) {
 		this(id,map,cell,"",align,false,false);
-        int groupSize = random.nextInt(maxSize)+1;
+        int groupSize = (maxSize == -1)?defaultMaxGroup:random.nextInt(maxSize)+1;
 
 		//On v�rifie qu'il existe des monstres de l'alignement demand� pour �viter les boucles infinies
 		boolean haveSameAlign = false;
@@ -108,6 +109,7 @@ public class MobGroup extends Creature {
         if(timer){
             startTimer();
         }
+        helper = new MobGroupHelper(this);
     }
 
 	public int getAlign() {

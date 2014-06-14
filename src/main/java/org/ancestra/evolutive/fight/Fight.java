@@ -1614,19 +1614,17 @@ public class Fight {
 	        for(Fighter F : TEAM1)if(!F.isInvocation() || (F.getMob() != null && F.getMob().getTemplate().getId() ==258))groupPP += F.getTotalStats().getEffect(Constants.STATS_ADD_PROS);
 	        if(groupPP <0)groupPP =0;
         	//Calcul des drops possibles
-	        ArrayList<Drop> possibleDrops = new ArrayList<Drop>();
-	        for(Fighter F : TEAM2)
-	        {
+	        Map<Integer,Integer> possibleDrops = new TreeMap<>();
+	        for(Fighter F : TEAM2){
 	        	if(F.isInvocation() || F.getMob() == null)continue;
 	        	minkamas += F.getMob().getTemplate().getMinKamas();
 	        	maxkamas += F.getMob().getTemplate().getMaxKamas();
-	        	for(Drop D : F.getMob().getTemplate().getDrops())
-	        	{
-	        		if(D.getMinProsp() <= groupPP)
-	        		{
+	        	for(Drop D : F.getMob().getTemplate().getDrops()){
+	        		if(D.getMinProsp() <= groupPP){
 	        			//On augmente le taux en fonction de la PP
-	        			int taux = (int)((groupPP * D.get_taux()*Server.config.getRateDrop())/100);
-	        			possibleDrops.add(new Drop(D.get_itemID(),0,taux,D.get_max()));
+	        			int taux = (int)((groupPP * D.getTaux(F.getMob().getGrade())*Server.config.getRateDrop())/100);
+	        			//possibleDrops.add(new Drop(D.getItemId(),0,taux));
+                        possibleDrops.put(D.getItemId(),taux);
 	        		}
 	        	}
 	        }
@@ -1770,23 +1768,17 @@ public class Fight {
         		int winKamas= Formulas.getKamasWin(i,TEAM1,minkamas,maxkamas);
         		String drops = "";
         		//Drop system
-        		ArrayList<Drop> temp = new ArrayList<Drop>();
-        		temp.addAll(possibleDrops);
         		Map<Integer,Integer> itemWon = new TreeMap<Integer,Integer>();
         		
-        		for(Drop D : temp)
-        		{
-        			int t = (int)(D.get_taux()*100);//Permet de gerer des taux>0.01
+        		for(Entry<Integer,Integer> tauxByItem : possibleDrops.entrySet()){
+        			int t = (int)(tauxByItem.getValue()*100);//Permet de gerer des taux>0.01
         			int jet = Formulas.getRandomValue(0, 100*100);
-        			if(jet < t)
-        			{
-        				ObjTemplate OT = World.data.getObjTemplate(D.get_itemID());
+        			if(jet < t){
+        				ObjTemplate OT = World.data.getObjTemplate(tauxByItem.getKey());
         				if(OT == null)continue;
         				//on ajoute a la liste
         				itemWon.put(OT.getID(),(itemWon.get(OT.getID())==null?0:itemWon.get(OT.getID()))+1);
-        				
-        				D.setMax(D.get_max()-1);
-        				if(D.get_max() == 0)possibleDrops.remove(D);
+
         			}
         		}
         		if(i._id == captWinner && pierrePleine != null)	//S'il � captur� le groupe
@@ -1948,23 +1940,19 @@ public class Fight {
 			Packet.append(";");//Monture
 			
 			String drops = "";
-    		ArrayList<Drop> temp = new ArrayList<Drop>();
-    		temp.addAll(possibleDrops);
+
     		Map<Integer,Integer> itemWon = new TreeMap<Integer,Integer>();
     		
-    		for(Drop D : temp)
+    		for(Entry<Integer,Integer> tauxByItem: possibleDrops.entrySet())
     		{
-    			int t = (int)(D.get_taux()*100);//Permet de gerer des taux>0.01
+    			int t = (int)(tauxByItem.getValue()*100);//Permet de gerer des taux>0.01
     			int jet = Formulas.getRandomValue(0, 100*100);
     			if(jet < t)
     			{
-    				ObjTemplate OT = World.data.getObjTemplate(D.get_itemID());
+    				ObjTemplate OT = World.data.getObjTemplate(tauxByItem.getKey());
     				if(OT == null)continue;
     				//on ajoute a la liste
     				itemWon.put(OT.getID(),(itemWon.get(OT.getID())==null?0:itemWon.get(OT.getID()))+1);
-    				
-    				D.setMax(D.get_max()-1);
-    				if(D.get_max() == 0)possibleDrops.remove(D);
     			}
     		}
     		for(Entry<Integer,Integer> entry : itemWon.entrySet())

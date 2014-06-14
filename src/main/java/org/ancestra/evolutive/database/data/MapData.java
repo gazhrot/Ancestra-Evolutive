@@ -44,7 +44,7 @@ public class MapData extends AbstractDAO<Maps>{
 			execute(statement);
 			return true;
 		} catch (Exception e) {
-			Console.instance.writeln("SQL ERROR(MapData): "+e.getMessage());
+			logger.error("Error while updating map {} ",obj.getId(),e);
 		}
 		return false;
 	}
@@ -86,7 +86,7 @@ public class MapData extends AbstractDAO<Maps>{
 			}
 			close(result);
 		} catch (Exception e) {
-			Console.instance.writeln("SQL ERROR(MapData): "+e.getMessage());
+            logger.error("Error while creating map {} ",id,e);
 		}
 		return map;
 	}

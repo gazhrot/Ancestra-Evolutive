@@ -2,35 +2,48 @@ package org.ancestra.evolutive.other;
 
 public class Drop
 {
-	private int _itemID;
-	private int _prosp;
-	private float _taux;
-	private int _max;
+	private final int itemId;
+	private final int prospectionNedded;
+	private final float tauxGrade1;
+    private final float tauxGrade2;
+    private final float tauxGrade3;
+    private final float tauxGrade4;
+    private final float tauxGrade5;
 	
-	public Drop(int itm,int p,float t,int m)
+	public Drop(int itm,int p,float t1,float t2,float t3,float t4,float t5)
 	{
-		_itemID = itm;
-		_prosp = p;
-		_taux = t;
-		_max = m;
+		itemId = itm;
+		prospectionNedded = p;
+		tauxGrade1 = t1;
+        tauxGrade2 = t2;
+        tauxGrade3 = t3;
+        tauxGrade4 = t4;
+        tauxGrade5 = t5;
 	}
-	public void setMax(int m)
-	{
-		_max = m;
-	}
-	public int get_itemID() {
-		return _itemID;
+
+	public int getItemId() {
+		return itemId;
 	}
 
 	public int getMinProsp() {
-		return _prosp;
+		return prospectionNedded;
 	}
 
-	public float get_taux() {
-		return _taux;
+	public float getTaux(int grade) {
+		switch(grade){
+            case 1 :
+                return tauxGrade1;
+            case 2 :
+                return tauxGrade2;
+            case 3 :
+                return tauxGrade3;
+            case 4 :
+                return tauxGrade4;
+            case 5 :
+                return tauxGrade5;
+            default:
+                return tauxGrade1;
+        }
 	}
 
-	public int get_max() {
-		return _max;
-	}
 }

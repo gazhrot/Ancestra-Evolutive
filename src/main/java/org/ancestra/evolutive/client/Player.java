@@ -2021,8 +2021,7 @@ public class Player {
 		{
 			PW = this.getAccount().getGameClient();
 		}
-		if(World.data.getCarte(newMapID) == null)
-		{
+		if(World.data.getCarte(newMapID) == null){
 			Log.addToLog("Game: INVALID MAP : "+newMapID);
 			return;
 		}

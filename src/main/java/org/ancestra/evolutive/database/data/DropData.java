@@ -53,7 +53,8 @@ public class DropData extends AbstractDAO<ArrayList<Drop>>{
         while (resultSet.next()) {
             MobTemplate MT = World.data.getMonstre(resultSet.getInt("mob"));
             Drop drop = new Drop(resultSet.getInt("item"), resultSet.getInt("seuil"), resultSet
-                    .getFloat("taux"), resultSet.getInt("max"));
+                    .getFloat("taux1"),resultSet.getFloat("taux2"),resultSet.getFloat("taux3"),resultSet.getFloat("taux4"),
+                    resultSet.getFloat("taux5"));
             MT.getDrops().add(drop);
             drops.add(drop);
         }
