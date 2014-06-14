@@ -543,16 +543,16 @@ public class Account {
 			if(player.getFight() != null) {
 				player.getFight().leftFight(player, null);
 			} else {
-				player.getCurCell().removePlayer(player.getUUID());
+				player.getCurCell().removePlayer(player.getId());
 				if(player.getCurMap() != null && player.isOnline())
-					SocketManager.GAME_SEND_ERASE_ON_MAP_TO_MAP(player.getCurMap(), player.getUUID());
+					SocketManager.GAME_SEND_ERASE_ON_MAP_TO_MAP(player.getCurMap(), player.getId());
 			}
 			
 			player.setOnline(false);
 			if(save)
 				player.save();
 			player.resetVars();
-			World.data.unloadPerso(player.getUUID());
+			World.data.unloadPerso(player.getId());
 		}
 	}
 }

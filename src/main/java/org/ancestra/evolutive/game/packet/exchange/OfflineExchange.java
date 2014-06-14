@@ -42,7 +42,7 @@ public class OfflineExchange implements PacketParser {
 		client.getPlayer().setOrientation(orientation);
         Maps map = client.getPlayer().getCurMap();
         client.getPlayer().setSeeSeller(true);
-        World.data.addSeller(client.getPlayer().getUUID(), client.getPlayer().getCurMap().getId());
+        World.data.addSeller(client.getPlayer().getId(), client.getPlayer().getCurMap().getId());
         client.kick();
         for(Player z : map.getPlayers())
         	if(z != null && z.isOnline())

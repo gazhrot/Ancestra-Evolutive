@@ -88,72 +88,36 @@ public class MobTemplate {
 		return gfx;
 	}
 
-	public void setGfx(int gfx) {
-		this.gfx = gfx;
-	}
-
 	public int getAlign() {
 		return align;
-	}
-
-	public void setAlign(int align) {
-		this.align = align;
 	}
 
 	public String getColors() {
 		return colors;
 	}
 
-	public void setColors(String colors) {
-		this.colors = colors;
-	}
-
 	public int getIa() {
 		return ia;
-	}
-
-	public void setIa(int ia) {
-		this.ia = ia;
 	}
 
 	public int getMinKamas() {
 		return minKamas;
 	}
 
-	public void setMinKamas(int minKamas) {
-		this.minKamas = minKamas;
-	}
-
 	public int getMaxKamas() {
 		return maxKamas;
-	}
-
-	public void setMaxKamas(int maxKamas) {
-		this.maxKamas = maxKamas;
 	}
 
 	public Map<Integer, MobGrade> getGrades() {
 		return grades;
 	}
 
-	public void setGrades(Map<Integer, MobGrade> grades) {
-		this.grades = grades;
-	}
-
 	public ArrayList<Drop> getDrops() {
 		return drops;
 	}
 
-	public void setDrops(ArrayList<Drop> drops) {
-		this.drops = drops;
-	}
-
 	public boolean isCapturable() {
 		return isCapturable;
-	}
-
-	public void setCapturable(boolean isCapturable) {
-		this.isCapturable = isCapturable;
 	}
 
 	public MobGrade getGradeByLevel(int level) {

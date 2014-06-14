@@ -41,7 +41,7 @@ public class Kick implements PacketParser {
 			if(toRemGuild == null)//La guilde du personnage n'est pas charger ?
 				toRemGuild = World.data.getGuild(client.getPlayer().getGuild().getId());//On prend la guilde du perso qui l'�jecte
 			
-			toRemMember = toRemGuild.getMember(P.getUUID());
+			toRemMember = toRemGuild.getMember(P.getId());
 			
 			if(toRemMember == null) 
 				return;//Si le membre n'est pas dans la guilde.

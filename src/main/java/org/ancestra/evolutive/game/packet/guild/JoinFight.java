@@ -52,7 +52,7 @@ public class JoinFight implements PacketParser {
 				if(client.getPlayer().getFight() == null && !client.getPlayer().isAway())	{
 					if(client.getPlayer().getCurMap().getId() != map)
 						client.getPlayer().teleport(map, cell);
-					World.data.getCarte(map).getFights().get(fight).joinPercepteurFight(client.getPlayer(),client.getPlayer().getUUID(), id);
+					World.data.getCarte(map).getFights().get(fight).joinPercepteurFight(client.getPlayer(),client.getPlayer().getId(), id);
 				}
 			break;
 		}

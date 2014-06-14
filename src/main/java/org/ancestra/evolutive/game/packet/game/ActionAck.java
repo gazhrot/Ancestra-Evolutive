@@ -48,7 +48,7 @@ public class ActionAck implements PacketParser {
 			case 1://Deplacement
 				if(isOk) {//Hors Combat
 					if(client.getPlayer().getFight() == null) {
-						client.getPlayer().getCurCell().removePlayer(client.getPlayer().getUUID());
+						client.getPlayer().getCurCell().removePlayer(client.getPlayer().getId());
 						SocketManager.GAME_SEND_BN(client);
 						String path = GA.getArgs();
 						//On prend la case cibl�e
@@ -91,7 +91,7 @@ public class ActionAck implements PacketParser {
 						return;
 					
 					String path = GA.getArgs();
-					client.getPlayer().getCurCell().removePlayer(client.getPlayer().getUUID());
+					client.getPlayer().getCurCell().removePlayer(client.getPlayer().getId());
 					client.getPlayer().setCurCell(client.getPlayer().getCurMap().getCases().get(newCellID));
 					client.getPlayer().setOrientation(CryptManager.getIntByHashedValue(path.charAt(path.length()-3)));
 					client.getPlayer().getCurCell().addPlayer(client.getPlayer());
@@ -114,7 +114,7 @@ public class ActionAck implements PacketParser {
                         return;
 
                     String path = GA.getArgs();
-                    client.getPlayer().getCurCell().removePlayer(client.getPlayer().getUUID());
+                    client.getPlayer().getCurCell().removePlayer(client.getPlayer().getId());
                     client.getPlayer().setCurCell(client.getPlayer().getCurMap().getCases().get(newCellID));
                     client.getPlayer().setOrientation(CryptManager.getIntByHashedValue(path.charAt(path.length()-3)));
                     client.getPlayer().getCurCell().addPlayer(client.getPlayer());

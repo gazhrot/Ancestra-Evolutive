@@ -154,7 +154,7 @@ public class JobAction {
 		{
 			IO.setInteractive(false);
 			IO.setState(JobConstant.IOBJECT_STATE_EMPTYING);
-			SocketManager.GAME_SEND_GA_PACKET_TO_MAP(P.getCurMap(),""+GA.getId(), 501, P.getUUID()+"", cell.getId()+","+this.time);
+			SocketManager.GAME_SEND_GA_PACKET_TO_MAP(P.getCurMap(),""+GA.getId(), 501, P.getId()+"", cell.getId()+","+this.time);
 			SocketManager.GAME_SEND_GDF_PACKET_TO_MAP(P.getCurMap(),cell);
 			this.startTime = System.currentTimeMillis()+this.time;//pour eviter le cheat
 		}else
@@ -191,7 +191,7 @@ public class JobAction {
 			//Si retourne true, on l'ajoute au monde
 			if(P.addObjet(O, true))
 				World.data.addObjet(O, true);
-			SocketManager.GAME_SEND_IQ_PACKET(P,P.getUUID(),qua);
+			SocketManager.GAME_SEND_IQ_PACKET(P,P.getId(),qua);
 			SocketManager.GAME_SEND_Ow_PACKET(P);
 			/* 
 			int maxPercent = 20+(P.getMetierBySkill(this.id).get_lvl()-20);
@@ -301,7 +301,7 @@ public class JobAction {
 		if(tID == -1 || !SM.getTemplate().canCraft(this.id, tID))
 		{
 			SocketManager.GAME_SEND_Ec_PACKET(this.player,"EI");
-			SocketManager.GAME_SEND_IO_PACKET_TO_MAP(this.player.getCurMap(),this.player.getUUID(),"-");
+			SocketManager.GAME_SEND_IO_PACKET_TO_MAP(this.player.getCurMap(),this.player.getId(),"-");
 			this.ingredients.clear();	
 			return;
 		}
@@ -312,7 +312,7 @@ public class JobAction {
 		if(!success)//Si echec
 		{
 			SocketManager.GAME_SEND_Ec_PACKET(this.player,"EF");
-			SocketManager.GAME_SEND_IO_PACKET_TO_MAP(this.player.getCurMap(),this.player.getUUID(),"-"+tID);
+			SocketManager.GAME_SEND_IO_PACKET_TO_MAP(this.player.getCurMap(),this.player.getId(),"-"+tID);
 			SocketManager.GAME_SEND_Im_PACKET(this.player, "0118");
 		}else
 		{
@@ -343,7 +343,7 @@ public class JobAction {
 			SocketManager.GAME_SEND_Ow_PACKET(this.player);
 			SocketManager.GAME_SEND_Em_PACKET(this.player,"KO+"+guid+"|1|"+tID+"|"+newObj.parseStatsString().replace(";","#"));
 			SocketManager.GAME_SEND_Ec_PACKET(this.player,"K;"+tID);
-			SocketManager.GAME_SEND_IO_PACKET_TO_MAP(this.player.getCurMap(),this.player.getUUID(),"+"+tID);
+			SocketManager.GAME_SEND_IO_PACKET_TO_MAP(this.player.getCurMap(),this.player.getId(),"+"+tID);
 		}
 		
 		//On donne l'xp
@@ -398,7 +398,7 @@ public class JobAction {
 			Objet ing = World.data.getObjet(idIngredient);
 			if (ing == null || !this.player.hasItemGuid(idIngredient)) {
 				SocketManager.GAME_SEND_Ec_PACKET(this.player, "EI");
-				SocketManager.GAME_SEND_IO_PACKET_TO_MAP(this.player.getCurMap(), this.player.getUUID(), "-");
+				SocketManager.GAME_SEND_IO_PACKET_TO_MAP(this.player.getCurMap(), this.player.getId(), "-");
 				this.ingredients.clear();
 				return;
 			}
@@ -926,7 +926,7 @@ public class JobAction {
 		job.addXp(this.player, (int) (Server.config.getRateXpJob() + 9.0 / 10.0) * 10);
 		if (job == null || objectFm == null || runeOrPotion == null) {
 			SocketManager.GAME_SEND_Ec_PACKET(this.player, "EI");
-			SocketManager.GAME_SEND_IO_PACKET_TO_MAP(this.player.getCurMap(), this.player.getUUID(), "-");
+			SocketManager.GAME_SEND_IO_PACKET_TO_MAP(this.player.getCurMap(), this.player.getId(), "-");
 			this.ingredients.clear();
 			return;
 		}
@@ -1026,7 +1026,7 @@ public class JobAction {
 				this.data = data;
 			
 			
-			SocketManager.GAME_SEND_IO_PACKET_TO_MAP(this.player.getCurMap(), this.player.getUUID(), "-" + objTemaplateID);
+			SocketManager.GAME_SEND_IO_PACKET_TO_MAP(this.player.getCurMap(), this.player.getId(), "-" + objTemaplateID);
 			SocketManager.GAME_SEND_Ec_PACKET(this.player, "EF");
 			SocketManager.GAME_SEND_Im_PACKET(this.player, "0183");
 		} else {// Si r�ussite :)
@@ -1140,7 +1140,7 @@ public class JobAction {
 			if (this.reConfigingRunes != 0 || this.broken)
 				SocketManager.GAME_SEND_EXCHANGE_MOVE_OK_FM(this.player, 'O', "+", data);
 			this.data = data;
-			SocketManager.GAME_SEND_IO_PACKET_TO_MAP(this.player.getCurMap(), this.player.getUUID(), "+" + objTemaplateID);
+			SocketManager.GAME_SEND_IO_PACKET_TO_MAP(this.player.getCurMap(), this.player.getId(), "+" + objTemaplateID);
 			SocketManager.GAME_SEND_Ec_PACKET(this.player, "K;" + objTemaplateID);
 		}
 		this.lastCraft.clear();

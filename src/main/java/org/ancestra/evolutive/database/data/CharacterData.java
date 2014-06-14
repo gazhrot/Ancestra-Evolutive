@@ -36,7 +36,7 @@ public class CharacterData extends AbstractDAO<Player>{
 		try {
 			PreparedStatement statement = getPreparedStatement(baseQuery);
 			
-			statement.setInt(1,obj.getUUID());
+			statement.setInt(1,obj.getId());
 			statement.setString(2, obj.getName());
 			statement.setInt(3,obj.getSex());
 			statement.setInt(4,obj.getClasse().getId());
@@ -55,8 +55,7 @@ public class CharacterData extends AbstractDAO<Player>{
 			statement.setInt(17,obj.getCurCell().getId());
 			statement.setInt(18,obj.getCurMap().getId());
 			statement.setString(19, obj.parseSpellsToDb());
-			
-			execute(statement);
+            execute(statement);
             logger.info("A new player has been created named {}",obj.getName());
 			return true;
 		} catch (Exception e) {
@@ -68,7 +67,7 @@ public class CharacterData extends AbstractDAO<Player>{
 	@Override
 	public boolean delete(Player obj) {
 		try {
-			String baseQuery = "DELETE FROM personnages WHERE guid = "+obj.getUUID();
+			String baseQuery = "DELETE FROM personnages WHERE guid = "+obj.getId();
 			execute(baseQuery);
 			logger.debug("Player {} has been deleted",obj.getName());
 			if(!obj.getItemsIDSplitByChar(",").equals("")) {
@@ -146,7 +145,7 @@ public class CharacterData extends AbstractDAO<Player>{
 			statement.setInt(34, (obj.getMount()!=null?obj.getMount().getId():-1));
 			statement.setByte(35,(obj.getTitle()));
 			statement.setInt(36,obj.getWife());
-			statement.setInt(37,obj.getUUID());
+			statement.setInt(37,obj.getId());
 			
 			execute(statement);
 			
@@ -236,7 +235,7 @@ public class CharacterData extends AbstractDAO<Player>{
 			Result result = getData("SELECT * FROM personnages WHERE name = '"+name+"'");
 			exist = result.resultSet.next();
 			close(result);
-            logger.trace("Player {} exist",name);
+            logger.trace("Player {} existe : {}",name,exist);
 		} catch(Exception e) {
 			logger.error("Can't ask database if {} exist ", name, e);
 		}
@@ -313,7 +312,7 @@ public class CharacterData extends AbstractDAO<Player>{
             //V�rifications pr�-connexion
             player.VerifAndChangeItemPlace();
             World.data.addPersonnage(player);
-            int guildId = World.database.getGuildMemberData().getGuildByPlayer(player.getUUID());
+            int guildId = World.database.getGuildMemberData().getGuildByPlayer(player.getId());
             if(guildId >= 0) {
             	Guild guild =  World.data.getGuild(guildId);
             	if(guild != null) {

@@ -228,7 +228,7 @@ public class World {
 	}
 
 	public void addPersonnage(Player perso) {
-		players.put(perso.getUUID(), perso);
+		players.put(perso.getId(), perso);
 	}
 
 	public Player getPersoByName(String name) {
@@ -262,8 +262,8 @@ public class World {
 			}
 		}
 		perso.remove();// Supression BDD Perso, items, monture.
-		unloadPerso(perso.getUUID());// UnLoad du perso+item
-		players.remove(perso.getUUID());
+		unloadPerso(perso.getId());// UnLoad du perso+item
+		players.remove(perso.getId());
 	}
 
 	public String getSousZoneStateString() {
@@ -452,7 +452,7 @@ public class World {
 									_out,
 									"Erreur. Nouvelle tentative de sauvegarde");
 						saveTries++;
-						saveData(saver.getUUID());
+						saveData(saver.getId());
 					} else {
 						set_state((short) 1);
 						// TODO : Rafraichir
@@ -807,7 +807,7 @@ public class World {
 	public void AddMarried(int ordre, Player perso) {
 		Player Perso = married.get(ordre);
 		if (Perso != null) {
-			if (perso.getUUID() == Perso.getUUID()) // Si c'est le meme
+			if (perso.getId() == Perso.getId()) // Si c'est le meme
 														// joueur...
 				return;
 			if (Perso.isOnline())// Si perso en ligne...
@@ -843,8 +843,8 @@ public class World {
 						+ getMarried((perso.getSex() == 1 ? 0 : 1))
 								.getName() + " ?");
 		SocketManager.GAME_SEND_WEDDING(carte, 617,
-				(Homme == perso ? Homme.getUUID() : Femme.getUUID()),
-				(Homme == perso ? Femme.getUUID() : Homme.getUUID()),
+				(Homme == perso ? Homme.getId() : Femme.getId()),
+				(Homme == perso ? Femme.getId() : Homme.getId()),
 				IdPretre);
 	}
 

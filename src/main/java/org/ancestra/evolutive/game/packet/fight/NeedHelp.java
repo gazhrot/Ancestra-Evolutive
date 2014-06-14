@@ -11,6 +11,6 @@ public class NeedHelp implements PacketParser {
 	public void parse(GameClient client, String packet) {
 		if(client.getPlayer().getFight() == null)
 			return;
-		client.getPlayer().getFight().toggleHelp(client.getPlayer().getUUID());
+		client.getPlayer().getFight().toggleHelp(client.getPlayer().getId());
 	}
 }

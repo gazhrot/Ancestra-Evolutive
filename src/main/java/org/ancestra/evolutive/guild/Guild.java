@@ -145,8 +145,8 @@ public class Guild {
 	}
 	
 	public GuildMember addNewMember(Player player) {
-		GuildMember GM = new GuildMember(this, player.getUUID(), 0, 0, (byte) 0, 0);
-		this.members.put(player.getUUID(), GM);
+		GuildMember GM = new GuildMember(this, player.getId(), 0, 0, (byte) 0, 0);
+		this.members.put(player.getId(), GM);
 		return GM;
 	}
 	
@@ -156,7 +156,7 @@ public class Guild {
 			if(House.HouseOnGuild(this.getId()) > 0)
 				World.database.getHouseData().update(house, 0, 0);
 
-		this.members.remove(player.getUUID());
+		this.members.remove(player.getId());
 		World.database.getGuildMemberData().delete(player.getGuildMember());
 	}
 	

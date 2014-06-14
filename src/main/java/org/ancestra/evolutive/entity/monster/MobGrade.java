@@ -161,10 +161,6 @@ public class MobGrade {
 		return initiative;
 	}
 
-	public void setInitiative(int initiative) {
-		this.initiative = initiative;
-	}
-
 	public int getPa() {
 		return pa;
 	}
@@ -231,10 +227,6 @@ public class MobGrade {
 
 	public Map<Integer, SpellStats> getSpells() {
 		return spells;
-	}
-
-	public void setSpells(Map<Integer, SpellStats> spells) {
-		this.spells = spells;
 	}
 
 	public MobGrade getCopy() {

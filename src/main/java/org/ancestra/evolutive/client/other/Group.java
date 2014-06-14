@@ -21,7 +21,7 @@ public class Group {
 	}
 	
 	public boolean isChief(int i) {
-		return this.chief.getUUID() == i;
+		return this.chief.getId() == i;
 	}
 	
 	public ArrayList<Player> getPlayers() {
@@ -50,7 +50,7 @@ public class Group {
 				return;
 			SocketManager.GAME_SEND_PV_PACKET(this.players.get(0).getAccount().getGameClient(), "");
 		} else {
-			SocketManager.GAME_SEND_PM_DEL_PACKET_TO_GROUP(this, player.getUUID());
+			SocketManager.GAME_SEND_PM_DEL_PACKET_TO_GROUP(this, player.getId());
 		}
 	}
 }

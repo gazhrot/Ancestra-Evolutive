@@ -26,7 +26,7 @@ public class Sell implements PacketParser {
 			SocketManager.GAME_SEND_Im_PACKET(client.getPlayer(), "194");
 			return;
 		}
-		if(mountPark.getOwner() != client.getPlayer().getUUID()) {
+		if(mountPark.getOwner() != client.getPlayer().getId()) {
 			SocketManager.GAME_SEND_Im_PACKET(client.getPlayer(), "195");
 			return;
 		}

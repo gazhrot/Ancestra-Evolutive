@@ -56,7 +56,7 @@ public class MountparkExchange implements PacketParser {
 					client.getPlayer().removeItem(guid);
 					World.data.removeItem(guid);
 					//on ajoute la dinde a l'�table
-					MP.getDatas().put(DD.getId(), client.getPlayer().getUUID());
+					MP.getDatas().put(DD.getId(), client.getPlayer().getId());
 					World.database.getMountparkData().update(MP);
 					//On envoie les packet
 					SocketManager.GAME_SEND_REMOVE_ITEM_PACKET(client.getPlayer(),obj.getGuid());
@@ -66,10 +66,10 @@ public class MountparkExchange implements PacketParser {
 					Mount DD1 = World.data.getDragoByID(guid);
 					//S'il n'a pas la dinde
 					if(DD1 == null || !MP.getDatas().containsKey(DD1.getId()))return;
-					if(MP.getDatas().get(DD1.getId()) != client.getPlayer().getUUID() && 
+					if(MP.getDatas().get(DD1.getId()) != client.getPlayer().getId() &&
 						World.data.getPersonnage(MP.getDatas().get(DD1.getId())).getGuild() != client.getPlayer().getGuild())
 						return;
-					if(MP.getDatas().get(DD1.getId()) != client.getPlayer().getUUID() && 
+					if(MP.getDatas().get(DD1.getId()) != client.getPlayer().getId() &&
 							World.data.getPersonnage(MP.getDatas().get(DD1.getId())).getGuild() == client.getPlayer().getGuild() &&
 							!client.getPlayer().getGuildMember().canDo(Constants.G_OTHDINDE)) {
 						//M�me guilde, pas le droit
@@ -102,10 +102,10 @@ public class MountparkExchange implements PacketParser {
 					//S'il n'a pas la dinde
 					if(DD3 == null || !MP.getDatas().containsKey(DD3.getId()) || client.getPlayer().getMount() != null)return;
 					
-					if(MP.getDatas().get(DD3.getId()) != client.getPlayer().getUUID() && 
+					if(MP.getDatas().get(DD3.getId()) != client.getPlayer().getId() &&
 							World.data.getPersonnage(MP.getDatas().get(DD3.getId())).getGuild() != client.getPlayer().getGuild())
 						return;
-					if(MP.getDatas().get(DD3.getId()) != client.getPlayer().getUUID() && 
+					if(MP.getDatas().get(DD3.getId()) != client.getPlayer().getId() &&
 							World.data.getPersonnage(MP.getDatas().get(DD3.getId())).getGuild() == client.getPlayer().getGuild() &&
 							!client.getPlayer().getGuildMember().canDo(Constants.G_OTHDINDE)) {
 						//M�me guilde, pas le droit
@@ -132,7 +132,7 @@ public class MountparkExchange implements PacketParser {
 						if(client.getPlayer().isOnMount())return;
 						
 						Mount DD2 = client.getPlayer().getMount();
-						MP.getDatas().put(DD2.getId(), client.getPlayer().getUUID());
+						MP.getDatas().put(DD2.getId(), client.getPlayer().getId());
 						World.database.getMountparkData().update(MP);
 						client.getPlayer().setMount(null);
 						

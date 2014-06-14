@@ -217,7 +217,7 @@ public class SocketManager {
 	public static void GAME_SEND_ASK(Client out,Player perso)
 	{
 		StringBuilder packet = new StringBuilder();
-		packet.append("ASK|").append(perso.getUUID()).append("|").append(perso.getName()).append("|");
+		packet.append("ASK|").append(perso.getId()).append("|").append(perso.getName()).append("|");
 		packet.append(perso.getLevel()).append("|").append(perso.getClasse().getId()).append("|").append(perso.getSex());
 		packet.append("|").append(perso.getGfx()).append("|").append((perso.getColor1()==-1?"-1":Integer.toHexString(perso.getColor1())));
 		packet.append("|").append((perso.getColor2()==-1?"-1":Integer.toHexString(perso.getColor2()))).append("|");
@@ -402,7 +402,7 @@ public class SocketManager {
 		String packet = "GM|-"+guid;
 		for(Fighter F : f.getFighters(team))
 		{
-			if(F.getPersonnage() == null || F.getPersonnage().getAccount().getGameClient() == null || F.getPersonnage().getUUID() == guid)continue;
+			if(F.getPersonnage() == null || F.getPersonnage().getAccount().getGameClient() == null || F.getPersonnage().getId() == guid)continue;
 			send(F.getPersonnage().getAccount().getGameClient(),packet);
 		}
 		if(Server.config.isDebug())
@@ -903,20 +903,17 @@ public class SocketManager {
 			Log.addToSockLog("Game: Fight : Send>>"+packet);
 	}
 	
-	public static void GAME_SEND_GA_PACKET_TO_FIGHT(Fight fight,int teams, int actionID,String s1, String s2)
-	{
+	public static void GAME_SEND_GA_PACKET_TO_FIGHT(Fight fight,int teams, int actionID,String s1, String s2){
 		String packet = "GA;"+actionID+";"+s1;
 		if(!s2.equals(""))
 			packet+=";"+s2;
 		
-		for(Fighter f : fight.getFighters(teams))
-		{
+		for(Fighter f : fight.getFighters(teams)){
 			if(f.hasLeft())continue;
 			if(f.getPersonnage() == null || !f.getPersonnage().isOnline())continue;
+            System.err.println("Bonjour");
 			send(f.getPersonnage(),packet);
 		}
-		if(Server.config.isDebug())
-			Log.addToSockLog("Game: Fight("+fight.getFighters(teams).size()+") : Send>>"+packet);
 	}
 	
 	public static void GAME_SEND_GA_PACKET(Client out, String actionID,String s0,String s1, String s2)
@@ -1548,7 +1545,7 @@ public class SocketManager {
 
 	public static void GAME_SEND_PL_PACKET(Client out, Group g)
 	{
-		String packet = "PL"+g.getChief().getUUID();
+		String packet = "PL"+g.getChief().getId();
 		send(out,packet);
 		if(Server.config.isDebug())
 			Log.addToSockLog("Game: Groupe: Send>>"+packet);

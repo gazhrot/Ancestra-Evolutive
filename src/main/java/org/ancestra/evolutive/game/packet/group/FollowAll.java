@@ -33,24 +33,24 @@ public class FollowAll implements PacketParser {
 		
 		if(packet.charAt(2) == '+') {//Suivre
 			for(Player T : group.getPlayers()) {
-				if(T.getUUID() == player.getUUID()) 
+				if(T.getId() == player.getId())
 					continue;
 				if(T.getFollow() != null)
-					T.getFollow().getFollowers().remove(client.getPlayer().getUUID());
+					T.getFollow().getFollowers().remove(client.getPlayer().getId());
 				SocketManager.GAME_SEND_FLAG_PACKET(T, player);
-				SocketManager.GAME_SEND_PF(T, "+"+player.getUUID());
+				SocketManager.GAME_SEND_PF(T, "+"+player.getId());
 				T.setFollow(player);
-				player.getFollowers().put(T.getUUID(), T);
+				player.getFollowers().put(T.getId(), T);
 			}
 		}else 
 		if(packet.charAt(2) == '-') {//Ne plus suivre
 			for(Player p : group.getPlayers()) {
-				if(p.getUUID() == player.getUUID()) 
+				if(p.getId() == player.getId())
 					continue;
 				SocketManager.GAME_SEND_DELETE_FLAG_PACKET(p);
 				SocketManager.GAME_SEND_PF(p, "-");
 				p.setFollow(null);
-				player.getFollowers().remove(p.getUUID());
+				player.getFollowers().remove(p.getId());
 			}
 		}
 	}

@@ -33,8 +33,8 @@ public class Invite implements PacketParser {
 			return;
 		}
 		
-		target.setInviting(client.getPlayer().getUUID());	
-		client.getPlayer().setInviting(target.getUUID());
+		target.setInviting(client.getPlayer().getId());
+		client.getPlayer().setInviting(target.getId());
 		SocketManager.GAME_SEND_GROUP_INVITATION(client, client.getPlayer().getName(),name);
 		SocketManager.GAME_SEND_GROUP_INVITATION(target.getAccount().getGameClient(), client.getPlayer().getName(),name);
 	}

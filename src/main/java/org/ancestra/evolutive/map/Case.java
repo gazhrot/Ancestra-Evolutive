@@ -128,7 +128,7 @@ public class Case {
 	public void addPlayer(Player player) {
 		if(this.players == null) 
 			this.players = new TreeMap<Integer, Player>();
-		this.players.put(player.getUUID(), player);
+		this.players.put(player.getId(), player);
 	}
 	
 	public void removePlayer(int id) {
@@ -196,7 +196,7 @@ public class Case {
 				if(this.interactiveObject.getState() != Constants.IOBJECT_STATE_FULL)return;//Si le puits est vide
 				this.interactiveObject.setState(Constants.IOBJECT_STATE_EMPTYING);
 				this.interactiveObject.setInteractive(false);
-				SocketManager.GAME_SEND_GA_PACKET_TO_MAP(perso.getCurMap(),""+GA.getId(), 501, perso.getUUID()+"", this.id+","+this.interactiveObject.getUseDuration()+","+this.interactiveObject.getUnknowValue());
+				SocketManager.GAME_SEND_GA_PACKET_TO_MAP(perso.getCurMap(),""+GA.getId(), 501, perso.getId()+"", this.id+","+this.interactiveObject.getUseDuration()+","+this.interactiveObject.getUnknowValue());
 				SocketManager.GAME_SEND_GDF_PACKET_TO_MAP(perso.getCurMap(),this);
 			break;
 			case 114://Utiliser (zaap)
@@ -275,7 +275,7 @@ public class Case {
 					SocketManager.GAME_SEND_Im_PACKET(perso, "194");
 					return;
 				}
-				if(MP1.getOwner() != perso.getUUID())
+				if(MP1.getOwner() != perso.getId())
 				{
 					SocketManager.GAME_SEND_Im_PACKET(perso, "195");
 					return;
@@ -385,7 +385,7 @@ public class Case {
 				Objet obj = World.data.getObjTemplate(311).createNewItem(qua, false);
 				if(perso.addObjet(obj, true))
 					World.data.addObjet(obj,true);
-				SocketManager.GAME_SEND_IQ_PACKET(perso,perso.getUUID(),qua);
+				SocketManager.GAME_SEND_IQ_PACKET(perso,perso.getId(),qua);
 			break;
 			
 			case 183:

@@ -36,15 +36,15 @@ public class Join implements PacketParser {
 			case 'C'://Suivre le deplacement
 				if(packet.charAt(3) == '+') {//Si lancement de la traque
 					if(client.getPlayer().getFollow() != null)
-						client.getPlayer().getFollow().getFollowers().remove(client.getPlayer().getUUID());
+						client.getPlayer().getFollow().getFollowers().remove(client.getPlayer().getId());
 					
 					SocketManager.GAME_SEND_FLAG_PACKET(client.getPlayer(), player);
 					client.getPlayer().setFollow(player);
-					player.getFollowers().put(client.getPlayer().getUUID(), client.getPlayer());
+					player.getFollowers().put(client.getPlayer().getId(), client.getPlayer());
 				} else {//On arrete de suivre
 					SocketManager.GAME_SEND_DELETE_FLAG_PACKET(client.getPlayer());
 					client.getPlayer().setFollow(null);
-					player.getFollowers().remove(client.getPlayer().getUUID());
+					player.getFollowers().remove(client.getPlayer().getId());
 				}
 			break;
 		}

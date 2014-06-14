@@ -25,6 +25,6 @@ public class ShowCase implements PacketParser {
 		
 		if(cellID == -1)
 			return;
-		client.getPlayer().getFight().showCaseToTeam(client.getPlayer().getUUID(),cellID);
+		client.getPlayer().getFight().showCaseToTeam(client.getPlayer().getId(),cellID);
 	}
 }

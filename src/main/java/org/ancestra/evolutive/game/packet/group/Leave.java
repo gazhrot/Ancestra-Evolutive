@@ -26,7 +26,7 @@ public class Leave implements PacketParser {
 			SocketManager.GAME_SEND_PV_PACKET(client, "");
 			SocketManager.GAME_SEND_IH_PACKET(client.getPlayer(), "");
 		}else 
-		if(group.isChief(client.getPlayer().getUUID())) {//Sinon, c'est qu'il kick un joueur du groupe
+		if(group.isChief(client.getPlayer().getId())) {//Sinon, c'est qu'il kick un joueur du groupe
 			int guid = -1;
 			
 			try {
@@ -39,7 +39,7 @@ public class Leave implements PacketParser {
 			Player player = World.data.getPersonnage(guid);
 			
 			group.leave(player);
-			SocketManager.GAME_SEND_PV_PACKET(player.getAccount().getGameClient(), String.valueOf(client.getPlayer().getUUID()));
+			SocketManager.GAME_SEND_PV_PACKET(player.getAccount().getGameClient(), String.valueOf(client.getPlayer().getId()));
 			SocketManager.GAME_SEND_IH_PACKET(player, "");
 		}
 	}

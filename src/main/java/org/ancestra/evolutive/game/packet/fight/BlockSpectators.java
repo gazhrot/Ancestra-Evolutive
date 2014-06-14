@@ -11,6 +11,6 @@ public class BlockSpectators implements PacketParser {
 	public void parse(GameClient client, String packet) {
 		if(client.getPlayer().getFight() == null)
 			return;
-		client.getPlayer().getFight().toggleLockSpec(client.getPlayer().getUUID());
+		client.getPlayer().getFight().toggleLockSpec(client.getPlayer().getId());
 	}
 }

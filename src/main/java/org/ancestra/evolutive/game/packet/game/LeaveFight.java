@@ -24,7 +24,7 @@ public class LeaveFight implements PacketParser {
 		if(id > 0) {//Expulsion d'un joueurs autre que soi-meme
 			Player target = World.data.getPersonnage(id);//On ne quitte pas un joueur qui : est null, ne combat pas, n'est pas de sa team.
 			
-			if(target == null || target.getFight() == null || target.getFight().getTeamID(target.getUUID()) != client.getPlayer().getFight().getTeamID(client.getPlayer().getUUID()))
+			if(target == null || target.getFight() == null || target.getFight().getTeamID(target.getId()) != client.getPlayer().getFight().getTeamID(client.getPlayer().getId()))
 				return;
 			
 			client.getPlayer().getFight().leftFight(client.getPlayer(), target);

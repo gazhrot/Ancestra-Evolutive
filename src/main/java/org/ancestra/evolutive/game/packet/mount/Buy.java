@@ -58,7 +58,7 @@ public class Buy implements PacketParser {
 		}
 		
 		mountPark.setPrice(0);//On vide le prix
-		mountPark.setOwner(client.getPlayer().getUUID());
+		mountPark.setOwner(client.getPlayer().getId());
 		mountPark.setGuild(client.getPlayer().getGuild());
 		World.database.getMountparkData().update(mountPark);
 		client.getPlayer().save();

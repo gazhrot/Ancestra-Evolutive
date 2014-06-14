@@ -222,7 +222,7 @@ public class Collector extends Creature {
 					for(Fighter f : F.getValue().getFighters(1))//Attaque
 					{
 						str.append("|");
-						str.append(Integer.toString(f.getPersonnage().getUUID(), 36)).append(";");
+						str.append(Integer.toString(f.getPersonnage().getId(), 36)).append(";");
 						str.append(f.getPersonnage().getName()).append(";");
 						str.append(f.getPersonnage().getLevel()).append(";");
 						str.append("0;");
@@ -247,7 +247,7 @@ public class Collector extends Creature {
 					{
 						if(f.getPersonnage() == null) continue;//On sort le percepteur
 						str.append("|");
-						str.append(Integer.toString(f.getPersonnage().getUUID(), 36)).append(";");
+						str.append(Integer.toString(f.getPersonnage().getId(), 36)).append(";");
 						str.append(f.getPersonnage().getName()).append(";");
 						str.append(f.getPersonnage().getGfx()).append(";");
 						str.append(f.getPersonnage().getLevel()).append(";");

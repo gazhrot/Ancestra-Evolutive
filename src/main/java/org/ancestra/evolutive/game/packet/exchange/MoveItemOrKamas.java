@@ -18,7 +18,7 @@ public class MoveItemOrKamas implements PacketParser {
 	@Override
 	public void parse(GameClient client, String packet) {
 		//Store
-		if(client.getPlayer().getIsTradingWith() == client.getPlayer().getUUID())
+		if(client.getPlayer().getIsTradingWith() == client.getPlayer().getId())
 		{
 			switch(packet.charAt(2))
 			{
@@ -381,7 +381,7 @@ public class MoveItemOrKamas implements PacketParser {
 					try	{
 						int guid = Integer.parseInt(infos[0]);
 						int qua  = Integer.parseInt(infos[1]);
-						int quaInExch = client.getPlayer().getCurExchange().getQuaItem(guid, client.getPlayer().getUUID());
+						int quaInExch = client.getPlayer().getCurExchange().getQuaItem(guid, client.getPlayer().getId());
 						
 						if(!client.getPlayer().hasItemGuid(guid))
 							return;
@@ -395,7 +395,7 @@ public class MoveItemOrKamas implements PacketParser {
 						if(qua <= 0)
 							return;
 						
-						client.getPlayer().getCurExchange().addItem(guid, qua, client.getPlayer().getUUID());
+						client.getPlayer().getCurExchange().addItem(guid, qua, client.getPlayer().getId());
 					} catch(NumberFormatException e) {}
 				}else {
 					try	{
@@ -412,10 +412,10 @@ public class MoveItemOrKamas implements PacketParser {
 						
 						if(obj == null)
 							return;
-						if(qua > client.getPlayer().getCurExchange().getQuaItem(guid, client.getPlayer().getUUID()))
+						if(qua > client.getPlayer().getCurExchange().getQuaItem(guid, client.getPlayer().getId()))
 							return;
 						
-						client.getPlayer().getCurExchange().removeItem(guid,qua, client.getPlayer().getUUID());
+						client.getPlayer().getCurExchange().removeItem(guid,qua, client.getPlayer().getId());
 					} catch(NumberFormatException e) {}
 				}
 			break;
@@ -426,7 +426,7 @@ public class MoveItemOrKamas implements PacketParser {
 						numb = client.getPlayer().getKamas();
                     else if(numb <= 0)
                         return;
-					client.getPlayer().getCurExchange().setKamas(client.getPlayer().getUUID(), numb);
+					client.getPlayer().getCurExchange().setKamas(client.getPlayer().getId(), numb);
 				} catch(NumberFormatException e) {}
 			break;
 		}

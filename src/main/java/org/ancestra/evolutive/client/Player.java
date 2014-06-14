@@ -7,6 +7,7 @@ import org.ancestra.evolutive.common.Constants;
 import org.ancestra.evolutive.common.Formulas;
 import org.ancestra.evolutive.common.SocketManager;
 import org.ancestra.evolutive.core.*;
+import org.ancestra.evolutive.entity.Creature;
 import org.ancestra.evolutive.entity.Mount;
 import org.ancestra.evolutive.enums.Classe;
 import org.ancestra.evolutive.event.player.PlayerJoinEvent;
@@ -41,10 +42,8 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.Map.Entry;
 
-public class Player {
-	
-	private int UUID;
-	private String name;
+public class Player extends Creature{
+
 	private int sex;
 	private Classe classe;
 	private int color1;
@@ -141,13 +140,12 @@ public class Player {
 	private Map<Integer, JobStat> jobs = new TreeMap<>();
 	private Map<Integer , Integer> stores = new TreeMap<>();//<ObjID, Prix>	
 	
-	public Player(int UUID, String name, int sex, int classe, int color1, int color2, int color3,long kamas, int spellPoints, 
+	public Player(int UUID, String name, int sex, int classe, int color1, int color2, int color3,long kamas, int spellPoints,
 		int capital, int energy, int level, long experience, int size, int gfx, byte align, int account, Map<Integer,Integer> stats,
 		byte showFriendConnection, byte showWings, byte seeSeller, String canaux, short curMap, int curCell, String stuff, String store,
 		int pdvPer, String spells, String savePos, String jobs, int mountXp, int mount, int honor, int deshonor, int aLvl, String zaaps, byte title, int wife)
 	{
-		this.UUID = UUID;
-		this.name = name;
+        super(UUID,name,curMap,curCell);
 		this.sex = sex;
 		this.classe = Classe.values()[classe-1];
 		this.color1 = color1;
@@ -200,37 +198,34 @@ public class Player {
 		});
 	}
 	
-	public Player(int UUID, String name, int sex, int classe, int color1, int color2, int color3, int level, int size,
-		int gfx, Map<Integer,Integer> stats, String stuff, int pdvPer, byte showWings, int mount, int aLvl, byte align)
-	{
-		this.UUID = UUID;
-		this.name = name;
-		this.sex = sex;
-		this.classe = Classe.values()[classe-1];
-		this.color1 = color1;
-		this.color2 = color2;
-		this.color3 = color3;
-		this.level = level;
+	public Player(Player player,int id){
+        super(id,player.getName(),player.getMap(),player.getCell());
+		this.sex = player.getSex();
+		this.classe = player.getClasse();
+		this.color1 = player.getColor1();
+		this.color2 = player.getColor2();
+		this.color3 = player.getColor3();
+		this.level = player.getLevel();
 		
-		this.size = size;
-		this.gfx = gfx;
-		this.stats = new Stats(stats, true, this);
-		this.setStuff(stuff);
-		this.maxPdv = (this.level - 1) * 5 + Constants.getBasePdv(this.classe.getId())+getTotalStats().getEffect(Constants.STATS_ADD_VITA);
-		this.exPdv = this.pdv = (this.maxPdv * pdvPer) / 100;
-		this.showWings = (this.getAlign() != 0 ? showWings==1 : false);
-		this.mount = (mount != -1 ? World.data.getDragoByID(mount) : null);
-		this.aLvl = aLvl;
-		this.align = align;
-	}
+		this.size = player.getSize();
+		this.gfx = player.getGfx();
+		this.stats = player.getStats();
+		this.setStuff(player.getStuffStats().parseToItemSetStats());
+		this.maxPdv = player.getMaxPdv();
+		this.exPdv = this.pdv = player.getPdv();
+		this.showWings = player.isShowWings();
+		this.mount = player.getMount();
+		this.aLvl = player.getaLvl();
+		this.align = player.getAlign();
+        this.account = player.getAccount();
+    }
 	
 	public static Player create(String name, int sex, int classe, int color1, int color2, int color3, Account compte) {
 		String zaaps = "";
 		if(Server.config.isAllZaaps()) 
 			for(Entry<Integer, Integer> i : Constants.ZAAPS.entrySet())
 				zaaps += (zaaps.length() != 0 ? "," : "") + i.getKey();
-		
-		Player perso = new Player(
+        Player perso = new Player(
 				World.database.getCharacterData().nextId(),
 				name,
 				sex,
@@ -276,36 +271,15 @@ public class Player {
 			Constants.onLevelUpSpells(perso, a);
 		
 		perso.spellsPlace = Constants.getStartSortsPlaces(classe);
-		
-		if(!World.database.getCharacterData().create(perso))
+        if(!World.database.getCharacterData().create(perso))
 			return null;
 		
 		World.data.addPersonnage(perso);
 		return perso;
 	}
-	
-	public int getUUID() {
-		return UUID;
-	}
-
-	public void setUUID(int UUID) {
-		this.UUID = UUID;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
 
 	public int getSex() {
 		return sex;
-	}
-
-	public void setSex(int sex) {
-		this.sex = sex;
 	}
 
 	public Classe getClasse() {
@@ -316,24 +290,12 @@ public class Player {
 		return color1;
 	}
 
-	public void setColor1(int color1) {
-		this.color1 = color1;
-	}
-
 	public int getColor2() {
 		return color2;
 	}
 
-	public void setColor2(int color2) {
-		this.color2 = color2;
-	}
-
 	public int getColor3() {
 		return color3;
-	}
-
-	public void setColor3(int color3) {
-		this.color3 = color3;
 	}
 
 	public long getKamas() {
@@ -398,14 +360,6 @@ public class Player {
 
 	public void setGfx(int gfx) {
 		this.gfx = gfx;
-	}
-
-	public int getOrientation() {
-		return orientation;
-	}
-
-	public void setOrientation(int orientation) {
-		this.orientation = orientation;
 	}
 
 	public Account getAccount() {
@@ -1149,8 +1103,8 @@ public class Player {
 	public String parseALK() {
 		StringBuilder perso = new StringBuilder();
 		perso.append("|");
-		perso.append(this.UUID).append(";");
-		perso.append(this.name).append(";");
+		perso.append(this.getId()).append(";");
+		perso.append(this.getName()).append(";");
 		perso.append(this.level).append(";");
 		perso.append(this.gfx).append(";");
 		perso.append((this.color1!= -1?Integer.toHexString(this.color1):"-1")).append(";");
@@ -1260,9 +1214,9 @@ public class Player {
 		
 		GameClient client = this.getAccount().getGameClient();
 		
-		if(this.seeSeller == true && World.data.getSeller(this.getCurMap().getId()) != null && World.data.getSeller(this.getCurMap().getId()).contains(this.getUUID())) {
-			World.data.removeSeller(this.getUUID(), this.getCurMap().getId());
-			SocketManager.GAME_SEND_ERASE_ON_MAP_TO_MAP(this.getCurMap(), this.getUUID());
+		if(this.seeSeller == true && World.data.getSeller(this.getCurMap().getId()) != null && World.data.getSeller(this.getCurMap().getId()).contains(this.getId())) {
+			World.data.removeSeller(this.getId(), this.getCurMap().getId());
+			SocketManager.GAME_SEND_ERASE_ON_MAP_TO_MAP(this.getCurMap(), this.getId());
 			this.seeSeller = false;
 		}
 		
@@ -1274,7 +1228,7 @@ public class Player {
 	}
 	
 	public String parseToOa() {
-		return "Oa" + this.getUUID() + "|" + this.getGMStuffString();
+		return "Oa" + this.getId() + "|" + this.getGMStuffString();
 	}
 	
 	public String parseToGM() {
@@ -1282,13 +1236,13 @@ public class Player {
 		if(this.getFight() == null) {// Hors combat
 			str.append(this.getCurCell().getId()).append(";").append(this.getOrientation()).append(";");
 			str.append("0").append(";");//FIXME:?
-			str.append(this.getUUID()).append(";").append(this.getName()).append(";").append(this.getClasse().getId());
+			str.append(this.getId()).append(";").append(this.getName()).append(";").append(this.getClasse().getId());
 			str.append((this.getTitle()>0?(","+this.getTitle()+";"):(";")));
 			str.append(this.getGfx()).append("^").append(this.getSize()).append(";");//gfxID^size
 			str.append(this.getSex()).append(";").append(this.getAlign()).append(",");//1,0,0,4055064
 			str.append("0").append(",");//FIXME(think)
 			str.append((this.isShowWings() ? getGrade() : "0")).append(",");
-			str.append(this.getLevel() + this.getUUID());
+			str.append(this.getLevel() + this.getId());
 			
 			if(this.isShowWings() && this.getDeshonor() > 0)
 				str.append(",").append(this.getDeshonor() > 0 ? 1 : 0).append(';');
@@ -1322,7 +1276,7 @@ public class Player {
     	str.append(this.getCurCell().getId()).append(";");
     	str.append(this.getOrientation()).append(";");
     	str.append("0").append(";");
-    	str.append(this.getUUID()).append(";");
+    	str.append(this.getId()).append(";");
     	str.append(this.getName()).append(";");
     	str.append("-5").append(";");//Merchant identifier
     	str.append(this.getGfx()).append("^").append(this.getSize()).append(";");
@@ -1578,9 +1532,9 @@ public class Player {
 		try {
 			int id = Integer.parseInt(str);
 			if(this.getFight() == null)
-				SocketManager.GAME_SEND_EMOTICONE_TO_MAP(this.getCurMap(), this.getUUID(), id);
+				SocketManager.GAME_SEND_EMOTICONE_TO_MAP(this.getCurMap(), this.getId(), id);
 			else
-				SocketManager.GAME_SEND_EMOTICONE_TO_FIGHT(this.getFight(), 7, this.getUUID(), id);
+				SocketManager.GAME_SEND_EMOTICONE_TO_FIGHT(this.getFight(), 7, this.getId(), id);
 		} catch(NumberFormatException e) {}
 	}
 
@@ -1961,7 +1915,7 @@ public class Player {
 	public String parseToPM()
 	{
 		StringBuilder str = new StringBuilder();
-		str.append(this.getUUID()).append(";");
+		str.append(this.getId()).append(";");
 		str.append(this.getName()).append(";");
 		str.append(this.getGfx()).append(";");
 		str.append(this.getColor1()).append(";");
@@ -2032,11 +1986,11 @@ public class Player {
 		}
 		if(PW != null)
 		{
-			SocketManager.GAME_SEND_GA2_PACKET(PW, this.getUUID());
-			SocketManager.GAME_SEND_ERASE_ON_MAP_TO_MAP(this.getCurMap(), this.getUUID());
+			SocketManager.GAME_SEND_GA2_PACKET(PW, this.getId());
+			SocketManager.GAME_SEND_ERASE_ON_MAP_TO_MAP(this.getCurMap(), this.getId());
 		}
 		
-		this.getCurCell().removePlayer(this.getUUID());
+		this.getCurCell().removePlayer(this.getId());
 		this.setCurMap(World.data.getCarte(newMapID));
 		this.setCurCell(this.getCurMap().getCases().get(newCellID));
 		
@@ -2052,7 +2006,7 @@ public class Player {
 				if(player.isOnline())
 					SocketManager.GAME_SEND_FLAG_PACKET(player, this);
 				else
-					this.followers.remove(player.getUUID());
+					this.followers.remove(player.getId());
 	}
 	
 	public int getBankCost()
@@ -2278,9 +2232,9 @@ public class Player {
 		
 		this.setCurMountPark(this.getCurMap().getMountPark());
 		this.setAway(true);
-		String str = this.getCurMountPark().parseData(this.getUUID(), (this.getCurMountPark().getOwner() == -1 ? true : false));
+		String str = this.getCurMountPark().parseData(this.getId(), (this.getCurMountPark().getOwner() == -1 ? true : false));
 		
-		if(this.getCurMountPark().getOwner() == -1 || this.getCurMountPark().getOwner() == this.getUUID()) {//Public ou le proprio
+		if(this.getCurMountPark().getOwner() == -1 || this.getCurMountPark().getOwner() == this.getId()) {//Public ou le proprio
 			SocketManager.GAME_SEND_ECK_PACKET(this, 16, str);
 		} else 
 		if(this.getGuildMember() != null) {
@@ -2510,9 +2464,9 @@ public class Player {
 		}
 
 		if(this.getFight() != null && this.getFight().get_state() == 2) 
-			SocketManager.GAME_SEND_ALTER_FIGHTER_MOUNT(this.getFight(), this.getFight().getFighterByPerso(this), this.getUUID(), this.getFight().getTeamID(this.getUUID()), this.getFight().getOtherTeamID(this.getUUID()));
+			SocketManager.GAME_SEND_ALTER_FIGHTER_MOUNT(this.getFight(), this.getFight().getFighterByPerso(this), this.getId(), this.getFight().getTeamID(this.getId()), this.getFight().getOtherTeamID(this.getId()));
 		else
-			SocketManager.GAME_SEND_ALTER_GM_PACKET(this.getCurMap(),this);
+			SocketManager.GAME_SEND_ALTER_GM_PACKET(this.getCurMap(), this);
 		
 		SocketManager.GAME_SEND_Re_PACKET(this, "+", this.getMount());
 		SocketManager.GAME_SEND_Rr_PACKET(this, this.isOnMount() ? "+" : "-");
@@ -2795,54 +2749,8 @@ public class Player {
 	
 
 	
-	public static Player ClonePerso(Player P, int id)
-	{	
-		TreeMap<Integer,Integer> stats = new TreeMap<Integer,Integer>();
-		stats.put(Constants.STATS_ADD_VITA, P.getStats().getEffect(Constants.STATS_ADD_VITA));
-		stats.put(Constants.STATS_ADD_FORC, P.getStats().getEffect(Constants.STATS_ADD_FORC));
-		stats.put(Constants.STATS_ADD_SAGE, P.getStats().getEffect(Constants.STATS_ADD_SAGE));
-		stats.put(Constants.STATS_ADD_INTE, P.getStats().getEffect(Constants.STATS_ADD_INTE));
-		stats.put(Constants.STATS_ADD_CHAN, P.getStats().getEffect(Constants.STATS_ADD_CHAN));
-		stats.put(Constants.STATS_ADD_AGIL, P.getStats().getEffect(Constants.STATS_ADD_AGIL));
-		stats.put(Constants.STATS_ADD_PA, P.getStats().getEffect(Constants.STATS_ADD_PA));
-		stats.put(Constants.STATS_ADD_PM, P.getStats().getEffect(Constants.STATS_ADD_PM));
-		stats.put(Constants.STATS_ADD_RP_NEU, P.getStats().getEffect(Constants.STATS_ADD_RP_NEU));
-		stats.put(Constants.STATS_ADD_RP_TER, P.getStats().getEffect(Constants.STATS_ADD_RP_TER));
-		stats.put(Constants.STATS_ADD_RP_FEU, P.getStats().getEffect(Constants.STATS_ADD_RP_FEU));
-		stats.put(Constants.STATS_ADD_RP_EAU, P.getStats().getEffect(Constants.STATS_ADD_RP_EAU));
-		stats.put(Constants.STATS_ADD_RP_AIR, P.getStats().getEffect(Constants.STATS_ADD_RP_AIR));
-		stats.put(Constants.STATS_ADD_AFLEE, P.getStats().getEffect(Constants.STATS_ADD_AFLEE));
-		stats.put(Constants.STATS_ADD_MFLEE, P.getStats().getEffect(Constants.STATS_ADD_MFLEE));
-		
-		byte showWings = 0;
-		int alvl = 0;
-		if(P.getAlign() != 0 && P.isShowWings()) {
-			showWings = 1;
-			alvl = P.getGrade();
-		}
-		int mountID = -1;
-		if(P.getMount() != null)
-			mountID = P.getMount().getId();
-		
-		Player Clone = new Player(
-				id, 
-				P.getName(), 
-				P.getSex(), 
-				P.getClasse().getId(),
-				P.getColor1(), 
-				P.getColor2(), 
-				P.getColor3(), 
-				P.getLevel(), 
-				100, 
-				P.getGfx(),
-				stats,
-				P.parseObjectsToDb(),
-				100,
-				showWings,
-				mountID,
-				alvl,
-				P.getAlign()
-				);
+	public static Player ClonePerso(Player P, int id){
+		Player Clone = new Player(P,id);
 		
 		Clone.setClone(true);
 		if(P.isOnMount())
@@ -3056,7 +2964,7 @@ public class Player {
 	
 	public void MarryTo(Player wife)
 	{
-		this.setWife(wife.getUUID());
+		this.setWife(wife.getId());
 		save();
 	}
 	
@@ -3136,7 +3044,7 @@ public class Player {
 		|| this.getOrientation() == 4 || this.getOrientation() == 6)
 		{
 			this.setOrientation(toOrientation);
-			SocketManager.GAME_SEND_eD_PACKET_TO_MAP(this.getCurMap(), this.getUUID(), toOrientation);
+			SocketManager.GAME_SEND_eD_PACKET_TO_MAP(this.getCurMap(), this.getId(), toOrientation);
 		}
 	}
 
@@ -3168,7 +3076,7 @@ public class Player {
 		this.setAway(false);
 		this.setSpeed(0);
 		SocketManager.GAME_SEND_STATS_PACKET(this);
-		SocketManager.GAME_SEND_ERASE_ON_MAP_TO_MAP(this.getCurMap(), this.getUUID());
+		SocketManager.GAME_SEND_ERASE_ON_MAP_TO_MAP(this.getCurMap(), this.getId());
 		SocketManager.GAME_SEND_ADD_PLAYER_TO_MAP(this.getCurMap(), this);
 	}
    

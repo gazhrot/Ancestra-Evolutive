@@ -20,7 +20,7 @@ public class SetDirection implements PacketParser {
 				return;
 			
 			client.getPlayer().setOrientation(dir);
-			SocketManager.GAME_SEND_eD_PACKET_TO_MAP(client.getPlayer().getCurMap(),client.getPlayer().getUUID(),dir);
+			SocketManager.GAME_SEND_eD_PACKET_TO_MAP(client.getPlayer().getCurMap(),client.getPlayer().getId(),dir);
 		} catch(NumberFormatException e) {}
 	}
 }

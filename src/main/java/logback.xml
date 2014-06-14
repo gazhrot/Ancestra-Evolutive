@@ -9,7 +9,6 @@
     <logger name="org.apache.mina" level="OFF" additivity="False"/>
     <logger name="com.zaxxer.hikari.pool.HikariPool" level="OFF" additivity="False"/>
 
-
     <root level="trace">
         <appender-ref ref="LogbackClassic" />
     </root>

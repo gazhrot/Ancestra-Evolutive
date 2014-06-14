@@ -104,7 +104,7 @@ public class Promote implements PacketParser {
 		
 		SocketManager.GAME_SEND_gS_PACKET(client.getPlayer(),client.getPlayer().getGuildMember());
 		
-		if(p != null && p.getUUID() != client.getPlayer().getUUID())
+		if(p != null && p.getId() != client.getPlayer().getId())
 			SocketManager.GAME_SEND_gS_PACKET(p,p.getGuildMember());
 	}
 }

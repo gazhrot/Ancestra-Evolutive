@@ -26,8 +26,8 @@ public class Accept implements PacketParser {
 		
 		Exchange echg = new Exchange(target, client.getPlayer());
 		client.getPlayer().setCurExchange(echg);
-		client.getPlayer().setIsTradingWith(target.getUUID());
+		client.getPlayer().setIsTradingWith(target.getId());
 		target.setCurExchange(echg);
-		target.setIsTradingWith(client.getPlayer().getUUID());
+		target.setIsTradingWith(client.getPlayer().getId());
 	}
 }

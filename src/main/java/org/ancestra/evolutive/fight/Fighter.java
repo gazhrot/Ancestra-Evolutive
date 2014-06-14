@@ -6,7 +6,6 @@ import org.ancestra.evolutive.client.other.Stats;
 import org.ancestra.evolutive.common.Constants;
 import org.ancestra.evolutive.common.Formulas;
 import org.ancestra.evolutive.common.SocketManager;
-import org.ancestra.evolutive.core.Console;
 import org.ancestra.evolutive.core.Log;
 import org.ancestra.evolutive.core.Server;
 import org.ancestra.evolutive.core.World;
@@ -24,14 +23,25 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
-public class Fighter
-{
+public class Fighter{
+    public enum TYPE{
+        PLAYER(1),
+        CREATURE(2),
+        COLLECTOR(5),
+        CLONE(10);
+
+        int value;
+        private TYPE(int value){
+            this.value = value;
+        }
+    }
+
     protected Logger logger;
 
 	int _id = 0;
 	private boolean _canPlay = false;
 	private Fight _fight;
-	private int _type = 0; // 1 : Personnage, 2 : Mob, 5 : Perco
+	private TYPE type; // 1 : Personnage, 2 : Mob, 5 : Perco
 	private MobGrade _mob = null;
 	private Player _perso = null;
 	Collector _Perco = null;
@@ -65,7 +75,7 @@ public class Fighter
 	public Fighter(Fight f, MobGrade mob)
 	{
 		_fight = f;
-		_type = 2;
+		type = TYPE.CREATURE;
 		_mob = mob;
 		_id = mob.getId();
 		_PDVMAX = mob.getMaxPdv();
@@ -77,16 +87,14 @@ public class Fighter
 	public Fighter(Fight f, Player perso)
 	{
 		_fight = f;
-		if(perso.isClone())
-		{
-			_type = 10;
+		if(perso.isClone()){
+			type = TYPE.CLONE;
 			_double = perso;
-		}else
-		{
-			_type = 1;
+        }else {
+			type = TYPE.PLAYER;
 			_perso = perso;
 		}
-		_id = perso.getUUID();
+		_id = perso.getId();
 		_PDVMAX = perso.getMaxPdv();
 		_PDV = perso.getPdv();
 		_gfxID = getDefaultGfx();
@@ -95,9 +103,8 @@ public class Fighter
 
 	public Fighter(Fight f, Collector collector) {
 		_fight = f;
-		_type = 5;
+		type = TYPE.COLLECTOR;
 		_Perco = collector;
-		Console.instance.println("Perco:"+collector);
 		_id = -1;
 		_PDVMAX = (World.data.getGuild(collector.get_guildID()).getLevel()*100);
 		_PDV = (World.data.getGuild(collector.get_guildID()).getLevel()*100);
@@ -200,14 +207,14 @@ public class Fighter
 
 	public Player getPersonnage()
 	{
-		if(_type == 1)
+		if(type == TYPE.PLAYER)
 			return _perso;
 		return null;
 	}
 	
 	public Collector getPerco()
 	{
-		if(_type == 5)
+		if(type == TYPE.COLLECTOR)
 			return _Perco;
 		return null;
 	}
@@ -226,13 +233,13 @@ public class Fighter
 	public Stats getTotalStats()
 	{
 		Stats stats = new Stats(new TreeMap<Integer,Integer>());
-		if(_type == 1)
+		if(type == TYPE.PLAYER)
 			stats = _perso.getTotalStats();
-		if(_type == 2)
+		if(type == TYPE.CREATURE)
 			stats =_mob.getStats();
-		if(_type == 5)
+		if(type == TYPE.COLLECTOR)
 			stats = World.data.getGuild(_Perco.get_guildID()).getStatsFight();
-		if(_type == 10)
+		if(type == TYPE.CLONE)
 			stats = _double.getTotalStats();
 		
 		stats = Stats.cumulStat(stats,getFightBuffStats());
@@ -240,12 +247,9 @@ public class Fighter
 	}
 	
 	
-	public void initBuffStats()
-	{
-		if(_type == 1)
-		{
-			for(Map.Entry<Integer, SpellEffect> entry : _perso.getBuffs().entrySet())
-			{
+	public void initBuffStats(){
+		if(type == TYPE.PLAYER){
+			for(Map.Entry<Integer, SpellEffect> entry : _perso.getBuffs().entrySet()){
 				_fightBuffs.add(entry.getValue());
 			}
 		}
@@ -272,9 +276,9 @@ public class Fighter
 		str.append(getGUID()).append(";");
 		str.append(getPacketsName()).append(";");
 
-		switch(_type)
+		switch(type)
 		{
-			case 1://Perso
+            case PLAYER ://Perso
 				str.append(_perso.getClasse().getId()).append(";");
 				str.append(_perso.getGfx()).append("^").append(_perso.getSize()).append(";");
 				str.append(_perso.getSex()).append(";");
@@ -282,7 +286,7 @@ public class Fighter
 				str.append(_perso.getAlign()).append(",");
 				str.append("0").append(",");//TODO
 				str.append((_perso.isShowWings()?_perso.getGrade():"0")).append(",");
-				str.append(_perso.getLevel()+_perso.getUUID());
+				str.append(_perso.getLevel()+_perso.getId());
 				if(_perso.isShowWings() && _perso.getDeshonor()>0)
 					str.append(",").append(_perso.getDeshonor()>0?1:0).append(';');
 				else
@@ -305,7 +309,7 @@ public class Fighter
 				if(_perso.isOnMount() && _perso.getMount() != null)str.append(_perso.getMount().getColor());
 				str.append(";");
 			break;
-			case 2://Mob
+			case CREATURE://Mob
 				str.append("-2;");
 				str.append(_mob.getTemplate().getGfx()).append("^100;");
 				str.append(_mob.getGrade()).append(";");
@@ -316,7 +320,7 @@ public class Fighter
 				str.append(_mob.getPm()).append(";");
 				str.append(_team);
 			break;
-			case 5://Perco
+			case COLLECTOR://Perco
 				str.append("-6;");//Perco
 				str.append("6000^100;");//GFXID^Size
 				Guild G = World.data.getCollector(_fight.getOldMap()).getGuild();
@@ -326,7 +330,7 @@ public class Fighter
 				str.append((int)Math.floor(G.getLevel()/2)).append(";").append((int)Math.floor(G.getLevel()/2)).append(";").append((int)Math.floor(G.getLevel()/2)).append(";").append((int)Math.floor(G.getLevel()/2)).append(";").append((int)Math.floor(G.getLevel()/2)).append(";").append((int)Math.floor(G.getLevel()/2)).append(";").append((int)Math.floor(G.getLevel()/2)).append(";");//R�sistances
 				str.append(_team);
 			break;
-			case 10://Double
+			case CLONE://Double
 				str.append(_double.getClasse().getId()).append(";");
 				str.append(_double.getGfx()).append("^").append(_double.getSize()).append(";");
 				str.append(_double.getSex()).append(";");
@@ -334,7 +338,7 @@ public class Fighter
 				str.append(_double.getAlign()).append(",");
 				str.append("0,");//TODO
 				str.append((_double.isShowWings()?_double.getGrade():"0")).append(",");
-				str.append(_double.getUUID()).append(";");
+				str.append(_double.getId()).append(";");
 				str.append((_double.getColor1()==-1?"-1":Integer.toHexString(_double.getColor1()))).append(";");
 				str.append((_double.getColor2()==-1?"-1":Integer.toHexString(_double.getColor2()))).append(";");
 				str.append((_double.getColor3()==-1?"-1":Integer.toHexString(_double.getColor3()))).append(";");
@@ -628,13 +632,13 @@ public class Fighter
 	
 	public int getInitiative()
 	{
-		if(_type == 1)
+		if(type == TYPE.PLAYER)
 			return _perso.getInitiative();
-		if(_type == 2)
+		if(type == TYPE.CREATURE)
 			return _mob.getInitiative();
-		if(_type == 5)
+		if(type == TYPE.COLLECTOR)
 			return World.data.getGuild(_Perco.get_guildID()).getLevel();
-		if(_type == 10)
+		if(type == TYPE.CLONE)
 			return _double.getInitiative();
 		
 		return 0;
@@ -645,13 +649,13 @@ public class Fighter
 	}
 	
 	public int get_lvl() {
-		if(_type == 1)
+		if(type == TYPE.PLAYER)
 			return _perso.getLevel();
-		if(_type == 2)
+		if(type == TYPE.CREATURE)
 			return _mob.getLevel();
-		if(_type == 5)
+		if(type == TYPE.COLLECTOR)
 			return World.data.getGuild(_Perco.get_guildID()).getLevel();
-		if(_type == 10)
+		if(type == TYPE.CLONE)
 			return _double.getLevel();
 
 		return 0;
@@ -666,22 +670,21 @@ public class Fighter
 		}
 		return "0"+str+"0"+str+"0";
 	}
-	public String getPacketsName()
-	{
-		if(_type == 1)
+
+	public String getPacketsName(){
+		if(type == TYPE.PLAYER)
 			return _perso.getName();
-		if(_type == 2)
+		if(type == TYPE.CREATURE)
 			return _mob.getTemplate().getId()+"";
-		if(_type == 5)
+		if(type == TYPE.COLLECTOR)
 			return (_Perco.getFirstNameId()+","+_Perco.getLastNameId());
-		if(_type == 10)
+		if(type == TYPE.CLONE)
 			return _double.getName();
 		
 		return "";
 	}
-	public MobGrade getMob()
-	{
-		if(_type == 2)
+	public MobGrade getMob(){
+		if(type == TYPE.CREATURE)
 			return _mob;
 		
 		return null;
@@ -719,39 +722,39 @@ public class Fighter
 	public Stats getTotalStatsLessBuff()
 	{
 		Stats stats = new Stats(new TreeMap<Integer,Integer>());
-		if(_type == 1)
+		if(type == TYPE.PLAYER)
 			stats = _perso.getTotalStats();
-		if(_type == 2)
+		if(type == TYPE.CREATURE)
 			stats =_mob.getStats();
-		if(_type == 5)
+		if(type == TYPE.COLLECTOR)
 			stats = World.data.getGuild(_Perco.get_guildID()).getStatsFight();
-		if(_type == 10)
+		if(type == TYPE.CLONE)
 			stats = _double.getTotalStats();
 		
 		return stats;
 	}
 	public int getPA()
 	{
-		if(_type == 1)
+		if(type == TYPE.PLAYER)
 			return getTotalStats().getEffect(Constants.STATS_ADD_PA);
-		if(_type == 2)
+		if(type == TYPE.CREATURE)
 			return getTotalStats().getEffect(Constants.STATS_ADD_PA) + _mob.getPa();
-		if(_type == 5)
+		if(type == TYPE.COLLECTOR)
 			return getTotalStats().getEffect(Constants.STATS_ADD_PM) + 6;
-		if(_type == 10)
+		if(type == TYPE.CLONE)
 			return getTotalStats().getEffect(Constants.STATS_ADD_PA);
 		
 		return 0;
 	}
 	public int getPM()
 	{
-		if(_type == 1)
+		if(type == TYPE.PLAYER)
 			return getTotalStats().getEffect(Constants.STATS_ADD_PM);
-		if(_type == 2)
+		if(type == TYPE.CREATURE)
 			return getTotalStats().getEffect(Constants.STATS_ADD_PM) + _mob.getPm();
-		if(_type == 5)
+		if(type == TYPE.COLLECTOR)
 			return getTotalStats().getEffect(Constants.STATS_ADD_PM) + 3;
-		if(_type == 10)
+		if(type == TYPE.CLONE)
 			return getTotalStats().getEffect(Constants.STATS_ADD_PM);
 		
 		return 0;

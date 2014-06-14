@@ -16,6 +16,6 @@ public class Ready implements PacketParser {
 		}
 		if(client.getPlayer().getCurExchange() == null)
 			return;
-		client.getPlayer().getCurExchange().toogleOK(client.getPlayer().getUUID());
+		client.getPlayer().getCurExchange().toogleOK(client.getPlayer().getId());
 	}
 }

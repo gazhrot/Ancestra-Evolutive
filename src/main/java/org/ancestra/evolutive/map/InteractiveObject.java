@@ -221,12 +221,12 @@ public class InteractiveObject {
 			break;
 			
 			case 1694://Village brigandin tire �olienne
-				SocketManager.GAME_SEND_GA_PACKET(player.getAccount().getGameClient(), "", "2", player.getUUID()+"", "4");
+				SocketManager.GAME_SEND_GA_PACKET(player.getAccount().getGameClient(), "", "2", player.getId()+"", "4");
 				player.teleport((short) 6848, 390);
 			break;
 			
 			case 1695://Village brigandin tire �olienne
-				SocketManager.GAME_SEND_GA_PACKET(player.getAccount().getGameClient(), "", "2", player.getUUID()+"", "3");
+				SocketManager.GAME_SEND_GA_PACKET(player.getAccount().getGameClient(), "", "2", player.getId()+"", "3");
 				player.teleport((short) 6844, 268 );
 			break;
 			

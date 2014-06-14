@@ -45,11 +45,11 @@ public class Join implements PacketParser {
 					return;
 				}
 				
-				client.getPlayer().setInviting(P.getUUID());
-				P.setInviting(client.getPlayer().getUUID());
+				client.getPlayer().setInviting(P.getId());
+				P.setInviting(client.getPlayer().getId());
 	
 				SocketManager.GAME_SEND_gJ_PACKET(client.getPlayer(),"R"+packet.substring(1));
-				SocketManager.GAME_SEND_gJ_PACKET(P,"r"+client.getPlayer().getUUID()+"|"+client.getPlayer().getName()+"|"+client.getPlayer().getGuild().getName());
+				SocketManager.GAME_SEND_gJ_PACKET(P,"r"+client.getPlayer().getId()+"|"+client.getPlayer().getName()+"|"+client.getPlayer().getGuild().getName());
 			break;
 			case 'E'://ou Refus
 				if(packet.substring(3).equalsIgnoreCase(client.getPlayer().getInviting()+""))

@@ -28,9 +28,9 @@ public class Exchange
 	synchronized public long getKamas(int guid)
 	{
 		int i = 0;
-		if(perso1.getUUID() == guid)
+		if(perso1.getId() == guid)
 			i = 1;
-		else if(perso2.getUUID() == guid)
+		else if(perso2.getId() == guid)
 			i = 2;
 		
 		if(i == 1)
@@ -43,9 +43,9 @@ public class Exchange
 	synchronized public void toogleOK(int guid)
 	{
 		int i = 0;
-		if(perso1.getUUID() == guid)
+		if(perso1.getId() == guid)
 			i = 1;
-		else if(perso2.getUUID() == guid)
+		else if(perso2.getId() == guid)
 			i = 2;
 		
 		if(i == 1)
@@ -74,14 +74,14 @@ public class Exchange
 		ok2 = false;
 		
 		int i = 0;
-		if(perso1.getUUID() == guid)
+		if(perso1.getId() == guid)
 			i = 1;
-		else if(perso2.getUUID() == guid)
+		else if(perso2.getId() == guid)
 			i = 2;
-		SocketManager.GAME_SEND_EXCHANGE_OK(perso1.getAccount().getGameClient(),ok1,perso1.getUUID());
-		SocketManager.GAME_SEND_EXCHANGE_OK(perso2.getAccount().getGameClient(),ok1,perso1.getUUID());
-		SocketManager.GAME_SEND_EXCHANGE_OK(perso1.getAccount().getGameClient(),ok2,perso2.getUUID());
-		SocketManager.GAME_SEND_EXCHANGE_OK(perso2.getAccount().getGameClient(),ok2,perso2.getUUID());
+		SocketManager.GAME_SEND_EXCHANGE_OK(perso1.getAccount().getGameClient(),ok1,perso1.getId());
+		SocketManager.GAME_SEND_EXCHANGE_OK(perso2.getAccount().getGameClient(),ok1,perso1.getId());
+		SocketManager.GAME_SEND_EXCHANGE_OK(perso1.getAccount().getGameClient(),ok2,perso2.getId());
+		SocketManager.GAME_SEND_EXCHANGE_OK(perso2.getAccount().getGameClient(),ok2,perso2.getId());
 		
 		if(i == 1)
 		{
@@ -184,17 +184,17 @@ public class Exchange
 		Objet obj = World.data.getObjet(guid);
 		int i = 0;
 		
-		if(perso1.getUUID() == pguid) i = 1;
-		if(perso2.getUUID() == pguid) i = 2;
+		if(perso1.getId() == pguid) i = 1;
+		if(perso2.getId() == pguid) i = 2;
 		
 		if(qua == 1) qua = 1;
 		String str = guid+"|"+qua;
 		if(obj == null)return;
 		String add = "|"+obj.getTemplate().getID()+"|"+obj.parseStatsString();
-		SocketManager.GAME_SEND_EXCHANGE_OK(perso1.getAccount().getGameClient(),ok1,perso1.getUUID());
-		SocketManager.GAME_SEND_EXCHANGE_OK(perso2.getAccount().getGameClient(),ok1,perso1.getUUID());
-		SocketManager.GAME_SEND_EXCHANGE_OK(perso1.getAccount().getGameClient(),ok2,perso2.getUUID());
-		SocketManager.GAME_SEND_EXCHANGE_OK(perso2.getAccount().getGameClient(),ok2,perso2.getUUID());
+		SocketManager.GAME_SEND_EXCHANGE_OK(perso1.getAccount().getGameClient(),ok1,perso1.getId());
+		SocketManager.GAME_SEND_EXCHANGE_OK(perso2.getAccount().getGameClient(),ok1,perso1.getId());
+		SocketManager.GAME_SEND_EXCHANGE_OK(perso1.getAccount().getGameClient(),ok2,perso2.getId());
+		SocketManager.GAME_SEND_EXCHANGE_OK(perso2.getAccount().getGameClient(),ok2,perso2.getId());
 		if(i == 1)
 		{
 			Couple<Integer,Integer> couple = getCoupleInList(items1,guid);
@@ -228,17 +228,17 @@ public class Exchange
 	synchronized public void removeItem(int guid, int qua, int pguid)
 	{
 		int i = 0;
-		if(perso1.getUUID() == pguid)
+		if(perso1.getId() == pguid)
 			i = 1;
-		else if(perso2.getUUID() == pguid)
+		else if(perso2.getId() == pguid)
 			i = 2;
 		ok1 = false;
 		ok2 = false;
 		
-		SocketManager.GAME_SEND_EXCHANGE_OK(perso1.getAccount().getGameClient(),ok1,perso1.getUUID());
-		SocketManager.GAME_SEND_EXCHANGE_OK(perso2.getAccount().getGameClient(),ok1,perso1.getUUID());
-		SocketManager.GAME_SEND_EXCHANGE_OK(perso1.getAccount().getGameClient(),ok2,perso2.getUUID());
-		SocketManager.GAME_SEND_EXCHANGE_OK(perso2.getAccount().getGameClient(),ok2,perso2.getUUID());
+		SocketManager.GAME_SEND_EXCHANGE_OK(perso1.getAccount().getGameClient(),ok1,perso1.getId());
+		SocketManager.GAME_SEND_EXCHANGE_OK(perso2.getAccount().getGameClient(),ok1,perso1.getId());
+		SocketManager.GAME_SEND_EXCHANGE_OK(perso1.getAccount().getGameClient(),ok2,perso2.getId());
+		SocketManager.GAME_SEND_EXCHANGE_OK(perso2.getAccount().getGameClient(),ok2,perso2.getId());
 		
 		Objet obj = World.data.getObjet(guid);
 		if(obj == null)return;
@@ -290,7 +290,7 @@ public class Exchange
 	public synchronized int getQuaItem(int itemID, int playerGuid)
 	{
 		ArrayList<Couple<Integer, Integer>> items;
-		if(perso1.getUUID() == playerGuid)
+		if(perso1.getId() == playerGuid)
 			items = items1;
 		else
 			items = items2;

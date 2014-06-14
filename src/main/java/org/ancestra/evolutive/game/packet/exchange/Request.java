@@ -99,10 +99,10 @@ public class Request implements PacketParser {
 						SocketManager.GAME_SEND_EXCHANGE_REQUEST_ERROR(client,'O');
 						return;
 					}
-					SocketManager.GAME_SEND_EXCHANGE_REQUEST_OK(client, client.getPlayer().getUUID(), guidTarget,1);
-					SocketManager.GAME_SEND_EXCHANGE_REQUEST_OK(target.getAccount().getGameClient(),client.getPlayer().getUUID(), guidTarget,1);
+					SocketManager.GAME_SEND_EXCHANGE_REQUEST_OK(client, client.getPlayer().getId(), guidTarget,1);
+					SocketManager.GAME_SEND_EXCHANGE_REQUEST_OK(target.getAccount().getGameClient(),client.getPlayer().getId(), guidTarget,1);
 					client.getPlayer().setIsTradingWith(guidTarget);
-					target.setIsTradingWith(client.getPlayer().getUUID());
+					target.setIsTradingWith(client.getPlayer().getId());
 				} catch(NumberFormatException e) {}
 			break;
             case '4'://StorePlayer
@@ -120,14 +120,14 @@ public class Request implements PacketParser {
 					return;
 				
 				client.getPlayer().setIsTradingWith(id);
-				SocketManager.GAME_SEND_ECK_PACKET(client.getPlayer(), 4, seller.getUUID()+"");
+				SocketManager.GAME_SEND_ECK_PACKET(client.getPlayer(), 4, seller.getId()+"");
 				SocketManager.GAME_SEND_ITEM_LIST_PACKET_SELLER(seller, client.getPlayer());
             break;
 			case '6'://StoreItems
 				if(client.getPlayer().getIsTradingWith() > 0 || client.getPlayer().getFight() != null || client.getPlayer().isAway())
 					return;
                 
-				client.getPlayer().setIsTradingWith(client.getPlayer().getUUID());
+				client.getPlayer().setIsTradingWith(client.getPlayer().getId());
                 SocketManager.GAME_SEND_ECK_PACKET(client.getPlayer(), 6, "");
                 SocketManager.GAME_SEND_ITEM_LIST_PACKET_SELLER(client.getPlayer(), client.getPlayer());
 			break;

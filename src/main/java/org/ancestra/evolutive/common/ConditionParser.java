@@ -55,7 +55,7 @@ public class ConditionParser
 			 	jep.addVariable("PR", (perso.getWife()>0?1:0));
 			 	jep.addVariable("SI", perso.getCurMap().getId());
 			 	//Les pierres d'ames sont lancables uniquement par le lanceur.
-			 	jep.addVariable("MiS",perso.getUUID());
+			 	jep.addVariable("MiS",perso.getId());
 
 
 			 	Node node = jep.parse(req);

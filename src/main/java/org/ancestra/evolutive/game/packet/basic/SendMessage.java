@@ -39,19 +39,19 @@ public class SendMessage implements PacketParser {
 					return;
 				}
 				if(client.getPlayer().getFight() == null)
-					SocketManager.GAME_SEND_cMK_PACKET_TO_MAP(client.getPlayer().getCurMap(), "", client.getPlayer().getUUID(), client.getPlayer().getName(), msg);
+					SocketManager.GAME_SEND_cMK_PACKET_TO_MAP(client.getPlayer().getCurMap(), "", client.getPlayer().getId(), client.getPlayer().getName(), msg);
 				else
-					SocketManager.GAME_SEND_cMK_PACKET_TO_FIGHT(client.getPlayer().getFight(), 7, "", client.getPlayer().getUUID(), client.getPlayer().getName(), msg);
+					SocketManager.GAME_SEND_cMK_PACKET_TO_FIGHT(client.getPlayer().getFight(), 7, "", client.getPlayer().getId(), client.getPlayer().getName(), msg);
 			break;
 			case '#'://Canal Equipe
 				if(!client.getPlayer().getCanaux().contains(packet.charAt(2)+""))
 					return;
 				if(client.getPlayer().getFight() != null) {
 					msg = packet.split("\\|",2)[1];
-					int team = client.getPlayer().getFight().getTeamID(client.getPlayer().getUUID());
+					int team = client.getPlayer().getFight().getTeamID(client.getPlayer().getId());
 					if(team == -1)
 						return;
-					SocketManager.GAME_SEND_cMK_PACKET_TO_FIGHT(client.getPlayer().getFight(), team, "#", client.getPlayer().getUUID(), client.getPlayer().getName(), msg);
+					SocketManager.GAME_SEND_cMK_PACKET_TO_FIGHT(client.getPlayer().getFight(), team, "#", client.getPlayer().getId(), client.getPlayer().getName(), msg);
 				}
 			break;
 			case '$'://Canal groupe
@@ -60,7 +60,7 @@ public class SendMessage implements PacketParser {
 				if(client.getPlayer().getGroup() == null)
 					break;
 				msg = packet.split("\\|",2)[1];
-				SocketManager.GAME_SEND_cMK_PACKET_TO_GROUP(client.getPlayer().getGroup(), "$", client.getPlayer().getUUID(), client.getPlayer().getName(), msg);
+				SocketManager.GAME_SEND_cMK_PACKET_TO_GROUP(client.getPlayer().getGroup(), "$", client.getPlayer().getId(), client.getPlayer().getName(), msg);
 			break;
 			
 			case ':'://Canal commerce
@@ -73,12 +73,12 @@ public class SendMessage implements PacketParser {
 				}
 				client.timeLastTradeMsg = System.currentTimeMillis();
 				msg = packet.split("\\|",2)[1];
-				SocketManager.GAME_SEND_cMK_PACKET_TO_ALL(":", client.getPlayer().getUUID(), client.getPlayer().getName(), msg);
+				SocketManager.GAME_SEND_cMK_PACKET_TO_ALL(":", client.getPlayer().getId(), client.getPlayer().getName(), msg);
 			break;
 			case '@'://Canal Admin
 				if(client.getPlayer().getAccount().getGmLvl() ==0)return;
 				msg = packet.split("\\|",2)[1];
-				SocketManager.GAME_SEND_cMK_PACKET_TO_ADMIN("@", client.getPlayer().getUUID(), client.getPlayer().getName(), msg);
+				SocketManager.GAME_SEND_cMK_PACKET_TO_ADMIN("@", client.getPlayer().getId(), client.getPlayer().getName(), msg);
 			break;
 			case '?'://Canal recrutement
 				if(!client.getPlayer().getCanaux().contains(packet.charAt(2)+""))return;
@@ -90,7 +90,7 @@ public class SendMessage implements PacketParser {
 				}
 				client.timeLastRecrutmentMsg = System.currentTimeMillis();
 				msg = packet.split("\\|",2)[1];
-				SocketManager.GAME_SEND_cMK_PACKET_TO_ALL("?", client.getPlayer().getUUID(), client.getPlayer().getName(), msg);
+				SocketManager.GAME_SEND_cMK_PACKET_TO_ALL("?", client.getPlayer().getId(), client.getPlayer().getName(), msg);
 			break;
 			case '%'://Canal guilde
 				if(!client.getPlayer().getCanaux().contains(packet.charAt(2)+""))
@@ -98,7 +98,7 @@ public class SendMessage implements PacketParser {
 				if(client.getPlayer().getGuild() == null)
 					return;
 				msg = packet.split("\\|",2)[1];
-				SocketManager.GAME_SEND_cMK_PACKET_TO_GUILD(client.getPlayer().getGuild(), "%", client.getPlayer().getUUID(), client.getPlayer().getName(), msg);
+				SocketManager.GAME_SEND_cMK_PACKET_TO_GUILD(client.getPlayer().getGuild(), "%", client.getPlayer().getId(), client.getPlayer().getName(), msg);
 			break;
 			case 0xC2://Canal 
 			break;
@@ -119,7 +119,7 @@ public class SendMessage implements PacketParser {
 				}
 				client.timeLastAlignMsg = System.currentTimeMillis();
 				msg = packet.split("\\|",2)[1];
-				SocketManager.GAME_SEND_cMK_PACKET_TO_ALIGN("!", client.getPlayer().getUUID(), client.getPlayer().getName(), msg, client.getPlayer());
+				SocketManager.GAME_SEND_cMK_PACKET_TO_ALIGN("!", client.getPlayer().getId(), client.getPlayer().getName(), msg, client.getPlayer());
 			break;
 			default:
 				String nom = packet.substring(2).split("\\|")[0];
@@ -144,8 +144,8 @@ public class SendMessage implements PacketParser {
 						SocketManager.GAME_SEND_Im_PACKET(client.getPlayer(), "114;"+target.getName());
 						return;
 					}
-					SocketManager.GAME_SEND_cMK_PACKET(target, "F", client.getPlayer().getUUID(), client.getPlayer().getName(), msg);
-					SocketManager.GAME_SEND_cMK_PACKET(client.getPlayer(), "T", target.getUUID(), target.getName(), msg);
+					SocketManager.GAME_SEND_cMK_PACKET(target, "F", client.getPlayer().getId(), client.getPlayer().getName(), msg);
+					SocketManager.GAME_SEND_cMK_PACKET(client.getPlayer(), "T", target.getId(), target.getName(), msg);
 				}
 			break;
 		}

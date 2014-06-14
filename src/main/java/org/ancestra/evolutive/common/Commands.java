@@ -171,7 +171,7 @@ public class Commands {
 			for(GameClient client: Server.config.getGameServer().getClients().values()) {
 				Player P = client.getPlayer();
 				if(P == null)continue;
-				mess = P.getName()+"("+P.getUUID()+") ";
+				mess = P.getName()+"("+P.getId()+") ";
 				
 				switch(P.getClasse().getId())
 				{
@@ -345,7 +345,7 @@ public class Commands {
 			}
 			int morphID = target.getClasse().getId()*10 + target.getSex();
 			target.setGfx(morphID);
-			SocketManager.GAME_SEND_ERASE_ON_MAP_TO_MAP(target.getCurMap(), target.getUUID());
+			SocketManager.GAME_SEND_ERASE_ON_MAP_TO_MAP(target.getCurMap(), target.getId());
 			SocketManager.GAME_SEND_ADD_PLAYER_TO_MAP(target.getCurMap(), target);
 			String str = "Le joueur a ete transforme";
 			SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out,str);
@@ -914,7 +914,7 @@ public class Commands {
 				}
 			}
 			target.setSize(size);
-			SocketManager.GAME_SEND_ERASE_ON_MAP_TO_MAP(target.getCurMap(), target.getUUID());
+			SocketManager.GAME_SEND_ERASE_ON_MAP_TO_MAP(target.getCurMap(), target.getId());
 			SocketManager.GAME_SEND_ADD_PLAYER_TO_MAP(target.getCurMap(), target);
 			String str = "La taille du joueur a ete modifiee";
 			SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out,str);
@@ -944,7 +944,7 @@ public class Commands {
 				}
 			}
 			target.setGfx(morphID);
-			SocketManager.GAME_SEND_ERASE_ON_MAP_TO_MAP(target.getCurMap(), target.getUUID());
+			SocketManager.GAME_SEND_ERASE_ON_MAP_TO_MAP(target.getCurMap(), target.getId());
 			SocketManager.GAME_SEND_ADD_PLAYER_TO_MAP(target.getCurMap(), target);
 			String str = "Le joueur a ete transforme";
 			SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out,str);
@@ -1207,7 +1207,7 @@ public class Commands {
 		}else
 		if(command.equalsIgnoreCase("SAVE") && !Server.config.isSaving())
 		{
-			World.data.saveData(_perso.getUUID());
+			World.data.saveData(_perso.getId());
 			String mess = "Sauvegarde lancee!";
 			SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out, mess);
 			return;

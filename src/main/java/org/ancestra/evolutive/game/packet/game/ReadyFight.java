@@ -18,6 +18,6 @@ public class ReadyFight implements PacketParser {
 		
 		client.getPlayer().setReady(packet.substring(2).equalsIgnoreCase("1"));
 		client.getPlayer().getFight().verifIfAllReady();
-		SocketManager.GAME_SEND_FIGHT_PLAYER_READY_TO_FIGHT(client.getPlayer().getFight(),3,client.getPlayer().getUUID(),packet.substring(2).equalsIgnoreCase("1"));
+		SocketManager.GAME_SEND_FIGHT_PLAYER_READY_TO_FIGHT(client.getPlayer().getFight(),3,client.getPlayer().getId(),packet.substring(2).equalsIgnoreCase("1"));
 	}
 }

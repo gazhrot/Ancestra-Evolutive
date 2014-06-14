@@ -60,13 +60,6 @@ public abstract class AbstractDAO<T> implements DAO<T>{
                 logger.debug("SQL request executed successfully {}", statement.toString());
             }catch(SQLException e) {
                 logger.error("Can't execute SQL Request :"+ statement.toString(),e);
-                try {
-                    if (connection != null) {
-                        connection.rollback();
-                    }
-                }catch (Exception e1){
-                    logger.error("Can't rollback",e1);
-                }
             } finally {
                 close(statement);
                 close(connection);

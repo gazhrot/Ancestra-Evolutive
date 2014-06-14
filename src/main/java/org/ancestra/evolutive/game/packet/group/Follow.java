@@ -34,17 +34,17 @@ public class Follow implements PacketParser {
 		
 		if(packet.charAt(2) == '+') {//Suivre
 			if(client.getPlayer().getFollow() != null)
-				client.getPlayer().getFollow().getFollowers().remove(client.getPlayer().getUUID());
+				client.getPlayer().getFollow().getFollowers().remove(client.getPlayer().getId());
 			SocketManager.GAME_SEND_FLAG_PACKET(client.getPlayer(), player);
-			SocketManager.GAME_SEND_PF(client.getPlayer(), "+"+player.getUUID());
+			SocketManager.GAME_SEND_PF(client.getPlayer(), "+"+player.getId());
 			client.getPlayer().setFollow(player);
-			player.getFollowers().put(client.getPlayer().getUUID(), client.getPlayer());
+			player.getFollowers().put(client.getPlayer().getId(), client.getPlayer());
 		}else 
 		if(packet.charAt(2) == '-') {//Ne plus suivre
 			SocketManager.GAME_SEND_DELETE_FLAG_PACKET(client.getPlayer());
 			SocketManager.GAME_SEND_PF(client.getPlayer(), "-");
 			client.getPlayer().setFollow(null);
-			player.getFollowers().remove(client.getPlayer().getUUID());
+			player.getFollowers().remove(client.getPlayer().getId());
 		}
 	}
 }

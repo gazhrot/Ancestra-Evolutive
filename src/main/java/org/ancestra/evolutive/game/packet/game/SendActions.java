@@ -70,7 +70,7 @@ public class SendActions implements PacketParser {
 			
 			case 618://Mariage oui
 				client.getPlayer().setIsOK(Integer.parseInt(packet.substring(5,6)));
-				SocketManager.GAME_SEND_cMK_PACKET_TO_MAP(client.getPlayer().getCurMap(), "", client.getPlayer().getUUID(), client.getPlayer().getName(), "Oui");
+				SocketManager.GAME_SEND_cMK_PACKET_TO_MAP(client.getPlayer().getCurMap(), "", client.getPlayer().getId(), client.getPlayer().getName(), "Oui");
 				if(World.data.getMarried(0).getIsOK() > 0 && World.data.getMarried(1).getIsOK() > 0)
 					World.data.Wedding(World.data.getMarried(0), World.data.getMarried(1), 1);
 				if(World.data.getMarried(0) != null && World.data.getMarried(1) != null)
@@ -78,7 +78,7 @@ public class SendActions implements PacketParser {
 			break;
 			case 619://Mariage non
 				client.getPlayer().setIsOK(0);
-				SocketManager.GAME_SEND_cMK_PACKET_TO_MAP(client.getPlayer().getCurMap(), "", client.getPlayer().getUUID(), client.getPlayer().getName(), "Non");
+				SocketManager.GAME_SEND_cMK_PACKET_TO_MAP(client.getPlayer().getCurMap(), "", client.getPlayer().getId(), client.getPlayer().getName(), "Non");
 				World.data.Wedding(World.data.getMarried(0), World.data.getMarried(1), 0);
 			break;
 			
@@ -146,7 +146,7 @@ public class SendActions implements PacketParser {
 					SocketManager.GAME_SEND_Im_PACKET(client.getPlayer(), "1180");
 					return;
 				}
-				SocketManager.GAME_SEND_GA_PACKET_TO_MAP(client.getPlayer().getCurMap(),"", 909, client.getPlayer().getUUID()+"", id+"");
+				SocketManager.GAME_SEND_GA_PACKET_TO_MAP(client.getPlayer().getCurMap(),"", 909, client.getPlayer().getId()+"", id+"");
 				client.getPlayer().getCurMap().startFigthVersusPercepteur(client.getPlayer(), target);
 			}catch(Exception e){};
 		}
@@ -166,7 +166,7 @@ public class SendActions implements PacketParser {
 					return;
 				
 				client.getPlayer().toggleWings('+');
-				SocketManager.GAME_SEND_GA_PACKET_TO_MAP(client.getPlayer().getCurMap(),"", 906, client.getPlayer().getUUID()+"", id+"");
+				SocketManager.GAME_SEND_GA_PACKET_TO_MAP(client.getPlayer().getCurMap(),"", 906, client.getPlayer().getId()+"", id+"");
 				
 				if(target.getAlign() == 0) {
 					client.getPlayer().setDeshonor(client.getPlayer().getDeshonor()+1);
@@ -264,7 +264,7 @@ public class SendActions implements PacketParser {
 			int guid = -1;
 			try{guid = Integer.parseInt(packet.substring(5));}catch(NumberFormatException e){return;};
 			if(client.getPlayer().getDuel() != guid || client.getPlayer().getDuel() == -1)return;
-			SocketManager.GAME_SEND_MAP_START_DUEL_TO_MAP(client.getPlayer().getCurMap(),client.getPlayer().getDuel(),client.getPlayer().getUUID());
+			SocketManager.GAME_SEND_MAP_START_DUEL_TO_MAP(client.getPlayer().getCurMap(),client.getPlayer().getDuel(),client.getPlayer().getId());
 			Fight fight = client.getPlayer().getCurMap().newFight(World.data.getPersonnage(client.getPlayer().getDuel()),client.getPlayer(),Constants.FIGHT_TYPE_CHALLENGE, false);
 			client.getPlayer().setFight(fight);
 			World.data.getPersonnage(client.getPlayer().getDuel()).setFight(fight);
@@ -275,7 +275,7 @@ public class SendActions implements PacketParser {
 			try
 			{
 				if(client.getPlayer().getDuel() == -1)return;
-				SocketManager.GAME_SEND_CANCEL_DUEL_TO_MAP(client.getPlayer().getCurMap(),client.getPlayer().getDuel(),client.getPlayer().getUUID());
+				SocketManager.GAME_SEND_CANCEL_DUEL_TO_MAP(client.getPlayer().getCurMap(),client.getPlayer().getDuel(),client.getPlayer().getId());
 				World.data.getPersonnage(client.getPlayer().getDuel()).setAway(false);
 				World.data.getPersonnage(client.getPlayer().getDuel()).setDuel(-1);
 				client.getPlayer().setAway(false);
@@ -287,14 +287,14 @@ public class SendActions implements PacketParser {
 		{
 			if(client.getPlayer().getCurMap().getPlaces().equalsIgnoreCase("|"))
 			{
-				SocketManager.GAME_SEND_DUEL_Y_AWAY(client, client.getPlayer().getUUID());
+				SocketManager.GAME_SEND_DUEL_Y_AWAY(client, client.getPlayer().getId());
 				return;
 			}
 			try
 			{
 				int guid = Integer.parseInt(packet.substring(5));
 				if(client.getPlayer().isAway() || client.getPlayer().getFight() != null) {
-					SocketManager.GAME_SEND_DUEL_Y_AWAY(client, client.getPlayer().getUUID());
+					SocketManager.GAME_SEND_DUEL_Y_AWAY(client, client.getPlayer().getId());
 					return;
 				}
 				
@@ -303,15 +303,15 @@ public class SendActions implements PacketParser {
 				if(Target == null) 
 					return;
 				if(Target.isAway() || Target.getFight() != null || Target.getCurMap().getId() != client.getPlayer().getCurMap().getId()) {
-					SocketManager.GAME_SEND_DUEL_E_AWAY(client, client.getPlayer().getUUID());
+					SocketManager.GAME_SEND_DUEL_E_AWAY(client, client.getPlayer().getId());
 					return;
 				}
 				
 				client.getPlayer().setDuel(guid);
 				client.getPlayer().setAway(true);
-				World.data.getPersonnage(guid).setDuel(client.getPlayer().getUUID());
+				World.data.getPersonnage(guid).setDuel(client.getPlayer().getId());
 				World.data.getPersonnage(guid).setAway(true);
-				SocketManager.GAME_SEND_MAP_NEW_DUEL_TO_MAP(client.getPlayer().getCurMap(),client.getPlayer().getUUID(),guid);
+				SocketManager.GAME_SEND_MAP_NEW_DUEL_TO_MAP(client.getPlayer().getCurMap(),client.getPlayer().getId(),guid);
 			}catch(NumberFormatException e){return;}
 		}
 	
@@ -365,13 +365,13 @@ public class SendActions implements PacketParser {
 				//Si le path est invalide
 				if(result == -1000)
 				{
-					Log.addToLog(client.getPlayer().getName()+"("+client.getPlayer().getUUID()+") Tentative de  deplacement avec un path invalide");
+					Log.addToLog(client.getPlayer().getName()+"("+client.getPlayer().getId()+") Tentative de  deplacement avec un path invalide");
 					path = CryptManager.getHashedValueByInt(client.getPlayer().getOrientation())+CryptManager.cellID_To_Code(client.getPlayer().getCurCell().getId());	
 				}
 				//On sauvegarde le path dans la variable
 				GA.setArgs(path);
 				
-				SocketManager.GAME_SEND_GA_PACKET_TO_MAP(client.getPlayer().getCurMap(), ""+GA.getId(), 1, client.getPlayer().getUUID()+"", "a"+CryptManager.cellID_To_Code(client.getPlayer().getCurCell().getId())+path);
+				SocketManager.GAME_SEND_GA_PACKET_TO_MAP(client.getPlayer().getCurMap(), ""+GA.getId(), 1, client.getPlayer().getId()+"", "a"+CryptManager.cellID_To_Code(client.getPlayer().getCurCell().getId())+path);
 				client.addAction(GA);
 				if(client.getPlayer().isSitted())client.getPlayer().setSitted(false);
 				client.getPlayer().setAway(true);

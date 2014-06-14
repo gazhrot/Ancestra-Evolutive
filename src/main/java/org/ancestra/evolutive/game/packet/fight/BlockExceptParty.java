@@ -11,6 +11,6 @@ public class BlockExceptParty implements PacketParser {
 	public void parse(GameClient client, String packet) {
 		if(client.getPlayer().getFight() == null || client.getPlayer().getGroup() == null)
 			return;
-		client.getPlayer().getFight().toggleOnlyGroup(client.getPlayer().getUUID());
+		client.getPlayer().getFight().toggleOnlyGroup(client.getPlayer().getId());
 	}
 }

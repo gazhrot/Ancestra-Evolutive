@@ -313,7 +313,7 @@ public class Action {
 					PierreAme pierrePleine = (PierreAme)World.data.getObjet(itemID);
 
 					String groupData = pierrePleine.parseGroupData();
-					String condition = "MiS = "+perso.getUUID();	//Condition pour que le groupe ne soit lan�able que par le personnage qui � utiliser l'objet
+					String condition = "MiS = "+perso.getId();	//Condition pour que le groupe ne soit lan�able que par le personnage qui � utiliser l'objet
 					perso.getCurMap().spawnNewGroup(true, perso.getCurCell(), groupData,condition);
 
 					if(delObj)
@@ -470,14 +470,14 @@ public class Action {
 					int morphID = Integer.parseInt(args);
 					if(morphID < 0)return;
 					perso.setGfx(morphID);
-					SocketManager.GAME_SEND_ERASE_ON_MAP_TO_MAP(perso.getCurMap(), perso.getUUID());
+					SocketManager.GAME_SEND_ERASE_ON_MAP_TO_MAP(perso.getCurMap(), perso.getId());
 					SocketManager.GAME_SEND_ADD_PLAYER_TO_MAP(perso.getCurMap(), perso);
 				}catch(Exception e){Log.addToLog(e.getMessage());};
 			break;
 			case 25://SimpleUnMorph
 				int UnMorphID = perso.getClasse().getId()*10 + perso.getSex();
 				perso.setGfx(UnMorphID);
-				SocketManager.GAME_SEND_ERASE_ON_MAP_TO_MAP(perso.getCurMap(), perso.getUUID());
+				SocketManager.GAME_SEND_ERASE_ON_MAP_TO_MAP(perso.getCurMap(), perso.getId());
 				SocketManager.GAME_SEND_ADD_PLAYER_TO_MAP(perso.getCurMap(), perso);
 			break;
 			case 26://T�l�portation enclo de guilde (ouverture du panneau de guilde)
@@ -650,7 +650,7 @@ public class Action {
 					Animation animation = World.data.getAnimation(AnimationId);
 					if(perso.getFight() != null) return;
 					perso.changeOrientation(1);
-					SocketManager.GAME_SEND_GA_PACKET_TO_MAP(perso.getCurMap(), "0", 228, perso.getUUID()+";"+cellid+","+Animation.parseToGA(animation), "");
+					SocketManager.GAME_SEND_GA_PACKET_TO_MAP(perso.getCurMap(), "0", 228, perso.getId()+";"+cellid+","+Animation.parseToGA(animation), "");
 				}catch(Exception e){Log.addToLog(e.getMessage());};
 			break;
             case 229 :

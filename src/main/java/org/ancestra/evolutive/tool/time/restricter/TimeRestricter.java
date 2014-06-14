@@ -58,7 +58,7 @@ public class TimeRestricter {
 	}
 	
 	private ClientInstance find(Player player) {
-		ClientInstance result = players.get(player.getUUID());
+		ClientInstance result = players.get(player.getId());
 		switch(this.level) {
 			case ACCOUNT:
 				if(result == null) {
@@ -86,7 +86,7 @@ public class TimeRestricter {
 		if (result != null) return result;
 		
 		result = new ClientInstance(player, this);
-		players.put(player.getUUID(), result);
+		players.put(player.getId(), result);
 		return result;
 	}
 	
@@ -103,7 +103,7 @@ class ClientInstance {
 	private TimeRestricter restricter;
 	
 	public ClientInstance(Player player, TimeRestricter restricter) {
-		this.player = player.getUUID();
+		this.player = player.getId();
 		this.account = player.getAccount().getUUID();
 		this.ip = player.getAccount().getCurIp();
 		this.hits = 0;
