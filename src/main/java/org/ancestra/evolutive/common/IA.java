@@ -575,7 +575,7 @@ public class IA implements Runnable {
 					if( PDVPER < PDVPERmin && PDVPER < 95)
 					{
 						int infl = 0;
-						for(Entry<Integer, SpellStats> ss : World.data.getGuild(f.getPerco().GetPercoGuildID()).getSpells().entrySet())
+						for(Entry<Integer, SpellStats> ss : World.data.getGuild(f.getPerco().getGuild().getId()).getSpells().entrySet())
 						{
 							if(ss.getValue() == null) continue;
 							if(infl < calculInfluenceHeal(ss.getValue()) && calculInfluenceHeal(ss.getValue()) != 0 && fight.CanCastSpell(f, ss.getValue(), F.get_fightCell(true), -1))//Si le sort est plus interessant
@@ -642,7 +642,7 @@ public class IA implements Runnable {
 	{
 		int infl = 0;	
 		SpellStats ss = null;
-		for(Entry<Integer, SpellStats> SS : World.data.getGuild(F.getPerco().GetPercoGuildID()).getSpells().entrySet())
+		for(Entry<Integer, SpellStats> SS : World.data.getGuild(F.getPerco().getGuild().getId()).getSpells().entrySet())
 		{
 			if(SS.getValue() == null) continue;
 			if(infl < calculInfluence(SS.getValue(),F,T) && calculInfluence(SS.getValue(),F,T) > 0 && fight.CanCastSpell(F, SS.getValue(), T.get_fightCell(true), -1))//Si le sort est plus interessant
@@ -877,7 +877,7 @@ public class IA implements Runnable {
 		}
 		int curTarget = 0,cell = 0;
 		SpellStats SS2 = null;
-		for(Entry<Integer, SpellStats> S : World.data.getGuild(fighter.getPerco().GetPercoGuildID()).getSpells().entrySet())
+		for(Entry<Integer, SpellStats> S : World.data.getGuild(fighter.getPerco().getGuild().getId()).getSpells().entrySet())
 		{
 			if(S.getValue() == null) continue;
 			int targetVal = getBestTargetZone(fight,fighter,S.getValue(),fighter.get_fightCell(true).getId());
@@ -1128,7 +1128,7 @@ public class IA implements Runnable {
 	{
 		int inflMax = 0;
 		SpellStats ss = null;
-		for(Entry<Integer, SpellStats> SS : World.data.getGuild(F.getPerco().GetPercoGuildID()).getSpells().entrySet())
+		for(Entry<Integer, SpellStats> SS : World.data.getGuild(F.getPerco().getGuild().getId()).getSpells().entrySet())
 		{
 			if(SS.getValue() == null) continue;
 			int curInfl = 0, Infl1 = 0, Infl2 = 0;
@@ -1145,7 +1145,7 @@ public class IA implements Runnable {
 				inflMax = Infl1;
 			}
 			
-			for(Entry<Integer, SpellStats> SS2 : World.data.getGuild(F.getPerco().GetPercoGuildID()).getSpells().entrySet())
+			for(Entry<Integer, SpellStats> SS2 : World.data.getGuild(F.getPerco().getGuild().getId()).getSpells().entrySet())
 			{
 				if( (PA - usedPA[0]) < SS2.getValue().getPACost())continue;
 				if(!fight.CanCastSpell(F, SS2.getValue(), F.get_fightCell(true), T.get_fightCell(true).getId()))continue;
@@ -1158,7 +1158,7 @@ public class IA implements Runnable {
 					Infl2 = curInfl;
 					inflMax = Infl1 + Infl2;
 				}
-				for(Entry<Integer, SpellStats> SS3 : World.data.getGuild(F.getPerco().GetPercoGuildID()).getSpells().entrySet())
+				for(Entry<Integer, SpellStats> SS3 : World.data.getGuild(F.getPerco().getGuild().getId()).getSpells().entrySet())
 				{
 					if( (PA - usedPA[0] - usedPA[1]) < SS3.getValue().getPACost())continue;
 					if(!fight.CanCastSpell(F, SS3.getValue(), F.get_fightCell(true), T.get_fightCell(true).getId()))continue;

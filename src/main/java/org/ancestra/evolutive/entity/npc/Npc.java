@@ -1,25 +1,17 @@
 package org.ancestra.evolutive.entity.npc;
 
-public class Npc {
-	
-	private int UUID;
+import org.ancestra.evolutive.entity.Creature;
+import org.ancestra.evolutive.entity.Helper;
+import org.ancestra.evolutive.map.Case;
+import org.ancestra.evolutive.map.Maps;
+
+public class Npc extends Creature {
 	private NpcTemplate template;
-	private int cellid;
-	private byte orientation;
 	
-	public Npc(NpcTemplate template, int UUID, int cellid, byte orientation) {
+	public Npc(NpcTemplate template, int id,Maps map,Case cell, byte orientation) {
+        super(id,"npc" + Integer.toString(id),map,cell,(int)orientation);
 		this.template = template;
-		this.UUID = UUID;
-		this.cellid = cellid;
-		this.orientation = orientation;
-	}
-
-	public int getUUID() {
-		return UUID;
-	}
-
-	public void setUUID(int uUID) {
-		this.UUID = uUID;
+        helper = new NpcHelper(this);
 	}
 
 	public NpcTemplate getTemplate() {
@@ -30,29 +22,13 @@ public class Npc {
 		this.template = template;
 	}
 
-	public int getCellid() {
-		return cellid;
-	}
-
-	public void setCellid(int cellid) {
-		this.cellid = cellid;
-	}
-
-	public byte getOrientation() {
-		return orientation;
-	}
-
-	public void setOrientation(byte orientation) {
-		this.orientation = orientation;
-	}
-
 	public String parseToGM() {
 		StringBuilder sock = new StringBuilder();
 		sock.append("+");
-		sock.append(this.getCellid()).append(";");
+		sock.append(this.getCell().getId()).append(";");
 		sock.append(this.getOrientation()).append(";");
 		sock.append("0").append(";");
-		sock.append(this.getUUID()).append(";");
+		sock.append(this.getId()).append(";");
 		sock.append(this.getTemplate().getId()).append(";");
 		sock.append("-4").append(";");//type = NPC
 		

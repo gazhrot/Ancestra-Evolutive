@@ -7,7 +7,7 @@ import org.ancestra.evolutive.core.Console;
 import org.ancestra.evolutive.core.Log;
 import org.ancestra.evolutive.core.Server;
 import org.ancestra.evolutive.core.World;
-import org.ancestra.evolutive.entity.Collector;
+import org.ancestra.evolutive.entity.collector.Collector;
 import org.ancestra.evolutive.entity.Mount;
 import org.ancestra.evolutive.entity.monster.MobGroup;
 import org.ancestra.evolutive.entity.npc.Npc;
@@ -30,7 +30,6 @@ import org.ancestra.evolutive.object.Objet;
 import org.ancestra.evolutive.object.Objet.ObjTemplate;
 
 import java.util.ArrayList;
-import java.util.Map;
 import java.util.Map.Entry;
 
 public class SocketManager {
@@ -360,21 +359,13 @@ public class SocketManager {
 			Log.addToSockLog("Game: Send>>"+packet);
 	}
 	
-	public static void GAME_SEND_MAP_PERCO_GMS_PACKETS(Client out, Maps carte)
-	{
-		String packet = Collector.parseGM(carte);
+	public static void GAME_SEND_MAP_PERCO_GMS_PACKETS(Client out, Maps carte){
+        Collector collector = World.data.getCollector(carte);
+        if(collector == null) return;
+		String packet = "GM|+"+collector.getHelper().getGmPacket();
 		if(packet.length() < 5)return;
 		send(out,packet);
-		if(Server.config.isDebug())
-			Log.addToSockLog("Game: Send>>"+packet);
-	}
-	
-	public static void GAME_SEND_MAP_GMS_PACKETS(Client out, Maps carte)
-	{
-		String packet = carte.getGMsPackets();
-		send(out,packet);
-		if(Server.config.isDebug())
-			Log.addToSockLog("Game: Send>>"+packet);
+
 	}
 
 	public static void GAME_SEND_ERASE_ON_MAP_TO_MAP(Maps map,int guid)
@@ -1985,15 +1976,13 @@ public class SocketManager {
 	
 	public static void GAME_SEND_ADD_NPC_TO_MAP(Maps map, Npc npc)
 	{
-		String packet = "GM|"+npc.parseToGM();
+		String packet = "GM|+"+npc.getHelper().getGmPacket();
 		for(Player z : map.getPlayers()) send(z,packet);
-		if(Server.config.isDebug())
-			Log.addToSockLog("Game: Map: Send>>"+packet);
 	}
 	
-	public static void GAME_SEND_ADD_PERCO_TO_MAP(Maps map)
-	{
-		String packet = "GM|"+Collector.parseGM(map);
+	public static void GAME_SEND_ADD_PERCO_TO_MAP(Maps map){
+        Collector collector = World.data.getCollector(map);
+		String packet = "GM|+"+collector.getHelper().getGmPacket();
 		for(Player z : map.getPlayers()) send(z,packet);
 		if(Server.config.isDebug())
 			Log.addToSockLog("Game: Map: Send>>"+packet);

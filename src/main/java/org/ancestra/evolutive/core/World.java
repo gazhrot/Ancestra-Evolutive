@@ -9,7 +9,7 @@ import org.ancestra.evolutive.common.Constants;
 import org.ancestra.evolutive.common.Couple;
 import org.ancestra.evolutive.common.SocketManager;
 import org.ancestra.evolutive.database.Database;
-import org.ancestra.evolutive.entity.Collector;
+import org.ancestra.evolutive.entity.collector.Collector;
 import org.ancestra.evolutive.entity.Mount;
 import org.ancestra.evolutive.entity.monster.MobTemplate;
 import org.ancestra.evolutive.entity.npc.NpcAnswer;
@@ -39,7 +39,6 @@ import org.ancestra.evolutive.tool.plugin.packet.Packet;
 import org.ancestra.evolutive.tool.plugin.packet.PacketParser;
 
 import java.lang.annotation.Annotation;
-import java.sql.Connection;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
@@ -93,9 +92,6 @@ public class World {
 	private Map<String, PacketParser> packetPlugins = new HashMap<>();
 	private Map<String, PluginLoader> otherPlugins = new HashMap<>();
 
-	private Connection connection;
-	
-	private int nextHdvID;
 	private int nextLigneID; 
 	private int saveTries = 1; 
 	private short state = 1;
@@ -745,20 +741,6 @@ public class World {
 			object = World.database.getHdvData().load(mapID);
 		return object;
 	}
-
-	/**
-	 * @return The next line id (with incrementation).
-	 * @deprecated Do not use this function anyhow.
-	 */
-	@Deprecated
-	public synchronized int getNextHdvID() {
-		nextHdvID++;
-		return nextHdvID;
-	}
-
-	public synchronized void setNextHdvID(int nextID) {
-		nextHdvID = nextID;
-	}
 	
 	/**
 	 * @return The next line id (with incrementation).
@@ -909,15 +891,24 @@ public class World {
 	}
 
 	public void addPerco(Collector perco) {
-		collectors.put(perco.getGuid(), perco);
+		collectors.put(perco.getId(), perco);
 	}
 
 	public Collector getPerco(int percoID) {
-		Collector spell = collectors.get(percoID);
-		if(spell == null)
-			spell = World.database.getCollectorData().load(percoID);
-		return spell;
+		Collector collector = collectors.get(percoID);
+		if(collector == null)
+			collector = World.database.getCollectorData().load(percoID);
+		return collector;
 	}
+
+    public Collector getCollector(Maps map){
+        for(Collector collector : collectors.values()){
+            if(collector.getMap().equals(map)){
+                return collector;
+            }
+        }
+        return World.database.getCollectorData().loadByMap(map.getId());
+    }
 
 	public Map<Integer, Collector> getPercos() {
 		return collectors;
@@ -1056,14 +1047,6 @@ public class World {
 		return null;
 	}
 	
-	public Connection getConnection() {
-		return connection;
-	}
-
-	public void setConnection(Connection connection) {
-		this.connection = connection;
-	}
-	
 	public Map<Integer, Player> getPlayers() {
 		return this.players;
 	}
@@ -1075,4 +1058,6 @@ public class World {
 	public ExecutorService getWorker() {
 		return worker;
 	}
+
+
 }

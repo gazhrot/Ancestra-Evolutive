@@ -4,7 +4,7 @@ import org.ancestra.evolutive.client.Player;
 import org.ancestra.evolutive.common.Constants;
 import org.ancestra.evolutive.common.SocketManager;
 import org.ancestra.evolutive.core.World;
-import org.ancestra.evolutive.entity.Collector;
+import org.ancestra.evolutive.entity.collector.Collector;
 import org.ancestra.evolutive.game.GameClient;
 import org.ancestra.evolutive.tool.plugin.packet.Packet;
 import org.ancestra.evolutive.tool.plugin.packet.PacketParser;
@@ -23,16 +23,17 @@ public class RemoveCollector implements PacketParser {
 		if(perco == null || perco.get_inFight() > 0) return;
 		SocketManager.GAME_SEND_ERASE_ON_MAP_TO_MAP(client.getPlayer().getCurMap(), IDPerco);
 		World.database.getCollectorData().delete(perco);
-		perco.DelPerco(perco.getGuid());
+		perco.DelPerco(perco.getId());
 		for(Player z : client.getPlayer().getGuild().getMembers())
 		{
 			if(z.isOnline())
 			{
 				SocketManager.GAME_SEND_gITM_PACKET(z, Collector.parsetoGuild(z.getGuild().getId()));
 				String str = "";
-				str += "R"+perco.get_N1()+","+perco.get_N2()+"|";
-				str += perco.get_mapID()+"|";
-				str += World.data.getCarte(perco.get_mapID()).getX()+"|"+World.data.getCarte(perco.get_mapID()).getY()+"|"+client.getPlayer().getName();
+				str += "R"+perco.getFirstNameId()+","+perco.getLastNameId()+"|";
+                str += perco.getMap().getId()+"|";
+                str += perco.getMap().getX()+"|"
+                        +perco.getMap().getY()+"|"+client.getPlayer().getName();
 				SocketManager.GAME_SEND_gT_PACKET(z, str);
 			}
 		}

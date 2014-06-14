@@ -4,7 +4,7 @@ import org.ancestra.evolutive.client.Player;
 import org.ancestra.evolutive.core.Console;
 import org.ancestra.evolutive.core.Server;
 import org.ancestra.evolutive.core.World;
-import org.ancestra.evolutive.entity.Collector;
+import org.ancestra.evolutive.entity.collector.Collector;
 import org.ancestra.evolutive.enums.Classe;
 import org.ancestra.evolutive.fight.Fight;
 import org.ancestra.evolutive.fight.Fighter;
@@ -457,7 +457,7 @@ public class Formulas {
 	
 	public static long getXpWinPerco(Collector perco, ArrayList<Fighter> winners,ArrayList<Fighter> loosers,long groupXP)
 	{
-			Guild G = World.data.getGuild(perco.get_guildID());
+			Guild G = perco.getGuild();
 			float sag = G.getStat(Constants.STATS_ADD_SAGE);
 			float coef = (sag + 100)/100;
 			int taux = Server.config.getRateXpPvm();

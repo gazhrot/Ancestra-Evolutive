@@ -3,7 +3,7 @@ package org.ancestra.evolutive.game.packet.exchange;
 import org.ancestra.evolutive.client.Player;
 import org.ancestra.evolutive.common.SocketManager;
 import org.ancestra.evolutive.core.World;
-import org.ancestra.evolutive.entity.Collector;
+import org.ancestra.evolutive.entity.collector.Collector;
 import org.ancestra.evolutive.entity.npc.Npc;
 import org.ancestra.evolutive.game.GameClient;
 import org.ancestra.evolutive.hdv.HDV;
@@ -140,10 +140,10 @@ public class Request implements PacketParser {
 						return;
 					
 					perco.set_Exchange(true);
-					SocketManager.GAME_SEND_ECK_PACKET(client, 8, perco.getGuid()+"");
+					SocketManager.GAME_SEND_ECK_PACKET(client, 8, perco.getId()+"");
 					SocketManager.GAME_SEND_ITEM_LIST_PACKET_PERCEPTEUR(client, perco);
-					client.getPlayer().setIsTradingWith(perco.getGuid());
-					client.getPlayer().setIsOnCollector(perco.getGuid());
+					client.getPlayer().setIsTradingWith(perco.getId());
+					client.getPlayer().setIsOnCollector(perco.getId());
 				} catch(NumberFormatException e) {}
 			break;
 		}

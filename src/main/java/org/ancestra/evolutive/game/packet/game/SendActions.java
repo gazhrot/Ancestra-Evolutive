@@ -7,7 +7,7 @@ import org.ancestra.evolutive.common.Pathfinding;
 import org.ancestra.evolutive.common.SocketManager;
 import org.ancestra.evolutive.core.Log;
 import org.ancestra.evolutive.core.World;
-import org.ancestra.evolutive.entity.Collector;
+import org.ancestra.evolutive.entity.collector.Collector;
 import org.ancestra.evolutive.fight.Fight;
 import org.ancestra.evolutive.fight.Fighter;
 import org.ancestra.evolutive.fight.spell.SpellStats;

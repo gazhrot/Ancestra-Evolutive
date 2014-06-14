@@ -5,7 +5,7 @@ import org.ancestra.evolutive.common.Constants;
 import org.ancestra.evolutive.common.Formulas;
 import org.ancestra.evolutive.common.SocketManager;
 import org.ancestra.evolutive.core.World;
-import org.ancestra.evolutive.entity.Collector;
+import org.ancestra.evolutive.entity.collector.Collector;
 import org.ancestra.evolutive.game.GameClient;
 import org.ancestra.evolutive.tool.plugin.packet.Packet;
 import org.ancestra.evolutive.tool.plugin.packet.PacketParser;
@@ -24,7 +24,7 @@ public class AddCollector implements PacketParser {
 			SocketManager.GAME_SEND_Im_PACKET(client.getPlayer(), "182");
 			return;
 		}
-		if(Collector.GetPercoGuildID(client.getPlayer().getCurMap().getId()) > 0)//La carte poss�de un perco
+		if(World.data.getCollector(client.getPlayer().getCurMap()) != null)//La carte poss�de un perco
 		{
 			SocketManager.GAME_SEND_Im_PACKET(client.getPlayer(), "1168;1");
 			return;
@@ -49,9 +49,10 @@ public class AddCollector implements PacketParser {
 			{
 				SocketManager.GAME_SEND_gITM_PACKET(z, Collector.parsetoGuild(z.getGuild().getId()));
 				String str = "";
-				str += "S"+perco.get_N1()+","+perco.get_N2()+"|";
-				str += perco.get_mapID()+"|";
-				str += World.data.getCarte(perco.get_mapID()).getX()+"|"+World.data.getCarte(perco.get_mapID()).getY()+"|"+client.getPlayer().getName();
+				str += "S"+perco.getFirstNameId()+","+perco.getLastNameId()+"|";
+				str += perco.getMap().getId()+"|";
+				str += perco.getMap().getX()+"|"
+                        +perco.getMap().getY()+"|"+client.getPlayer().getName();
 				SocketManager.GAME_SEND_gT_PACKET(z, str);
 			}
 		}

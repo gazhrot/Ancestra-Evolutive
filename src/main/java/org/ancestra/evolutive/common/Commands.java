@@ -149,7 +149,7 @@ public class Commands {
 			Maps map = _perso.getCurMap();
 			for(Entry<Integer, Npc> entry : map.getNpcs().entrySet())
 			{
-				mess = entry.getKey()+" "+entry.getValue().getTemplate().getId()+" "+entry.getValue().getCellid()+" "+entry.getValue().getTemplate().getInitQuestion();
+				mess = entry.getKey()+" "+entry.getValue().getTemplate().getId()+" "+entry.getValue().getCell().getId()+" "+entry.getValue().getTemplate().getInitQuestion();
 				SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out, mess);
 			}
 			mess = "Liste des groupes de monstres:";
@@ -962,11 +962,11 @@ public class Commands {
 				SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out,str);
 				return;
 			}
-			int exC = npc.getCellid();
+			int exC = npc.getCell().getId();
 			//on l'efface de la map
 			SocketManager.GAME_SEND_ERASE_ON_MAP_TO_MAP(_perso.getCurMap(), id);
 			//on change sa position/orientation
-			npc.setCellid(_perso.getCurCell().getId());
+			npc.setCell(_perso.getCurCell());
 			npc.setOrientation((byte)_perso.getOrientation());
 			//on envoie la modif
 			SocketManager.GAME_SEND_ADD_NPC_TO_MAP(_perso.getCurMap(),npc);
@@ -1417,7 +1417,7 @@ public class Commands {
 				SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out,str);
 				return;
 			}
-			int exC = npc.getCellid();
+			int exC = npc.getCell().getId();
 			//on l'efface de la map
 			SocketManager.GAME_SEND_ERASE_ON_MAP_TO_MAP(_perso.getCurMap(), id);
 			if(_perso.getCurMap().getNpcs().containsKey(id))

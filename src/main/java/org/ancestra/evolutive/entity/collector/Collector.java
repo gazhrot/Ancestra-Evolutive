@@ -1,8 +1,9 @@
-package org.ancestra.evolutive.entity;
+package org.ancestra.evolutive.entity.collector;
 
 import org.ancestra.evolutive.client.Player;
 import org.ancestra.evolutive.common.SocketManager;
 import org.ancestra.evolutive.core.World;
+import org.ancestra.evolutive.entity.Creature;
 import org.ancestra.evolutive.fight.Fight;
 import org.ancestra.evolutive.fight.Fighter;
 import org.ancestra.evolutive.guild.Guild;
@@ -13,35 +14,32 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
-public class Collector {
-	private int _guid;
-	private short _MapID;
-	private int _cellID;
-	private byte _orientation;
+public class Collector extends Creature {
 	private int _GuildID = 0;
-	private short _N1 = 0;
-	private short _N2 = 0;
+
+    private final Guild guild;
+	private final short firstNameId;
+	private final short lastNameId;
 	private byte _inFight = 0;
 	private int _inFightID = -1;
-	private Map<Integer,Objet> _objets = new TreeMap<Integer,Objet>();
+	private Map<Integer,Objet> _objets = new TreeMap<>();
 	private long _kamas = 0;
 	private long _xp = 0;
 	private boolean _inExchange = false;
 	//Timer
 	private int _timeTurn = 45000;
 	//Les logs
-	private Map<Integer,Objet> _LogObjets = new TreeMap<Integer,Objet>();
+	private Map<Integer,Objet> _LogObjets = new TreeMap<>();
 	private long _LogXP = 0;
 	
 	public Collector(int guid, short map, int cellID, byte orientation, int GuildID, 
 			short N1, short N2, String items, long kamas, long xp) {
-		_guid = guid;
-		_MapID = map;
-		_cellID = cellID;
-		_orientation = orientation;
+		super(guid,Short.toString(N1) +","+ Short.toString(N2),map,cellID);
 		_GuildID = GuildID;
-		_N1 = N1;
-		_N2 = N2;
+        helper = new CollectorHelper(this);
+        guild = World.data.getGuild(_GuildID);
+		firstNameId = N1;
+		lastNameId = N2;
 		//Mise en place de son inventaire
 		for(String item : items.split("\\|"))
 		{
@@ -88,13 +86,7 @@ public class Collector {
 	
 	public boolean HaveObjet(int guid)
 	{
-		if(_objets.get(guid) != null)
-		{
-			return true;
-		}else
-		{
-			return false;
-		}
+        return _objets.get(guid) != null;
 	}
 	
 	public void remove_timeTurn(int time)
@@ -112,49 +104,12 @@ public class Collector {
 		return _timeTurn;
 	}
 	
-	public int getOrientation() {
-		return this._orientation;
-	}
-	
-	public static String parseGM(Maps map)
-	{
-		StringBuilder sock = new StringBuilder();
-		sock.append("GM|");
-		boolean isFirst = true;
-		for(Entry<Integer, Collector> perco :  World.data.getPercos().entrySet())
-		{
-			if(perco.getValue()._inFight > 0) continue;//On affiche pas le perco si il est en combat
-			if(perco.getValue()._MapID == map.getId())
-			{
-				if(!isFirst) sock.append("|");
-				sock.append("+");
-				sock.append(perco.getValue()._cellID).append(";");
-				sock.append(perco.getValue()._orientation).append(";");
-				sock.append("0").append(";");
-				sock.append(perco.getValue()._guid).append(";");
-				sock.append(perco.getValue()._N1).append(",").append(perco.getValue()._N2).append(";");
-				sock.append("-6").append(";");
-				sock.append("6000^100;");
-				Guild G = World.data.getGuild(perco.getValue()._GuildID);
-				sock.append(G.getLevel()).append(";");
-				sock.append(G.getName()).append(";"+G.getEmblem());
-				isFirst = false;
-			}else
-			{
-				continue;
-			}
-		}
-		return sock.toString();
-	}
-	
 	public int get_guildID() {
 		return _GuildID;
 	}
 	
-	public void DelPerco(int percoGuid)
-	{
-		for(Objet obj : _objets.values())
-		{
+	public void DelPerco(int percoGuid){
+		for(Objet obj : _objets.values()){
 			//On supprime les objets non ramasser/drop
 			World.data.removeItem(obj.getGuid());
 		}
@@ -171,16 +126,6 @@ public class Collector {
 		_inFight = fight;
 	}
 	
-	public int getGuid()
-	{
-		return _guid;
-	}
-	
-	public int get_cellID()
-	{
-		return _cellID;
-	}
-	
 	public void set_inFightID(int ID)
 	{
 		_inFightID = ID;
@@ -190,21 +135,7 @@ public class Collector {
 	{
 		return _inFightID;
 	}
-	
-	public short get_mapID()
-	{
-		return _MapID;
-	}
-	
-	public int get_N1()
-	{
-		return _N1;
-	}
-	
-	public int get_N2()
-	{
-		return _N2;
-	}
+
 	
 	public static String parsetoGuild(int GuildID)
 	{
@@ -214,10 +145,10 @@ public class Collector {
 		{
 			 if(perco.getValue().get_guildID() == GuildID)
     		 {
-				 	Maps map = World.data.getCarte(perco.getValue().get_mapID());
+				 	Maps map = World.data.getCarte(perco.getValue().getMap().getId());
 				 	if(isFirst) packet.append("+");
 	    			if(!isFirst) packet.append("|");
-	    			packet.append(perco.getValue().getGuid()).append(";").append(perco.getValue().get_N1()).append(",").append(perco.getValue().get_N2()).append(";");
+	    			packet.append(perco.getValue().getId()).append(";").append(perco.getValue().getFirstNameId()).append(",").append(perco.getValue().getLastNameId()).append(";");
 	    			
 	    			packet.append(Integer.toString(map.getId(), 36)).append(",").append(map.getX()).append(",").append(map.getY()).append(";");
 	    			packet.append(perco.getValue().get_inFight()).append(";");
@@ -244,48 +175,15 @@ public class Collector {
 	    			
 	    			//	?,?,callername,startdate(Base 10),lastHarvesterName,lastHarvestDate(Base 10),nextHarvestDate(Base 10)
 	    			isFirst = false;
-    		 }else
-    		 {
-    			 continue;
     		 }
    	 	}
 		if(packet.length() == 0) packet = new StringBuilder("null");
 		return packet.toString();
 	}
 	
-	public static int GetPercoGuildID(int _id) {
-		
-		for(Entry<Integer, Collector> perco :  World.data.getPercos().entrySet())
-		{
-			if(perco.getValue().get_mapID() == _id)
-			{
-				return perco.getValue().get_guildID();
-			}
-		}
-		return 0;
-	}
-	
-	public int GetPercoGuildID() {
-		
-		return get_guildID();
-	}
-	
-	public static Collector GetPercoByMapID(short _id) {
-		
-		for(Entry<Integer, Collector> perco :  World.data.getPercos().entrySet())
-		{
-			if(perco.getValue().get_mapID() == _id)
-			{
-				return  World.data.getPercos().get(perco.getValue().getGuid());
-			}
-		}
-		return null;
-	}
-	
 	public static int CountPercoGuild(int GuildID) {
 		int i = 0;
-		for(Entry<Integer, Collector> perco :  World.data.getPercos().entrySet())
-		{
+		for(Entry<Integer, Collector> perco :  World.data.getPercos().entrySet()){
 			if(perco.getValue().get_guildID() == GuildID)
 			{
 				i++;
@@ -294,24 +192,18 @@ public class Collector {
 		return i;
 	}
 	
-	public static void parseAttaque(Player perso, int guildID)
-	{
-		for(Entry<Integer, Collector> perco :  World.data.getPercos().entrySet()) 
-		{
-			if(perco.getValue().get_inFight() > 0 && perco.getValue().get_guildID() == guildID)
-			{
-				SocketManager.GAME_SEND_gITp_PACKET(perso, parseAttaqueToGuild(perco.getValue().getGuid(), perco.getValue().get_mapID(), perco.getValue().get_inFightID()));
+	public static void parseAttaque(Player perso, int guildID){
+		for(Entry<Integer, Collector> perco :  World.data.getPercos().entrySet()) {
+			if(perco.getValue().get_inFight() > 0 && perco.getValue().get_guildID() == guildID){
+				SocketManager.GAME_SEND_gITp_PACKET(perso, parseAttaqueToGuild(perco.getValue().getId(), perco.getValue().getMap().getId(), perco.getValue().get_inFightID()));
 			}
 		}
 	}
 	
-	public static void parseDefense(Player perso, int guildID)
-	{
-		for(Entry<Integer, Collector> perco :  World.data.getPercos().entrySet()) 
-		{
-			if(perco.getValue().get_inFight() > 0 && perco.getValue().get_guildID() == guildID)
-			{
-				SocketManager.GAME_SEND_gITP_PACKET(perso, parseDefenseToGuild(perco.getValue().getGuid(), perco.getValue().get_mapID(), perco.getValue().get_inFightID()));
+	public static void parseDefense(Player perso, int guildID){
+		for(Entry<Integer, Collector> perco :  World.data.getPercos().entrySet()) {
+			if(perco.getValue().get_inFight() > 0 && perco.getValue().get_guildID() == guildID){
+				SocketManager.GAME_SEND_gITP_PACKET(perso, parseDefenseToGuild(perco.getValue().getId(), perco.getValue().getMap().getId(), perco.getValue().get_inFightID()));
 			}
 		}
 	}
@@ -513,20 +405,46 @@ public class Collector {
 		return _inExchange;
 	}
 	
-	public static void removePercepteur(int GuildID)
-	{
-		for(Entry<Integer, Collector> perco : World.data.getPercos().entrySet())
-		{
-			if(perco.getValue().get_guildID() == GuildID)
-			{
+	public static void removePercepteur(int GuildID){
+		for(Entry<Integer, Collector> perco : World.data.getPercos().entrySet()){
+			if(perco.getValue().get_guildID() == GuildID){
 				Collector collector = perco.getValue();
 				World.data.getPercos().remove(perco.getKey());
-				for(Player p : World.data.getCarte(perco.getValue().get_mapID()).getPlayers())
-				{
-					SocketManager.GAME_SEND_ERASE_ON_MAP_TO_MAP(p.getCurMap(), perco.getValue().getGuid());//Suppression visuelle
+				for(Player p : collector.getMap().getPlayers()){
+					SocketManager.GAME_SEND_ERASE_ON_MAP_TO_MAP(p.getCurMap(), perco.getValue().getId());//Suppression visuelle
 				}
 				World.database.getCollectorData().delete(collector);//Supprime les percepteurs
 			}
 		}
 	}
+
+    //<editor-fold desc="Getters and setters">
+    /**
+     * Retourne la guilde proprietaire du percepteur
+     * @return guilde proprietaire
+     */
+    public Guild getGuild() {
+        return guild;
+    }
+
+    /**
+     * Retourne l'identifiant du prenom
+     * Il est transforme en nom par le jeu
+     * @return identifiant du prenom
+     */
+    public int getFirstNameId()
+    {
+        return firstNameId;
+    }
+
+    /**
+     * Retourne l identifiant du nom
+     * Il est transforme en nom par le jeu
+     * @return identifiant du nom
+     */
+    public int getLastNameId()
+    {
+        return lastNameId;
+    }
+    //</editor-fold>
 }

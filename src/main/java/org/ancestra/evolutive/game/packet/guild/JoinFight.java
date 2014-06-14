@@ -3,7 +3,7 @@ package org.ancestra.evolutive.game.packet.guild;
 import org.ancestra.evolutive.core.Log;
 import org.ancestra.evolutive.core.Server;
 import org.ancestra.evolutive.core.World;
-import org.ancestra.evolutive.entity.Collector;
+import org.ancestra.evolutive.entity.collector.Collector;
 import org.ancestra.evolutive.game.GameClient;
 import org.ancestra.evolutive.tool.plugin.packet.Packet;
 import org.ancestra.evolutive.tool.plugin.packet.PacketParser;
@@ -36,13 +36,13 @@ public class JoinFight implements PacketParser {
 				short map = -1;
 				
 				try {		
-					map = World.data.getCarte(collector.get_mapID()).getFights().get(fight).getMap().getId();
+					map = World.data.getCarte(collector.getMap().getId()).getFights().get(fight).getMap().getId();
 				} catch(Exception e) {}
 				
 				int cell = -1;
 				
 				try {
-					cell = collector.get_cellID();
+					cell = collector.getCell().getId();
 				} catch(Exception e) {}
 				
 				if(Server.config.isDebug()) 

@@ -2,7 +2,7 @@ package org.ancestra.evolutive.game.packet.guild;
 
 import org.ancestra.evolutive.common.SocketManager;
 import org.ancestra.evolutive.core.World;
-import org.ancestra.evolutive.entity.Collector;
+import org.ancestra.evolutive.entity.collector.Collector;
 import org.ancestra.evolutive.game.GameClient;
 import org.ancestra.evolutive.house.House;
 import org.ancestra.evolutive.tool.plugin.packet.Packet;

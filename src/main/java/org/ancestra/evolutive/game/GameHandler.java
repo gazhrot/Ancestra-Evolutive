@@ -20,7 +20,7 @@ public class GameHandler implements IoHandler {
 		else {
 			GameClient client = new GameClient(arg0);
 	
-			SocketManager.GAME_SEND_HELLOGAME_PACKET(client);
+			client.send("HG");
 			Server.config.getGameServer().getClients().put(arg0.getId(), client);
 			
 			if(Server.config.getGameServer().getClients().size() 

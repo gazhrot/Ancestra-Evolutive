@@ -48,9 +48,6 @@ public class HdvData extends AbstractDAO<HDV>{
 			close(result);
 			result = getData("SELECT id MAX FROM `hdvs`;");
 			
-			if (result.resultSet.first())
-				World.data.setNextHdvID(result.resultSet.getInt("MAX"));
-			
 			close(result);
 
 		} catch (Exception e) {

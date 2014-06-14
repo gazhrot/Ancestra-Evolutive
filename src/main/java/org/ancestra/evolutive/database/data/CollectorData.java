@@ -5,14 +5,13 @@ import com.zaxxer.hikari.HikariDataSource;
 import org.ancestra.evolutive.core.Console;
 import org.ancestra.evolutive.core.World;
 import org.ancestra.evolutive.database.AbstractDAO;
-import org.ancestra.evolutive.entity.Collector;
+import org.ancestra.evolutive.entity.collector.Collector;
 import org.ancestra.evolutive.map.Maps;
 import org.slf4j.LoggerFactory;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 
 
 public class CollectorData extends AbstractDAO<Collector>{
@@ -28,13 +27,13 @@ public class CollectorData extends AbstractDAO<Collector>{
 				" VALUES (?,?,?,?,?,?,?,?,?,?);";
 		try {
 			PreparedStatement statement = getPreparedStatement(baseQuery);
-			statement.setInt(1, obj.getGuid());
-			statement.setInt(2, obj.get_mapID());
-			statement.setInt(3, obj.get_cellID());
+			statement.setInt(1, obj.getId());
+			statement.setInt(2, obj.getMap().getId());
+			statement.setInt(3, obj.getCell().getId());
 			statement.setInt(4, obj.getOrientation());
-			statement.setInt(5, obj.get_guildID());
-			statement.setInt(6, obj.get_N1());
-			statement.setInt(7, obj.get_N2());
+			statement.setInt(5, obj.getGuild().getId());
+			statement.setInt(6, obj.getFirstNameId());
+			statement.setInt(7, obj.getLastNameId());
 			statement.setString(8, "");
 			statement.setLong(9, 0);
 			statement.setLong(10, 0);
@@ -49,7 +48,7 @@ public class CollectorData extends AbstractDAO<Collector>{
 
 	@Override
 	public boolean delete(Collector obj) {
-		String baseQuery = "DELETE FROM percepteurs WHERE guid = "+obj.getGuid();
+		String baseQuery = "DELETE FROM percepteurs WHERE guid = "+obj.getId();
 		execute(baseQuery);
 		return true;
 	}
@@ -64,7 +63,7 @@ public class CollectorData extends AbstractDAO<Collector>{
 			statement.setString(1, obj.parseItemPercepteur());
 			statement.setLong(2, obj.getKamas());
 			statement.setLong(3, obj.getXp());
-			statement.setInt(4, obj.getGuid());
+			statement.setInt(4, obj.getId());
 			
 			execute(statement);
 			return true;
@@ -88,21 +87,17 @@ public class CollectorData extends AbstractDAO<Collector>{
 		return collector;
 	}
 	
-	public ArrayList<Collector> loadByMap(int id) {
-		ArrayList<Collector> collectors = null;
+	public Collector loadByMap(int id) {
+		Collector collector = null;
 		try {
 			Result result = getData("SELECT * FROM percepteurs WHERE mapid = "+id);
-            Collector collector;
-			while((collector = loadFromResultSet(result.resultSet)) != null){
-                if(collectors == null) collectors = new ArrayList<>();
-                collectors.add(collector);
-            }
+			collector = loadFromResultSet(result.resultSet);
 			close(result);
             logger.debug("Collectors of map {} have been loaded",id);
 		} catch(Exception e) {
             logger.error("Collectors on map {} can't be loaded ",id,e);
 		}
-		return collectors;
+		return collector;
 	}
 
     public void load() {

@@ -1,7 +1,6 @@
 package org.ancestra.evolutive.game.packet.account;
 
 
-import org.ancestra.evolutive.client.Account;
 import org.ancestra.evolutive.common.SocketManager;
 import org.ancestra.evolutive.core.Server;
 import org.ancestra.evolutive.core.World;

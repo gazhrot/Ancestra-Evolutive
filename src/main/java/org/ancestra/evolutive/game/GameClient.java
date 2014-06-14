@@ -37,7 +37,6 @@ public class GameClient implements Client {
 		this.session = session;
         logger = (Logger)LoggerFactory.getLogger("gsession" + session.getId());
         logger.info("has been created");
-        send("hello");
 	}	
 
 	@Override
@@ -122,8 +121,7 @@ public class GameClient implements Client {
 		
 		String prefix = packet.substring(0, 2);	
 		PacketParser parser = World.data.getPacketJar().get(prefix);
-		
-		if(parser != null)
+        if(parser != null)
 			parser.parse(this, packet);
 		else 
 			System.out.println(" <> Packet introuvable : "+ packet+" !");

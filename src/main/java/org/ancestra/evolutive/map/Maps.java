@@ -6,7 +6,7 @@ import org.ancestra.evolutive.common.*;
 import org.ancestra.evolutive.core.Log;
 import org.ancestra.evolutive.core.Server;
 import org.ancestra.evolutive.core.World;
-import org.ancestra.evolutive.entity.Collector;
+import org.ancestra.evolutive.entity.collector.Collector;
 import org.ancestra.evolutive.entity.monster.MobGrade;
 import org.ancestra.evolutive.entity.monster.MobGroup;
 import org.ancestra.evolutive.entity.npc.Npc;
@@ -341,7 +341,7 @@ public class Maps {
 		if(template == null || this.getCases().get(cell) == null)
 			return null;
 		
-		Npc npc = new Npc(template, this.getNextObject(), cell, (byte) dir);
+		Npc npc = new Npc(template, this.getNextObject(),this, cases.get(cell), (byte) dir);
 		this.getNpcs().put(this.getNextObject(), npc);
 		this.nextObject--;
 		return npc;
@@ -449,7 +449,7 @@ public class Maps {
 
 			ok = true;
 			for(Entry<Integer, Npc> npc : this.getNpcs().entrySet())
-				if(npc.getValue().getCellid() == entry.getValue().getId())
+				if(npc.getValue().getCell().getId() == entry.getValue().getId())
 					ok = false;
 			
 			if(!ok)
@@ -613,15 +613,15 @@ public class Maps {
 		if(this.getNpcs().isEmpty())
 			return "";
 		
-		StringBuilder packet = new StringBuilder().append("GM|");
+		StringBuilder packet = new StringBuilder().append("GM|+");
 		boolean isFirst = true;
 		
-		for(Entry<Integer, Npc> entry : this.getNpcs().entrySet()) {
-			String GM = entry.getValue().parseToGM();
+		for(Npc entry : this.getNpcs().values()) {
+			String GM = entry.getHelper().getGmPacket();
 			if(GM.equals(""))
 				continue;
 			if(!isFirst)
-				packet.append("|");
+				packet.append("|+");
 			
 			packet.append(GM);
 			isFirst = false;
@@ -645,4 +645,13 @@ public class Maps {
 		}
 		return toreturn.toString();
 	}
+
+    public boolean equals(Object object){
+        if(object instanceof Maps){
+            if(((Maps)object).getId() == this.getId()){
+                return true;
+            }
+        }
+        return false;
+    }
 }

@@ -94,7 +94,6 @@ public class Database {
         dataSource = new HikariDataSource(config);
         if(!testConnection(dataSource)){
             logger.error("Pleaz check your username and password and database connection");
-            logger.debug("If you're using a modified dbb you should look at test query in config.conf");
             System.exit(0);
         }
         logger.info("Database connection established");

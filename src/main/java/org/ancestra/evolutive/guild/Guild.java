@@ -4,7 +4,7 @@ import org.ancestra.evolutive.client.Player;
 import org.ancestra.evolutive.client.other.Stats;
 import org.ancestra.evolutive.common.Constants;
 import org.ancestra.evolutive.core.World;
-import org.ancestra.evolutive.entity.Collector;
+import org.ancestra.evolutive.entity.collector.Collector;
 import org.ancestra.evolutive.fight.spell.SpellStats;
 import org.ancestra.evolutive.house.House;
 

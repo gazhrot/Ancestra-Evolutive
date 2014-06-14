@@ -10,7 +10,7 @@ import org.ancestra.evolutive.core.Console;
 import org.ancestra.evolutive.core.Log;
 import org.ancestra.evolutive.core.Server;
 import org.ancestra.evolutive.core.World;
-import org.ancestra.evolutive.entity.Collector;
+import org.ancestra.evolutive.entity.collector.Collector;
 import org.ancestra.evolutive.entity.monster.MobGrade;
 import org.ancestra.evolutive.fight.spell.LaunchedSpell;
 import org.ancestra.evolutive.fight.spell.SpellEffect;
@@ -319,7 +319,7 @@ public class Fighter
 			case 5://Perco
 				str.append("-6;");//Perco
 				str.append("6000^100;");//GFXID^Size
-				Guild G = World.data.getGuild(Collector.GetPercoGuildID(_fight.getOldMap().getId()));
+				Guild G = World.data.getCollector(_fight.getOldMap()).getGuild();
 				str.append(G.getLevel()).append(";");
 				str.append("1;");//FIXME
 				str.append("2;4;");//FIXME
@@ -673,7 +673,7 @@ public class Fighter
 		if(_type == 2)
 			return _mob.getTemplate().getId()+"";
 		if(_type == 5)
-			return (_Perco.get_N1()+","+_Perco.get_N2());
+			return (_Perco.getFirstNameId()+","+_Perco.getLastNameId());
 		if(_type == 10)
 			return _double.getName();
 		

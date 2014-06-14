@@ -7,7 +7,6 @@ import org.ancestra.evolutive.common.Constants;
 import org.ancestra.evolutive.common.Formulas;
 import org.ancestra.evolutive.common.SocketManager;
 import org.ancestra.evolutive.core.*;
-import org.ancestra.evolutive.entity.Collector;
 import org.ancestra.evolutive.entity.Mount;
 import org.ancestra.evolutive.enums.Classe;
 import org.ancestra.evolutive.event.player.PlayerJoinEvent;
@@ -2042,25 +2041,7 @@ public class Player {
 		this.setCurMap(World.data.getCarte(newMapID));
 		this.setCurCell(this.getCurMap().getCases().get(newCellID));
 		
-		//Verification de la carte
-		//Verifier la validit� du mountpark
-		if(this.getCurMap().getMountPark() != null && this.getCurMap().getMountPark().getOwner() > 0 && this.getCurMap().getMountPark().getGuild() != null && this.getCurMap().getMountPark().getGuild().getId() != -1)
-		{
-			if(World.data.getGuild(this.getCurMap().getMountPark().getGuild().getId()) == null)//Ne devrait pas arriver
-			{
-				Log.addToLog("[MountPark] Suppression d'un MountPark a Guild invalide. GuildID : "+this.getCurMap().getMountPark().getGuild().getId());
-				MountPark.remove(this.getCurMap().getMountPark().getGuild().getId());
-			}
-		}
-		//Verifier la validit� du percepteur
-		if(Collector.GetPercoByMapID(this.getCurMap().getId()) != null)
-		{
-			if(World.data.getGuild(Collector.GetPercoByMapID(this.getCurMap().getId()).get_guildID()) == null)//Ne devrait pas arriver
-			{
-				Log.addToLog("[Percepteur] Suppression d'un Percepteur a Guild invalide. GuildID : "+Collector.GetPercoByMapID(this.getCurMap().getId()).get_guildID());
-				Collector.removePercepteur(Collector.GetPercoByMapID(this.getCurMap().getId()).get_guildID());
-			}
-		}
+
 		
 		if(PW != null) {
 			SocketManager.GAME_SEND_MAPDATA(PW,	newMapID, this.getCurMap().getDate(), this.getCurMap().getKey());

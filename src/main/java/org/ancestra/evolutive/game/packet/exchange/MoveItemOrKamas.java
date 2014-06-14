@@ -3,7 +3,7 @@ package org.ancestra.evolutive.game.packet.exchange;
 import org.ancestra.evolutive.client.Player;
 import org.ancestra.evolutive.common.SocketManager;
 import org.ancestra.evolutive.core.World;
-import org.ancestra.evolutive.entity.Collector;
+import org.ancestra.evolutive.entity.collector.Collector;
 import org.ancestra.evolutive.game.GameClient;
 import org.ancestra.evolutive.hdv.HDV;
 import org.ancestra.evolutive.hdv.HDV.HdvEntry;

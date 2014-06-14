@@ -8,7 +8,7 @@ import org.ancestra.evolutive.core.Console;
 import org.ancestra.evolutive.core.Log;
 import org.ancestra.evolutive.core.Server;
 import org.ancestra.evolutive.core.World;
-import org.ancestra.evolutive.entity.Collector;
+import org.ancestra.evolutive.entity.collector.Collector;
 import org.ancestra.evolutive.entity.monster.MobGrade;
 import org.ancestra.evolutive.entity.monster.MobGroup;
 import org.ancestra.evolutive.fight.spell.LaunchedSpell;
@@ -415,14 +415,14 @@ public class Fight {
 		_init0.setTeam(0);
 		
 		SocketManager.GAME_SEND_ERASE_ON_MAP_TO_MAP(_init0.getPersonnage().getCurMap(), _init0.getGUID());
-		SocketManager.GAME_SEND_ERASE_ON_MAP_TO_MAP(_init0.getPersonnage().getCurMap(), perco.getGuid());
+		SocketManager.GAME_SEND_ERASE_ON_MAP_TO_MAP(_init0.getPersonnage().getCurMap(), perco.getId());
 		
-		SocketManager.GAME_SEND_GAME_ADDFLAG_PACKET_TO_MAP(_init0.getPersonnage().getCurMap(), 5, _init0.getGUID(), perco.getGuid(), (_init0.getPersonnage().getCurCell().getId() + 1), "0;-1", perco.get_cellID(), "3;-1");
+		SocketManager.GAME_SEND_GAME_ADDFLAG_PACKET_TO_MAP(_init0.getPersonnage().getCurMap(), 5, _init0.getGUID(), perco.getId(), (_init0.getPersonnage().getCurCell().getId() + 1), "0;-1", perco.getCell().getId(), "3;-1");
 		SocketManager.GAME_SEND_ADD_IN_TEAM_PACKET_TO_MAP(_init0.getPersonnage().getCurMap(), _init0.getGUID(), _init0);
 		
 		for(Fighter f : team1.values())
 		{
-			SocketManager.GAME_SEND_ADD_IN_TEAM_PACKET_TO_MAP(_init0.getPersonnage().getCurMap(),perco.getGuid(), f);
+			SocketManager.GAME_SEND_ADD_IN_TEAM_PACKET_TO_MAP(_init0.getPersonnage().getCurMap(),perco.getId(), f);
 		}
 
 		SocketManager.GAME_SEND_MAP_FIGHT_GMS_PACKETS_TO_FIGHT(Fight.this,7, this.map);
@@ -557,7 +557,7 @@ public class Fight {
 	public void verifIfAllReady() {
 		boolean val = true;
         for(Fighter fighter : team0.values()) {
-            if (fighter.getPersonnage().isReady()) {
+            if (!fighter.getPersonnage().isReady()) {
                 val = false;
             }
         }
@@ -1931,14 +1931,14 @@ public class Fight {
         		Packet.append(";;0;0;0;0;0|");
         	}
 		}
-		if(Collector.GetPercoByMapID(map.getId()) != null && this.type == 4)//On a un percepteur ONLY PVM ?
+		if(World.data.getCollector(map) != null && this.type == 4)//On a un percepteur ONLY PVM ?
 		{
-			Collector p = Collector.GetPercoByMapID(map.getId());
+			Collector p = World.data.getCollector(map);
 			long winxp 	= (int)Math.floor(Formulas.getXpWinPerco(p,TEAM1,TEAM2,totalXP)/100);
 			long winkamas 	= (int)Math.floor(Formulas.getKamasWinPerco(minkamas,maxkamas)/100);
 			p.setXp(p.getXp()+winxp);
 			p.setKamas(p.getKamas()+winkamas);
-			Packet.append("5;").append(p.getGuid()).append(";").append(p.get_N1()).append(",").append(p.get_N2()).append(";").append(World.data.getGuild(p.get_guildID()).getLevel()).append(";0;");
+			Packet.append("5;").append(p.getId()).append(";").append(p.getFirstNameId()).append(",").append(p.getLastNameId()).append(";").append(World.data.getGuild(p.get_guildID()).getLevel()).append(";0;");
 			Guild G = World.data.getGuild(p.get_guildID());
 			Packet.append(G.getLevel()).append(";");
 			Packet.append(G.getExperience()).append(";");
@@ -2097,13 +2097,12 @@ public class Fight {
 								if(z.isOnline())
 								{
 									SocketManager.GAME_SEND_gITM_PACKET(z, Collector.parsetoGuild(z.getGuild().getId()));
-									SocketManager.GAME_SEND_MESSAGE(z, "Votre percepteur remporte la victioire.", Server.config.getMotdColor());
+									SocketManager.GAME_SEND_MESSAGE(z, "Votre percepteur remporte la victoire.", Server.config.getMotdColor());
 								}
 							}
 							F._Perco.set_inFight((byte)0);
 							F._Perco.set_inFightID((byte)-1);
-							for(Player z : World.data.getCarte(F._Perco.get_mapID()).getPlayers())
-							{
+							for(Player z : World.data.getCarte(F._Perco.getMap().getId()).getPlayers()){
 								if(z == null) continue;
 								SocketManager.GAME_SEND_MAP_PERCO_GMS_PACKETS(z.getAccount().getGameClient(), z.getCurMap());
 							}
@@ -2134,9 +2133,9 @@ public class Fight {
 					{
 						if(F._Perco != null)
 						{
-							getOldMap().getNpcs().remove(F._Perco.getGuid());
-							SocketManager.GAME_SEND_ERASE_ON_MAP_TO_MAP(getOldMap(), F._Perco.getGuid());
-							_perco.DelPerco(F._Perco.getGuid());
+							getOldMap().getNpcs().remove(F._Perco.getId());
+							SocketManager.GAME_SEND_ERASE_ON_MAP_TO_MAP(getOldMap(), F._Perco.getId());
+							_perco.DelPerco(F._Perco.getId());
 							World.database.getCollectorData().delete(F._Perco);
 							//On actualise la guilde+Message d'attaque FIXME
 							for(Player z : World.data.getGuild(_guildID).getMembers())
@@ -2758,7 +2757,7 @@ public class Fight {
 									}
 									_perco.set_inFight((byte)0);
 									_perco.set_inFightID((byte)-1);
-									for(Player z : World.data.getCarte(_perco.get_mapID()).getPlayers())
+									for(Player z : World.data.getCarte(_perco.getMap().getId()).getPlayers())
 									{
 										if(z == null) continue;
 										SocketManager.GAME_SEND_MAP_PERCO_GMS_PACKETS(z.getAccount().getGameClient(), z.getCurMap());
@@ -3142,7 +3141,7 @@ public class Fight {
 					}
 				}else if(fight.getValue().type == Constants.FIGHT_TYPE_PVT)
 				{
-					SocketManager.GAME_SEND_GAME_ADDFLAG_PACKET_TO_PLAYER(P, fight.getValue()._init0.getPersonnage().getCurMap(),5,fight.getValue()._init0.getGUID(),fight.getValue()._perco.getGuid(),(fight.getValue()._init0.getPersonnage().getCurCell().getId()+1),"0;-1",fight.getValue()._perco.get_cellID(),"3;-1");
+					SocketManager.GAME_SEND_GAME_ADDFLAG_PACKET_TO_PLAYER(P, fight.getValue()._init0.getPersonnage().getCurMap(),5,fight.getValue()._init0.getGUID(),fight.getValue()._perco.getId(),(fight.getValue()._init0.getPersonnage().getCurCell().getId()+1),"0;-1",fight.getValue()._perco.getCell().getId(),"3;-1");
 					for(Entry<Integer, Fighter> F : fight.getValue().team0.entrySet())
 					{
 						if(Server.config.isDebug()) Console.instance.println("PVT1: "+F.getValue().getPersonnage().getName());
@@ -3151,7 +3150,7 @@ public class Fight {
 					for(Entry<Integer, Fighter> F : fight.getValue().team1.entrySet())
 					{
 						if(Server.config.isDebug()) Console.instance.println("PVT2: "+F.getValue());
-						SocketManager.GAME_SEND_ADD_IN_TEAM_PACKET_TO_PLAYER(P, fight.getValue().map,fight.getValue()._perco.getGuid(), F.getValue());
+						SocketManager.GAME_SEND_ADD_IN_TEAM_PACKET_TO_PLAYER(P, fight.getValue().map,fight.getValue()._perco.getId(), F.getValue());
 					}
 				}
 			}
