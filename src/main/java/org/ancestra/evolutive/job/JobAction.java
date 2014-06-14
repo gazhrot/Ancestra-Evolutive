@@ -206,7 +206,7 @@ public class JobAction {
                    	{
                   		int monsterId = protectors[i][0];
                      	int monsterLvl = JobConstant.getProtectorLvl(P.getLevel());            
-                      	P.getCurMap().startFightVersusProtectors(P, new MobGroup(P.getCurMap().getNextObject(), cell.getId(), monsterId+","+monsterLvl+","+monsterLvl));
+                      	P.getCurMap().startFightVersusProtectors(P, new MobGroup(P.getCurMap().getNextObject(),P.getCurMap(), cell, monsterId+","+monsterLvl+","+monsterLvl));
                         break;
                  	}
                 }

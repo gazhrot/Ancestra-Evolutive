@@ -127,7 +127,7 @@ public class InteractiveObject {
 			break;
 			
 			case 1330://Pierre de kwak
-				player.getCurMap().startFightVersusProtectors(player, new MobGroup(player.getCurMap().getNextObject(), cell.getId(), getKwakere(player.getCurMap().getId())+","+40+","+40));
+				player.getCurMap().startFightVersusProtectors(player, new MobGroup(player.getCurMap().getNextObject(),player.getCurMap(), cell, getKwakere(player.getCurMap().getId())+","+40+","+40));
 			break;
 			
 			case 1679:

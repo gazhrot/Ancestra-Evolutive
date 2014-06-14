@@ -314,7 +314,7 @@ public class Action {
 
 					String groupData = pierrePleine.parseGroupData();
 					String condition = "MiS = "+perso.getUUID();	//Condition pour que le groupe ne soit lan�able que par le personnage qui � utiliser l'objet
-					perso.getCurMap().spawnNewGroup(true, perso.getCurCell().getId(), groupData,condition);
+					perso.getCurMap().spawnNewGroup(true, perso.getCurCell(), groupData,condition);
 
 					if(delObj)
 					{
@@ -503,7 +503,7 @@ public class Action {
 						ValidMobGroup += monsterID+","+monsterLevel+","+monsterLevel+";";
 					}
 					if(ValidMobGroup.isEmpty()) return;
-					MobGroup group  = new MobGroup(perso.getCurMap().getNextObject(), perso.getCurCell().getId(), ValidMobGroup);
+					MobGroup group  = new MobGroup(perso.getCurMap().getNextObject(),perso.getCurMap(),perso.getCurCell(), ValidMobGroup);
 					perso.getCurMap().startFigthVersusMonstres(perso, group);
 		        }catch(Exception e){Log.addToLog(e.getMessage());};
 			break;

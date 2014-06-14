@@ -156,7 +156,7 @@ public class Commands {
 			SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out, mess);
 			for(Entry<Integer, MobGroup> entry : map.getMobGroups().entrySet())
 			{
-				mess = entry.getKey()+" "+entry.getValue().getCellid()+" "+entry.getValue().getAlign()+" "+entry.getValue().getMobs().size();
+				mess = entry.getKey()+" "+entry.getValue().getCell().getId()+" "+entry.getValue().getAlign()+" "+entry.getValue().getMobs().size();
 				SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out, mess);
 			}
 			mess = "==========";

@@ -59,7 +59,7 @@ public class Creature extends Entity{
     public Creature(int id, String name, Maps map, Case cell,int orientation) {
         super(id, name);
         this.map = map;
-        this.cell = cell;
+        this.cell = (cell != null)?cell:map.getCases().get(map.getRandomFreeCell());
         this.orientation = orientation%8;
     }
 

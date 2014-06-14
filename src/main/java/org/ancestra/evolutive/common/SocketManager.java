@@ -584,7 +584,7 @@ public class SocketManager {
 	public static void GAME_SEND_MAP_MOBS_GM_PACKET(Maps map, MobGroup current_Mobs)
 	{
 		String packet = "GM|";
-		packet += current_Mobs.parseGM(); // Un par un comme sa lors du respawn :)
+		packet += current_Mobs.getHelper().getGmPacket(); // Un par un comme sa lors du respawn :)
 		for(Player z : map.getPlayers()) send(z,packet);
 		if(Server.config.isDebug())
 			Log.addToSockLog("Game: Map: Send>>"+packet);

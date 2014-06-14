@@ -352,7 +352,7 @@ public class Maps {
 			return;
 		
 		for(int a = 1; a <= nbr; a++) {
-			MobGroup group  = new MobGroup(this.getNextObject(), align, this.getMobPossibles(), this, cell, this.getMaxSize());
+			MobGroup group  = new MobGroup(this.getNextObject(), align, this.getMobPossibles(), this, cases.get(cell), this.getMaxSize());
 			
 			if(group.getMobs().isEmpty())
 				continue;
@@ -366,14 +366,13 @@ public class Maps {
 		}
 	}
 	
-	public void spawnNewGroup(boolean timer, int cell, String data, String condition) {
-		MobGroup group = new MobGroup(this.getNextObject(), cell, data);
+	public void spawnNewGroup(boolean timer, Case cell, String data, String condition) {
+		MobGroup group = new MobGroup(this.getNextObject(),this,cell, data,condition);
 		
 		if(group.getMobs().isEmpty())
 			return;
 		
 		this.getMobGroups().put(this.getNextObject(), group);
-		group.setCondition(condition);
 		group.setFix(false);
 		SocketManager.GAME_SEND_MAP_MOBS_GM_PACKET(this, group);
 		this.nextObject--;
@@ -383,7 +382,7 @@ public class Maps {
 	}
 	
 	public void spawnGroupOnCommand(int cell, String data) {
-		MobGroup group = new MobGroup(this.getNextObject(), cell, data);
+		MobGroup group = new MobGroup(this.getNextObject(),this,cases.get(cell),data);
 		
 		if(group.getMobs().isEmpty())
 			return;
@@ -395,7 +394,7 @@ public class Maps {
 	}
 	
 	public void addStaticGroup(int cell, String data) {
-		MobGroup group = new MobGroup(this.getNextObject(), cell, data);
+		MobGroup group = new MobGroup(this.getNextObject(), this,cases.get(cell), data);
 		
 		if(group.getMobs().isEmpty())
 			return;
@@ -441,7 +440,7 @@ public class Maps {
 			boolean ok = true;
 			
 			for(Entry<Integer,MobGroup> mgEntry : this.getMobGroups().entrySet())
-				if(mgEntry.getValue().getCellid() == entry.getValue().getId())
+				if(mgEntry.getValue().getCell().getId() == entry.getValue().getId())
 					ok = false;
 		
 			if(!ok)
@@ -507,7 +506,7 @@ public class Maps {
 			return;
 		
 		for(MobGroup group : this.getMobGroups().values()) {
-			if(Pathfinding.getDistanceBetween(this, cell,group.getCellid()) <= group.getAggroDistance()) {
+			if(Pathfinding.getDistanceBetween(this, cell,group.getCell().getId()) <= group.getAggroDistance()) {
 				if((group.getAlign() == -1 || ((player.getAlign() == 1 || player.getAlign() == 2) && (player.getAlign() != group.getAlign()))) && ConditionParser.validConditions(player, group.getCondition())) {
 					Log.addToLog(" > Le joueur " + player.getName() + " rentre en combat contre un groupe de monstre (" + group.getId() + ") !");
 					startFigthVersusMonstres(player,group);
@@ -593,15 +592,15 @@ public class Maps {
 		if(this.getMobGroups().isEmpty())
 			return "";
 		
-		StringBuilder packet = new StringBuilder().append("GM|");
+		StringBuilder packet = new StringBuilder().append("GM|+");
 		boolean isFirst = true;
 		
 		for(MobGroup entry : this.getMobGroups().values()) {
-			String GM = entry.parseGM();
+			String GM = entry.getHelper().getGmPacket();
 			if(GM.equals(""))
 				continue;
 			if(!isFirst)
-				packet.append("|");
+				packet.append("|+");
 			
 			packet.append(GM);
 			isFirst = false;

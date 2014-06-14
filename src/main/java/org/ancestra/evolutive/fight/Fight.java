@@ -260,7 +260,7 @@ public class Fight {
 		SocketManager.GAME_SEND_ERASE_ON_MAP_TO_MAP(_init0.getPersonnage().getCurMap(), _init0.getGUID());
 		SocketManager.GAME_SEND_ERASE_ON_MAP_TO_MAP(_init0.getPersonnage().getCurMap(), group.getId());
 		
-		SocketManager.GAME_SEND_GAME_ADDFLAG_PACKET_TO_MAP(_init0.getPersonnage().getCurMap(), 4, _init0.getGUID(), group.getId(), (_init0.getPersonnage().getCurCell().getId() + 1), "0;-1", group.getCellid(), "1;-1");
+		SocketManager.GAME_SEND_GAME_ADDFLAG_PACKET_TO_MAP(_init0.getPersonnage().getCurMap(), 4, _init0.getGUID(), group.getId(), (_init0.getPersonnage().getCurCell().getId() + 1), "0;-1", group.getCell().getId(), "1;-1");
 		SocketManager.GAME_SEND_ADD_IN_TEAM_PACKET_TO_MAP(_init0.getPersonnage().getCurMap(), _init0.getGUID(), _init0);
 		
 		for(Fighter f : team1.values())
@@ -609,7 +609,7 @@ public class Fight {
 				 team1.get(team1.keySet().toArray()[0]).getMob().getTemplate().getAlign();
 			}
 			//Si groupe non fixe
-			if(!_mobGroup.isFix())World.data.getCarte(map.getId()).spawnGroup(align, 1, true, _mobGroup.getCellid());//Respawn d'un groupe
+			if(!_mobGroup.isFix())World.data.getCarte(map.getId()).spawnGroup(align, 1, true, _mobGroup.getCell().getId());//Respawn d'un groupe
 		}
 		SocketManager.GAME_SEND_GIC_PACKETS_TO_FIGHT(Fight.this, 7);
 		SocketManager.GAME_SEND_GS_PACKET_TO_FIGHT(Fight.this, 7);
@@ -2771,7 +2771,7 @@ public class Fight {
 										 team1.get(team1.keySet().toArray()[0]).getMob().getTemplate().getAlign();
 									}
 									//Si groupe non fixe
-									if(!_mobGroup.isFix())World.data.getCarte(map.getId()).spawnGroup(align, 1, true,_mobGroup.getCellid());//Respawn d'un groupe
+									if(!_mobGroup.isFix())World.data.getCarte(map.getId()).spawnGroup(align, 1, true,_mobGroup.getCell().getId());//Respawn d'un groupe
 								}
 								map = null;
 								_ordreJeu = null;
@@ -3128,7 +3128,7 @@ public class Fight {
 					}
 				}else if(fight.getValue().type == Constants.FIGHT_TYPE_PVM)
 				{
-					SocketManager.GAME_SEND_GAME_ADDFLAG_PACKET_TO_PLAYER(P, fight.getValue()._init0.getPersonnage().getCurMap(),4,fight.getValue()._init0.getGUID(),fight.getValue()._mobGroup.getId(),(fight.getValue()._init0.getPersonnage().getCurCell().getId()+1),"0;-1",fight.getValue()._mobGroup.getCellid(),"1;-1");
+					SocketManager.GAME_SEND_GAME_ADDFLAG_PACKET_TO_PLAYER(P, fight.getValue()._init0.getPersonnage().getCurMap(),4,fight.getValue()._init0.getGUID(),fight.getValue()._mobGroup.getId(),(fight.getValue()._init0.getPersonnage().getCurCell().getId()+1),"0;-1",fight.getValue()._mobGroup.getCell().getId(),"1;-1");
 					for(Entry<Integer, Fighter> F : fight.getValue().team0.entrySet())
 					{
 						if(Server.config.isDebug()) Console.instance.println("PVM1: "+F.getValue().getPersonnage().getName());
