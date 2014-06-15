@@ -837,7 +837,7 @@ public class World {
 					+ " est deja marier!", Server.config.getMotdColor());
 			return;
 		}
-		SocketManager.GAME_SEND_cMK_PACKET_TO_MAP(perso.getCurMap(), "", -1,
+		SocketManager.GAME_SEND_cMK_PACKET_TO_MAP(perso.getMap(), "", -1,
 				"Pr�tre", perso.getName()
 						+ " acceptez-vous d'�pouser "
 						+ getMarried((perso.getSex() == 1 ? 0 : 1))
@@ -850,14 +850,14 @@ public class World {
 
 	public void Wedding(Player Homme, Player Femme, int isOK) {
 		if (isOK > 0) {
-			SocketManager.GAME_SEND_cMK_PACKET_TO_MAP(Homme.getCurMap(), "",
+			SocketManager.GAME_SEND_cMK_PACKET_TO_MAP(Homme.getMap(), "",
 					-1, "Pr�tre", "Je d�clare " + Homme.getName() + " et "
 							+ Femme.getName()
 							+ " unis par les liens sacr�s du mariage.");
 			Homme.MarryTo(Femme);
 			Femme.MarryTo(Homme);
 		} else {
-			SocketManager.GAME_SEND_Im_PACKET_TO_MAP(Homme.getCurMap(),
+			SocketManager.GAME_SEND_Im_PACKET_TO_MAP(Homme.getMap(),
 					"048;" + Homme.getName() + "~" + Femme.getName());
 		}
 		married.get(0).setIsOK(0);

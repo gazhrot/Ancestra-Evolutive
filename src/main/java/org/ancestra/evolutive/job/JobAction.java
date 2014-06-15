@@ -104,7 +104,7 @@ public class JobAction {
 		{
 			if(World.data.getMetier(36).isValidTool(P.getObjetByPos(Constants.ITEM_POS_ARME).getTemplate().getID()))
 			{
-				int dist = Pathfinding.getDistanceBetween(P.getCurMap(), P.getCurCell().getId(), cell.getId());
+				int dist = Pathfinding.getDistanceBetween(P.getMap(), P.getCell().getId(), cell.getId());
 				int distItem = 0;
 				switch(P.getObjetByPos(Constants.ITEM_POS_ARME).getTemplate().getID())
 				{
@@ -154,8 +154,8 @@ public class JobAction {
 		{
 			IO.setInteractive(false);
 			IO.setState(JobConstant.IOBJECT_STATE_EMPTYING);
-			SocketManager.GAME_SEND_GA_PACKET_TO_MAP(P.getCurMap(),""+GA.getId(), 501, P.getId()+"", cell.getId()+","+this.time);
-			SocketManager.GAME_SEND_GDF_PACKET_TO_MAP(P.getCurMap(),cell);
+			SocketManager.GAME_SEND_GA_PACKET_TO_MAP(P.getMap(),""+GA.getId(), 501, P.getId()+"", cell.getId()+","+this.time);
+			SocketManager.GAME_SEND_GDF_PACKET_TO_MAP(P.getMap(),cell);
 			this.startTime = System.currentTimeMillis()+this.time;//pour eviter le cheat
 		}else
 		{
@@ -163,7 +163,7 @@ public class JobAction {
 			IO.setState(JobConstant.IOBJECT_STATE_EMPTYING);//FIXME trouver la bonne valeur
 			P.setCurJobAction(this);
 			SocketManager.GAME_SEND_ECK_PACKET(P, 3, this.min+";"+this.id);//this.min => Nbr de Case de l'interface
-			SocketManager.GAME_SEND_GDF_PACKET_TO_MAP(P.getCurMap(), cell);
+			SocketManager.GAME_SEND_GDF_PACKET_TO_MAP(P.getMap(), cell);
 		}
 	}
 	
@@ -178,7 +178,7 @@ public class JobAction {
 			IO.setState(3);
 			IO.startTimer();
 			//Packet GDF (changement d'�tat de l'IO)
-			SocketManager.GAME_SEND_GDF_PACKET_TO_MAP(P.getCurMap(), cell);
+			SocketManager.GAME_SEND_GDF_PACKET_TO_MAP(P.getMap(), cell);
 			//boolean special = Formulas.getRandomValue(0, 99)==0;//Restriction de niveau ou pas ? Useless.
 			//On ajoute X ressources
 			int qua = (this.max>this.min?Formulas.getRandomValue(this.min, this.max):this.min);
@@ -206,7 +206,7 @@ public class JobAction {
                    	{
                   		int monsterId = protectors[i][0];
                      	int monsterLvl = JobConstant.getProtectorLvl(P.getLevel());            
-                      	P.getCurMap().startFightVersusProtectors(P, new MobGroup(P.getCurMap().getNextObject(),P.getCurMap(), cell, monsterId+","+monsterLvl+","+monsterLvl));
+                      	P.getMap().startFightVersusProtectors(P, new MobGroup(P.getMap().getNextObject(),P.getMap(), cell, monsterId+","+monsterLvl+","+monsterLvl));
                         break;
                  	}
                 }
@@ -301,7 +301,7 @@ public class JobAction {
 		if(tID == -1 || !SM.getTemplate().canCraft(this.id, tID))
 		{
 			SocketManager.GAME_SEND_Ec_PACKET(this.player,"EI");
-			SocketManager.GAME_SEND_IO_PACKET_TO_MAP(this.player.getCurMap(),this.player.getId(),"-");
+			SocketManager.GAME_SEND_IO_PACKET_TO_MAP(this.player.getMap(),this.player.getId(),"-");
 			this.ingredients.clear();	
 			return;
 		}
@@ -312,7 +312,7 @@ public class JobAction {
 		if(!success)//Si echec
 		{
 			SocketManager.GAME_SEND_Ec_PACKET(this.player,"EF");
-			SocketManager.GAME_SEND_IO_PACKET_TO_MAP(this.player.getCurMap(),this.player.getId(),"-"+tID);
+			SocketManager.GAME_SEND_IO_PACKET_TO_MAP(this.player.getMap(),this.player.getId(),"-"+tID);
 			SocketManager.GAME_SEND_Im_PACKET(this.player, "0118");
 		}else
 		{
@@ -343,7 +343,7 @@ public class JobAction {
 			SocketManager.GAME_SEND_Ow_PACKET(this.player);
 			SocketManager.GAME_SEND_Em_PACKET(this.player,"KO+"+guid+"|1|"+tID+"|"+newObj.parseStatsString().replace(";","#"));
 			SocketManager.GAME_SEND_Ec_PACKET(this.player,"K;"+tID);
-			SocketManager.GAME_SEND_IO_PACKET_TO_MAP(this.player.getCurMap(),this.player.getId(),"+"+tID);
+			SocketManager.GAME_SEND_IO_PACKET_TO_MAP(this.player.getMap(),this.player.getId(),"+"+tID);
 		}
 		
 		//On donne l'xp
@@ -398,7 +398,7 @@ public class JobAction {
 			Objet ing = World.data.getObjet(idIngredient);
 			if (ing == null || !this.player.hasItemGuid(idIngredient)) {
 				SocketManager.GAME_SEND_Ec_PACKET(this.player, "EI");
-				SocketManager.GAME_SEND_IO_PACKET_TO_MAP(this.player.getCurMap(), this.player.getId(), "-");
+				SocketManager.GAME_SEND_IO_PACKET_TO_MAP(this.player.getMap(), this.player.getId(), "-");
 				this.ingredients.clear();
 				return;
 			}
@@ -926,7 +926,7 @@ public class JobAction {
 		job.addXp(this.player, (int) (Server.config.getRateXpJob() + 9.0 / 10.0) * 10);
 		if (job == null || objectFm == null || runeOrPotion == null) {
 			SocketManager.GAME_SEND_Ec_PACKET(this.player, "EI");
-			SocketManager.GAME_SEND_IO_PACKET_TO_MAP(this.player.getCurMap(), this.player.getId(), "-");
+			SocketManager.GAME_SEND_IO_PACKET_TO_MAP(this.player.getMap(), this.player.getId(), "-");
 			this.ingredients.clear();
 			return;
 		}
@@ -1026,7 +1026,7 @@ public class JobAction {
 				this.data = data;
 			
 			
-			SocketManager.GAME_SEND_IO_PACKET_TO_MAP(this.player.getCurMap(), this.player.getId(), "-" + objTemaplateID);
+			SocketManager.GAME_SEND_IO_PACKET_TO_MAP(this.player.getMap(), this.player.getId(), "-" + objTemaplateID);
 			SocketManager.GAME_SEND_Ec_PACKET(this.player, "EF");
 			SocketManager.GAME_SEND_Im_PACKET(this.player, "0183");
 		} else {// Si r�ussite :)
@@ -1140,7 +1140,7 @@ public class JobAction {
 			if (this.reConfigingRunes != 0 || this.broken)
 				SocketManager.GAME_SEND_EXCHANGE_MOVE_OK_FM(this.player, 'O', "+", data);
 			this.data = data;
-			SocketManager.GAME_SEND_IO_PACKET_TO_MAP(this.player.getCurMap(), this.player.getId(), "+" + objTemaplateID);
+			SocketManager.GAME_SEND_IO_PACKET_TO_MAP(this.player.getMap(), this.player.getId(), "+" + objTemaplateID);
 			SocketManager.GAME_SEND_Ec_PACKET(this.player, "K;" + objTemaplateID);
 		}
 		this.lastCraft.clear();

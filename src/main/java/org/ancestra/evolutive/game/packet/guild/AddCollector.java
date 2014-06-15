@@ -24,12 +24,12 @@ public class AddCollector implements PacketParser {
 			SocketManager.GAME_SEND_Im_PACKET(client.getPlayer(), "182");
 			return;
 		}
-		if(World.data.getCollector(client.getPlayer().getCurMap()) != null)//La carte poss�de un perco
+		if(World.data.getCollector(client.getPlayer().getMap()) != null)//La carte poss�de un perco
 		{
 			SocketManager.GAME_SEND_Im_PACKET(client.getPlayer(), "1168;1");
 			return;
 		}
-		if(client.getPlayer().getCurMap().getPlaces().length() < 5)//La map ne poss�de pas de "places"
+		if(client.getPlayer().getMap().getPlaces().length() < 5)//La map ne poss�de pas de "places"
 		{
 			SocketManager.GAME_SEND_Im_PACKET(client.getPlayer(), "113");
 			return;
@@ -39,9 +39,9 @@ public class AddCollector implements PacketParser {
 		short random2 = (short) (Formulas.getRandomValue(1, 71));
 		//Ajout du Perco.
 		int id = World.database.getCollectorData().nextId();
-		Collector perco = new Collector(id, client.getPlayer().getCurMap().getId(), client.getPlayer().getCurCell().getId(), (byte)3, client.getPlayer().getGuild().getId(), random1, random2, "", 0, 0);
+		Collector perco = new Collector(id, client.getPlayer().getMap().getId(), client.getPlayer().getCell().getId(), (byte)3, client.getPlayer().getGuild().getId(), random1, random2, "", 0, 0);
 		World.data.addPerco(perco);
-		SocketManager.GAME_SEND_ADD_PERCO_TO_MAP(client.getPlayer().getCurMap());
+		SocketManager.GAME_SEND_ADD_PERCO_TO_MAP(client.getPlayer().getMap());
 		World.database.getCollectorData().create(perco);
 		for(Player z : client.getPlayer().getGuild().getMembers())
 		{

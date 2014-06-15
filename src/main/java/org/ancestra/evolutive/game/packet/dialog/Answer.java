@@ -19,7 +19,7 @@ public class Answer implements PacketParser {
 			if(client.getPlayer().getIsTalkingWith() == 0)
 				return;
 			
-			Npc npc = client.getPlayer().getCurMap().getNpcs().get(client.getPlayer().getIsTalkingWith());
+			Npc npc = client.getPlayer().getMap().getNpcs().get(client.getPlayer().getIsTalkingWith());
 			
 			if( npc == null)
 				return;

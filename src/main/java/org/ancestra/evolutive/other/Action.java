@@ -308,13 +308,13 @@ public class Action {
 					boolean delObj = args.split(",")[0].equals("true");
 					boolean inArena = args.split(",")[1].equals("true");
 
-					if(inArena && !World.data.isArenaMap(perso.getCurMap().getId()))return;	//Si la map du personnage n'est pas class� comme �tant dans l'ar�ne
+					if(inArena && !World.data.isArenaMap(perso.getMap().getId()))return;	//Si la map du personnage n'est pas class� comme �tant dans l'ar�ne
 
 					PierreAme pierrePleine = (PierreAme)World.data.getObjet(itemID);
 
 					String groupData = pierrePleine.parseGroupData();
 					String condition = "MiS = "+perso.getId();	//Condition pour que le groupe ne soit lan�able que par le personnage qui � utiliser l'objet
-					perso.getCurMap().spawnNewGroup(true, perso.getCurCell(), groupData,condition);
+					perso.getMap().spawnNewGroup(true, perso.getCell(), groupData,condition);
 
 					if(delObj)
 					{
@@ -359,7 +359,7 @@ public class Action {
 						perso.teleport(newMapID,newCellID);
 					}else if(MapNeed > 0)
 					{
-					if (perso.hasItemTemplate(ObjetNeed, 1) && perso.getCurMap().getId() == MapNeed)
+					if (perso.hasItemTemplate(ObjetNeed, 1) && perso.getMap().getId() == MapNeed)
 					{
 						//Le perso a l'item
 						//Le perso est sur la bonne map
@@ -368,7 +368,7 @@ public class Action {
 						perso.removeByTemplateID(ObjetNeed, 1);
 						SocketManager.GAME_SEND_Ow_PACKET(perso);
 					}
-					else if(perso.getCurMap().getId() != MapNeed)
+					else if(perso.getMap().getId() != MapNeed)
 					{
 						//Le perso n'est pas sur la bonne map
 						SocketManager.GAME_SEND_MESSAGE(perso, "Vous n'etes pas sur la bonne map du donjon pour etre teleporter.", "009900");
@@ -470,15 +470,15 @@ public class Action {
 					int morphID = Integer.parseInt(args);
 					if(morphID < 0)return;
 					perso.setGfx(morphID);
-					SocketManager.GAME_SEND_ERASE_ON_MAP_TO_MAP(perso.getCurMap(), perso.getId());
-					SocketManager.GAME_SEND_ADD_PLAYER_TO_MAP(perso.getCurMap(), perso);
+					SocketManager.GAME_SEND_ERASE_ON_MAP_TO_MAP(perso.getMap(), perso.getId());
+					SocketManager.GAME_SEND_ADD_PLAYER_TO_MAP(perso.getMap(), perso);
 				}catch(Exception e){Log.addToLog(e.getMessage());};
 			break;
 			case 25://SimpleUnMorph
 				int UnMorphID = perso.getClasse().getId()*10 + perso.getSex();
 				perso.setGfx(UnMorphID);
-				SocketManager.GAME_SEND_ERASE_ON_MAP_TO_MAP(perso.getCurMap(), perso.getId());
-				SocketManager.GAME_SEND_ADD_PLAYER_TO_MAP(perso.getCurMap(), perso);
+				SocketManager.GAME_SEND_ERASE_ON_MAP_TO_MAP(perso.getMap(), perso.getId());
+				SocketManager.GAME_SEND_ADD_PLAYER_TO_MAP(perso.getMap(), perso);
 			break;
 			case 26://T�l�portation enclo de guilde (ouverture du panneau de guilde)
 				SocketManager.GAME_SEND_GUILDENCLO_PACKET(perso);
@@ -503,8 +503,8 @@ public class Action {
 						ValidMobGroup += monsterID+","+monsterLevel+","+monsterLevel+";";
 					}
 					if(ValidMobGroup.isEmpty()) return;
-					MobGroup group  = new MobGroup(perso.getCurMap().getNextObject(),perso.getCurMap(),perso.getCurCell(), ValidMobGroup);
-					perso.getCurMap().startFigthVersusMonstres(perso, group);
+					MobGroup group  = new MobGroup(perso.getMap().getNextObject(),perso.getMap(),perso.getCell(), ValidMobGroup);
+					perso.getMap().startFigthVersusMonstres(perso, group);
 		        }catch(Exception e){Log.addToLog(e.getMessage());};
 			break;
 			case 50://Traque
@@ -620,7 +620,7 @@ public class Action {
 
 			break;
 			case 101://Arriver sur case de mariage
-				if((perso.getSex() == 0 && perso.getCurCell().getId() == 282) || (perso.getSex() == 1 && perso.getCurCell().getId() == 297))
+				if((perso.getSex() == 0 && perso.getCell().getId() == 282) || (perso.getSex() == 1 && perso.getCell().getId() == 297))
 				{
 					World.data.AddMarried(perso.getSex(), perso);
 				}else 
@@ -629,7 +629,7 @@ public class Action {
 				}
 			break;
 			case 102://Marier des personnages
-				World.data.PriestRequest(perso, perso.getCurMap(), perso.getIsTalkingWith());
+				World.data.PriestRequest(perso, perso.getMap(), perso.getIsTalkingWith());
 			break;
 			case 103://Divorce
 				if(perso.getKamas() < 50000)
@@ -650,7 +650,7 @@ public class Action {
 					Animation animation = World.data.getAnimation(AnimationId);
 					if(perso.getFight() != null) return;
 					perso.changeOrientation(1);
-					SocketManager.GAME_SEND_GA_PACKET_TO_MAP(perso.getCurMap(), "0", 228, perso.getId()+";"+cellid+","+Animation.parseToGA(animation), "");
+					SocketManager.GAME_SEND_GA_PACKET_TO_MAP(perso.getMap(), "0", 228, perso.getId()+";"+cellid+","+Animation.parseToGA(animation), "");
 				}catch(Exception e){Log.addToLog(e.getMessage());};
 			break;
             case 229 :

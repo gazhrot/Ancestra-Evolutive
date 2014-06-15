@@ -35,7 +35,7 @@ import java.util.Map.Entry;
 public class SocketManager {
 	
 	public static void send(Player p, String packet) {
-		p.getAccount().getGameClient().getSession().write(packet);
+        p.getAccount().getGameClient().getSession().write(packet);
 	}
 	
 	public static void send(Client out, String packet) {
@@ -432,7 +432,7 @@ public class SocketManager {
 
 	public static void GAME_SEND_ADD_PLAYER_TO_MAP(Maps map, Player perso)
 	{
-		String packet = "GM|+"+perso.parseToGM();
+		String packet = "GM|+"+perso.getHelper().getGmPacket();
 		for(Player z : map.getPlayers()) send(z,packet);	
 		if(Server.config.isDebug())
 			Log.addToSockLog("Game: Map "+map.getId()+": Send>>"+packet);
@@ -694,8 +694,7 @@ public class SocketManager {
 	{
 		String packet = "ILS"+i;
 		send(out,packet);
-		if(Server.config.isDebug())
-			Log.addToSockLog("Game: Send>>"+packet);
+
 	}public static void GAME_SEND_ILF_PACKET(Player P,int i)
 	{
 		String packet = "ILF"+i;
@@ -911,7 +910,6 @@ public class SocketManager {
 		for(Fighter f : fight.getFighters(teams)){
 			if(f.hasLeft())continue;
 			if(f.getPersonnage() == null || !f.getPersonnage().isOnline())continue;
-            System.err.println("Bonjour");
 			send(f.getPersonnage(),packet);
 		}
 	}
@@ -1949,7 +1947,7 @@ public class SocketManager {
 
 	public static void GAME_SEND_ALTER_GM_PACKET(Maps map,	Player perso)
 	{
-		String packet = "GM|~"+perso.parseToGM();
+		String packet = "GM|~"+perso.getHelper().getGmPacket();
 		for(Player z : map.getPlayers()) send(z,packet);
 		if(Server.config.isDebug())
 			Log.addToSockLog("Game: Map: Send>>"+packet);
@@ -2139,7 +2137,7 @@ public class SocketManager {
 	}
 	
 	public static void GAME_SEND_ZAAPI_PACKET(Player perso, String list) {
-		String packet = "Wc" + perso.getCurMap().getId()+ "|"+list;
+		String packet = "Wc" + perso.getMap().getId()+ "|"+list;
 		send(perso, packet);
 		Log.addToSockLog("Game: Send>>" + packet);
 	}
@@ -2317,7 +2315,7 @@ public class SocketManager {
 	
 	public static void GAME_SEND_FLAG_PACKET(Player perso, Player cible) 
 	{ 
-		String packet = "IC"+cible.getCurMap().getX()+"|"+cible.getCurMap().getY(); 
+		String packet = "IC"+cible.getMap().getX()+"|"+cible.getMap().getY();
 		send(perso,packet); 
 		if(Server.config.isDebug()) 
 			Log.addToSockLog("Game: Send>>"+packet); 
@@ -2444,8 +2442,8 @@ public class SocketManager {
     {
     	StringBuilder packet = new StringBuilder();
     	packet.append("GM|~");
-    	if(World.data.getSeller(P.getCurMap().getId()) == null) return;
-        for (Integer pID : World.data.getSeller(P.getCurMap().getId())) 
+    	if(World.data.getSeller(P.getMap().getId()) == null) return;
+        for (Integer pID : World.data.getSeller(P.getMap().getId()))
         {
         	if(!World.data.getPersonnage(pID).isOnline() && World.data.getPersonnage(pID).isSeeSeller())
         	{

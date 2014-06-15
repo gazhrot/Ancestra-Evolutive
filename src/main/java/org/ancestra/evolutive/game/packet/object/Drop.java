@@ -24,7 +24,7 @@ public class Drop implements PacketParser {
 			return;
 		
 		Objet obj = World.data.getObjet(guid);
-		client.getPlayer().setCurCell(client.getPlayer().getCurCell());
+		client.getPlayer().setCell(client.getPlayer().getCell());
 		int cellPosition = Constants.getNearCellidUnused(client.getPlayer());
 		
 		if(cellPosition < 0) {
@@ -37,23 +37,23 @@ public class Drop implements PacketParser {
 			if(obj.getPosition() == Constants.ITEM_POS_ARME || obj.getPosition() == Constants.ITEM_POS_COIFFE ||
 				obj.getPosition() == Constants.ITEM_POS_FAMILIER || obj.getPosition() == Constants.ITEM_POS_CAPE ||
 				obj.getPosition() == Constants.ITEM_POS_BOUCLIER || obj.getPosition() == Constants.ITEM_POS_NO_EQUIPED)
-				SocketManager.GAME_SEND_ON_EQUIP_ITEM(client.getPlayer().getCurMap(), client.getPlayer());
+				SocketManager.GAME_SEND_ON_EQUIP_ITEM(client.getPlayer().getMap(), client.getPlayer());
 		}
 		if(qua >= obj.getQuantity()) {
 			client.getPlayer().removeItem(guid);
-			client.getPlayer().getCurMap().getCases().get(client.getPlayer().getCurCell().getId()+cellPosition).setObject(obj);
+			client.getPlayer().getMap().getCases().get(client.getPlayer().getCell().getId()+cellPosition).setObject(obj);
 			obj.setPosition(Constants.ITEM_POS_NO_EQUIPED);
 			SocketManager.GAME_SEND_REMOVE_ITEM_PACKET(client.getPlayer(), guid);
 		}else {
 			obj.setQuantity(obj.getQuantity() - qua);
 			Objet obj2 = Objet.getCloneObjet(obj, qua);
 			obj2.setPosition(Constants.ITEM_POS_NO_EQUIPED);
-			client.getPlayer().getCurMap().getCases().get(client.getPlayer().getCurCell().getId()+cellPosition).setObject(obj2);
+			client.getPlayer().getMap().getCases().get(client.getPlayer().getCell().getId()+cellPosition).setObject(obj2);
 			SocketManager.GAME_SEND_OBJECT_QUANTITY_PACKET(client.getPlayer(), obj);
 		}
 		
 		SocketManager.GAME_SEND_Ow_PACKET(client.getPlayer());
-		SocketManager.GAME_SEND_GDO_PACKET_TO_MAP(client.getPlayer().getCurMap(),'+',client.getPlayer().getCurMap().getCases().get(client.getPlayer().getCurCell().getId()+cellPosition).getId(),obj.getTemplate().getID(),0);
+		SocketManager.GAME_SEND_GDO_PACKET_TO_MAP(client.getPlayer().getMap(),'+',client.getPlayer().getMap().getCases().get(client.getPlayer().getCell().getId()+cellPosition).getId(),obj.getTemplate().getID(),0);
 		SocketManager.GAME_SEND_STATS_PACKET(client.getPlayer());
 	}
 }

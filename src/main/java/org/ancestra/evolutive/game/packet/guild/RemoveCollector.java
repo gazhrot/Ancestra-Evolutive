@@ -21,7 +21,7 @@ public class RemoveCollector implements PacketParser {
 		byte IDPerco = Byte.parseByte(packet);
 		Collector perco = World.data.getPerco(IDPerco);
 		if(perco == null || perco.get_inFight() > 0) return;
-		SocketManager.GAME_SEND_ERASE_ON_MAP_TO_MAP(client.getPlayer().getCurMap(), IDPerco);
+		SocketManager.GAME_SEND_ERASE_ON_MAP_TO_MAP(client.getPlayer().getMap(), IDPerco);
 		World.database.getCollectorData().delete(perco);
 		perco.DelPerco(perco.getId());
 		for(Player z : client.getPlayer().getGuild().getMembers())

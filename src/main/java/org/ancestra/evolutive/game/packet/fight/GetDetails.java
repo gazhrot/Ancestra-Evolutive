@@ -18,6 +18,6 @@ public class GetDetails implements PacketParser {
 		if(key == -1)
 			return;
 		
-		SocketManager.GAME_SEND_FIGHT_DETAILS(client, client.getPlayer().getCurMap().getFights().get(key));
+		SocketManager.GAME_SEND_FIGHT_DETAILS(client, client.getPlayer().getMap().getFights().get(key));
 	}
 }

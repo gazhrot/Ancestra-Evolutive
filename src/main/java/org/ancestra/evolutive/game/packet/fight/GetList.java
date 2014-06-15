@@ -10,6 +10,6 @@ public class GetList implements PacketParser {
 
 	@Override
 	public void parse(GameClient client, String packet) {
-		SocketManager.GAME_SEND_FIGHT_LIST_PACKET(client, client.getPlayer().getCurMap());
+		SocketManager.GAME_SEND_FIGHT_LIST_PACKET(client, client.getPlayer().getMap());
 	}
 }

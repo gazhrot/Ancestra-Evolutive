@@ -70,15 +70,15 @@ public class SendActions implements PacketParser {
 			
 			case 618://Mariage oui
 				client.getPlayer().setIsOK(Integer.parseInt(packet.substring(5,6)));
-				SocketManager.GAME_SEND_cMK_PACKET_TO_MAP(client.getPlayer().getCurMap(), "", client.getPlayer().getId(), client.getPlayer().getName(), "Oui");
+				SocketManager.GAME_SEND_cMK_PACKET_TO_MAP(client.getPlayer().getMap(), "", client.getPlayer().getId(), client.getPlayer().getName(), "Oui");
 				if(World.data.getMarried(0).getIsOK() > 0 && World.data.getMarried(1).getIsOK() > 0)
 					World.data.Wedding(World.data.getMarried(0), World.data.getMarried(1), 1);
 				if(World.data.getMarried(0) != null && World.data.getMarried(1) != null)
-					World.data.PriestRequest((World.data.getMarried(0)==client.getPlayer()?World.data.getMarried(1):World.data.getMarried(0)), (World.data.getMarried(0)==client.getPlayer()?World.data.getMarried(1).getCurMap():World.data.getMarried(0).getCurMap()), client.getPlayer().getIsTalkingWith());
+					World.data.PriestRequest((World.data.getMarried(0)==client.getPlayer()?World.data.getMarried(1):World.data.getMarried(0)), (World.data.getMarried(0)==client.getPlayer()?World.data.getMarried(1).getMap():World.data.getMarried(0).getMap()), client.getPlayer().getIsTalkingWith());
 			break;
 			case 619://Mariage non
 				client.getPlayer().setIsOK(0);
-				SocketManager.GAME_SEND_cMK_PACKET_TO_MAP(client.getPlayer().getCurMap(), "", client.getPlayer().getId(), client.getPlayer().getName(), "Non");
+				SocketManager.GAME_SEND_cMK_PACKET_TO_MAP(client.getPlayer().getMap(), "", client.getPlayer().getId(), client.getPlayer().getName(), "Non");
 				World.data.Wedding(World.data.getMarried(0), World.data.getMarried(1), 0);
 			break;
 			
@@ -146,8 +146,8 @@ public class SendActions implements PacketParser {
 					SocketManager.GAME_SEND_Im_PACKET(client.getPlayer(), "1180");
 					return;
 				}
-				SocketManager.GAME_SEND_GA_PACKET_TO_MAP(client.getPlayer().getCurMap(),"", 909, client.getPlayer().getId()+"", id+"");
-				client.getPlayer().getCurMap().startFigthVersusPercepteur(client.getPlayer(), target);
+				SocketManager.GAME_SEND_GA_PACKET_TO_MAP(client.getPlayer().getMap(),"", 909, client.getPlayer().getId()+"", id+"");
+				client.getPlayer().getMap().startFigthVersusPercepteur(client.getPlayer(), target);
 			}catch(Exception e){};
 		}
 		
@@ -159,21 +159,21 @@ public class SendActions implements PacketParser {
 				int id = Integer.parseInt(packet.substring(5));
 				Player target = World.data.getPersonnage(id);
 				if(target == null || !target.isOnline() || target.getFight() != null
-					|| target.getCurMap().getId() != client.getPlayer().getCurMap().getId()
+					|| target.getMap().getId() != client.getPlayer().getMap().getId()
 					|| target.getAlign() == client.getPlayer().getAlign()
-					|| client.getPlayer().getCurMap().getPlaces().equalsIgnoreCase("|")
+					|| client.getPlayer().getMap().getPlaces().equalsIgnoreCase("|")
 					|| !target.isCanAggro())
 					return;
 				
 				client.getPlayer().toggleWings('+');
-				SocketManager.GAME_SEND_GA_PACKET_TO_MAP(client.getPlayer().getCurMap(),"", 906, client.getPlayer().getId()+"", id+"");
+				SocketManager.GAME_SEND_GA_PACKET_TO_MAP(client.getPlayer().getMap(),"", 906, client.getPlayer().getId()+"", id+"");
 				
 				if(target.getAlign() == 0) {
 					client.getPlayer().setDeshonor(client.getPlayer().getDeshonor()+1);
 					SocketManager.GAME_SEND_Im_PACKET(client.getPlayer(), "084;1");
-					client.getPlayer().getCurMap().newFight(client.getPlayer(), target, Constants.FIGHT_TYPE_AGRESSION, true);
+					client.getPlayer().getMap().newFight(client.getPlayer(), target, Constants.FIGHT_TYPE_AGRESSION, true);
 				} else 
-					client.getPlayer().getCurMap().newFight(client.getPlayer(), target, Constants.FIGHT_TYPE_AGRESSION, false);
+					client.getPlayer().getMap().newFight(client.getPlayer(), target, Constants.FIGHT_TYPE_AGRESSION, false);
 				
 			}catch(Exception e){
 				
@@ -192,13 +192,13 @@ public class SendActions implements PacketParser {
 				action = Integer.parseInt(packet.split(";")[1]);
 			} catch(Exception e) {}
 			//Si packet invalide, ou cellule introuvable
-			if(cell == -1 || action == -1 || client.getPlayer() == null || client.getPlayer().getCurMap() == null ||
-					client.getPlayer().getCurMap().getCases().get(cell) == null)
+			if(cell == -1 || action == -1 || client.getPlayer() == null || client.getPlayer().getMap() == null ||
+					client.getPlayer().getMap().getCases().get(cell) == null)
 				return;
 			GA.setArgs(cell+";"+action);
 			client.getPlayer().getAccount().getGameClient().addAction(GA);
             if(client.getLastPacketSent().equals("GA;0")){
-                client.getPlayer().getCurMap().getCases().get(cell).startAction(client.getPlayer(),GA);
+                client.getPlayer().getMap().getCases().get(cell).startAction(client.getPlayer(),GA);
             }
 		}
 	
@@ -240,7 +240,7 @@ public class SendActions implements PacketParser {
 			{
 				try
 				{
-					Fight F = client.getPlayer().getCurMap().getFights().get(Integer.parseInt(infos[0]));
+					Fight F = client.getPlayer().getMap().getFights().get(Integer.parseInt(infos[0]));
 					F.joinAsSpect(client.getPlayer());
 				}catch(Exception e){return;};
 			}else
@@ -264,8 +264,8 @@ public class SendActions implements PacketParser {
 			int guid = -1;
 			try{guid = Integer.parseInt(packet.substring(5));}catch(NumberFormatException e){return;};
 			if(client.getPlayer().getDuel() != guid || client.getPlayer().getDuel() == -1)return;
-			SocketManager.GAME_SEND_MAP_START_DUEL_TO_MAP(client.getPlayer().getCurMap(),client.getPlayer().getDuel(),client.getPlayer().getId());
-			Fight fight = client.getPlayer().getCurMap().newFight(World.data.getPersonnage(client.getPlayer().getDuel()),client.getPlayer(),Constants.FIGHT_TYPE_CHALLENGE, false);
+			SocketManager.GAME_SEND_MAP_START_DUEL_TO_MAP(client.getPlayer().getMap(),client.getPlayer().getDuel(),client.getPlayer().getId());
+			Fight fight = client.getPlayer().getMap().newFight(World.data.getPersonnage(client.getPlayer().getDuel()),client.getPlayer(),Constants.FIGHT_TYPE_CHALLENGE, false);
 			client.getPlayer().setFight(fight);
 			World.data.getPersonnage(client.getPlayer().getDuel()).setFight(fight);
 		}
@@ -275,7 +275,7 @@ public class SendActions implements PacketParser {
 			try
 			{
 				if(client.getPlayer().getDuel() == -1)return;
-				SocketManager.GAME_SEND_CANCEL_DUEL_TO_MAP(client.getPlayer().getCurMap(),client.getPlayer().getDuel(),client.getPlayer().getId());
+				SocketManager.GAME_SEND_CANCEL_DUEL_TO_MAP(client.getPlayer().getMap(),client.getPlayer().getDuel(),client.getPlayer().getId());
 				World.data.getPersonnage(client.getPlayer().getDuel()).setAway(false);
 				World.data.getPersonnage(client.getPlayer().getDuel()).setDuel(-1);
 				client.getPlayer().setAway(false);
@@ -285,7 +285,7 @@ public class SendActions implements PacketParser {
 	
 		public static void game_ask_duel(GameClient client, String packet)
 		{
-			if(client.getPlayer().getCurMap().getPlaces().equalsIgnoreCase("|"))
+			if(client.getPlayer().getMap().getPlaces().equalsIgnoreCase("|"))
 			{
 				SocketManager.GAME_SEND_DUEL_Y_AWAY(client, client.getPlayer().getId());
 				return;
@@ -302,7 +302,7 @@ public class SendActions implements PacketParser {
 				
 				if(Target == null) 
 					return;
-				if(Target.isAway() || Target.getFight() != null || Target.getCurMap().getId() != client.getPlayer().getCurMap().getId()) {
+				if(Target.isAway() || Target.getFight() != null || Target.getMap().getId() != client.getPlayer().getMap().getId()) {
 					SocketManager.GAME_SEND_DUEL_E_AWAY(client, client.getPlayer().getId());
 					return;
 				}
@@ -311,7 +311,7 @@ public class SendActions implements PacketParser {
 				client.getPlayer().setAway(true);
 				World.data.getPersonnage(guid).setDuel(client.getPlayer().getId());
 				World.data.getPersonnage(guid).setAway(true);
-				SocketManager.GAME_SEND_MAP_NEW_DUEL_TO_MAP(client.getPlayer().getCurMap(),client.getPlayer().getId(),guid);
+				SocketManager.GAME_SEND_MAP_NEW_DUEL_TO_MAP(client.getPlayer().getMap(),client.getPlayer().getId(),guid);
 			}catch(NumberFormatException e){return;}
 		}
 	
@@ -329,9 +329,9 @@ public class SendActions implements PacketParser {
 				}
 				
 				AtomicReference<String> pathRef = new AtomicReference<String>(path);
-				int result = Pathfinding.isValidPath(client.getPlayer().getCurMap(), client.getPlayer().getCurCell().getId(), pathRef, null);
+				int result = Pathfinding.isValidPath(client.getPlayer().getMap(), client.getPlayer().getCell().getId(), pathRef, null);
 				
-				Case targetCell = client.getPlayer().getCurMap().getCases().get(CryptManager.cellCode_To_ID(path.substring(path.length()-2)));
+				Case targetCell = client.getPlayer().getMap().getCases().get(CryptManager.cellCode_To_ID(path.substring(path.length()-2)));
 				
 				//Si d�placement inutile
 				if(result == 0)
@@ -341,7 +341,7 @@ public class SendActions implements PacketParser {
 						if(targetCell.getObject() != null)
 						{
 							if(targetCell.getInteractiveObject().getId() == 1324) {
-								Constants.applyPlotIOAction(client.getPlayer(),client.getPlayer().getCurMap().getId(),targetCell.getId());
+								Constants.applyPlotIOAction(client.getPlayer(),client.getPlayer().getMap().getId(),targetCell.getId());
 							}else if(targetCell.getInteractiveObject().getId() == 542) {
 								if(client.getPlayer().isGhosts()) 
 									client.getPlayer().setAlive();
@@ -366,12 +366,12 @@ public class SendActions implements PacketParser {
 				if(result == -1000)
 				{
 					Log.addToLog(client.getPlayer().getName()+"("+client.getPlayer().getId()+") Tentative de  deplacement avec un path invalide");
-					path = CryptManager.getHashedValueByInt(client.getPlayer().getOrientation())+CryptManager.cellID_To_Code(client.getPlayer().getCurCell().getId());	
+					path = CryptManager.getHashedValueByInt(client.getPlayer().getOrientation())+CryptManager.cellID_To_Code(client.getPlayer().getCell().getId());
 				}
 				//On sauvegarde le path dans la variable
 				GA.setArgs(path);
 				
-				SocketManager.GAME_SEND_GA_PACKET_TO_MAP(client.getPlayer().getCurMap(), ""+GA.getId(), 1, client.getPlayer().getId()+"", "a"+CryptManager.cellID_To_Code(client.getPlayer().getCurCell().getId())+path);
+				SocketManager.GAME_SEND_GA_PACKET_TO_MAP(client.getPlayer().getMap(), ""+GA.getId(), 1, client.getPlayer().getId()+"", "a"+CryptManager.cellID_To_Code(client.getPlayer().getCell().getId())+path);
 				client.addAction(GA);
 				if(client.getPlayer().isSitted())client.getPlayer().setSitted(false);
 				client.getPlayer().setAway(true);

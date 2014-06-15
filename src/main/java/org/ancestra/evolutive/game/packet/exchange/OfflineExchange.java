@@ -15,16 +15,16 @@ public class OfflineExchange implements PacketParser {
 
 	@Override
 	public void parse(GameClient client, String packet) {
-		if(World.data.isMarchandMap(client.getPlayer().getCurMap().getId())) {
+		if(World.data.isMarchandMap(client.getPlayer().getMap().getId())) {
 			SocketManager.GAME_SEND_Im_PACKET(client.getPlayer(), "113");
 			return;
 		}
-		if (client.getPlayer().getCurMap().getId() == 33 || client.getPlayer().getCurMap().getId() == 38 || client.getPlayer().getCurMap().getId() == 4601 || client.getPlayer().getCurMap().getId() == 4259 || client.getPlayer().getCurMap().getId() == 8036 || client.getPlayer().getCurMap().getId() == 10301) {
-			if (client.getPlayer().getCurMap().getStoreCount() >= 25) {
+		if (client.getPlayer().getMap().getId() == 33 || client.getPlayer().getMap().getId() == 38 || client.getPlayer().getMap().getId() == 4601 || client.getPlayer().getMap().getId() == 4259 || client.getPlayer().getMap().getId() == 8036 || client.getPlayer().getMap().getId() == 10301) {
+			if (client.getPlayer().getMap().getStoreCount() >= 25) {
 				SocketManager.GAME_SEND_Im_PACKET(client.getPlayer(), "125;25");
 				return;
 			}
-		}else if(client.getPlayer().getCurMap().getStoreCount() >= 6) {
+		}else if(client.getPlayer().getMap().getStoreCount() >= 6) {
 			SocketManager.GAME_SEND_Im_PACKET(client.getPlayer(), "125;6");
 			return;
 		}
@@ -40,12 +40,12 @@ public class OfflineExchange implements PacketParser {
 		int orientation = Formulas.getRandomValue(1, 3);
 		client.getPlayer().setKamas(client.getPlayer().getKamas() - Apayer2);
 		client.getPlayer().setOrientation(orientation);
-        Maps map = client.getPlayer().getCurMap();
+        Maps map = client.getPlayer().getMap();
         client.getPlayer().setSeeSeller(true);
-        World.data.addSeller(client.getPlayer().getId(), client.getPlayer().getCurMap().getId());
+        World.data.addSeller(client.getPlayer().getId(), client.getPlayer().getMap().getId());
         client.kick();
         for(Player z : map.getPlayers())
         	if(z != null && z.isOnline())
-        		SocketManager.GAME_SEND_MERCHANT_LIST(z, z.getCurMap().getId());
+        		SocketManager.GAME_SEND_MERCHANT_LIST(z, z.getMap().getId());
 	}
 }

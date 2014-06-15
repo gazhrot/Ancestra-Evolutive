@@ -324,9 +324,9 @@ public class House
 		World.database.getHouseData().update(P, h);
 
 		//Rafraichir la map apr�s l'achat
-		for(Player z:P.getCurMap().getPlayers())
+		for(Player z:P.getMap().getPlayers())
 		{
-			LoadHouse(z, z.getCurMap().getId());
+			LoadHouse(z, z.getMap().getId());
 		}
 	}
 	
@@ -357,9 +357,9 @@ public class House
 			World.database.getHouseData().update(h, price);
 
 			//Rafraichir la map apr�s la mise en vente
-			for(Player z:P.getCurMap().getPlayers())
+			for(Player z:P.getMap().getPlayers())
 			{
-				LoadHouse(z, z.getCurMap().getId());
+				LoadHouse(z, z.getMap().getId());
 			}
 				
 			return;
@@ -546,7 +546,7 @@ public class House
 		if(!h.isHouse(P, h)) return;
 		int Pguid = Integer.parseInt(packet);
 		Player Target = World.data.getPersonnage(Pguid);
-		if(Target == null || !Target.isOnline() || Target.getFight() != null || Target.getCurMap().getId() != P.getCurMap().getId()) return;
+		if(Target == null || !Target.isOnline() || Target.getFight() != null || Target.getMap().getId() != P.getMap().getId()) return;
 		Target.teleport(h.get_map_id(), h.get_cell_id());
 		SocketManager.GAME_SEND_Im_PACKET(Target, "018;"+P.getName());
 	}

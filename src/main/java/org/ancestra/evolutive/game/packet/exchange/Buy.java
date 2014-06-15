@@ -69,9 +69,9 @@ public class Buy implements PacketParser {
 	            SocketManager.GAME_SEND_ITEM_LIST_PACKET_SELLER(seller, client.getPlayer());
 	            SocketManager.GAME_SEND_BUY_OK_PACKET(client);
 	            if(seller.getStores().isEmpty()) {
-	            	if(World.data.getSeller(seller.getCurMap().getId()) != null && World.data.getSeller(seller.getCurMap().getId()).contains(seller.getId())) {
-	        			World.data.removeSeller(seller.getId(), seller.getCurMap().getId());
-	        			SocketManager.GAME_SEND_ERASE_ON_MAP_TO_MAP(seller.getCurMap(), seller.getId());
+	            	if(World.data.getSeller(seller.getMap().getId()) != null && World.data.getSeller(seller.getMap().getId()).contains(seller.getId())) {
+	        			World.data.removeSeller(seller.getId(), seller.getMap().getId());
+	        			SocketManager.GAME_SEND_ERASE_ON_MAP_TO_MAP(seller.getMap(), seller.getId());
 	        			World.data.getPacketJar().get("EV").parse(client, packet);
 	        		}
 	            }
@@ -93,7 +93,7 @@ public class Buy implements PacketParser {
 				SocketManager.GAME_SEND_BUY_ERROR_PACKET(client);
 				return;
 			}
-			if(!client.getPlayer().getCurMap().getNpcs().get(client.getPlayer().getIsTradingWith()).getTemplate().haveObject(tempID)) {//Si le PNJ ne vend pas l'objet voulue
+			if(!client.getPlayer().getMap().getNpcs().get(client.getPlayer().getIsTradingWith()).getTemplate().haveObject(tempID)) {//Si le PNJ ne vend pas l'objet voulue
 				Log.addToLog(client.getPlayer().getName()+" tente d'acheter l'itemTemplate "+tempID+" que le present PNJ ne vend pas");
 				SocketManager.GAME_SEND_BUY_ERROR_PACKET(client);
 				return;

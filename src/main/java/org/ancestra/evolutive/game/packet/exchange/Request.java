@@ -24,7 +24,7 @@ public class Request implements PacketParser {
 				return;
 			}
 			
-			HDV toOpen = World.data.getHdv(client.getPlayer().getCurMap().getId());
+			HDV toOpen = World.data.getHdv(client.getPlayer().getMap().getId());
 			
 			if(toOpen == null) 
 				return;
@@ -37,7 +37,7 @@ public class Request implements PacketParser {
 						";-1;"+
 						toOpen.getSellTime();
 			SocketManager.GAME_SEND_ECK_PACKET(client.getPlayer(),11,info);
-			client.getPlayer().setIsTradingWith(0 - client.getPlayer().getCurMap().getId());	//R�cup�re l'ID de la map et rend cette valeur n�gative
+			client.getPlayer().setIsTradingWith(0 - client.getPlayer().getMap().getId());	//R�cup�re l'ID de la map et rend cette valeur n�gative
 			return;
 		}else 
 		if(packet.substring(2,4).equals("10"))//Ouverture HDV vente
@@ -51,7 +51,7 @@ public class Request implements PacketParser {
 				return;
 			}
 			
-			HDV toOpen = World.data.getHdv(client.getPlayer().getCurMap().getId());
+			HDV toOpen = World.data.getHdv(client.getPlayer().getMap().getId());
 			
 			if(toOpen == null) return;
 			
@@ -63,7 +63,7 @@ public class Request implements PacketParser {
 						";-1;"+
 						toOpen.getSellTime();
 			SocketManager.GAME_SEND_ECK_PACKET(client.getPlayer(),10,info);
-			client.getPlayer().setIsTradingWith(0 - client.getPlayer().getCurMap().getId());	//R�cup�re l'ID de la map et rend cette valeur n�gative
+			client.getPlayer().setIsTradingWith(0 - client.getPlayer().getMap().getId());	//R�cup�re l'ID de la map et rend cette valeur n�gative
 			
 			SocketManager.GAME_SEND_HDVITEM_SELLING(client.getPlayer());
 			return;
@@ -73,7 +73,7 @@ public class Request implements PacketParser {
 			case '0'://Si NPC
 				try	{
 					int npcID = Integer.parseInt(packet.substring(4));
-					Npc npc = client.getPlayer().getCurMap().getNpcs().get(npcID);
+					Npc npc = client.getPlayer().getMap().getNpcs().get(npcID);
 					
 					if(npc == null)
 						return;
@@ -91,7 +91,7 @@ public class Request implements PacketParser {
 						SocketManager.GAME_SEND_EXCHANGE_REQUEST_ERROR(client,'E');
 						return;
 					}
-					if(target.getCurMap()!= client.getPlayer().getCurMap() || !target.isOnline()) {//Si les persos ne sont pas sur la meme map
+					if(target.getMap()!= client.getPlayer().getMap() || !target.isOnline()) {//Si les persos ne sont pas sur la meme map
 						SocketManager.GAME_SEND_EXCHANGE_REQUEST_ERROR(client,'E');
 						return;
 					}

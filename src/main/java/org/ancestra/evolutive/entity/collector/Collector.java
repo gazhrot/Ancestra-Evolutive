@@ -411,7 +411,7 @@ public class Collector extends Creature {
 				Collector collector = perco.getValue();
 				World.data.getPercos().remove(perco.getKey());
 				for(Player p : collector.getMap().getPlayers()){
-					SocketManager.GAME_SEND_ERASE_ON_MAP_TO_MAP(p.getCurMap(), perco.getValue().getId());//Suppression visuelle
+					SocketManager.GAME_SEND_ERASE_ON_MAP_TO_MAP(p.getMap(), perco.getValue().getId());//Suppression visuelle
 				}
 				World.database.getCollectorData().delete(collector);//Supprime les percepteurs
 			}

@@ -147,10 +147,6 @@ public class Maps {
 		return date;
 	}
 
-	public void setDate(String date) {
-		this.date = date;
-	}
-
 	public byte getX() {
 		return x;
 	}
@@ -297,7 +293,7 @@ public class Maps {
 	
 	public void addPlayer(Player player) {
 		SocketManager.GAME_SEND_ADD_PLAYER_TO_MAP(this, player);
-		player.getCurCell().addPlayer(player);
+		player.getCell().addPlayer(player);
 	}
 	
 	public ArrayList<Player> getPlayers() {
@@ -502,7 +498,7 @@ public class Maps {
 		if(this.getPlaces().equalsIgnoreCase("|")) 
 			return;
 
-		if(player.getCurMap().getId() != this.getId() || !player.isCanAggro())
+		if(player.getMap().getId() != this.getId() || !player.isCanAggro())
 			return;
 		
 		for(MobGroup group : this.getMobGroups().values()) {
@@ -576,7 +572,7 @@ public class Maps {
 		StringBuilder packet = new StringBuilder();
 		for(Case cell: this.getCases().values())
 			for(Player player : cell.getPlayers().values())
-				packet.append("GM|+").append(player.parseToGM()).append('\u0000');
+				packet.append("GM|+").append(player.getHelper().getGmPacket()).append('\u0000');
 		return packet.toString();
 	}
 	

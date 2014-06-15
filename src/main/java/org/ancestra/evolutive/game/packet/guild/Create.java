@@ -75,7 +75,7 @@ public class Create implements PacketParser {
 				SocketManager.GAME_SEND_gC_PACKET(client.getPlayer(), "Eae");
 				return;
 			}
-			if(client.getPlayer().getCurMap().getId() == 2196) {//Temple de cr�ation de guilde
+			if(client.getPlayer().getMap().getId() == 2196) {//Temple de cr�ation de guilde
 				if(!client.getPlayer().hasItemTemplate(1575,1)) {//Guildalogemme
 					SocketManager.GAME_SEND_Im_PACKET(client.getPlayer(), "14");
 					return;

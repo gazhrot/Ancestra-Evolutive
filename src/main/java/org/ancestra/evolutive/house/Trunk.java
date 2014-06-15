@@ -310,7 +310,7 @@ public class Trunk {
 			}
 		}
 		
-		for(Player perso : P.getCurMap().getPlayers())
+		for(Player perso : P.getMap().getPlayers())
 		{
 			if(perso.getCurTrunk() != null && get_id() == perso.getCurTrunk().get_id())
 			{
@@ -401,7 +401,7 @@ public class Trunk {
 			}
 		}
 		
-		for(Player perso : P.getCurMap().getPlayers())
+		for(Player perso : P.getMap().getPlayers())
 		{
 			if(perso.getCurTrunk() != null && get_id() == perso.getCurTrunk().get_id())
 			{

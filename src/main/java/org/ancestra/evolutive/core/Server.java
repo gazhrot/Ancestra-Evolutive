@@ -45,8 +45,12 @@ import com.typesafe.config.ConfigFactory;
 public class Server {
 	
 	public static Server config = new Server();
-	
-	//emulator
+    //Config
+    private static final Config configFile = ConfigFactory.parseFile(new File("config.conf"));
+    public static final long startTime = System.currentTimeMillis();
+
+
+    //emulator
 	private boolean isRunning;
 	private boolean isSaving;
 	
@@ -80,6 +84,7 @@ public class Server {
 	private short startMap;
 	private int startCell;
 	private int startLevel, startKamas;
+    public static final boolean regenLifeWhenOffline = configFile.getBoolean("server.regenLifeWhenOffline");
 	
 	private boolean multiAccount;
 	private boolean allZaaps;
@@ -118,9 +123,7 @@ public class Server {
 	//collector
 	private ArrayList<Integer> collectorMaps = new ArrayList<>();
 	
-	//Config
-	private Config configFile = ConfigFactory.parseFile(new File("config.conf"));
-	
+
 	public void initialize() {	
 		try {
 			//console
@@ -165,6 +168,7 @@ public class Server {
 			this.playerLimitOnServer = configFile.getInt("server.playerLimit");
 			this.motd = configFile.getString("server.welcomMessage.content");
 			this.motdColor = configFile.getString("server.welcomMessage.color");
+
 			
 			//rates
 			this.rateDrop = configFile.getInt("rates.drop");

@@ -196,8 +196,8 @@ public class Case {
 				if(this.interactiveObject.getState() != Constants.IOBJECT_STATE_FULL)return;//Si le puits est vide
 				this.interactiveObject.setState(Constants.IOBJECT_STATE_EMPTYING);
 				this.interactiveObject.setInteractive(false);
-				SocketManager.GAME_SEND_GA_PACKET_TO_MAP(perso.getCurMap(),""+GA.getId(), 501, perso.getId()+"", this.id+","+this.interactiveObject.getUseDuration()+","+this.interactiveObject.getUnknowValue());
-				SocketManager.GAME_SEND_GDF_PACKET_TO_MAP(perso.getCurMap(),this);
+				SocketManager.GAME_SEND_GA_PACKET_TO_MAP(perso.getMap(),""+GA.getId(), 501, perso.getId()+"", this.id+","+this.interactiveObject.getUseDuration()+","+this.interactiveObject.getUnknowValue());
+				SocketManager.GAME_SEND_GDF_PACKET_TO_MAP(perso.getMap(),this);
 			break;
 			case 114://Utiliser (zaap)
 				perso.openZaapMenu();
@@ -209,12 +209,12 @@ public class Case {
 				int count = 0;
 				int price = 20;
 				
-				if (perso.getCurMap().getSubArea().getArea().getId() == 7 && (perso.getAlign() == 1 || perso.getAlign() == 0 || perso.getAlign() == 3))//Ange, Neutre ou S�rianne
+				if (perso.getMap().getSubArea().getArea().getId() == 7 && (perso.getAlign() == 1 || perso.getAlign() == 0 || perso.getAlign() == 3))//Ange, Neutre ou S�rianne
 				{
 					Zaapis = Constants.ZAAPI.get(Constants.ALIGNEMENT_BONTARIEN).split(",");
 					if (perso.getAlign() == 1) price = 10;
 				}
-				else if (perso.getCurMap().getSubArea().getArea().getId() == 11 && (perso.getAlign() == 2 || perso.getAlign() == 0 || perso.getAlign() == 3))//D�mons, Neutre ou S�rianne
+				else if (perso.getMap().getSubArea().getArea().getId() == 11 && (perso.getAlign() == 2 || perso.getAlign() == 0 || perso.getAlign() == 3))//D�mons, Neutre ou S�rianne
 				{
 					Zaapis = Constants.ZAAPI.get(Constants.ALIGNEMENT_BRAKMARIEN).split(",");
 					if (perso.getAlign() == 2) price = 10;
@@ -240,11 +240,11 @@ public class Case {
 			break;
 			case 175://Acceder a un enclos
 				if(this.interactiveObject.getState() != Constants.IOBJECT_STATE_EMPTY);
-				//SocketManager.GAME_SEND_GDF_PACKET_TO_MAP(perso.getCurMap(),this);
+				//SocketManager.GAME_SEND_GDF_PACKET_TO_MAP(perso.getMap(),this);
 				perso.openMountPark();
 			break;
 			case 176://Achat enclo
-				MountPark MP = perso.getCurMap().getMountPark();
+				MountPark MP = perso.getMap().getMountPark();
 				if(MP.getOwner() == -1)//Public
 				{
 					SocketManager.GAME_SEND_Im_PACKET(perso, "196");
@@ -269,7 +269,7 @@ public class Case {
 			break;
 			case 177://Vendre enclo
 			case 178://Modifier prix de vente
-				MountPark MP1 = perso.getCurMap().getMountPark();
+				MountPark MP1 = perso.getMap().getMountPark();
 				if(MP1.getOwner() == -1)
 				{
 					SocketManager.GAME_SEND_Im_PACKET(perso, "194");
@@ -294,39 +294,39 @@ public class Case {
 				perso.getAccount().getGameClient().removeAction(GA);
 			break;
 			case 81://V�rouiller maison
-				House h = House.get_house_id_by_coord(perso.getCurMap().getId(), CcellID);
+				House h = House.get_house_id_by_coord(perso.getMap().getId(), CcellID);
 				if(h == null)return;
 				perso.setCurHouse(h);
 				h.Lock(perso);
 			break;
 			case 84://Rentrer dans une maison
-				House h2 = House.get_house_id_by_coord(perso.getCurMap().getId(), CcellID);
+				House h2 = House.get_house_id_by_coord(perso.getMap().getId(), CcellID);
 				if(h2 == null)return;
 				perso.setCurHouse(h2);
 				h2.HopIn(perso);
 			break;
 			case 97://Acheter maison
-				House h3 = House.get_house_id_by_coord(perso.getCurMap().getId(), CcellID);
+				House h3 = House.get_house_id_by_coord(perso.getMap().getId(), CcellID);
 				if(h3 == null)return;
 				perso.setCurHouse(h3);
 				h3.BuyIt(perso);
 			break;
 			
             case 104://Ouvrir coffre priv�
-            	Trunk trunk = Trunk.get_trunk_id_by_coord(perso.getCurMap().getId(), CcellID);
+            	Trunk trunk = Trunk.get_trunk_id_by_coord(perso.getMap().getId(), CcellID);
             	if(trunk == null)
                 {
-                	Log.addToLog("Game: INVALID TRUNK ON MAP : "+perso.getCurMap().getId()+" CELLID : "+CcellID);
+                	Log.addToLog("Game: INVALID TRUNK ON MAP : "+perso.getMap().getId()+" CELLID : "+CcellID);
                 	return;
                 }
                 perso.setCurTrunk(trunk);
                 trunk.HopIn(perso);
             break;
             case 105://V�rouiller coffre
-                Trunk t = Trunk.get_trunk_id_by_coord(perso.getCurMap().getId(), CcellID);
+                Trunk t = Trunk.get_trunk_id_by_coord(perso.getMap().getId(), CcellID);
                 if(t == null)
                 {
-                	Log.addToLog("Game: INVALID TRUNK ON MAP : "+perso.getCurMap().getId()+" CELLID : "+CcellID);
+                	Log.addToLog("Game: INVALID TRUNK ON MAP : "+perso.getMap().getId()+" CELLID : "+CcellID);
                 	return;
                 }
                 perso.setCurTrunk(t);
@@ -335,7 +335,7 @@ public class Case {
             
 			case 98://Vendre
 			case 108://Modifier prix de vente
-				House h4 = House.get_house_id_by_coord(perso.getCurMap().getId(), CcellID);
+				House h4 = House.get_house_id_by_coord(perso.getMap().getId(), CcellID);
 				if(h4 == null)return;
 				perso.setCurHouse(h4);
 				h4.SellIt(perso);
@@ -380,7 +380,7 @@ public class Case {
 				this.interactiveObject.setState(Constants.IOBJECT_STATE_EMPTY);
 				this.interactiveObject.setInteractive(false);
 				this.interactiveObject.startTimer();
-				SocketManager.GAME_SEND_GDF_PACKET_TO_MAP(perso.getCurMap(),this);
+				SocketManager.GAME_SEND_GDF_PACKET_TO_MAP(perso.getMap(),this);
 				int qua = Formulas.getRandomValue(1, 10);//On a entre 1 et 10 eaux
 				Objet obj = World.data.getObjTemplate(311).createNewItem(qua, false);
 				if(perso.addObjet(obj, true))

@@ -2334,7 +2334,7 @@ public class Constants
 		int cellBack = 0;
 		int cellRight = 0;
 		int cellLeft = 0;
-		if(_perso.getCurMap().getSubArea().getArea().getId() == 7 || _perso.getCurMap().getSubArea().getArea().getId() == 11)
+		if(_perso.getMap().getSubArea().getArea().getId() == 7 || _perso.getMap().getSubArea().getArea().getId() == 11)
 		{
 			cellFront = 19;
 			cellBack = -19;
@@ -2347,27 +2347,27 @@ public class Constants
 			cellRight = 14;
 			cellLeft = -14;
 		}
-		if(_perso.getCurMap().getCases().get(_perso.getCurCell().getId()+cellFront).getObject() == null
-				&& _perso.getCurMap().getCases().get(_perso.getCurCell().getId()+cellFront).getPlayers().isEmpty()
-				&& _perso.getCurMap().getCases().get(_perso.getCurCell().getId()+cellFront).isWalkable(false))
+		if(_perso.getMap().getCases().get(_perso.getCell().getId()+cellFront).getObject() == null
+				&& _perso.getMap().getCases().get(_perso.getCell().getId()+cellFront).getPlayers().isEmpty()
+				&& _perso.getMap().getCases().get(_perso.getCell().getId()+cellFront).isWalkable(false))
 		{
 			return cellFront;
 		}else
-		if(_perso.getCurMap().getCases().get(_perso.getCurCell().getId()-cellBack).getObject() == null
-				&& _perso.getCurMap().getCases().get(_perso.getCurCell().getId()-cellBack).getPlayers().isEmpty()
-				&& _perso.getCurMap().getCases().get(_perso.getCurCell().getId()-cellBack).isWalkable(false))
+		if(_perso.getMap().getCases().get(_perso.getCell().getId()-cellBack).getObject() == null
+				&& _perso.getMap().getCases().get(_perso.getCell().getId()-cellBack).getPlayers().isEmpty()
+				&& _perso.getMap().getCases().get(_perso.getCell().getId()-cellBack).isWalkable(false))
 		{
 			return cellBack;
 		}else
-		if(_perso.getCurMap().getCases().get(_perso.getCurCell().getId()+cellRight).getObject() == null
-				&& _perso.getCurMap().getCases().get(_perso.getCurCell().getId()+cellRight).getPlayers().isEmpty()
-				&& _perso.getCurMap().getCases().get(_perso.getCurCell().getId()+cellRight).isWalkable(false))
+		if(_perso.getMap().getCases().get(_perso.getCell().getId()+cellRight).getObject() == null
+				&& _perso.getMap().getCases().get(_perso.getCell().getId()+cellRight).getPlayers().isEmpty()
+				&& _perso.getMap().getCases().get(_perso.getCell().getId()+cellRight).isWalkable(false))
 		{
 			return cellRight;
 		}else
-		if(_perso.getCurMap().getCases().get(_perso.getCurCell().getId()-cellLeft).getObject() == null
-				&& _perso.getCurMap().getCases().get(_perso.getCurCell().getId()-cellLeft).getPlayers().isEmpty()
-				&& _perso.getCurMap().getCases().get(_perso.getCurCell().getId()-cellLeft).isWalkable(false))
+		if(_perso.getMap().getCases().get(_perso.getCell().getId()-cellLeft).getObject() == null
+				&& _perso.getMap().getCases().get(_perso.getCell().getId()-cellLeft).getPlayers().isEmpty()
+				&& _perso.getMap().getCases().get(_perso.getCell().getId()-cellLeft).isWalkable(false))
 		{
 			return cellLeft;
 		}

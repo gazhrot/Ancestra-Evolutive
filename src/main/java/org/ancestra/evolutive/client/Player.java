@@ -43,6 +43,7 @@ import java.util.*;
 import java.util.Map.Entry;
 
 public class Player extends Creature{
+    public static boolean regenWhenOffline = true;
 
 	private int sex;
 	private Classe classe;
@@ -57,7 +58,6 @@ public class Player extends Creature{
 	private long experience;
 	private int size;
 	private int gfx;
-	private int orientation = 1;
 	
 	private Account account;
 	private Maps curMap;
@@ -90,11 +90,11 @@ public class Player extends Creature{
 	/** Life **/
 	private int pdv;
 	private int maxPdv;
-	private int exPdv;
-	private Timer sitTimer;
 	private boolean sitted;
 	
 	/** is... **/
+    private int regenRate = 2000;
+    private long regenTime = -1;//-1 veut dire que la personne ne c'est jamais connecte
 	private boolean isOnline  = false;
 	private boolean isInBank;
 	private boolean isInAction;//DoAction job
@@ -170,7 +170,14 @@ public class Player extends Creature{
 		this.setStuff(stuff);
 		this.setStore(store);
 		this.maxPdv = (this.level - 1) * 5 + Constants.getBasePdv(this.classe.getId()) + getTotalStats().getEffect(Constants.STATS_ADD_VITA);
-		this.exPdv = this.pdv = (this.maxPdv * pdvPer) / 100;
+		this.pdv = (this.maxPdv * pdvPer) / 100;
+        if(!Server.regenLifeWhenOffline){
+            regenTime = System.currentTimeMillis();
+        } else {
+            if(regenTime == -1) {
+                regenTime = Server.startTime;
+            }
+        }
 		
 		this.parseSpells(spells);
 		this.savePos = savePos;
@@ -189,13 +196,10 @@ public class Player extends Creature{
 		this.wife = wife; 
 			if(this.energy == 0) 
 			this.setGhosts();
-		
-		this.sitTimer = new Timer(2000, new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				regenLife();
-			}
-		});
+
+        helper = new PlayerHelper(this);
+        regenRate = 2000;
+        regenTime = System.currentTimeMillis();
 	}
 	
 	public Player(Player player,int id){
@@ -212,12 +216,13 @@ public class Player extends Creature{
 		this.stats = player.getStats();
 		this.setStuff(player.getStuffStats().parseToItemSetStats());
 		this.maxPdv = player.getMaxPdv();
-		this.exPdv = this.pdv = player.getPdv();
+		this.pdv = player.getPdv();
 		this.showWings = player.isShowWings();
 		this.mount = player.getMount();
 		this.aLvl = player.getaLvl();
 		this.align = player.getAlign();
         this.account = player.getAccount();
+        helper = new PlayerHelper(this);
     }
 	
 	public static Player create(String name, int sex, int classe, int color1, int color2, int color3, Account compte) {
@@ -370,22 +375,6 @@ public class Player extends Creature{
 		this.account = account;
 	}
 
-	public Maps getCurMap() {
-		return curMap;
-	}
-
-	public void setCurMap(Maps curMap) {
-		this.curMap = curMap;
-	}
-
-	public Case getCurCell() {
-		return curCell;
-	}
-
-	public void setCurCell(Case curCell) {
-		this.curCell = curCell;
-	}
-
 	public Stats getStats() {
 		return stats;
 	}
@@ -399,8 +388,9 @@ public class Player extends Creature{
 	}
 
 	public void setFight(Fight fight) {
-		this.fight = fight;
-	}
+        refreshLife();
+        this.fight = fight;
+    }
 
 	public Group getGroup() {
 		return group;
@@ -555,7 +545,8 @@ public class Player extends Creature{
 	}
 
 	public void setPdv(int pdv) {
-		this.pdv = pdv;
+		this.pdv = pdv<getMaxPdv()?pdv:maxPdv;
+        regenTime = System.currentTimeMillis();
 		if(this.getGroup() != null)
 			SocketManager.GAME_SEND_PM_MOD_PACKET_TO_GROUP(this.getGroup(), this);
 	}
@@ -569,26 +560,9 @@ public class Player extends Creature{
 		if(this.getGroup() != null)
 			SocketManager.GAME_SEND_PM_MOD_PACKET_TO_GROUP(this.getGroup(), this);
 	}
-
-
-	public int getExPdv() {
-		return exPdv;
-	}
-
-	public void setExPdv(int exPdv) {
-		this.exPdv = exPdv;
-	}
 	
 	public void fullPDV() {
 		this.pdv = this.maxPdv;
-	}
-
-	public Timer getSitTimer() {
-		return sitTimer;
-	}
-
-	public void setSitTimer(Timer sitTimer) {
-		this.sitTimer = sitTimer;
 	}
 
 	public boolean isOnline() {
@@ -962,18 +936,6 @@ public class Player extends Creature{
 			}
 		}
 	}
-
-	public void regenLife() {
-		if(this.getCurMap() == null)
-			return;
-		if(this.getFight() != null)
-			return;
-		if(this.getPdv() >= this.getMaxPdv()) {
-			this.setPdv(this.getMaxPdv());
-			return;
-		}
-		this.pdv++;
-	}
 		
 	public String parseSpellsToDb()
 	{
@@ -1204,8 +1166,7 @@ public class Player extends Creature{
 			SocketManager.GAME_SEND_MESSAGE(this, Server.config.getMotd(), color);
 		}
 
-		this.sitTimer.start();
-		SocketManager.GAME_SEND_ILS_PACKET(this, 2000);
+		SocketManager.GAME_SEND_ILS_PACKET(this, 1000);
 	}
 		
 	public void sendGameCreate() {
@@ -1214,17 +1175,17 @@ public class Player extends Creature{
 		
 		GameClient client = this.getAccount().getGameClient();
 		
-		if(this.seeSeller == true && World.data.getSeller(this.getCurMap().getId()) != null && World.data.getSeller(this.getCurMap().getId()).contains(this.getId())) {
-			World.data.removeSeller(this.getId(), this.getCurMap().getId());
-			SocketManager.GAME_SEND_ERASE_ON_MAP_TO_MAP(this.getCurMap(), this.getId());
+		if(this.seeSeller == true && World.data.getSeller(this.getMap().getId()) != null && World.data.getSeller(this.getMap().getId()).contains(this.getId())) {
+			World.data.removeSeller(this.getId(), this.getMap().getId());
+			SocketManager.GAME_SEND_ERASE_ON_MAP_TO_MAP(this.getMap(), this.getId());
 			this.seeSeller = false;
 		}
 		
 		SocketManager.GAME_SEND_GAME_CREATE(client, this.getName());
 		SocketManager.GAME_SEND_STATS_PACKET(this);
-		SocketManager.GAME_SEND_MAPDATA(client, this.getCurMap().getId(), this.getCurMap().getDate(), this.getCurMap().getKey());
-		SocketManager.GAME_SEND_MAP_FIGHT_COUNT(client, this.getCurMap());
-		this.getCurMap().addPlayer(this);
+		SocketManager.GAME_SEND_MAPDATA(client, this.getMap().getId(), this.getMap().getDate(), this.getMap().getKey());
+		SocketManager.GAME_SEND_MAP_FIGHT_COUNT(client, this.getMap());
+		this.getMap().addPlayer(this);
 	}
 	
 	public String parseToOa() {
@@ -1234,7 +1195,7 @@ public class Player extends Creature{
 	public String parseToGM() {
 		StringBuilder str = new StringBuilder();
 		if(this.getFight() == null) {// Hors combat
-			str.append(this.getCurCell().getId()).append(";").append(this.getOrientation()).append(";");
+			str.append(this.getCell().getId()).append(";").append(this.getOrientation()).append(";");
 			str.append("0").append(";");//FIXME:?
 			str.append(this.getId()).append(";").append(this.getName()).append(";").append(this.getClasse().getId());
 			str.append((this.getTitle()>0?(","+this.getTitle()+";"):(";")));
@@ -1273,7 +1234,7 @@ public class Player extends Creature{
 	
     public String parseToMerchant() {
     	StringBuilder str = new StringBuilder();
-    	str.append(this.getCurCell().getId()).append(";");
+    	str.append(this.getCell().getId()).append(";");
     	str.append(this.getOrientation()).append(";");
     	str.append("0").append(";");
     	str.append(this.getId()).append(";");
@@ -1290,7 +1251,7 @@ public class Player extends Creature{
         return str.toString();
     }
 	
-	public String getGMStuffString() {
+    public	String getGMStuffString() {
 		StringBuilder str = new StringBuilder();
 		if(getObjetByPos(Constants.ITEM_POS_ARME) != null)
 		 	str.append(Integer.toHexString(getObjetByPos(Constants.ITEM_POS_ARME).getTemplate().getID()));	
@@ -1508,23 +1469,17 @@ public class Player extends Creature{
 	public void setSitted(boolean sitted)
 	{
 		this.sitted = sitted;
-		int diff = this.getPdv() - this.exPdv;
-		int time = (sitted ? 1000 : 2000);
-		
-		this.exPdv = this.getPdv();
-		if(this.isOnline) {//On envoie le message "Vous avez recuperer X pdv"
-			SocketManager.GAME_SEND_ILF_PACKET(this, diff);
-			SocketManager.GAME_SEND_ILS_PACKET(this, time);
-		}
+        refreshLife();
+        regenRate = (sitted ? 1000 : 2000);
+        SocketManager.GAME_SEND_ILS_PACKET(this, regenRate);
 
-		this.sitTimer.setDelay(time);
-		if((this.emoteActive == 1 || this.emoteActive == 19) && sitted == false)
+
+		if((this.emoteActive == 1 || this.emoteActive == 19) && !sitted)
 			this.emoteActive = 0;
 	}
 	
 	public int getPdvPer() {
-		int pdvper = 100;
-		pdvper = (100* this.getPdv())/ this.getMaxPdv();
+		int pdvper = (100* this.getPdv())/ this.getMaxPdv();
 		return pdvper;
 	}
 
@@ -1532,18 +1487,18 @@ public class Player extends Creature{
 		try {
 			int id = Integer.parseInt(str);
 			if(this.getFight() == null)
-				SocketManager.GAME_SEND_EMOTICONE_TO_MAP(this.getCurMap(), this.getId(), id);
+				SocketManager.GAME_SEND_EMOTICONE_TO_MAP(this.getMap(), this.getId(), id);
 			else
 				SocketManager.GAME_SEND_EMOTICONE_TO_FIGHT(this.getFight(), 7, this.getId(), id);
 		} catch(NumberFormatException e) {}
 	}
 
 	public void refreshMapAfterFight() {
-		this.getCurMap().addPlayer(this);
-		if(this.getAccount().getGameClient() != null && this.getAccount().getGameClient() != null) {
-			SocketManager.GAME_SEND_STATS_PACKET(this);
-			SocketManager.GAME_SEND_ILS_PACKET(this, 1000);
-		}
+		this.getMap().addPlayer(this);
+        SocketManager.GAME_SEND_STATS_PACKET(this);
+        SocketManager.GAME_SEND_ILS_PACKET(this, 2000);
+        this.regenRate=2000;
+        this.regenTime=System.currentTimeMillis();
 		this.setFight(null);
 		this.isAway = false;
 	}
@@ -1952,8 +1907,8 @@ public class Player extends Creature{
 		} catch(Exception e) {}
 		if(cellID == -1 || action == -1)return;
 		//Si case invalide
-		if(!this.getCurMap().getCases().get(cellID).canDoAction(action))return;
-		this.getCurMap().getCases().get(cellID).startAction(this,GA);
+		if(!this.getMap().getCases().get(cellID).canDoAction(action))return;
+		this.getMap().getCases().get(cellID).startAction(this,GA);
 	}
 
 	public void finishActionOnCell(GameAction GA)
@@ -1964,7 +1919,7 @@ public class Player extends Creature{
 			cellID = Integer.parseInt(GA.getArgs().split(";")[0]);
 		}catch(Exception e){};
 		if(cellID == -1)return;
-		this.getCurMap().getCases().get(cellID).finishAction(this,GA);
+		this.getMap().getCases().get(cellID).finishAction(this,GA);
 		this.getAccount().getGameClient().removeAction(GA);
 	}
 	
@@ -1987,18 +1942,18 @@ public class Player extends Creature{
 		if(PW != null)
 		{
 			SocketManager.GAME_SEND_GA2_PACKET(PW, this.getId());
-			SocketManager.GAME_SEND_ERASE_ON_MAP_TO_MAP(this.getCurMap(), this.getId());
+			SocketManager.GAME_SEND_ERASE_ON_MAP_TO_MAP(this.getMap(), this.getId());
 		}
 		
-		this.getCurCell().removePlayer(this.getId());
-		this.setCurMap(World.data.getCarte(newMapID));
-		this.setCurCell(this.getCurMap().getCases().get(newCellID));
+		this.getCell().removePlayer(this.getId());
+		this.setMap(World.data.getCarte(newMapID));
+		this.setCell(this.getMap().getCases().get(newCellID));
 		
 
 		
 		if(PW != null) {
-			SocketManager.GAME_SEND_MAPDATA(PW,	newMapID, this.getCurMap().getDate(), this.getCurMap().getKey());
-			this.getCurMap().addPlayer(this);
+			SocketManager.GAME_SEND_MAPDATA(PW,	newMapID, this.getMap().getDate(), this.getMap().getKey());
+			this.getMap().addPlayer(this);
 		}
 		
 		if(!this.followers.isEmpty())//On met a jour la carte des personnages qui nous suivent
@@ -2230,7 +2185,7 @@ public class Player extends Creature{
 			return;
 		}
 		
-		this.setCurMountPark(this.getCurMap().getMountPark());
+		this.setCurMountPark(this.getMap().getMountPark());
 		this.setAway(true);
 		String str = this.getCurMountPark().parseData(this.getId(), (this.getCurMountPark().getOwner() == -1 ? true : false));
 		
@@ -2466,7 +2421,7 @@ public class Player extends Creature{
 		if(this.getFight() != null && this.getFight().get_state() == 2) 
 			SocketManager.GAME_SEND_ALTER_FIGHTER_MOUNT(this.getFight(), this.getFight().getFighterByPerso(this), this.getId(), this.getFight().getTeamID(this.getId()), this.getFight().getOtherTeamID(this.getId()));
 		else
-			SocketManager.GAME_SEND_ALTER_GM_PACKET(this.getCurMap(), this);
+			SocketManager.GAME_SEND_ALTER_GM_PACKET(this.getMap(), this);
 		
 		SocketManager.GAME_SEND_Re_PACKET(this, "+", this.getMount());
 		SocketManager.GAME_SEND_Rr_PACKET(this, this.isOnMount() ? "+" : "-");
@@ -2574,21 +2529,21 @@ public class Player extends Creature{
 
 	public String parseZaapList()//Pour le packet WC
 	{
-		String map = Integer.toString(this.getCurMap().getId());
+		String map = Integer.toString(this.getMap().getId());
 		try {
 			map = this.savePos.split(",")[0];
 		} catch(Exception e) {}
 		
 		StringBuilder str = new StringBuilder();
 		str.append(map);
-        int SubAreaID = this.getCurMap().getSubArea().getArea().getContinent().getId();
+        int SubAreaID = this.getMap().getSubArea().getArea().getContinent().getId();
 		for(short i : this.zaaps) {
 			if(World.data.getCarte(i) == null)
 				continue;
 			if(World.data.getCarte(i).getSubArea().getArea().getContinent().getId() != SubAreaID)
 				continue;
-			int cost = Formulas.calculZaapCost(this.getCurMap(), World.data.getCarte(i));
-			if(i == this.getCurMap().getId()) 
+			int cost = Formulas.calculZaapCost(this.getMap(), World.data.getCarte(i));
+			if(i == this.getMap().getId())
 				cost = 0;
 			str.append("|").append(i).append(";").append(cost);
 		}
@@ -2611,8 +2566,8 @@ public class Player extends Creature{
 				return;
 			}
 			this.setZaaping(true);
-			if(!hasZaap(this.getCurMap().getId())) {//Si le joueur ne connaissait pas ce zaap
-				this.zaaps.add(this.getCurMap().getId());
+			if(!hasZaap(this.getMap().getId())) {//Si le joueur ne connaissait pas ce zaap
+				this.zaaps.add(this.getMap().getId());
 				SocketManager.GAME_SEND_Im_PACKET(this, "024");
 				save();
 			}
@@ -2628,12 +2583,12 @@ public class Player extends Creature{
 		if(!hasZaap(id))
 			return;//S'il n'a pas le zaap demand�(ne devrais pas arriver)
 		
-		int cost = Formulas.calculZaapCost(this.getCurMap(), World.data.getCarte(id));
+		int cost = Formulas.calculZaapCost(this.getMap(), World.data.getCarte(id));
 		if(this.getKamas() < cost)
 			return;//S'il n'a pas les kamas (verif cot� client)
 		
 		short mapID = id;
-		int SubAreaID = this.getCurMap().getSubArea().getArea().getContinent().getId();
+		int SubAreaID = this.getMap().getSubArea().getArea().getContinent().getId();
 		int cellID = World.data.getZaapCellIdByMapId(id);
 		if(World.data.getCarte(mapID) == null)
 		{
@@ -2993,15 +2948,15 @@ public class Player extends Creature{
 		{
 			f = 1;
 		}
-		return this.getCurMap().getId() + "|" + this.getLevel() + "|" + f;
+		return this.getMap().getId() + "|" + this.getLevel() + "|" + f;
 	}
 	
 	public void meetWife(Player p)// Se teleporter selon les sacro-saintes autorisations du mariage.
 	{
 		if(p == null)return; // Ne devrait theoriquement jamais se produire.
 		
-		int dist = (this.getCurMap().getX() - p.getCurMap().getX())*(this.getCurMap().getX() - p.getCurMap().getX())
-					+ (this.getCurMap().getY() - p.getCurMap().getY())*(this.getCurMap().getY() - p.getCurMap().getY());
+		int dist = (this.getMap().getX() - p.getMap().getX())*(this.getMap().getX() - p.getMap().getX())
+					+ (this.getMap().getY() - p.getMap().getY())*(this.getMap().getY() - p.getMap().getY());
 		if(dist > 100)// La distance est trop grande...
 		{
 			if(p.getSex() == 0)
@@ -3027,7 +2982,7 @@ public class Player extends Creature{
 			return;
 		}
 		
-		teleport(p.getCurMap().getId(), (p.getCurCell().getId()+cellPositiontoadd));
+		teleport(p.getMap().getId(), (p.getCell().getId()+cellPositiontoadd));
 	}
 	
 	public void Divorce()
@@ -3044,7 +2999,7 @@ public class Player extends Creature{
 		|| this.getOrientation() == 4 || this.getOrientation() == 6)
 		{
 			this.setOrientation(toOrientation);
-			SocketManager.GAME_SEND_eD_PACKET_TO_MAP(this.getCurMap(), this.getId(), toOrientation);
+			SocketManager.GAME_SEND_eD_PACKET_TO_MAP(this.getMap(), this.getId(), toOrientation);
 		}
 	}
 
@@ -3076,8 +3031,8 @@ public class Player extends Creature{
 		this.setAway(false);
 		this.setSpeed(0);
 		SocketManager.GAME_SEND_STATS_PACKET(this);
-		SocketManager.GAME_SEND_ERASE_ON_MAP_TO_MAP(this.getCurMap(), this.getId());
-		SocketManager.GAME_SEND_ADD_PLAYER_TO_MAP(this.getCurMap(), this);
+		SocketManager.GAME_SEND_ERASE_ON_MAP_TO_MAP(this.getMap(), this.getId());
+		SocketManager.GAME_SEND_ADD_PLAYER_TO_MAP(this.getMap(), this);
 	}
    
 
@@ -3273,8 +3228,18 @@ public class Player extends Creature{
 	
 	public void refresh(boolean smoke) {
 		if(!smoke)
-			SocketManager.GAME_SEND_ADD_PLAYER_TO_MAP(this.getCurMap(), this);
+			SocketManager.GAME_SEND_ADD_PLAYER_TO_MAP(this.getMap(), this);
 		else
-			SocketManager.GAME_SEND_ALTER_GM_PACKET(this.getCurMap(), this);
+			SocketManager.GAME_SEND_ALTER_GM_PACKET(this.getMap(), this);
 	}
+
+    public void refreshLife(){
+        if(fight != null) return;
+        int time = (int)(System.currentTimeMillis()-regenTime);
+        int diff = time/regenRate;
+        setPdv(getPdv()+diff);
+        if(diff>=10){
+            SocketManager.GAME_SEND_ILF_PACKET(this, (int)diff/1000);
+        }
+    }
 }

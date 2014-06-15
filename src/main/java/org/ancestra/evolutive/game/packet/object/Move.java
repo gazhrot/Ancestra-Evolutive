@@ -127,7 +127,7 @@ public class Move implements PacketParser {
 				pos == Constants.ITEM_POS_CAPE		||
 				pos == Constants.ITEM_POS_BOUCLIER	||
 				pos == Constants.ITEM_POS_NO_EQUIPED)
-				SocketManager.GAME_SEND_ON_EQUIP_ITEM(client.getPlayer().getCurMap(), client.getPlayer());
+				SocketManager.GAME_SEND_ON_EQUIP_ITEM(client.getPlayer().getMap(), client.getPlayer());
 		
 			//Si familier
 			if(pos == Constants.ITEM_POS_FAMILIER && client.getPlayer().isOnMount())

@@ -15,7 +15,7 @@ public class Buy implements PacketParser {
 	@Override
 	public void parse(GameClient client, String packet) {
 		SocketManager.GAME_SEND_R_PACKET(client.getPlayer(), "v");//Fermeture du panneau
-		MountPark mountPark = client.getPlayer().getCurMap().getMountPark();
+		MountPark mountPark = client.getPlayer().getMap().getMountPark();
 		Player seller = World.data.getPersonnage(mountPark.getOwner());
 		
 		if(mountPark.getOwner() == -1) {
@@ -63,7 +63,7 @@ public class Buy implements PacketParser {
 		World.database.getMountparkData().update(mountPark);
 		client.getPlayer().save();
 		//On rafraichit l'enclo
-		for(Player z: client.getPlayer().getCurMap().getPlayers())
+		for(Player z: client.getPlayer().getMap().getPlayers())
 			SocketManager.GAME_SEND_Rp_PACKET(z, mountPark);
 	}
 }

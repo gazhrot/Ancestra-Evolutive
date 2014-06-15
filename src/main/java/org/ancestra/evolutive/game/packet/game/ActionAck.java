@@ -19,7 +19,7 @@ public class ActionAck implements PacketParser {
 			client.getPlayer().getWaiter().addNext(new Runnable() {
 				@Override
 				public void run() {
-					needed.getPlayer().getCurMap().applyEndFightAction(Constants.FIGHT_TYPE_PVM, needed.getPlayer());
+					needed.getPlayer().getMap().applyEndFightAction(Constants.FIGHT_TYPE_PVM, needed.getPlayer());
 					needed.getPlayer().refreshMapAfterFight();
 					needed.getPlayer().setNeedEndFightAction(false);
 				}
@@ -48,29 +48,29 @@ public class ActionAck implements PacketParser {
 			case 1://Deplacement
 				if(isOk) {//Hors Combat
 					if(client.getPlayer().getFight() == null) {
-						client.getPlayer().getCurCell().removePlayer(client.getPlayer().getId());
+						client.getPlayer().getCell().removePlayer(client.getPlayer().getId());
 						SocketManager.GAME_SEND_BN(client);
 						String path = GA.getArgs();
 						//On prend la case cibl�e
-						Case nextCell = client.getPlayer().getCurMap().getCases().get(CryptManager.cellCode_To_ID(path.substring(path.length()-2)));
-						Case targetCell = client.getPlayer().getCurMap().getCases().get(CryptManager.cellCode_To_ID(GA.getPacket().substring(GA.getPacket().length()-2)));
+						Case nextCell = client.getPlayer().getMap().getCases().get(CryptManager.cellCode_To_ID(path.substring(path.length()-2)));
+						Case targetCell = client.getPlayer().getMap().getCases().get(CryptManager.cellCode_To_ID(GA.getPacket().substring(GA.getPacket().length()-2)));
 						
 						//On d�finie la case et on ajoute le personnage sur la case
-						client.getPlayer().setCurCell(nextCell);
+						client.getPlayer().setCell(nextCell);
 						client.getPlayer().setOrientation(CryptManager.getIntByHashedValue(path.charAt(path.length()-3)));
-						client.getPlayer().getCurCell().addPlayer(client.getPlayer());
+						client.getPlayer().getCell().addPlayer(client.getPlayer());
 						if(!client.getPlayer().isGhosts()) client.getPlayer().setAway(false);
 						
 						if(targetCell.getObject() != null) {
 							//Si c'est une "borne" comme Emotes, ou Cr�ation guilde
 							if(targetCell.getInteractiveObject().getId() == 1324) {
-								Constants.applyPlotIOAction(client.getPlayer(),client.getPlayer().getCurMap().getId(),targetCell.getId());
+								Constants.applyPlotIOAction(client.getPlayer(),client.getPlayer().getMap().getId(),targetCell.getId());
 							}else if(targetCell.getInteractiveObject().getId() == 542) {
 								if(client.getPlayer().isGhosts()) 
 									client.getPlayer().setAlive();
 							}
 						}
-						client.getPlayer().getCurMap().onPlayerArriveOnCell(client.getPlayer(),client.getPlayer().getCurCell().getId());
+						client.getPlayer().getMap().onPlayerArriveOnCell(client.getPlayer(),client.getPlayer().getCell().getId());
 						
 						for(GameAction action: client.getActions().values()) 
 							client.getPlayer().startActionOnCell(action);
@@ -91,10 +91,10 @@ public class ActionAck implements PacketParser {
 						return;
 					
 					String path = GA.getArgs();
-					client.getPlayer().getCurCell().removePlayer(client.getPlayer().getId());
-					client.getPlayer().setCurCell(client.getPlayer().getCurMap().getCases().get(newCellID));
+					client.getPlayer().getCell().removePlayer(client.getPlayer().getId());
+					client.getPlayer().setCell(client.getPlayer().getMap().getCases().get(newCellID));
 					client.getPlayer().setOrientation(CryptManager.getIntByHashedValue(path.charAt(path.length()-3)));
-					client.getPlayer().getCurCell().addPlayer(client.getPlayer());
+					client.getPlayer().getCell().addPlayer(client.getPlayer());
 					SocketManager.GAME_SEND_BN(client);
                     client.getActions().clear();
 				}
@@ -114,10 +114,10 @@ public class ActionAck implements PacketParser {
                         return;
 
                     String path = GA.getArgs();
-                    client.getPlayer().getCurCell().removePlayer(client.getPlayer().getId());
-                    client.getPlayer().setCurCell(client.getPlayer().getCurMap().getCases().get(newCellID));
+                    client.getPlayer().getCell().removePlayer(client.getPlayer().getId());
+                    client.getPlayer().setCell(client.getPlayer().getMap().getCases().get(newCellID));
                     client.getPlayer().setOrientation(CryptManager.getIntByHashedValue(path.charAt(path.length()-3)));
-                    client.getPlayer().getCurCell().addPlayer(client.getPlayer());
+                    client.getPlayer().getCell().addPlayer(client.getPlayer());
                     SocketManager.GAME_SEND_BN(client);
                     client.getActions().clear();
                 }

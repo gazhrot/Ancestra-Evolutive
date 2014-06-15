@@ -16,7 +16,7 @@ public class Create implements PacketParser {
 		try	{
 			int npcID = Integer.parseInt(packet.substring(2).split((char)0x0A+"")[0]);
 			
-			Npc npc = client.getPlayer().getCurMap().getNpcs().get(npcID);
+			Npc npc = client.getPlayer().getMap().getNpcs().get(npcID);
 			
 			if( npc == null)
 				return;

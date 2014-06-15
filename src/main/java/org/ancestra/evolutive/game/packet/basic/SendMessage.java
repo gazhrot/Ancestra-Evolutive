@@ -39,7 +39,7 @@ public class SendMessage implements PacketParser {
 					return;
 				}
 				if(client.getPlayer().getFight() == null)
-					SocketManager.GAME_SEND_cMK_PACKET_TO_MAP(client.getPlayer().getCurMap(), "", client.getPlayer().getId(), client.getPlayer().getName(), msg);
+					SocketManager.GAME_SEND_cMK_PACKET_TO_MAP(client.getPlayer().getMap(), "", client.getPlayer().getId(), client.getPlayer().getName(), msg);
 				else
 					SocketManager.GAME_SEND_cMK_PACKET_TO_FIGHT(client.getPlayer().getFight(), 7, "", client.getPlayer().getId(), client.getPlayer().getName(), msg);
 			break;

@@ -62,8 +62,8 @@ public class Finish implements PacketParser {
 					SocketManager.GAME_SEND_gT_PACKET(z, str);
 				}
 			}
-			client.getPlayer().getCurMap().getNpcs().remove(perco.getId());
-			SocketManager.GAME_SEND_ERASE_ON_MAP_TO_MAP(client.getPlayer().getCurMap(), perco.getId());
+			client.getPlayer().getMap().getNpcs().remove(perco.getId());
+			SocketManager.GAME_SEND_ERASE_ON_MAP_TO_MAP(client.getPlayer().getMap(), perco.getId());
 			perco.DelPerco(perco.getId());
 			World.database.getCollectorData().delete(perco);
 			client.getPlayer().setIsOnCollector(0);

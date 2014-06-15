@@ -543,9 +543,9 @@ public class Account {
 			if(player.getFight() != null) {
 				player.getFight().leftFight(player, null);
 			} else {
-				player.getCurCell().removePlayer(player.getId());
-				if(player.getCurMap() != null && player.isOnline())
-					SocketManager.GAME_SEND_ERASE_ON_MAP_TO_MAP(player.getCurMap(), player.getId());
+				player.getCell().removePlayer(player.getId());
+				if(player.getMap() != null && player.isOnline())
+					SocketManager.GAME_SEND_ERASE_ON_MAP_TO_MAP(player.getMap(), player.getId());
 			}
 			
 			player.setOnline(false);

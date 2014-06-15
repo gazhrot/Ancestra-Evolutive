@@ -127,7 +127,7 @@ public class InteractiveObject {
 			break;
 			
 			case 1330://Pierre de kwak
-				player.getCurMap().startFightVersusProtectors(player, new MobGroup(player.getCurMap().getNextObject(),player.getCurMap(), cell, getKwakere(player.getCurMap().getId())+","+40+","+40));
+				player.getMap().startFightVersusProtectors(player, new MobGroup(player.getMap().getNextObject(),player.getMap(), cell, getKwakere(player.getMap().getId())+","+40+","+40));
 			break;
 			
 			case 1679:
@@ -135,24 +135,24 @@ public class InteractiveObject {
 			break;
 			
 			/*case 1748://Donjon Larve
-				if(player.getCurMap().getId() == 6692)
+				if(player.getMap().getId() == 6692)
 				{
-					if(player.getCurMap().requiredCell.size() == 2)
-						player.getCurMap().openDoor();
-					player.getCurMap().requiredCell.clear();		
+					if(player.getMap().requiredCell.size() == 2)
+						player.getMap().openDoor();
+					player.getMap().requiredCell.clear();
 				}
-				if(player.getCurMap().getId() == 6720)
+				if(player.getMap().getId() == 6720)
 				{
-					if(player.getCurMap().getCase(121).getDroppedItem(false) == null || player.getCurMap().getCase(136).getDroppedItem(false) == null
-					|| player.getCurMap().getCase(151).getDroppedItem(false) == null || player.getCurMap().getCase(271).getDroppedItem(false) == null
-					|| player.getCurMap().getCase(286).getDroppedItem(false) == null || player.getCurMap().getCase(301).getDroppedItem(false) == null)
+					if(player.getMap().getCase(121).getDroppedItem(false) == null || player.getMap().getCase(136).getDroppedItem(false) == null
+					|| player.getMap().getCase(151).getDroppedItem(false) == null || player.getMap().getCase(271).getDroppedItem(false) == null
+					|| player.getMap().getCase(286).getDroppedItem(false) == null || player.getMap().getCase(301).getDroppedItem(false) == null)
 						return;
-					if(player.getCurMap().getCase(121).getDroppedItem(false).getTemplate().getId() == 362
-					&& player.getCurMap().getCase(136).getDroppedItem(false).getTemplate().getId() == 363
-					&& player.getCurMap().getCase(151).getDroppedItem(false).getTemplate().getId() == 364
-					&& player.getCurMap().getCase(271).getDroppedItem(false).getTemplate().getId() == 362
-					&& player.getCurMap().getCase(286).getDroppedItem(false).getTemplate().getId() == 363
-					&& player.getCurMap().getCase(301).getDroppedItem(false).getTemplate().getId() == 364)
+					if(player.getMap().getCase(121).getDroppedItem(false).getTemplate().getId() == 362
+					&& player.getMap().getCase(136).getDroppedItem(false).getTemplate().getId() == 363
+					&& player.getMap().getCase(151).getDroppedItem(false).getTemplate().getId() == 364
+					&& player.getMap().getCase(271).getDroppedItem(false).getTemplate().getId() == 362
+					&& player.getMap().getCase(286).getDroppedItem(false).getTemplate().getId() == 363
+					&& player.getMap().getCase(301).getDroppedItem(false).getTemplate().getId() == 364)
 					{
 						World.data.getCarte((short) 6904).openDoor();
 					}
@@ -168,7 +168,7 @@ public class InteractiveObject {
 				&& player.getTotalStats().getEffect(Constants.STATS_ADD_AGIL) == 0 
 				&& player.getTotalStats().getEffect(Constants.STATS_ADD_CHAN) == 0)
 				{
-					SocketManager.GAME_SEND_ACTION_TO_DOOR(player.getCurMap(), 237, true);
+					SocketManager.GAME_SEND_ACTION_TO_DOOR(player.getMap(), 237, true);
 					try { Thread.sleep(2250); } catch (InterruptedException e) {}
 					player.setFullMorph(10, false, false);
 				}else
@@ -183,7 +183,7 @@ public class InteractiveObject {
 			break;
 			
 			case 1324:// Plot Rouge des �motes
-				switch(player.getCurMap().getId())
+				switch(player.getMap().getId())
 				{
 					case 2196:
 						if(player.isAway())
@@ -231,7 +231,7 @@ public class InteractiveObject {
 			break;
 			
 			/*case 7045: TODO : :D
-				Map map = player.getCurMap();
+				Map map = player.getMap();
 				switch(map.getId())
 				{
 					case 6165://Prison porte Bonta
@@ -332,7 +332,7 @@ public class InteractiveObject {
 	
 	public static void getSignIO(Player player, int cell, int id)
 	{
-		switch(player.getCurMap().getId())
+		switch(player.getMap().getId())
 		{
 			case 7460:
 				if(id == 1988 && cell == 234)

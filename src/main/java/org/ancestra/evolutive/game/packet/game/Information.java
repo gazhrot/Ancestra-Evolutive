@@ -14,26 +14,26 @@ public class Information implements PacketParser {
 	public void parse(GameClient client, String packet) {
 		if(client.getPlayer().getFight() != null) {
 			//Only percepteur
-			SocketManager.GAME_SEND_MAP_GMS_PACKETS(client.getPlayer().getCurMap(), client.getPlayer());
+			SocketManager.GAME_SEND_MAP_GMS_PACKETS(client.getPlayer().getMap(), client.getPlayer());
 			SocketManager.GAME_SEND_GDK_PACKET(client);
 			return;
 		}
 		//Enclos
-		SocketManager.GAME_SEND_Rp_PACKET(client.getPlayer(), client.getPlayer().getCurMap().getMountPark());
+		SocketManager.GAME_SEND_Rp_PACKET(client.getPlayer(), client.getPlayer().getMap().getMountPark());
 		//Maisons
-		House.LoadHouse(client.getPlayer(), client.getPlayer().getCurMap().getId());
+		House.LoadHouse(client.getPlayer(), client.getPlayer().getMap().getId());
 		//Objets sur la carte
-		SocketManager.GAME_SEND_MAP_GMS_PACKETS(client.getPlayer().getCurMap(), client.getPlayer());
-		SocketManager.GAME_SEND_MAP_MOBS_GMS_PACKETS(client.getPlayer().getAccount().getGameClient(), client.getPlayer().getCurMap());
-		SocketManager.GAME_SEND_MAP_NPCS_GMS_PACKETS(client, client.getPlayer().getCurMap());
-		SocketManager.GAME_SEND_MAP_PERCO_GMS_PACKETS(client, client.getPlayer().getCurMap());
-		SocketManager.GAME_SEND_MAP_OBJECTS_GDS_PACKETS(client, client.getPlayer().getCurMap());
+		SocketManager.GAME_SEND_MAP_GMS_PACKETS(client.getPlayer().getMap(), client.getPlayer());
+		SocketManager.GAME_SEND_MAP_MOBS_GMS_PACKETS(client.getPlayer().getAccount().getGameClient(), client.getPlayer().getMap());
+		SocketManager.GAME_SEND_MAP_NPCS_GMS_PACKETS(client, client.getPlayer().getMap());
+		SocketManager.GAME_SEND_MAP_PERCO_GMS_PACKETS(client, client.getPlayer().getMap());
+		SocketManager.GAME_SEND_MAP_OBJECTS_GDS_PACKETS(client, client.getPlayer().getMap());
 		SocketManager.GAME_SEND_GDK_PACKET(client);
-		SocketManager.GAME_SEND_MAP_FIGHT_COUNT(client, client.getPlayer().getCurMap());
-		SocketManager.GAME_SEND_MERCHANT_LIST(client.getPlayer(), client.getPlayer().getCurMap().getId());
+		SocketManager.GAME_SEND_MAP_FIGHT_COUNT(client, client.getPlayer().getMap());
+		SocketManager.GAME_SEND_MERCHANT_LIST(client.getPlayer(), client.getPlayer().getMap().getId());
 		//Les drapeau de combats
-		Fight.FightStateAddFlag(client.getPlayer().getCurMap(), client.getPlayer());
+		Fight.FightStateAddFlag(client.getPlayer().getMap(), client.getPlayer());
 		//items au sol
-		client.getPlayer().getCurMap().sendFloorItems(client.getPlayer());
+		client.getPlayer().getMap().sendFloorItems(client.getPlayer());
 	}
 }

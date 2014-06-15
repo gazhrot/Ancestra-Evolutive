@@ -37,6 +37,6 @@ public class UseEmote implements PacketParser {
 		Console.instance.println("Set Emote "+client.getPlayer().getEmoteActive());
 		Console.instance.println("Is sitted "+client.getPlayer().isSitted());
 		
-		SocketManager.GAME_SEND_eUK_PACKET_TO_MAP(client.getPlayer().getCurMap(), client.getPlayer().getId(), client.getPlayer().getEmoteActive());
+		SocketManager.GAME_SEND_eUK_PACKET_TO_MAP(client.getPlayer().getMap(), client.getPlayer().getId(), client.getPlayer().getEmoteActive());
 	}
 }

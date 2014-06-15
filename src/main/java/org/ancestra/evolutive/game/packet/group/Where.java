@@ -26,7 +26,7 @@ public class Where implements PacketParser {
 		for(Player GroupP : client.getPlayer().getGroup().getPlayers()) {
 			if(!isFirst) 
 				str += "|";
-			str += GroupP.getCurMap().getX()+";"+GroupP.getCurMap().getY()+";"+GroupP.getCurMap().getId()+";2;"+GroupP.getId()+";"+GroupP.getName();
+			str += GroupP.getMap().getX()+";"+GroupP.getMap().getY()+";"+GroupP.getMap().getId()+";2;"+GroupP.getId()+";"+GroupP.getName();
 			isFirst = false;
 		}
 		

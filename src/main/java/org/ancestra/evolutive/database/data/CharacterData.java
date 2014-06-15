@@ -52,8 +52,8 @@ public class CharacterData extends AbstractDAO<Player>{
 			statement.setInt(14,obj.getSize());
 			statement.setInt(15,obj.getGfx());
 			statement.setInt(16,obj.getAccount().getUUID());
-			statement.setInt(17,obj.getCurCell().getId());
-			statement.setInt(18,obj.getCurMap().getId());
+			statement.setInt(17,obj.getCell().getId());
+			statement.setInt(18,obj.getMap().getId());
 			statement.setString(19, obj.parseSpellsToDb());
             execute(statement);
             logger.info("A new player has been created named {}",obj.getName());
@@ -132,8 +132,8 @@ public class CharacterData extends AbstractDAO<Player>{
 			statement.setInt(21,(obj.isShowWings()?1:0));
 			statement.setInt(22,(obj.isSeeSeller()?1:0));
 			statement.setString(23,obj.getCanaux());
-			statement.setInt(24,obj.getCurMap().getId());
-			statement.setInt(25,obj.getCurCell().getId());
+			statement.setInt(24,obj.getMap().getId());
+			statement.setInt(25,obj.getCell().getId());
 			statement.setInt(26,obj.getPdvPer());
 			statement.setString(27,obj.parseSpellsToDb());
 			statement.setString(28,obj.parseObjectsToDb());
