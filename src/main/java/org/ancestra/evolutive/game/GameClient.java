@@ -26,7 +26,7 @@ public class GameClient implements Client {
 	private Commands command;
     private String lastPacketSent = "";
 
-    Logger logger = (Logger)LoggerFactory.getLogger(Client.class);
+    public Logger logger = (Logger)LoggerFactory.getLogger(Client.class);
 
 
 	private Map<Integer, GameAction> actions = new ConcurrentHashMap<>();
