@@ -1,5 +1,6 @@
 package org.ancestra.evolutive.client;
 
+import ch.qos.logback.classic.Logger;
 import org.ancestra.evolutive.common.CryptManager;
 import org.ancestra.evolutive.common.SocketManager;
 import org.ancestra.evolutive.core.Server;
@@ -8,6 +9,7 @@ import org.ancestra.evolutive.game.GameClient;
 import org.ancestra.evolutive.hdv.HDV.HdvEntry;
 import org.ancestra.evolutive.login.LoginClient;
 import org.ancestra.evolutive.object.Objet;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -51,7 +53,7 @@ public class Account {
 	private ArrayList<Integer> enemys = new ArrayList<>();
 	private Map<Integer, ArrayList<HdvEntry>> hdvs;// Contient les items des HDV format : <hdvID,<cheapestID>>
 
-	
+	private final Logger logger;
 	public Account(int UUID, String name,String password, String pseudo, String question, String answer, 
 			int gmLvl, int vip, boolean banned, String lastIp, String lastConnection, String bank,
 			int bankKamas, String friends, String enemys, boolean logged)
@@ -70,7 +72,7 @@ public class Account {
 		this.bankKamas = bankKamas;
 		this.hdvs = World.data.getMyItems(this.UUID);
 		this.logged = logged;
-
+        this.logger = (Logger)LoggerFactory.getLogger("account." + name);
 		for(String item: bank.split("\\|"))	{
 			if(item.equals(""))
 				continue;
@@ -441,16 +443,17 @@ public class Account {
 		HdvEntry entry = null;
 		
 		for(HdvEntry tempEntry : this.hdvs.get(hdvID)) {//Boucle dans la liste d'entry de l'HDV pour trouver un entry avec le meme cheapestID que sp�cifi�
-			if(tempEntry.getLigneID() == line) {//Si la boucle trouve un objet avec le meme cheapestID, arrete la boucle
+			logger.debug(tempEntry.getObjet().getTemplate().getName());
+            if(tempEntry.getLigneID() == line) {//Si la boucle trouve un objet avec le meme cheapestID, arrete la boucle
 				entry = tempEntry;
 				break;
 			}
 		}
 		if(entry == null)//Si entry == null cela veut dire que la boucle s'est effectu� sans trouver d'item avec le meme cheapestID
 			return false;
-		
-		this.hdvs.get(hdvID).remove(entry);//Retire l'item de la liste des objets a vendre du compte
 
+		this.hdvs.get(hdvID).remove(entry);//Retire l'item de la liste des objets a vendre du compte
+        logger.info("La supression de l item va etre effectuee");
 		Objet obj = entry.getObjet();
 		
 		boolean b = this.getCurPlayer().addObjet(obj,true);//False = Meme item dans l'inventaire donc augmente la qua
@@ -555,4 +558,14 @@ public class Account {
 			World.data.unloadPerso(player.getId());
 		}
 	}
+
+    /**
+     * Envoie un message au player utilise par le compte
+     * @param message message a faire parvenir
+     */
+    public void send(String message){
+        if(gameClient != null){
+            gameClient.send(message);
+        }
+    }
 }

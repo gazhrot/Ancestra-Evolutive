@@ -21,7 +21,7 @@ public class MountPark {
 	private Maps map;
 	private InteractiveObject door;
 	private ArrayList<Case> cases = new ArrayList<>();
-	private Map<Integer,Integer> datas = new TreeMap<Integer,Integer>();//DragoID, IDperso
+	private Map<Integer,Integer> datas = new TreeMap<>();//DragoID, IDperso
 	
 	public MountPark(int owner, Maps map, int cellid, int size, String datas, int guild, int price) {
 		this.owner = owner;

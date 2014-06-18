@@ -51,7 +51,9 @@ public class GameClient implements Client {
 
     @Override
 	public void send(String message) {
-        this.session.write(message);
+        if(session.isConnected()) {
+            this.session.write(message);
+        }
     }
 
 	public void setAccount(Account account) {

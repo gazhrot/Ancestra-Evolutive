@@ -41,7 +41,7 @@ public class Fighter{
 	int _id = 0;
 	private boolean _canPlay = false;
 	private Fight _fight;
-	private TYPE type; // 1 : Personnage, 2 : Mob, 5 : Perco
+	private final TYPE type;
 	private MobGrade _mob = null;
 	private Player _perso = null;
 	Collector _Perco = null;
@@ -910,5 +910,9 @@ public class Fighter{
 	public void setFakeCell(Case fakeCell) {
 		this.fakeCell = fakeCell;
 	}
+
+    public TYPE getType(){
+        return this.type;
+    }
 
 }

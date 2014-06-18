@@ -1498,8 +1498,6 @@ public class SocketManager {
 		if(!s1.equals(""))
 			packet += s1;
 		send(out,packet);
-		if(Server.config.isDebug())
-			Log.addToSockLog("Game: Send>>"+packet);
 	}
 
 	public static void GAME_SEND_EXCHANGE_OK(Client out,boolean ok, int guid)

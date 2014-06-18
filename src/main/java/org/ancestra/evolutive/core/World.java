@@ -353,8 +353,8 @@ public class World {
 
 	public void removeItem(int guid) {
 		Objet o = objects.get(guid);
-		objects.remove(guid);
-		database.getItemData().delete(o);
+        database.getItemData().delete(o);
+        objects.remove(guid);
 	}
 
 	public void addInteractiveObjectTemplate(InteractiveObjectTemplate IOT) {
@@ -963,12 +963,10 @@ public class World {
 
 	public int totalMPGuild(int GuildID) {
 		int i = 0;
-		for (Entry<Short, MountPark> mp : mountParks.entrySet()) {
-			if (mp.getValue().getGuild().getId() == GuildID) {
-				i++;
-			} else {
-				continue;
-			}
+		for (MountPark mp : mountParks.values()) {
+            if (mp.getGuild() != null && mp.getGuild().getId() == GuildID) {
+                i++;
+            }
 		}
 		return i;
 	}

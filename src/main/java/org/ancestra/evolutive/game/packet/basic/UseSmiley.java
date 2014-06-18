@@ -10,6 +10,10 @@ public class UseSmiley implements PacketParser {
 
 	@Override
 	public void parse(GameClient client, String packet) {
-		client.getPlayer().emoticone(packet.substring(2));
-	}
+        try {
+            int emoteId = Integer.parseInt(packet.substring(2));
+            client.getPlayer().emoticone(emoteId);
+        } catch (NumberFormatException ignored) {}
+
+    }
 }

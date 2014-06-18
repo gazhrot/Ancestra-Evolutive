@@ -1288,6 +1288,7 @@ public class Player extends Creature{
 	public String getAsPacket()
 	{
 		refreshStats();
+        refreshLife();
 		
 		StringBuilder ASData = new StringBuilder();
 		ASData.append("As").append(this.getXpToString(",")).append("|");
@@ -1492,18 +1493,20 @@ public class Player extends Creature{
 	}
 	
 	public int getPdvPer() {
-		int pdvper = (100* this.getPdv())/ this.getMaxPdv();
-		return pdvper;
+        return (100* this.getPdv())/ this.getMaxPdv();
 	}
 
-	public void emoticone(String str) {
-		try {
-			int id = Integer.parseInt(str);
-			if(this.getFight() == null)
-				SocketManager.GAME_SEND_EMOTICONE_TO_MAP(this.getMap(), this.getId(), id);
-			else
-				SocketManager.GAME_SEND_EMOTICONE_TO_FIGHT(this.getFight(), 7, this.getId(), id);
-		} catch(NumberFormatException e) {}
+    /**
+     * Affiche l emote du joueur a l ensemble des joueurs pouvant le voir
+     * @param emoteId
+     */
+	public void emoticone(int emoteId) {
+        String activeEmote = "cS" + this.getId() + "|" + emoteId;
+        if(this.getFight() == null){
+            this.getMap().send(activeEmote);
+        } else {
+            this.getFight().send(activeEmote);
+        }
 	}
 
 	public void refreshMapAfterFight() {
@@ -3072,80 +3075,66 @@ public class Player extends Creature{
 		}
 		return str.toString();
     }
-    
-    public void addinStore(int ObjID, int price, int qua)
-    {
-		Objet PersoObj = World.data.getObjet(ObjID);
-		//Si le joueur n'a pas l'item dans son sac ...
-		if(this.getStores().get(ObjID) != null)
-		{
-			this.getStores().remove(ObjID);
-			this.getStores().put(ObjID, price);
-			SocketManager.GAME_SEND_ITEM_LIST_PACKET_SELLER(this, this);
+
+    public void addinStore(int objectId, int price, int quantity) {
+        Objet objet = this.objects.get(objectId);
+		if(this.objects.get(objectId) == null){
 			return;
 		}
-		if(this.objects.get(ObjID) == null)
-		{
-			Log.addToLog("Le joueur "+this.getName()+" a tenter d'ajouter un objet au store qu'il n'avait pas.");
-			return;
-		}
-		//Si c'est un item �quip� ...
-		if(PersoObj.getPosition() != Constants.ITEM_POS_NO_EQUIPED)return;
-		
-		Objet SimilarObj = getSimilarStoreItem(PersoObj);
-		int newQua = PersoObj.getQuantity() - qua;
+
+		Objet SimilarObj = getSimilarStoreItem(objet);
+		int newQuantity = objet.getQuantity() - quantity;
 		if(SimilarObj == null)//S'il n'y pas d'item du meme Template
 		{
 			//S'il ne reste pas d'item dans le sac
-			if(newQua <= 0)
-			{
+			if(newQuantity <= 0){
 				//On enleve l'objet du sac du joueur
-				removeItem(PersoObj.getGuid());
+				this.objects.remove(objectId);
 				//On met l'objet du sac dans le store, avec la meme quantit�
-				this.getStores().put(PersoObj.getGuid(), price);
-				SocketManager.GAME_SEND_REMOVE_ITEM_PACKET(this, PersoObj.getGuid());
+				this.getStores().put(objectId, price);
+				SocketManager.GAME_SEND_REMOVE_ITEM_PACKET(this, objectId);
                 SocketManager.GAME_SEND_ITEM_LIST_PACKET_SELLER(this, this);
 			}
 			else//S'il reste des objets au joueur
 			{
 				//on modifie la quantit� d'item du sac
-				PersoObj.setQuantity(newQua);
+				objet.setQuantity(newQuantity);
 				//On ajoute l'objet a la banque et au monde
-				SimilarObj = Objet.getCloneObjet(PersoObj, qua);
+				SimilarObj = Objet.getCloneObjet(objet, quantity);
 				World.data.addObjet(SimilarObj, true);
 				this.getStores().put(SimilarObj.getGuid(), price);
 				
 				//Envoie des packets
 				SocketManager.GAME_SEND_ITEM_LIST_PACKET_SELLER(this, this);
-				SocketManager.GAME_SEND_OBJECT_QUANTITY_PACKET(this, PersoObj);
+				SocketManager.GAME_SEND_OBJECT_QUANTITY_PACKET(this, objet);
 				
 			}
 		}else // S'il y avait un item du meme template
 		{
 			//S'il ne reste pas d'item dans le sac
-			if(newQua <= 0)
+			if(newQuantity <= 0)
 			{
 				//On enleve l'objet du sac du joueur
-				removeItem(PersoObj.getGuid());
+				removeItem(objet.getGuid());
 				//On enleve l'objet du monde
-				World.data.removeItem(PersoObj.getGuid());
+				World.data.removeItem(objet.getGuid());
 				//On ajoute la quantit� a l'objet en banque
-				SimilarObj.setQuantity(SimilarObj.getQuantity() + PersoObj.getQuantity());
+				SimilarObj.setQuantity(SimilarObj.getQuantity() + objet.getQuantity());
 				this.getStores().remove(SimilarObj.getGuid());
 				this.getStores().put(SimilarObj.getGuid(), price);
 				//on envoie l'ajout a la banque de l'objet
 				SocketManager.GAME_SEND_ITEM_LIST_PACKET_SELLER(this, this);
 				//on envoie la supression de l'objet du sac au joueur
-				SocketManager.GAME_SEND_REMOVE_ITEM_PACKET(this, PersoObj.getGuid());
+				SocketManager.GAME_SEND_REMOVE_ITEM_PACKET(this, objet.getGuid());
 			}else //S'il restait des objets
 			{
 				//on modifie la quantit� d'item du sac
-				PersoObj.setQuantity(newQua);
-				SimilarObj.setQuantity(SimilarObj.getQuantity() + qua);
+				objet.setQuantity(newQuantity);
+				SimilarObj.setQuantity(SimilarObj.getQuantity() + quantity);
 				this.getStores().remove(SimilarObj.getGuid());
 				this.getStores().put(SimilarObj.getGuid(), price);
 				SocketManager.GAME_SEND_ITEM_LIST_PACKET_SELLER(this, this);
-				SocketManager.GAME_SEND_OBJECT_QUANTITY_PACKET(this, PersoObj);
+				SocketManager.GAME_SEND_OBJECT_QUANTITY_PACKET(this, objet);
 				
 			}
 		}
@@ -3246,7 +3235,7 @@ public class Player extends Creature{
 			SocketManager.GAME_SEND_ALTER_GM_PACKET(this.getMap(), this);
 	}
 
-    public void refreshLife(){
+    void refreshLife(){
         if(fight != null) return;
         int time = (int)(System.currentTimeMillis()-regenTime);
         int diff = time/regenRate;
@@ -3254,5 +3243,13 @@ public class Player extends Creature{
         if(diff>=10){
             SocketManager.GAME_SEND_ILF_PACKET(this, (int)diff/1000);
         }
+    }
+
+    /**
+     * Envoie un message au player
+     * @param message message a faire parvenir
+     */
+    public void send(String message){
+        this.account.send(message);
     }
 }

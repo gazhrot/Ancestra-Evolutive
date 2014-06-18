@@ -44,7 +44,7 @@ public class Fight {
 	private final Map<Integer,Fighter> team0 = new ConcurrentHashMap<>();
 	private final Map<Integer,Fighter> team1 = new ConcurrentHashMap<>();
 	private final Map<Integer,Fighter> deadList = new ConcurrentHashMap<>();
-	private final Map<Integer,Player> _spec  = new ConcurrentHashMap<>();
+	private final Map<Integer,Player> spectator = new ConcurrentHashMap<>();
 	private Maps map, oldMap;
 	private Fighter _init0, _init1;
 	private ArrayList<Case> _start0 = new ArrayList<Case>(), _start1 = new ArrayList<Case>();
@@ -488,7 +488,7 @@ public class Fight {
 		
 		if(teams - 4 >= 0)
 		{
-			for(Entry<Integer,Player> entry : _spec.entrySet())
+			for(Entry<Integer,Player> entry : spectator.entrySet())
 			{
 				fighters.add(new Fighter(Fight.this,entry.getValue()));
 			}
@@ -1110,11 +1110,11 @@ public class Fight {
 			specOk = !specOk;
 			if(!specOk)
 			{
-				for(Entry<Integer, Player> spectateur : _spec.entrySet())//Expulsion des spectateurs
+				for(Entry<Integer, Player> spectateur : spectator.entrySet())//Expulsion des spectateurs
 				{
 					Player perso = spectateur.getValue();
 					SocketManager.GAME_SEND_GV_PACKET(perso);
-					_spec.remove(perso.getId());
+					spectator.remove(perso.getId());
 					perso.setSitted(false);
 					perso.setFight(null);
 					perso.setAway(false);
@@ -2043,7 +2043,7 @@ public class Fight {
 			}
 			
 			//on vire les spec du combat
-			for(Player perso: _spec.values())
+			for(Player perso: spectator.values())
 			{
 				//on remet le perso sur la map
 				perso.getMap().addPlayer(perso);
@@ -2304,7 +2304,7 @@ public class Fight {
 			return 1;
 		if(team1.containsKey(guid))
 			return 2;
-		if(_spec.containsKey(guid))
+		if(spectator.containsKey(guid))
 			return 4;
 		return -1;
 	}
@@ -2839,7 +2839,7 @@ public class Fight {
 		}else//Si perso en spec
 		{
 			SocketManager.GAME_SEND_GV_PACKET(perso);
-			_spec.remove(perso.getId());
+			spectator.remove(perso.getId());
 			perso.setSitted(false);
 			perso.setFight(null);
 			perso.setAway(false);
@@ -2961,7 +2961,7 @@ public class Fight {
 			if(e.getValue().getPersonnage() != null && e.getValue().getPersonnage().getAccount().getGameClient() != null)
 				PWs.add(e.getValue().getPersonnage().getAccount().getGameClient());
 		}
-		for(Entry<Integer,Player> e : _spec.entrySet())
+		for(Entry<Integer,Player> e : spectator.entrySet())
 		{
 			PWs.add(e.getValue().getAccount().getGameClient());
 		}
@@ -2982,7 +2982,7 @@ public class Fight {
 		SocketManager.GAME_SEND_ERASE_ON_MAP_TO_MAP(p.getMap(), p.getId());
 		SocketManager.GAME_SEND_MAP_FIGHT_GMS_PACKETS(Fight.this, map,p);
 		SocketManager.GAME_SEND_GAMETURNSTART_PACKET(p,_ordreJeu.get(_curPlayer).getGUID(),Constants.TIME_BY_TURN);
-		_spec.put(p.getId(), p);
+		spectator.put(p.getId(), p);
 		p.setFight(Fight.this);
 		SocketManager.GAME_SEND_Im_PACKET_TO_FIGHT(Fight.this, 7, "036;"+p.getName());
 	}
@@ -3211,4 +3211,24 @@ public class Fight {
 	public void set_curAction(String _curAction) {
 		this._curAction = _curAction;
 	}
+
+    /**
+     * Envoie un message a tout les joueurs du combat
+     * @param message
+     */
+    public void send(String message){
+        for(Fighter fighter : team0.values()){
+            if(fighter.getType() == Fighter.TYPE.PLAYER){
+                fighter.getPersonnage().send(message);
+            }
+        }
+        for(Fighter fighter : team1.values()){
+            if(fighter.getType() == Fighter.TYPE.PLAYER){
+                fighter.getPersonnage().send(message);
+            }
+        }
+        for(Player player : spectator.values()){
+            player.send(message);
+        }
+    }
 }

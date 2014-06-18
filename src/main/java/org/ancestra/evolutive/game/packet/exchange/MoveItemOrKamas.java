@@ -18,32 +18,29 @@ public class MoveItemOrKamas implements PacketParser {
 	@Override
 	public void parse(GameClient client, String packet) {
 		//Store
-		if(client.getPlayer().getIsTradingWith() == client.getPlayer().getId())
-		{
-			switch(packet.charAt(2))
-			{
+		if(client.getPlayer().getIsTradingWith() == client.getPlayer().getId()) {
+			switch(packet.charAt(2)){
 			case 'O'://Objets
-				if(packet.charAt(3) == '+')
-				{
+				if(packet.charAt(3) == '+'){
 					String[] infos = packet.substring(4).split("\\|");
-					try
-					{
-						
-						int guid = Integer.parseInt(infos[0]);
-						int qua  = Integer.parseInt(infos[1]);
+					try {
+						int objectId = Integer.parseInt(infos[0]);
+						int quantity  = Integer.parseInt(infos[1]);
 						int price  = Integer.parseInt(infos[2]);
 						
-						Objet obj = World.data.getObjet(guid);
+						Objet obj = World.data.getObjet(objectId);
 						if(obj == null)return;
 						
-						if(qua > obj.getQuantity() || qua <= 0)
-							qua = obj.getQuantity();
+						if(quantity > obj.getQuantity() || quantity <= 0) {
+                            quantity = obj.getQuantity();
+                        }
 						
-						client.getPlayer().addinStore(obj.getGuid(), price, qua);
+						client.getPlayer().addinStore(objectId, price, quantity);
 						
-					}catch(NumberFormatException e){};
-				}else
-				{
+					}catch(NumberFormatException ignored){};
+                    return;
+				}
+                else {
 					String[] infos = packet.substring(4).split("\\|");
 					try
 					{
@@ -127,7 +124,6 @@ public class MoveItemOrKamas implements PacketParser {
 					int cheapestID = Integer.parseInt(packet.substring(4).split("\\|")[0]);
 					int count = Integer.parseInt(packet.substring(4).split("\\|")[1]);
 					if(count <= 0)return;
-					
 					client.getPlayer().getAccount().recoverItem(cheapestID,count);//Retire l'objet de la liste de vente du compte
 					SocketManager.GAME_SEND_EXCHANGE_OTHER_MOVE_OK(client,'-',"",cheapestID+"");
 				break;
@@ -143,8 +139,7 @@ public class MoveItemOrKamas implements PacketParser {
 					
 					if(!client.getPlayer().hasItemGuid(itmID))//V�rifie si le personnage a bien l'item sp�cifi� et l'argent pour payer la taxe
 						return;
-					if(client.getPlayer().getAccount().countHdvItems(curHdv.getHdvID()) >= curHdv.getMaxItemCompte())
-					{
+					if(client.getPlayer().getAccount().countHdvItems(curHdv.getHdvID()) >= curHdv.getMaxItemCompte()){
 						SocketManager.GAME_SEND_Im_PACKET(client.getPlayer(), "058");
 						return;
 					}
@@ -154,7 +149,7 @@ public class MoveItemOrKamas implements PacketParser {
 						return;
 					}
 					
-					client.getPlayer().addKamas(taxe *-1);//Retire le montant de la taxe au personnage
+					client.getPlayer().addKamas(-taxe);//Retire le montant de la taxe au personnage
 					
 					SocketManager.GAME_SEND_STATS_PACKET(client.getPlayer());//Met a jour les kamas du client
 					
@@ -184,6 +179,7 @@ public class MoveItemOrKamas implements PacketParser {
 					curHdv.addEntry(toAdd);	//Ajoute l'entry dans l'HDV
 					
 					SocketManager.GAME_SEND_EXCHANGE_OTHER_MOVE_OK(client,'+',"",toAdd.parseToEmK());	//Envoie un packet pour ajouter l'item dans la fenetre de l'HDV du client
+                    SocketManager.GAME_SEND_HDVITEM_SELLING(client.getPlayer());
 				break;
 			}
 			return;

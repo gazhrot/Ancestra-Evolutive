@@ -641,6 +641,13 @@ public class Maps {
 		return toreturn.toString();
 	}
 
+    public void send(String str){
+        for(Player player : this.getPlayers()){
+            player.send(str);
+        }
+    }
+
+    @Override
     public boolean equals(Object object){
         if(object instanceof Maps){
             if(((Maps)object).getId() == this.getId()){
