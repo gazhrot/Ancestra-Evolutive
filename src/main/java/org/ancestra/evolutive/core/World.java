@@ -9,8 +9,8 @@ import org.ancestra.evolutive.common.Constants;
 import org.ancestra.evolutive.common.Couple;
 import org.ancestra.evolutive.common.SocketManager;
 import org.ancestra.evolutive.database.Database;
-import org.ancestra.evolutive.entity.collector.Collector;
 import org.ancestra.evolutive.entity.Mount;
+import org.ancestra.evolutive.entity.collector.Collector;
 import org.ancestra.evolutive.entity.monster.MobTemplate;
 import org.ancestra.evolutive.entity.npc.NpcAnswer;
 import org.ancestra.evolutive.entity.npc.NpcQuestion;
@@ -57,7 +57,7 @@ public class World {
 
 	private Map<Integer, Account> accounts = new HashMap<>();
 	private Map<Integer, Player> players = new HashMap<>();
-	private Map<Short, Maps> maps = new HashMap<>();
+	private Map<Integer, Maps> maps = new HashMap<>();
 	private Map<Integer, Objet> objects = new HashMap<>();
 	private Map<Integer, ExpLevel> expLevels = new HashMap<>();
 	private Map<Integer, Spell> spells = new HashMap<>();
@@ -79,11 +79,11 @@ public class World {
 	private Map<Integer, Map<Integer, ArrayList<HdvEntry>>> hdvItems = new HashMap<>();
 	private Map<Integer, Player> married = new HashMap<>();
 	private Map<Integer, Animation> animations = new HashMap<>();
-	private Map<Short, MountPark> mountParks = new HashMap<>();
+	private Map<Integer, MountPark> mountParks = new HashMap<>();
 	private Map<Integer, Trunk> trunks = new HashMap<>();
 	private Map<Integer, Collector> collectors = new ConcurrentHashMap<>();
 	private Map<Integer, House> houses = new HashMap<>();
-	private Map<Short, Collection<Integer>> sellers = new HashMap<>();
+	private Map<Integer, Collection<Integer>> sellers = new HashMap<>();
 	private Map<String, Command<Player>> playerCommands = new HashMap<>();
 	private Map<String, Command<Console>> consoleCommands = new HashMap<>();
 	private ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
@@ -190,7 +190,7 @@ public class World {
 		npcTemplates.put(temp.getId(), temp);
 	}
 
-	public Maps getCarte(short id) {
+	public Maps getCarte(int id) {
 		Maps map = maps.get(id);
 		if(map == null)
 			map = World.database.getMapData().load(id);
@@ -930,8 +930,7 @@ public class World {
 		mountParks.put(mp.getMap().getId(), mp);
 	}
 
-	public Map<Short, MountPark> getMountPark() {
-		
+	public Map<Integer, MountPark> getMountPark() {
 		return mountParks;
 	}
 	
@@ -948,7 +947,7 @@ public class World {
 		StringBuilder packet = new StringBuilder();
 		packet.append(enclosMax);
 
-		for (Entry<Short, MountPark> mp : mountParks.entrySet()) {
+		for (Entry<Integer, MountPark> mp : mountParks.entrySet()) {
 			if (mp.getValue().getGuild() != null
 					&& mp.getValue().getGuild().getId() == GuildID) {
 				packet.append("|").append(mp.getValue().getMap().getId())
@@ -971,7 +970,7 @@ public class World {
 		return i;
 	}
 
-	public void addSeller(int id, short map) {
+	public void addSeller(int id, int map) {
 		if (sellers.get(map) == null) {
 			ArrayList<Integer> players = new ArrayList<Integer>();
 			players.add(id);
@@ -985,11 +984,11 @@ public class World {
 		}
 	}
 
-	public Collection<Integer> getSeller(short mapID) {
-		return sellers.get(mapID);
+	public Collection<Integer> getSeller(Maps map) {
+		return sellers.get(map.getId());
 	}
 
-	public void removeSeller(int pID, short mapID) {
+	public void removeSeller(int pID, int mapID) {
 		sellers.get(mapID).remove(pID);
 	}
 

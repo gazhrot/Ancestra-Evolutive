@@ -32,9 +32,9 @@ public class Collector extends Creature {
 	private Map<Integer,Objet> _LogObjets = new TreeMap<>();
 	private long _LogXP = 0;
 	
-	public Collector(int guid, short map, int cellID, byte orientation, int GuildID, 
+	public Collector(int id, int map, int cellID, byte orientation, int GuildID,
 			short N1, short N2, String items, long kamas, long xp) {
-		super(guid,Short.toString(N1) +","+ Short.toString(N2),map,cellID);
+		super(id,Short.toString(N1) +","+ Short.toString(N2),map,cellID);
 		_GuildID = GuildID;
         helper = new CollectorHelper(this);
         guild = World.data.getGuild(_GuildID);
@@ -45,10 +45,10 @@ public class Collector extends Creature {
 		{
 			if(item.equals(""))continue;
 			String[] infos = item.split(":");
-			int id = Integer.parseInt(infos[0]);
-			Objet obj = World.data.getObjet(id);
+			int objectId = Integer.parseInt(infos[0]);
+			Objet obj = World.data.getObjet(objectId);
 			if(obj == null)continue;
-			_objets.put(obj.getGuid(), obj);
+			_objets.put(objectId, obj);
 		}
 		_xp = xp;
 		_kamas = kamas;
@@ -208,7 +208,7 @@ public class Collector extends Creature {
 		}
 	}
 	
-	public static String parseAttaqueToGuild(int guid, short mapid, int fightid)
+	public static String parseAttaqueToGuild(int guid, int mapid, int fightid)
 	{
 		StringBuilder str = new StringBuilder();
 		str.append("+").append(guid);
@@ -232,7 +232,7 @@ public class Collector extends Creature {
 		return str.toString();
 	}
 	
-	public static String parseDefenseToGuild(int guid, short mapid, int fightid)
+	public static String parseDefenseToGuild(int guid, int mapid, int fightid)
 	{
 		StringBuilder str = new StringBuilder();
 		str.append("+").append(guid);

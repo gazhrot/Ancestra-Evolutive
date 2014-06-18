@@ -7,8 +7,8 @@ import org.ancestra.evolutive.core.Console;
 import org.ancestra.evolutive.core.Log;
 import org.ancestra.evolutive.core.Server;
 import org.ancestra.evolutive.core.World;
-import org.ancestra.evolutive.entity.collector.Collector;
 import org.ancestra.evolutive.entity.Mount;
+import org.ancestra.evolutive.entity.collector.Collector;
 import org.ancestra.evolutive.entity.monster.MobGroup;
 import org.ancestra.evolutive.entity.npc.Npc;
 import org.ancestra.evolutive.fight.Fight;
@@ -2436,12 +2436,12 @@ public class SocketManager {
 		if(Server.config.isDebug())
 			Log.addToSockLog("Game: Send>>" + packet);
 	} 
-    public static void GAME_SEND_MERCHANT_LIST(Player P, short mapID) 
+    public static void GAME_SEND_MERCHANT_LIST(Player P, int mapID)
     {
     	StringBuilder packet = new StringBuilder();
     	packet.append("GM|~");
-    	if(World.data.getSeller(P.getMap().getId()) == null) return;
-        for (Integer pID : World.data.getSeller(P.getMap().getId()))
+    	if(World.data.getSeller(P.getMap()) == null) return;
+        for (Integer pID : World.data.getSeller(P.getMap()))
         {
         	if(!World.data.getPersonnage(pID).isOnline() && World.data.getPersonnage(pID).isSeeSeller())
         	{

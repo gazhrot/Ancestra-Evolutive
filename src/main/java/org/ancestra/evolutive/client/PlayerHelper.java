@@ -1,6 +1,5 @@
 package org.ancestra.evolutive.client;
 
-import org.ancestra.evolutive.client.Player;
 import org.ancestra.evolutive.core.Server;
 import org.ancestra.evolutive.entity.Helper;
 

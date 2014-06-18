@@ -34,9 +34,6 @@ import org.ancestra.evolutive.object.Objet;
 import org.ancestra.evolutive.other.Exchange;
 import org.ancestra.evolutive.tool.time.waiter.Waiter;
 
-import javax.swing.Timer;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -134,7 +131,7 @@ public class Player extends Creature{
 	protected long lastPacketTime;
 	
 	public Map<Integer,Player> followers = new TreeMap<>();
-	private ArrayList<Short> zaaps = new ArrayList<>();
+	private ArrayList<Integer> zaaps = new ArrayList<>();
 	private Map<Integer, SpellEffect> buffs = new TreeMap<>(); 
 	private Map<Integer, Objet> objects = new TreeMap<>();
 	private Map<Integer, JobStat> jobs = new TreeMap<>();
@@ -189,7 +186,7 @@ public class Player extends Creature{
 		this.aLvl = aLvl;
 		for(String id: zaaps.split(",")) {
 			try	{
-				this.zaaps.add(Short.parseShort(id));
+				this.zaaps.add(Integer.parseInt(id));
 			} catch(Exception e) {}
 		}
 		this.title = title;
@@ -836,7 +833,7 @@ public class Player extends Creature{
 		return followers;
 	}
 
-	public ArrayList<Short> getZaaps() {
+	public ArrayList<Integer> getZaaps() {
 		return zaaps;
 	}
 
@@ -1190,7 +1187,7 @@ public class Player extends Creature{
 		
 		GameClient client = this.getAccount().getGameClient();
 		
-		if(this.seeSeller == true && World.data.getSeller(this.getMap().getId()) != null && World.data.getSeller(this.getMap().getId()).contains(this.getId())) {
+		if(this.seeSeller == true && World.data.getSeller(this.getMap()) != null && World.data.getSeller(this.getMap()).contains(this.getId())) {
 			World.data.removeSeller(this.getId(), this.getMap().getId());
 			SocketManager.GAME_SEND_ERASE_ON_MAP_TO_MAP(this.getMap(), this.getId());
 			this.seeSeller = false;
@@ -1939,7 +1936,7 @@ public class Player extends Creature{
 		this.getAccount().getGameClient().removeAction(GA);
 	}
 	
-	public void teleport(short newMapID, int newCellID)
+	public void teleport(int newMapID, int newCellID)
 	{
 		GameClient PW = null;
 		if(this.getAccount().getGameClient() != null)
@@ -2553,7 +2550,7 @@ public class Player extends Creature{
 		StringBuilder str = new StringBuilder();
 		str.append(map);
         int SubAreaID = this.getMap().getSubArea().getArea().getContinent().getId();
-		for(short i : this.zaaps) {
+		for(int i : this.zaaps) {
 			if(World.data.getCarte(i) == null)
 				continue;
 			if(World.data.getCarte(i).getSubArea().getArea().getContinent().getId() != SubAreaID)

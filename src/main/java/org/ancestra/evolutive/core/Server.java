@@ -1,13 +1,14 @@
 package org.ancestra.evolutive.core;
 
-import org.ancestra.evolutive.core.Console;
-import org.ancestra.evolutive.core.Log;
-import org.ancestra.evolutive.core.Main;
-import org.ancestra.evolutive.core.Server;
-import org.ancestra.evolutive.core.World;
+import com.typesafe.config.Config;
+import com.typesafe.config.ConfigFactory;
+import org.ancestra.evolutive.client.Player;
+import org.ancestra.evolutive.common.Constants;
+import org.ancestra.evolutive.common.CryptManager;
 import org.ancestra.evolutive.event.Event;
 import org.ancestra.evolutive.event.EventListener;
 import org.ancestra.evolutive.event.player.PlayerJoinEvent;
+import org.ancestra.evolutive.game.GameServer;
 import org.ancestra.evolutive.login.LoginServer;
 import org.ancestra.evolutive.tool.command.Command;
 import org.ancestra.evolutive.tool.command.CommandAccess;
@@ -24,23 +25,11 @@ import java.io.PrintStream;
 import java.lang.annotation.Annotation;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-
-import org.ancestra.evolutive.client.Player;
-import org.ancestra.evolutive.common.Constants;
-import org.ancestra.evolutive.common.CryptManager;
-import org.ancestra.evolutive.game.GameServer;
-
-import com.typesafe.config.Config;
-import com.typesafe.config.ConfigFactory;
 
 public class Server {
 	
@@ -99,8 +88,7 @@ public class Server {
 	private int loadDelay;
 	private int reloadMobDelay;
 	private int playerLimitOnServer;
-	private boolean useMobs;
-	
+
 	//rates
 	private int rateDrop;
 	private int rateXpPvm;
@@ -163,7 +151,6 @@ public class Server {
 			this.saveTime = configFile.getInt("server.saveTime");
 			this.floodTime = configFile.getInt("server.floodTime");
 			this.loadDelay = configFile.getInt("server.liveActionDelay");
-			this.useMobs = configFile.getBoolean("server.useMob");
 			this.reloadMobDelay = configFile.getInt("server.reloadMobDelay");
 			this.playerLimitOnServer = configFile.getInt("server.playerLimit");
 			this.motd = configFile.getString("server.welcomMessage.content");
@@ -727,10 +714,6 @@ public class Server {
 
 	public boolean isCustomStartMap() {
 		return customStartMap;
-	}
-
-	public boolean isUseMobs() {
-		return useMobs;
 	}
 
 	public boolean isUseIp() {

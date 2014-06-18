@@ -129,15 +129,18 @@ public class CryptManager {
 		return (code1 + code2);
 	}
 
-	public static int getIntByHashedValue(char c)
-	{
+    /**
+     * Retourne le int correspondant a un character
+     * utilise dans le decryptage des maps
+     * @param c character a convertir
+     * @return int correspondant
+     */
+	public static int getIntByHashedValue(char c){
 		char[] HASH = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's',
 	            't', 'u', 'v', 'w', 'x', 'y', 'z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U',
 	            'V', 'W', 'X', 'Y', 'Z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '-', '_'};
-		for(int a = 0;a<HASH.length; a++)
-		{
-			if(HASH[a] == c)
-			{
+		for(int a = 0;a<=HASH.length; a++){
+			if(HASH[a] == c){
 				return a;
 			}
 		}	
@@ -170,24 +173,7 @@ public class CryptManager {
 		return list;
 	}
 
-	public static Map<Integer, Case> DecompileMapData(Maps map,String dData)
-	{
-		Map<Integer, Case> cells = new TreeMap<Integer,Case>();
-		for (int f = 0; f < dData.length(); f += 10)
-	    {
-			String CellData = dData.substring(f, f+10);
-			List<Byte> CellInfo = new ArrayList<Byte>();
-		    for (int i = 0; i < CellData.length(); i++)
-		    	CellInfo.add((byte)getIntByHashedValue(CellData.charAt(i)));
-		    int Type = (CellInfo.get(2) & 56) >> 3;
-		    boolean IsSightBlocker = (CellInfo.get(0) & 1) != 0;
-		    int layerObject2 = ((CellInfo.get(0) & 2) << 12) + ((CellInfo.get(7) & 1) << 12) + (CellInfo.get(8) << 6) + CellInfo.get(9);
-		    boolean layerObject2Interactive = ((CellInfo.get(7) & 2) >> 1) != 0;
-		    int obj = (layerObject2Interactive?layerObject2:-1);
-		    cells.put(f/10,new Case(map, f/10, Type!=0, IsSightBlocker, obj));
-	    }
-		return cells;
-	}
+
 	
 	//Fonction qui convertis tout les textes ANSI(Unicode) en UTF-8. Les fichiers doivent �tre cod� en ANSI sinon les phrases seront illisible.
 	public static String toUtf(String _in)

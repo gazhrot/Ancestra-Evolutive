@@ -13,7 +13,7 @@ public class Creature extends Entity{
     private Case cell;
     private STATE state;
     private int orientation;
-    protected Helper helper;
+
 
     /**
      * Créer une créature sur la Map donnée avec l orientation voulue
@@ -22,7 +22,7 @@ public class Creature extends Entity{
      * @param mapId id de la map
      * @param cellId id de la cellule
      */
-    public Creature(int id, String name, short mapId, int cellId,int orientation) {
+    public Creature(int id, String name, int mapId, int cellId,int orientation) {
         this(id, name,World.data.getCarte(mapId),World.data.getCarte(mapId).getCases().get(cellId),orientation);
     }
 
@@ -33,7 +33,7 @@ public class Creature extends Entity{
      * @param mapId id de la map
      * @param cellId id de la cellule
      */
-    public Creature(int id, String name, short mapId, int cellId) {
+    public Creature(int id, String name, int mapId, int cellId) {
         this(id, name,World.data.getCarte(mapId),World.data.getCarte(mapId).getCases().get(cellId),0);
     }
 
@@ -139,11 +139,11 @@ public class Creature extends Entity{
     }
 
     /**
-     * Retourne le helper de la creature
-     * @return helper
+     * Envoie un message a la creature
+     * @param message
      */
-    public Helper getHelper(){
-        return this.helper;
+    public void send(String message){
+        return;
     }
 
     /**

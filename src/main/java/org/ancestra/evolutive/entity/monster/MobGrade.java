@@ -236,14 +236,15 @@ public class MobGrade {
 	}
 
 	public void setStatByInvocator(Fighter caster) {
+
 		int coef = (1 + (caster.get_lvl()) / 100);
 		this.setPdv(this.getMaxPdv() * coef);
 		this.setMaxPdv(this.getPdv());
-		int force = this.stats.get(Constants.STATS_ADD_FORC) * coef;
-		int intel = this.stats.get(Constants.STATS_ADD_INTE) * coef;
-		int agili = this.stats.get(Constants.STATS_ADD_AGIL) * coef;
-		int sages = this.stats.get(Constants.STATS_ADD_SAGE) * coef;
-		int chanc = this.stats.get(Constants.STATS_ADD_CHAN) * coef;
+		int force = caster.getTotalStats().getEffect(Constants.STATS_ADD_FORC) * coef;
+		int intel = caster.getTotalStats().getEffect(Constants.STATS_ADD_INTE) * coef;
+		int agili = caster.getTotalStats().getEffect(Constants.STATS_ADD_AGIL) * coef;
+		int sages = caster.getTotalStats().getEffect(Constants.STATS_ADD_SAGE) * coef;
+		int chanc = caster.getTotalStats().getEffect(Constants.STATS_ADD_CHAN) * coef;
 		this.stats.put(Constants.STATS_ADD_FORC, force);
 		this.stats.put(Constants.STATS_ADD_INTE, intel);
 		this.stats.put(Constants.STATS_ADD_AGIL, agili);

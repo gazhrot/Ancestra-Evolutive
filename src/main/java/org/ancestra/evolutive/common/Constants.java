@@ -1134,15 +1134,6 @@ public class Constants
 		return 5;
 	}
 
-	public static int getAggroByLevel(int lvl)
-	{
-		int aggro = 0;
-		aggro = (lvl/50);
-		if(lvl>500)
-			aggro = 3;
-		return aggro;
-	}
-
 	public static boolean isValidPlaceForItem(ObjTemplate template, int place)
 	{
 		switch(template.getType())

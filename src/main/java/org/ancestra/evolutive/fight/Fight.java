@@ -8,6 +8,7 @@ import org.ancestra.evolutive.core.Console;
 import org.ancestra.evolutive.core.Log;
 import org.ancestra.evolutive.core.Server;
 import org.ancestra.evolutive.core.World;
+import org.ancestra.evolutive.entity.Alignement;
 import org.ancestra.evolutive.entity.collector.Collector;
 import org.ancestra.evolutive.entity.monster.MobGrade;
 import org.ancestra.evolutive.entity.monster.MobGroup;
@@ -606,10 +607,11 @@ public class Fight {
 			int align = -1;
 			if(team1.size() >0)
 			{
-				 team1.get(team1.keySet().toArray()[0]).getMob().getTemplate().getAlign();
+				 align = team1.get(team1.keySet().toArray()[0]).getMob().getTemplate().getAlign();
 			}
+            Alignement alignement = Alignement.getAlignement(align);
 			//Si groupe non fixe
-			if(!_mobGroup.isFix())World.data.getCarte(map.getId()).spawnGroup(align, 1, true, _mobGroup.getCell().getId());//Respawn d'un groupe
+			if(!_mobGroup.isFix())World.data.getCarte(map.getId()).spawnGroup(alignement, 1, true, _mobGroup.getCell().getId());//Respawn d'un groupe
 		}
 		SocketManager.GAME_SEND_GIC_PACKETS_TO_FIGHT(Fight.this, 7);
 		SocketManager.GAME_SEND_GS_PACKET_TO_FIGHT(Fight.this, 7);
@@ -2749,10 +2751,11 @@ public class Fight {
 									int align = -1;
 									if(team1.size() >0)
 									{
-										 team1.get(team1.keySet().toArray()[0]).getMob().getTemplate().getAlign();
+										 align = team1.get(team1.keySet().toArray()[0]).getMob().getTemplate().getAlign();
 									}
+                                    Alignement alignement = Alignement.getAlignement(align);
 									//Si groupe non fixe
-									if(!_mobGroup.isFix())World.data.getCarte(map.getId()).spawnGroup(align, 1, true,_mobGroup.getCell().getId());//Respawn d'un groupe
+									if(!_mobGroup.isFix())World.data.getCarte(map.getId()).spawnGroup(alignement, 1, true,_mobGroup.getCell().getId());//Respawn d'un groupe
 								}
 								map = null;
 								_ordreJeu = null;
