@@ -749,13 +749,28 @@ public class Player extends Creature{
 		this.savePos = savePos;
 	}
 
-	public int getEmoteActive() {
-		return emoteActive;
-	}
-
-	public void setEmoteActive(int emoteActive) {
-		this.emoteActive = emoteActive;
-	}
+    /**
+     * Creer l emote pour le joueur
+     * 0 signifie un reset des emotes
+     * Se charge de changer les timers lors d un sit
+     * @param emote
+     * @return true si l'action vient d etre activer
+     * false sinon
+     */
+	public boolean setEmoteActive(int emote) {
+        setSitted(false);
+        if(this.emoteActive == emote){
+            emoteActive = 0;
+            return false;
+        }
+        else {
+            emoteActive = emote;
+            if(emote ==1 || emote == 19){
+                setSitted(true);
+            }
+            return true;
+        }
+    }
 
 	public int getInviting() {
 		return inviting;
@@ -1466,16 +1481,14 @@ public class Player extends Creature{
 		return pods;
 	}
 
-	public void setSitted(boolean sitted)
-	{
-		this.sitted = sitted;
+	public void setSitted(boolean sitted){
+		if(this.sitted == sitted){
+            return;
+        }
+        this.sitted = sitted;
         refreshLife();
         regenRate = (sitted ? 1000 : 2000);
         SocketManager.GAME_SEND_ILS_PACKET(this, regenRate);
-
-
-		if((this.emoteActive == 1 || this.emoteActive == 19) && !sitted)
-			this.emoteActive = 0;
 	}
 	
 	public int getPdvPer() {
@@ -2433,7 +2446,7 @@ public class Player extends Creature{
 		this.isTradingWith = 0;
 		this.isTalkingWith = 0;
 		this.isAway = false;
-		this.emoteActive = 0;
+		setEmoteActive(0);
 		this.fight = null;
 		this.isReady = false;
 		this.curExchange = null;

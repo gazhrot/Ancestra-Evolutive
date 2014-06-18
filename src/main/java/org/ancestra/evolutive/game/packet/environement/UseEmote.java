@@ -21,22 +21,11 @@ public class UseEmote implements PacketParser {
 			return;
 		if(client.getPlayer().getFight() != null)
 			return;
+
+        boolean activated = client.getPlayer().setEmoteActive(emote);
 		
-		switch(emote) {//effets speciaux des emotes
-			case 19://s'allonger 
-			case 1:// s'asseoir
-				client.getPlayer().setSitted(!client.getPlayer().isSitted());
-			break;
-		}
+		client.logger.trace("Set Emote "+emote + " is sitted " + client.getPlayer().isSitted());
 		
-		if(client.getPlayer().getEmoteActive() == emote)
-			client.getPlayer().setEmoteActive(0);
-		else 
-			client.getPlayer().setEmoteActive(emote);
-		
-		Console.instance.println("Set Emote "+client.getPlayer().getEmoteActive());
-		Console.instance.println("Is sitted "+client.getPlayer().isSitted());
-		
-		SocketManager.GAME_SEND_eUK_PACKET_TO_MAP(client.getPlayer().getMap(), client.getPlayer().getId(), client.getPlayer().getEmoteActive());
+		SocketManager.GAME_SEND_eUK_PACKET_TO_MAP(client.getPlayer().getMap(), client.getPlayer().getId(), activated?emote:0);
 	}
 }

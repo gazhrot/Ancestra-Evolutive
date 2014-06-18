@@ -11,8 +11,8 @@
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 
 -- Export de la structure de la base pour ancestra
-CREATE DATABASE IF NOT EXISTS `ancestra` /*!40100 DEFAULT CHARACTER SET latin1 */;
-USE `ancestra`;
+CREATE DATABASE IF NOT EXISTS `ancestra-evolutive` /*!40100 DEFAULT CHARACTER SET latin1 */;
+USE `ancestra-evolutive`;
 
 
 -- Export de la structure de table ancestra. drops

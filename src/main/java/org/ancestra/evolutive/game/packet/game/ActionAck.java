@@ -48,6 +48,7 @@ public class ActionAck implements PacketParser {
 			case 1://Deplacement
 				if(isOk) {//Hors Combat
 					if(client.getPlayer().getFight() == null) {
+                        client.getPlayer().setEmoteActive(0);
 						client.getPlayer().getCell().removePlayer(client.getPlayer().getId());
 						SocketManager.GAME_SEND_BN(client);
 						String path = GA.getArgs();
