@@ -9,6 +9,7 @@ import org.ancestra.evolutive.database.AbstractDAO;
 import org.ancestra.evolutive.guild.Guild;
 import org.ancestra.evolutive.house.House;
 import org.ancestra.evolutive.house.Trunk;
+import org.ancestra.evolutive.map.Maps;
 import org.slf4j.LoggerFactory;
 
 import java.sql.PreparedStatement;
@@ -178,6 +179,25 @@ public class HouseData extends AbstractDAO<House>{
 		}
 		return house;
 	}
+
+    /**
+     * Charge l'ensemble des maisons se situant sur la carte
+     * @param map Carte dont les maisons doivent etre chargee
+     * @return
+     */
+    public ArrayList<House> load(Maps map) {
+        ArrayList<House> houses = new ArrayList<>();
+        try {
+            Result result = getData("SELECT * FROM houses WHERE map_id = "+map.getId());
+            House house;
+            while((house = load(result.resultSet)) != null) houses.add(house);
+            close(result);
+            logger.debug("{} houses has been loaded,ids : ",houses.size()+1,houses);
+        } catch (Exception e) {
+            logger.error("can t load house id {}", map.getId(), e);
+        }
+        return houses;
+    }
 
     protected House load(ResultSet result) throws SQLException {
         House house = null;

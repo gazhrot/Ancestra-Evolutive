@@ -151,7 +151,7 @@ public class House
 		{
 			if(house.getValue().get_map_id() == newMapID)
 			{
-				StringBuilder packet = new StringBuilder();
+                StringBuilder packet = new StringBuilder();
 				packet.append("P").append(house.getValue().get_id()).append("|");
 				if(house.getValue().get_owner_id() > 0)
 				{
@@ -163,15 +163,15 @@ public class House
 					{
 						packet.append(World.data.getCompte(house.getValue().get_owner_id()).getPseudo()).append(";");
 					}
-				}else
-				{
+				}
+                else {
 					packet.append(";");
 				}
 				if(house.getValue().get_sale() > 0)//Si prix > 0
 				{
 					packet.append("1");//Achetable
-				}else
-				{
+				}
+                else {
 					packet.append("0");//Non achetable
 				}
 				if(house.getValue().get_guild_id() > 0) //Maison de guilde

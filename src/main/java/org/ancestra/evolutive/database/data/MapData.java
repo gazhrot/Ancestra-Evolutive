@@ -65,7 +65,7 @@ public class MapData extends AbstractDAO<Maps>{
                         result.resultSet.getByte("groupmaxsize"));
 				World.data.addCarte(map);
 				World.database.getCollectorData().loadByMap(id);
-				World.database.getHouseData().load(id);
+				World.database.getHouseData().load(map);
 				World.database.getHdvData().load(id);
 				World.database.getMountparkData().load(id);
 				World.database.getNpcData().load(id);
