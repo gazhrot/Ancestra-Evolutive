@@ -2048,7 +2048,6 @@ public class SpellEffect {
 			fight.get_ordreJeu().add((fight.get_ordreJeu().indexOf(caster)+1),F);
 			fight.addFighterInTeam(F,caster.getTeam());
 			String gm = F.getGmPacket('+').substring(3);
-            System.err.println(gm);
             String gtl = fight.getGTL();
 			SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, 180, caster.getGUID() + "", gm);
 			SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, 999, caster.getGUID()+"", gtl);

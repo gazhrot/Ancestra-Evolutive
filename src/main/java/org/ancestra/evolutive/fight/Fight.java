@@ -2041,10 +2041,9 @@ public class Fight {
 					if(this.team1.get(-1) == null)return;
 				break;	
 			}
-			
+
 			//on vire les spec du combat
-			for(Player perso: spectator.values())
-			{
+			for(Player perso: spectator.values()){
 				//on remet le perso sur la map
 				perso.getMap().addPlayer(perso);
 				//SocketManager.GAME_SEND_GV_PACKET(perso);	//Mauvaise ligne apparemment
@@ -2099,11 +2098,9 @@ public class Fight {
 						if(F.getPersonnage() == null)continue;
 						if(F.isInvocation())continue;
 						if(!F.getPersonnage().isOnline())continue;
-						
-						if(type != Constants.FIGHT_TYPE_CHALLENGE)
-						{
-							if(F.getPDV() <= 0)
-							{
+						F.getPersonnage().refreshMapAfterFight();
+						if(type != Constants.FIGHT_TYPE_CHALLENGE){
+							if(F.getPDV() <= 0){
 								F.getPersonnage().setPdv(1);
 							}
 						}
@@ -2140,6 +2137,7 @@ public class Fight {
 						if(F.getPersonnage() == null)continue;
 						if(F.isInvocation())continue;
 						if(!F.getPersonnage().isOnline())continue;
+                        F.getPersonnage().refreshMapAfterFight();
 						
 						if(type != Constants.FIGHT_TYPE_CHALLENGE)
 						{
@@ -2452,8 +2450,7 @@ public class Fight {
 		set_curFighterPM(_ordreJeu.get(_curPlayer).getTotalStats().getEffect(Constants.STATS_ADD_PM) - _curFighterUsedPM);
 	}
 
-	public void leftFight(Player perso, Player target)
-	{
+	public void leftFight(Player perso, Player target){
 		if(perso == null)return;
 		Fighter F = Fight.this.getFighterByPerso(perso);
 		Fighter T = null;

@@ -3237,11 +3237,11 @@ public class Player extends Creature{
 
     void refreshLife(){
         if(fight != null) return;
-        int time = (int)(System.currentTimeMillis()-regenTime);
-        int diff = time/regenRate;
+        long time = (System.currentTimeMillis()-regenTime);
+        int diff = (int)time/regenRate;
         setPdv(getPdv()+diff);
         if(diff>=10){
-            SocketManager.GAME_SEND_ILF_PACKET(this, (int)diff/1000);
+            send("ILF" + diff);
         }
     }
 

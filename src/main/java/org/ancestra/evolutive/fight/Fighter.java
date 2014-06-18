@@ -399,15 +399,18 @@ public class Fighter{
 		}
 	}
 	
-	public int getPDV()
-	{
+	public int getPDV() {
 		int pdv = _PDV + getBuffValue(Constants.STATS_ADD_VITA);
 		return pdv;
 	}
 	
-	public void removePDV(int pdv)
-	{
-		_PDV -= pdv;
+	public void removePDV(int pdv){
+        if(this.type == TYPE.PLAYER){
+            this.getPersonnage().setPdv(this.getPersonnage().getPdv() - pdv);
+            _PDV = this.getPersonnage().getPdv();
+        } else {
+            _PDV -= pdv;
+        }
 	}
 	
 	public void applyBeginningTurnBuff(Fight fight)
@@ -893,8 +896,7 @@ public class Fighter{
 		if(_mob != null)return _mob.getXp();
 		return 0;
 	}
-	public void addPDV(int max) 
-	{
+	public void addPDV(int max) {
 		_PDVMAX = (_PDVMAX+max);
 		_PDV = (_PDV+max);
 	}

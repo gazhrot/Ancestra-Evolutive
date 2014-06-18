@@ -397,8 +397,8 @@ public class Case {
 		}
 	}
 	
-	public boolean canDoAction(int id)
-	{
+	public boolean canDoAction(int id){
+        if(this.interactiveObject == null) return false;
 		switch(id)
 		{
 			//Moudre et egrenner - Paysan
