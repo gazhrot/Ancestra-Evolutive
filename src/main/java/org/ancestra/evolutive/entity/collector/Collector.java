@@ -32,9 +32,9 @@ public class Collector extends Creature {
 	private Map<Integer, Object> _LogObjects = new TreeMap<>();
 	private long _LogXP = 0;
 	
-	public Collector(int guid, short map, int cellID, byte orientation, int GuildID, 
+	public Collector(int id, int map, int cellID, byte orientation, int GuildID,
 			short N1, short N2, String items, long kamas, long xp) {
-		super(guid,Short.toString(N1) +","+ Short.toString(N2),map,cellID);
+		super(id,Short.toString(N1) +","+ Short.toString(N2),map,cellID);
 		_GuildID = GuildID;
         helper = new CollectorHelper(this);
         guild = World.data.getGuild(_GuildID);
@@ -45,10 +45,11 @@ public class Collector extends Creature {
 		{
 			if(item.equals(""))continue;
 			String[] infos = item.split(":");
-			int id = Integer.parseInt(infos[0]);
-			Object obj = World.data.getObject(id);
+			int objectId = Integer.parseInt(infos[0]);
+			Object obj = World.data.getObject(objectId);
 			if(obj == null)continue;
-			_objets.put(obj.getId(), obj);
+			_objets.put(objectId, obj);
+
 		}
 		_xp = xp;
 		_kamas = kamas;
@@ -208,7 +209,7 @@ public class Collector extends Creature {
 		}
 	}
 	
-	public static String parseAttaqueToGuild(int guid, short mapid, int fightid)
+	public static String parseAttaqueToGuild(int guid, int mapid, int fightid)
 	{
 		StringBuilder str = new StringBuilder();
 		str.append("+").append(guid);
@@ -216,7 +217,7 @@ public class Collector extends Creature {
 		for(Entry<Integer, Fight> F : World.data.getMap(mapid).getFights().entrySet())
 		{
 			//Je boucle les combats de la map bien qu'inutile :/
-			//Mais cela �viter le bug F.getValue().getFighters(1) == null
+			//Mais cela ?viter le bug F.getValue().getFighters(1) == null
 				if(F.getValue().getId() == fightid)
 				{
 					for(Fighter f : F.getValue().getFighters(1))//Attaque
@@ -232,7 +233,7 @@ public class Collector extends Creature {
 		return str.toString();
 	}
 	
-	public static String parseDefenseToGuild(int guid, short mapid, int fightid)
+	public static String parseDefenseToGuild(int guid, int mapid, int fightid)
 	{
 		StringBuilder str = new StringBuilder();
 		str.append("+").append(guid);
@@ -240,7 +241,7 @@ public class Collector extends Creature {
 		for(Entry<Integer, Fight> F : World.data.getMap(mapid).getFights().entrySet())
 		{
 			//Je boucle les combats de la map bien qu'inutile :/
-			//Mais cela �viter le bug F.getValue().getFighters(2) == null
+			//Mais cela ?viter le bug F.getValue().getFighters(2) == null
 				if(F.getValue().getId() == fightid)
 				{
 					for(Fighter f : F.getValue().getFighters(2))//Defense
@@ -310,7 +311,7 @@ public class Collector extends Creature {
 				
 			}else //S'il reste des objets
 			{
-				//On cr�e une copy de l'item
+				//On cr?e une copy de l'item
 				PersoObj = Object.getClone(PercoObj, qua);
 				//On l'ajoute au monde
 				World.data.addObject(PersoObj, true);
@@ -334,7 +335,7 @@ public class Collector extends Creature {
 				//On retire l'item
 				this.removeObject(guid);
 				World.data.removeObject(PercoObj.getId());
-				//On Modifie la quantit� de l'item du sac du joueur
+				//On Modifie la quantit? de l'item du sac du joueur
 				PersoObj.setQuantity(PersoObj.getQuantity() + PercoObj.getQuantity());
 				
 				//On envoie les packets

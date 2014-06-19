@@ -69,7 +69,7 @@ public class Buy implements PacketParser {
 	            SocketManager.GAME_SEND_ITEM_LIST_PACKET_SELLER(seller, client.getPlayer());
 	            SocketManager.GAME_SEND_BUY_OK_PACKET(client);
 	            if(seller.getStores().isEmpty()) {
-	            	if(World.data.getSeller(seller.getMap().getId()) != null && World.data.getSeller(seller.getMap().getId()).contains(seller.getId())) {
+	            	if(World.data.getSeller(seller.getMap()) != null && World.data.getSeller(seller.getMap()).contains(seller.getId())) {
 	        			World.data.removeSeller(seller.getId(), seller.getMap().getId());
 	        			SocketManager.GAME_SEND_ERASE_ON_MAP_TO_MAP(seller.getMap(), seller.getId());
 	        			World.data.getPacketJar().get("EV").parse(client, packet);

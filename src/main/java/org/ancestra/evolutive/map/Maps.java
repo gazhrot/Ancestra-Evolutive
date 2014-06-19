@@ -1,11 +1,13 @@
 package org.ancestra.evolutive.map;
 
+import ch.qos.logback.classic.Logger;
 import org.ancestra.evolutive.area.SubArea;
 import org.ancestra.evolutive.client.Player;
 import org.ancestra.evolutive.common.*;
 import org.ancestra.evolutive.core.Log;
-import org.ancestra.evolutive.core.Server;
 import org.ancestra.evolutive.core.World;
+import org.ancestra.evolutive.entity.Alignement;
+import org.ancestra.evolutive.entity.Entity;
 import org.ancestra.evolutive.entity.collector.Collector;
 import org.ancestra.evolutive.entity.monster.MobGrade;
 import org.ancestra.evolutive.entity.monster.MobGroup;
@@ -15,28 +17,32 @@ import org.ancestra.evolutive.fight.Fight;
 import org.ancestra.evolutive.fight.Fighter;
 import org.ancestra.evolutive.object.Object;
 import org.ancestra.evolutive.other.Action;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
 public class Maps {
 	
-	private short id;
-	private String date;
-	private byte x = 0;
-	private byte y = 0;
-	private byte width;
-	private byte height;
-	private String key;
-	private String places;
+	private final int id;
+	private final String date;
+    private final byte height;
+    private final byte width;
+    private final String key;
+    private final Logger logger;
+    private String places;
+    private byte x;
+    private byte y = 0;
 	private byte maxGroup = 3;
 	private byte maxSize;
 	private int nextObject = -1;
 	private SubArea subArea;
 	private MountPark mountPark;	
-	
+
+    private ArrayList<Entity> entities = new ArrayList<>();
 	private Map<Integer, Npc> npcs = new TreeMap<>();
 	private Map<Integer, Case> cases = new TreeMap<>();
 	private Map<Integer, Fight> fights = new TreeMap<>();
@@ -45,7 +51,7 @@ public class Maps {
 	private Map<Integer, ArrayList<Action>> endFightAction = new TreeMap<>();
 	private ArrayList<MobGrade> mobPossibles = new ArrayList<>();
 
-	public Maps(short id, String date, byte width, byte height, String key, String places, String mapData, String cells, String monsters, String pos, byte maxGroup, byte maxSize) {
+	public Maps(int id, String date, byte width, byte height, String key, String places, String mapData, String cells, String monsters, String pos, byte maxGroup, byte maxSize) {
 		this.id = id;
 		this.date = date;
 		this.width = width;
@@ -54,6 +60,7 @@ public class Maps {
 		this.places = places;
 		this.maxGroup = maxGroup;
 		this.maxSize = maxSize;
+        logger = (Logger) LoggerFactory.getLogger("maps." + id);
 		try	{
 			String[] infos = pos.split(",");
 			this.x = Byte.parseByte(infos[0]);
@@ -62,97 +69,46 @@ public class Maps {
 			if(this.subArea != null)
 				this.subArea.addMap(this);
 		} catch(Exception e) {
-			Log.addToLog(" > Erreur lors du chargement de la map "+ this.id + ", position invalide !");
+            logger.error(" > Erreur lors du chargement de la map, position invalide !");
 			System.exit(0);
 		}
 		
 		if(!mapData.isEmpty()) {
-			this.cases = CryptManager.DecompileMapData(this, mapData);
+			this.cases = decompileMapData(mapData);
 		} else {
-			String[] data = cells.split("\\|");
-			
-			for(String cell: data) {
-				boolean walkable = true, lineOfSight = true;
-				int num = -1, obj = -1;
-				String[] cellInfos = cell.split(",");
-				try	{
-					walkable = cellInfos[2].equals("1");
-					lineOfSight = cellInfos[1].equals("1");
-					num = Integer.parseInt(cellInfos[0]);
-					if(!cellInfos[3].trim().equals(""))
-					{
-						obj = Integer.parseInt(cellInfos[3]);
-					}
-				} catch(Exception e) {}
-				if(num == -1)
-					continue;
-				
-	            this.cases.put(num, new Case(this, num, walkable, lineOfSight, obj));	
-			}
+			this.cases = decompileCells(cells);
 		}
-		for(String mob : monsters.split("\\|")) {
-			if(mob.equals(""))
-				continue;
-			
-			int uid = 0, lvl = 0;
-	
-			try	{
-				uid = Integer.parseInt(mob.split(",")[0]);
-				lvl = Integer.parseInt(mob.split(",")[1]);
-			} catch(NumberFormatException e) {
-				continue;
-			}
-			
-			if(uid == 0 || lvl == 0)
-				continue;
-			if(World.data.getMonstre(uid) == null)
-				continue;
-			if(World.data.getMonstre(uid).getGradeByLevel(lvl) == null)
-				continue;
-			
-			this.mobPossibles.add(World.data.getMonstre(uid).getGradeByLevel(lvl));
-		}
-		
+
+        this.mobPossibles = decompileMobPossibility(monsters);
+
 		if(this.cases.isEmpty())
 			return;
-		
-		if(Server.config.isUseMobs()) {
-			if(this.maxGroup == 0)
-				return;
-			this.spawnGroup(Constants.ALIGNEMENT_NEUTRE, this.maxGroup, false, -1);//Spawn des groupes d'alignement neutre 
-			this.spawnGroup(Constants.ALIGNEMENT_BONTARIEN, 1, false, -1);//Spawn du groupe de gardes bontarien s'il y a
-			this.spawnGroup(Constants.ALIGNEMENT_BRAKMARIEN, 1, false, -1);//Spawn du groupe de gardes brakmarien s'il y a
-		}
+
+		refreshSpawns();
 	}
 	
-	public Maps(short id, String date, byte width, byte height, String key, String places) {
+	public Maps(int id, String date, byte width, byte height, String key, String places) {
 		this.id = id;
 		this.date = date;
 		this.width = width;
 		this.height = height;
 		this.key = key;
 		this.places = places;
-		this.cases = new TreeMap<Integer, Case>();
+		this.cases = new TreeMap<>();
+        logger = (Logger) LoggerFactory.getLogger("maps." + id);
 	}
 
-	public short getId() {
-		return id;
-	}
-
-	public void setId(short id) {
-		this.id = id;
-	}
-
-	public String getDate() {
+    //region Getters and Setters
+    public String getDate() {
 		return date;
 	}
 
+    public int getId() {
+        return id;
+    }
+
 	public byte getX() {
 		return x;
-	}
-
-	public void setX(byte x) {
-		this.x = x;
 	}
 
 	public byte getY() {
@@ -167,33 +123,21 @@ public class Maps {
 		return width;
 	}
 
-	public void setWidth(byte width) {
-		this.width = width;
-	}
-
 	public byte getHeight() {
 		return height;
-	}
-
-	public void setHeight(byte height) {
-		this.height = height;
 	}
 
 	public String getKey() {
 		return key;
 	}
 
-	public void setKey(String key) {
-		this.key = key;
-	}
-
 	public String getPlaces() {
 		return places;
 	}
 
-	public void setPlaces(String places) {
-		this.places = places;
-	}
+    public void setPlaces(String places) {
+        this.places = places;
+    }
 
 	public byte getMaxGroup() {
 		return maxGroup;
@@ -207,24 +151,12 @@ public class Maps {
 		return maxSize;
 	}
 
-	public void setMaxSize(byte maxSize) {
-		this.maxSize = maxSize;
-	}
-
 	public int getNextObject() {
 		return nextObject;
 	}
 
-	public void setNextObject(int nextObject) {
-		this.nextObject = nextObject;
-	}
-
 	public SubArea getSubArea() {
 		return subArea;
-	}
-
-	public void setSubArea(SubArea subArea) {
-		this.subArea = subArea;
 	}
 
 	public MountPark getMountPark() {
@@ -239,10 +171,6 @@ public class Maps {
 		return npcs;
 	}
 
-	public void setNpcs(Map<Integer, Npc> npcs) {
-		this.npcs = npcs;
-	}
-
 	public Map<Integer, Case> getCases() {
 		return cases;
 	}
@@ -255,54 +183,50 @@ public class Maps {
 		return fights;
 	}
 
-	public void setFights(Map<Integer, Fight> fights) {
-		this.fights = fights;
-	}
-
 	public Map<Integer, MobGroup> getMobGroups() {
 		return mobGroups;
-	}
-
-	public void setMobGroups(Map<Integer, MobGroup> mobGroups) {
-		this.mobGroups = mobGroups;
 	}
 
 	public Map<Integer, MobGroup> getFixMobGroups() {
 		return fixMobGroups;
 	}
 
-	public void setFixMobGroups(Map<Integer, MobGroup> fixMobGroups) {
-		this.fixMobGroups = fixMobGroups;
-	}
-
 	public Map<Integer, ArrayList<Action>> getEndFightAction() {
 		return endFightAction;
-	}
-
-	public void setEndFightAction(Map<Integer, ArrayList<Action>> endFightAction) {
-		this.endFightAction = endFightAction;
 	}
 
 	public ArrayList<MobGrade> getMobPossibles() {
 		return mobPossibles;
 	}
-
-	public void setMobPossibles(ArrayList<MobGrade> mobPossibles) {
-		this.mobPossibles = mobPossibles;
-	}
+    //endregion
 	
 	public void addPlayer(Player player) {
-		SocketManager.GAME_SEND_ADD_PLAYER_TO_MAP(this, player);
+		send("GM|+" + player.getHelper().getGmPacket());
+        entities.add(player);
 		player.getCell().addPlayer(player);
 	}
 	
 	public ArrayList<Player> getPlayers() {
-		ArrayList<Player> players = new ArrayList<Player>();
-		for(Case cell: this.getCases().values())
-			for(Player player : cell.getPlayers().values())
-				players.add(player);
+		ArrayList<Player> players = new ArrayList<>();
+		for(Case cell : this.getCases().values()){
+            for(Player player : cell.getPlayers().values()){
+                players.add(player);
+            }
+        }
 		return players;
 	}
+
+    public Npc addNpc(int id,int cell, int dir) {
+        NpcTemplate template = World.data.getNpcTemplate(id);
+
+        if(template == null || this.getCases().get(cell) == null)
+            return null;
+
+        Npc npc = new Npc(template, this.getNextObject(),this, cases.get(cell), (byte) dir);
+        this.getNpcs().put(this.getNextObject(), npc);
+        this.nextObject--;
+        return npc;
+    }
 
 	public void applyEndFightAction(int type, Player player) {
 		if(this.getEndFightAction().get(type) == null)
@@ -324,26 +248,16 @@ public class Maps {
 		if(this.getEndFightAction().get(type1) == null)
 			return;
 		
-		ArrayList<Action> copy = new ArrayList<Action>();
+		ArrayList<Action> copy = new ArrayList<>();
 		copy.addAll(this.getEndFightAction().get(type1));
 		
 		for(Action A : copy)if(A.getId() == type2)
 			this.getEndFightAction().get(type1).remove(A);
 	}
 
-	public Npc addNpc(int id,int cell, int dir) {
-		NpcTemplate template = World.data.getNpcTemplate(id);
-		
-		if(template == null || this.getCases().get(cell) == null)
-			return null;
-		
-		Npc npc = new Npc(template, this.getNextObject(),this, cases.get(cell), (byte) dir);
-		this.getNpcs().put(this.getNextObject(), npc);
-		this.nextObject--;
-		return npc;
-	}
+
 	
-	public void spawnGroup(int align, int nbr, boolean log, int cell) {
+	public void spawnGroup(Alignement align, int nbr, boolean log, int cell) {
 		if((nbr < 1) || (this.getMobGroups().size() - this.getFixMobGroups().size() >= this.getMaxGroup()))
 			return;
 		
@@ -363,13 +277,12 @@ public class Maps {
 	}
 	
 	public void spawnNewGroup(boolean timer, Case cell, String data, String condition) {
-		MobGroup group = new MobGroup(this.getNextObject(),this,cell, data,condition);
+		MobGroup group = new MobGroup(this.getNextObject(),this,cell, data,condition,false);
 		
 		if(group.getMobs().isEmpty())
 			return;
 		
 		this.getMobGroups().put(this.getNextObject(), group);
-		group.setFix(false);
 		SocketManager.GAME_SEND_MAP_MOBS_GM_PACKET(this, group);
 		this.nextObject--;
 		
@@ -378,13 +291,12 @@ public class Maps {
 	}
 	
 	public void spawnGroupOnCommand(int cell, String data) {
-		MobGroup group = new MobGroup(this.getNextObject(),this,cases.get(cell),data);
+		MobGroup group = new MobGroup(this.getNextObject(),this,cases.get(cell),data,false);
 		
 		if(group.getMobs().isEmpty())
 			return;
 		
 		this.getMobGroups().put(this.getNextObject(), group);
-		group.setFix(false);
 		SocketManager.GAME_SEND_MAP_MOBS_GM_PACKET(this, group);
 		this.nextObject--;
 	}
@@ -465,8 +377,8 @@ public class Maps {
 	}
 	
 	public void refreshSpawns() {
-		for(int id : this.getMobGroups().keySet())
-			SocketManager.GAME_SEND_ERASE_ON_MAP_TO_MAP(this, id);
+        for(int id : this.getMobGroups().keySet())
+			send("GM|-" + id);
 
 		this.getMobGroups().clear();
 		this.getMobGroups().putAll(this.getFixMobGroups());
@@ -474,9 +386,9 @@ public class Maps {
 		for(MobGroup mg : this.getFixMobGroups().values())
 			SocketManager.GAME_SEND_MAP_MOBS_GM_PACKET(this, mg);
 
-		this.spawnGroup(Constants.ALIGNEMENT_NEUTRE, this.getMaxGroup(), true, -1);
-		this.spawnGroup(Constants.ALIGNEMENT_BONTARIEN, 1, true, -1);
-		this.spawnGroup(Constants.ALIGNEMENT_BRAKMARIEN, 1, true, -1);
+		this.spawnGroup(Alignement.NEUTRE, this.getMaxGroup(), true, -1);
+		this.spawnGroup(Alignement.BONTARIEN, 1, true, -1);
+		this.spawnGroup(Alignement.BRAKMARIEN, 1, true, -1);
 	}
 	
 	public void onPlayerArriveOnCell(Player player, int cell) {
@@ -503,7 +415,7 @@ public class Maps {
 		
 		for(MobGroup group : this.getMobGroups().values()) {
 			if(Pathfinding.getDistanceBetween(this, cell,group.getCell().getId()) <= group.getAggroDistance()) {
-				if((group.getAlign() == -1 || ((player.getAlign() == 1 || player.getAlign() == 2) && (player.getAlign() != group.getAlign()))) && ConditionParser.validConditions(player, group.getCondition())) {
+				if((group.getAlignement() == Alignement.NEUTRE || ((player.getAlign() == 1 || player.getAlign() == 2) && (Alignement.getAlignement(player.getAlign()) != group.getAlignement()))) && ConditionParser.validConditions(player, group.getCondition())) {
 					Log.addToLog(" > Le joueur " + player.getName() + " rentre en combat contre un groupe de monstre (" + group.getId() + ") !");
 					startFigthVersusMonstres(player,group);
 					return;
@@ -565,7 +477,7 @@ public class Maps {
 	}
 
 	public int getStoreCount() {
-		return (World.data.getSeller(getId()) == null ? 0 : World.data.getSeller(getId()).size());
+		return (World.data.getSeller(this) == null ? 0 : World.data.getSeller(this).size());
 	}
 	
 	public String getGMsPackets() {
@@ -643,7 +555,9 @@ public class Maps {
 
     public void send(String str){
         for(Player player : this.getPlayers()){
-            player.send(str);
+            if(player.getFight() == null) {
+                player.send(str);
+            }
         }
     }
 
@@ -653,5 +567,73 @@ public class Maps {
             if(((Maps) object).getId() == this.getId())
                 return true;
         return false;
+    }
+
+    private Map<Integer,Case> decompileCells(String cellsData){
+        Map<Integer,Case> cells = new TreeMap<>();
+        String[] data = cellsData.split("\\|");
+        for(String cellData : data) {
+            boolean walkable = true, lineOfSight = true;
+            int num = -1, obj = -1;
+            String[] cellInfos = cellData.split(",");
+            try	{
+                walkable = cellInfos[2].equals("1");
+                lineOfSight = cellInfos[1].equals("1");
+                num = Integer.parseInt(cellInfos[0]);
+                if(!cellInfos[3].trim().equals(""))
+                {
+                    obj = Integer.parseInt(cellInfos[3]);
+                }
+            } catch(Exception e) {}
+            if(num == -1)
+                continue;
+
+            cells.put(num, new Case(this, num, walkable, lineOfSight, obj));
+        }
+        return cells;
+    }
+
+    private Map<Integer, Case> decompileMapData(String dData){
+        Map<Integer, Case> cells = new TreeMap<>();
+        for (int f = 0; f < dData.length(); f += 10)
+        {
+            String CellData = dData.substring(f, f+10);
+            List<Byte> CellInfo = new ArrayList<Byte>();
+            for (int i = 0; i < CellData.length(); i++)
+                CellInfo.add((byte)CryptManager.getIntByHashedValue(CellData.charAt(i)));
+            int Type = (CellInfo.get(2) & 56) >> 3;
+            boolean IsSightBlocker = (CellInfo.get(0) & 1) != 0;
+            int layerObject2 = ((CellInfo.get(0) & 2) << 12) + ((CellInfo.get(7) & 1) << 12) + (CellInfo.get(8) << 6) + CellInfo.get(9);
+            boolean layerObject2Interactive = ((CellInfo.get(7) & 2) >> 1) != 0;
+            int obj = (layerObject2Interactive?layerObject2:-1);
+            cells.put(f/10,new Case(this, f/10, Type!=0, IsSightBlocker, obj));
+        }
+        return cells;
+    }
+
+    private ArrayList<MobGrade> decompileMobPossibility(String monsters){
+        ArrayList<MobGrade> mobs = new ArrayList<>();
+        int monsterId,lvl;
+        for(String mob : monsters.split("\\|")) {
+            if(mob.equals(""))
+                continue;
+
+            try	{
+                monsterId = Integer.parseInt(mob.split(",")[0]);
+                lvl = Integer.parseInt(mob.split(",")[1]);
+            } catch(NumberFormatException e) {
+                continue;
+            }
+
+            if(monsterId == 0 || lvl == 0)
+                continue;
+            if(World.data.getMonstre(monsterId) == null)
+                continue;
+            if(World.data.getMonstre(monsterId).getGradeByLevel(lvl) == null)
+                continue;
+
+            mobs.add(World.data.getMonstre(monsterId).getGradeByLevel(lvl));
+        }
+        return mobs;
     }
 }

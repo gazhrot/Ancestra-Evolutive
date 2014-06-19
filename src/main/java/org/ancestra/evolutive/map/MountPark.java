@@ -146,7 +146,7 @@ public class MountPark {
 	}
 	
 	public static void remove(int GuildID) {
-		for(Entry<Short, MountPark> mp : World.data.getMountPark().entrySet())//Pour chaque enclo si ils en ont plusieurs
+		for(Entry<Integer, MountPark> mp : World.data.getMountPark().entrySet())//Pour chaque enclo si ils en ont plusieurs
 		{
 			if(mp.getValue().getGuild().getId() == GuildID)
 			{

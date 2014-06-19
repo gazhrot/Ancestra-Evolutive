@@ -156,7 +156,7 @@ public class Commands {
 			SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out, mess);
 			for(Entry<Integer, MobGroup> entry : map.getMobGroups().entrySet())
 			{
-				mess = entry.getKey()+" "+entry.getValue().getCell().getId()+" "+entry.getValue().getAlign()+" "+entry.getValue().getMobs().size();
+				mess = entry.getKey()+" "+entry.getValue().getCell().getId()+" "+entry.getValue().getAlignement()+" "+entry.getValue().getMobs().size();
 				SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out, mess);
 			}
 			mess = "==========";
@@ -360,7 +360,7 @@ public class Commands {
 				SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out,str);
 				return;
 			}
-			short mapID = P.getMap().getId();
+			int mapID = P.getMap().getId();
 			int cellID = P.getCell().getId();
 			
 			Player target = _perso;
@@ -412,7 +412,7 @@ public class Commands {
 			}
 			if(P.isOnline())
 			{
-				short mapID = P.getMap().getId();
+				int mapID = P.getMap().getId();
 				int cellID = P.getCell().getId();
 				target.teleport(mapID, cellID);
 				String str = "Le joueur a ete teleporte";

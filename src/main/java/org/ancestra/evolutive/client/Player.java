@@ -131,7 +131,7 @@ public class Player extends Creature {
 	protected long lastPacketTime;
 	
 	public Map<Integer,Player> followers = new TreeMap<>();
-	private ArrayList<Short> zaaps = new ArrayList<>();
+	private ArrayList<Integer> zaaps = new ArrayList<>();
 	private Map<Integer, SpellEffect> buffs = new TreeMap<>(); 
 	private Map<Integer, Object> objects = new TreeMap<>();
 	private Map<Integer, JobStat> jobs = new TreeMap<>();
@@ -186,7 +186,7 @@ public class Player extends Creature {
 		this.aLvl = aLvl;
 		for(String id: zaaps.split(",")) {
 			try	{
-				this.zaaps.add(Short.parseShort(id));
+				this.zaaps.add(Integer.parseInt(id));
 			} catch(Exception e) {}
 		}
 		this.title = title;
@@ -838,12 +838,12 @@ public class Player extends Creature {
 		return followers;
 	}
 
-	public ArrayList<Short> getZaaps() {
+	public ArrayList<Integer> getZaaps() {
 		return zaaps;
 	}
 	
-	public void addZaap(short mapId) {
-		if(!this.zaaps.contains(Short.valueOf(mapId)))	{
+	public void addZaap(int mapId) {
+		if(!this.zaaps.contains(Integer.valueOf(mapId)))	{
 			this.zaaps.add(mapId);
 			SocketManager.GAME_SEND_Im_PACKET(this, "024");
 			World.database.getCharacterData().update(this);
@@ -1004,7 +1004,7 @@ public class Player extends Creature {
 	    	return false;
 	    
 		if(this.spells.containsKey(Integer.valueOf(id)) && learn) {
-			SocketManager.GAME_SEND_MESSAGE(this, "Tu possède déjà ce sort.", Server.config.getMotdColor());
+			SocketManager.GAME_SEND_MESSAGE(this, "Tu possï¿½de dï¿½jï¿½ ce sort.", Server.config.getMotdColor());
 			return false;
 		} else {
 			this.spells.put(id, World.data.getSort(id).getStatsByLevel(level));
@@ -1248,7 +1248,7 @@ public class Player extends Creature {
 		
 		GameClient client = this.getAccount().getGameClient();
 		
-		if(this.seeSeller == true && World.data.getSeller(this.getMap().getId()) != null && World.data.getSeller(this.getMap().getId()).contains(this.getId())) {
+		if(this.seeSeller == true && World.data.getSeller(this.getMap()) != null && World.data.getSeller(this.getMap()).contains(this.getId())) {
 			World.data.removeSeller(this.getId(), this.getMap().getId());
 			SocketManager.GAME_SEND_ERASE_ON_MAP_TO_MAP(this.getMap(), this.getId());
 			this.seeSeller = false;
@@ -1587,7 +1587,7 @@ public class Player extends Creature {
 			case 13://Chance
 				value = this.getStats().getEffect(Constants.STATS_ADD_CHAN);
 			break;
-			case 14://Agilité
+			case 14://Agilitï¿½
 				value = this.getStats().getEffect(Constants.STATS_ADD_AGIL);
 			break;
 			case 15://Intelligence
@@ -1616,7 +1616,7 @@ public class Player extends Creature {
 				case 13://Chance
 					this.getStats().addOneStat(Constants.STATS_ADD_CHAN, 1);
 				break;
-				case 14://Agilité
+				case 14://Agilitï¿½
 					this.getStats().addOneStat(Constants.STATS_ADD_AGIL, 1);
 				break;
 				case 15://Intelligence
@@ -1998,7 +1998,7 @@ public class Player extends Creature {
 		this.getAccount().getGameClient().removeAction(GA);
 	}
 	
-	public void teleport(short newMapID, int newCellID)
+	public void teleport(int newMapID, int newCellID)
 	{
 		GameClient PW = null;
 		if(this.getAccount().getGameClient() != null)
@@ -2611,8 +2611,8 @@ public class Player extends Creature {
 		
 		StringBuilder str = new StringBuilder();
 		str.append(map);
-        int SubAreaID = this.getMap().getSubArea().getArea().getContinent().getId();
-		for(short i : this.zaaps) {
+	        int SubAreaID = this.getMap().getSubArea().getArea().getContinent().getId();
+		for(int i : this.zaaps) {
 			if(World.data.getMap(i) == null)
 				continue;
 			if(World.data.getMap(i).getSubArea().getArea().getContinent().getId() != SubAreaID)

@@ -52,18 +52,18 @@ public class Constants
 	}
 	
 	//Valeur des droits de guilde
-	public static int G_BOOST = 2;			//G�rer les boost
-	public static int G_RIGHT = 4;			//G�rer les droits
+	public static int G_BOOST = 2;			//G?rer les boost
+	public static int G_RIGHT = 4;			//G?rer les droits
 	public static int G_INVITE = 8;			//Inviter de nouveaux membres
 	public static int G_BAN = 16;				//Bannir
-	public static int G_ALLXP = 32;			//G�rer les r�partitions d'xp
-	public static int G_HISXP = 256;			//G�rer sa r�partition d'xp
-	public static int G_RANK = 64;			//G�rer les rangs
+	public static int G_ALLXP = 32;			//G?rer les r?partitions d'xp
+	public static int G_HISXP = 256;			//G?rer sa r?partition d'xp
+	public static int G_RANK = 64;			//G?rer les rangs
 	public static int G_POSPERCO = 128;		//Poser un percepteur
 	public static int G_COLLPERCO = 512;		//Collecter les percepteurs
 	public static int G_USEENCLOS = 4096;		//Utiliser les enclos
-	public static int G_AMENCLOS = 8192;		//Am�nager les enclos
-	public static int G_OTHDINDE = 16384;		//G�rer les montures des autres membres
+	public static int G_AMENCLOS = 8192;		//Am?nager les enclos
+	public static int G_OTHDINDE = 16384;		//G?rer les montures des autres membres
 	
 	//Valeur des droits de maison
 	public static int H_GBLASON = 2; //Afficher blason pour membre de la guilde
@@ -96,7 +96,7 @@ public class Constants
 	public static final int IOBJECT_STATE_FULLING	= 5;
 	//FIGHT
 	public static final int TIME_BY_TURN			= 29*1000;
-	public static final int FIGHT_TYPE_CHALLENGE 	= 0;//D�fies
+	public static final int FIGHT_TYPE_CHALLENGE 	= 0;//D?fies
 	public static final int FIGHT_TYPE_AGRESSION 	= 1;//Aggros
 	public static final int FIGHT_TYPE_PVMA			= 2;//??
 	public static final int FIGHT_TYPE_MXVM			= 3;//??
@@ -275,7 +275,7 @@ public class Constants
 	public static final int SEX_FEMALE			=	1;
 	//GamePlay
 	public static final int MAX_EFFECTS_ID 		=	1500;
-	//Buff a v�rifier en d�but de tour
+	//Buff a v?rifier en d?but de tour
 	public static final int[] BEGIN_TURN_BUFF	=	{91,92,93,94,95,96,97,98,99,100,108};
 	//Buff des Armes
 	public static final int[] ARMES_EFFECT_IDS	=	{91,92,93,94,95,96,97,98,99,100,101};
@@ -284,14 +284,14 @@ public class Constants
 	//Invocation Statiques
 	public static final int[] STATIC_INVOCATIONS 		= 	{282,556};//Arbre et Cawotte s'tout :p
 	
-	//Verif d'Etat au lancement d'un sort {spellID,stateID}, � completer avant d'activer
+	//Verif d'Etat au lancement d'un sort {spellID,stateID}, ? completer avant d'activer
 	public static final int[][] STATE_REQUIRED =
 	{
 		{699,Constants.ETAT_SAOUL},
 		{690,Constants.ETAT_SAOUL}
 	};
 	
-	//Buff d�clench� en cas de frappe
+	//Buff d?clench? en cas de frappe
 	public static final int[] ON_HIT_BUFFS		=	{9,79,107,788};
 	
 	//Effects
@@ -503,7 +503,7 @@ public class Constants
 			break;
 			case CLASS_SRAM:
 				start.put(61,'b');//Sournoiserie
-				start.put(72,'c');//Invisibilit�
+				start.put(72,'c');//Invisibilit?
 				start.put(65,'d');//Piege sournois
 			break;
 			case CLASS_ENIRIPSA:
@@ -519,7 +519,7 @@ public class Constants
 			case CLASS_CRA:
 				start.put(161,'b');//Fleche Magique
 				start.put(169,'c');//Fleche de Recul
-				start.put(164,'d');//Fleche Empoisonn�e(ex Fleche chercheuse)
+				start.put(164,'d');//Fleche Empoisonn?e(ex Fleche chercheuse)
 			break;
 			case CLASS_IOP:
 				start.put(143,'b');//Intimidation
@@ -544,16 +544,16 @@ public class Constants
 			case CLASS_PANDAWA:
 				start.put(686,'b');//Picole
 				start.put(692,'c');//Gueule de bois
-				start.put(687,'d');//Poing enflamm�
+				start.put(687,'d');//Poing enflamm?
 			break;
 			case CLASS_ENUTROF:
 				start.put(51,'b');//Lancer de Piece
 				start.put(43,'c');//Lancer de Pelle
-				start.put(41,'d');//Sac anim�
+				start.put(41,'d');//Sac anim?
 			break;
 			case CLASS_SACRIEUR:
 				start.put(432,'b');//Pied du Sacrieur
-				start.put(431,'c');//Chatiment Os�
+				start.put(431,'c');//Chatiment Os?
 				start.put(434,'d');//Attirance
 			break;
 		}
@@ -572,7 +572,7 @@ public class Constants
 			break;
 			case CLASS_SRAM:
 				start.put(61,World.data.getSort(61).getStatsByLevel(1));//Sournoiserie
-				start.put(72,World.data.getSort(72).getStatsByLevel(1));//Invisibilit�
+				start.put(72,World.data.getSort(72).getStatsByLevel(1));//Invisibilit?
 				start.put(65,World.data.getSort(65).getStatsByLevel(1));//Piege sournois
 			break;
 			case CLASS_ENIRIPSA:
@@ -588,7 +588,7 @@ public class Constants
 			case CLASS_CRA:
 				start.put(161,World.data.getSort(161).getStatsByLevel(1));//Fleche Magique
 				start.put(169,World.data.getSort(169).getStatsByLevel(1));//Fleche de Recul
-				start.put(164,World.data.getSort(164).getStatsByLevel(1));//Fleche Empoisonn�e(ex Fleche chercheuse)
+				start.put(164,World.data.getSort(164).getStatsByLevel(1));//Fleche Empoisonn?e(ex Fleche chercheuse)
 			break;
 			case CLASS_IOP:
 				start.put(143,World.data.getSort(143).getStatsByLevel(1));//Intimidation
@@ -613,16 +613,16 @@ public class Constants
 			case CLASS_PANDAWA:
 				start.put(686,World.data.getSort(686).getStatsByLevel(1));//Picole
 				start.put(692,World.data.getSort(692).getStatsByLevel(1));//Gueule de bois
-				start.put(687,World.data.getSort(687).getStatsByLevel(1));//Poing enflamm�
+				start.put(687,World.data.getSort(687).getStatsByLevel(1));//Poing enflamm?
 			break;
 			case CLASS_ENUTROF:
 				start.put(51,World.data.getSort(51).getStatsByLevel(1));//Lancer de Piece
 				start.put(43,World.data.getSort(43).getStatsByLevel(1));//Lancer de Pelle
-				start.put(41,World.data.getSort(41).getStatsByLevel(1));//Sac anim�
+				start.put(41,World.data.getSort(41).getStatsByLevel(1));//Sac anim?
 			break;
 			case CLASS_SACRIEUR:
 				start.put(432,World.data.getSort(432).getStatsByLevel(1));//Pied du Sacrieur
-				start.put(431,World.data.getSort(431).getStatsByLevel(1));//Chatiment Forc�
+				start.put(431,World.data.getSort(431).getStatsByLevel(1));//Chatiment Forc?
 				start.put(434,World.data.getSort(434).getStatsByLevel(1));//Attirance
 			break;
 		}
@@ -883,7 +883,7 @@ public class Constants
 						return 5;
 				}
 			break;
-			case 14://Agilit�
+			case 14://Agilit?
 				switch(classID)
 				{
 					case CLASS_FECA:
@@ -1133,17 +1133,7 @@ public class Constants
 		return 5;
 	}
 
-	public static int getAggroByLevel(int lvl)
-	{
-		int aggro = 0;
-		aggro = (lvl/50);
-		if(lvl>500)
-			aggro = 3;
-		return aggro;
-	}
-
-	public static boolean isValidPlaceForItem(ObjectTemplate template, int place)
-	{
+	public static boolean isValidPlaceForItem(ObjectTemplate template, int place){
 		switch(template.getType())
 		{
 			case ITEM_TYPE_AMULETTE:
@@ -1251,38 +1241,38 @@ public class Constants
 				if(lvl == 17)
 					perso.learnSpell(18, 1, true, false, false);//Armure Aqueuse
 				if(lvl == 21)
-					perso.learnSpell(20, 1, true, false, false);//Immunit�
+					perso.learnSpell(20, 1, true, false, false);//Immunit?
 				if(lvl == 26)
 					perso.learnSpell(14, 1, true, false, false);//Armure Venteuse
 				if(lvl == 31)
 					perso.learnSpell(19, 1, true, false, false);//Bulle
 				if(lvl == 36)
-					perso.learnSpell(5, 1, true, false, false);//Tr�ve
+					perso.learnSpell(5, 1, true, false, false);//Tr?ve
 				if(lvl == 42)
-					perso.learnSpell(16, 1, true, false, false);//Science du b�ton
+					perso.learnSpell(16, 1, true, false, false);//Science du b?ton
 				if(lvl == 48)
-					perso.learnSpell(8, 1, true, false, false);//Retour du b�ton
+					perso.learnSpell(8, 1, true, false, false);//Retour du b?ton
 				if(lvl == 54)
 					perso.learnSpell(12, 1, true, false, false);//glyphe d'Aveuglement
 				if(lvl == 60)
-					perso.learnSpell(11, 1, true, false, false);//T�l�portation
+					perso.learnSpell(11, 1, true, false, false);//T?l?portation
 				if(lvl == 70)
-					perso.learnSpell(10, 1, true, false, false);//Glyphe Enflamm�
+					perso.learnSpell(10, 1, true, false, false);//Glyphe Enflamm?
 				if(lvl == 80)
-					perso.learnSpell(7, 1, true, false, false);//Bouclier F�ca
+					perso.learnSpell(7, 1, true, false, false);//Bouclier F?ca
 				if(lvl == 90)
 					perso.learnSpell(15, 1, true, false, false);//Glyphe d'Immobilisation
 				if(lvl == 100)
 					perso.learnSpell(13, 1, true, false, false);//Glyphe de Silence
 				if(lvl == 200)
-					perso.learnSpell(1901, 1, true, false, false);//Invocation de Dopeul F�ca
+					perso.learnSpell(1901, 1, true, false, false);//Invocation de Dopeul F?ca
 			break;
 			
 			case CLASS_OSAMODAS:
 				if(lvl == 3)
-					perso.learnSpell(26, 1, true, false, false);//B�n�diction Animale
+					perso.learnSpell(26, 1, true, false, false);//B?n?diction Animale
 				if(lvl == 6)
-					perso.learnSpell(22, 1, true, false, false);//D�placement F�lin
+					perso.learnSpell(22, 1, true, false, false);//D?placement F?lin
 				if(lvl == 9)
 					perso.learnSpell(35, 1, true, false, false);//Invocation de Bouftou
 				if(lvl == 13)
@@ -1292,7 +1282,7 @@ public class Constants
 				if(lvl == 21)
 					perso.learnSpell(30, 1, true, false, false);//Fouet
 				if(lvl == 26)
-					perso.learnSpell(27, 1, true, false, false);//Piq�re Motivante
+					perso.learnSpell(27, 1, true, false, false);//Piq?re Motivante
 				if(lvl == 31)
 					perso.learnSpell(24, 1, true, false, false);//Corbeau
 				if(lvl == 36)
@@ -1304,7 +1294,7 @@ public class Constants
 				if(lvl == 54)
 					perso.learnSpell(36, 1, true, false, false);//Frappe du Craqueleur
 				if(lvl == 60)
-					perso.learnSpell(32, 1, true, false, false);//R�sistance Naturelle
+					perso.learnSpell(32, 1, true, false, false);//R?sistance Naturelle
 				if(lvl == 70)
 					perso.learnSpell(29, 1, true, false, false);//Crocs du Mulou
 				if(lvl == 80)
@@ -1323,17 +1313,17 @@ public class Constants
 				if(lvl == 6)
 					perso.learnSpell(42, 1, true, false, false);//Chance
 				if(lvl == 9)
-					perso.learnSpell(47, 1, true, false, false);//Bo�te de Pandore
+					perso.learnSpell(47, 1, true, false, false);//Bo?te de Pandore
 				if(lvl == 13)
 					perso.learnSpell(48, 1, true, false, false);//Remblai
 				if(lvl == 17)
-					perso.learnSpell(45, 1, true, false, false);//Cl� R�ductrice
+					perso.learnSpell(45, 1, true, false, false);//Cl? R?ductrice
 				if(lvl == 21)
 					perso.learnSpell(53, 1, true, false, false);//Force de l'Age
 				if(lvl == 26)
-					perso.learnSpell(46, 1, true, false, false);//D�sinvocation
+					perso.learnSpell(46, 1, true, false, false);//D?sinvocation
 				if(lvl == 31)
-					perso.learnSpell(52, 1, true, false, false);//Cupidit�
+					perso.learnSpell(52, 1, true, false, false);//Cupidit?
 				if(lvl == 36)
 					perso.learnSpell(44, 1, true, false, false);//Roulage de Pelle
 				if(lvl == 42)
@@ -1341,7 +1331,7 @@ public class Constants
 				if(lvl == 48)
 					perso.learnSpell(54, 1, true, false, false);//Maladresse de Masse
 				if(lvl == 54)
-					perso.learnSpell(55, 1, true, false, false);//Acc�l�ration
+					perso.learnSpell(55, 1, true, false, false);//Acc?l?ration
 				if(lvl == 60)
 					perso.learnSpell(56, 1, true, false, false);//Pelle du Jugement
 				if(lvl == 70)
@@ -1349,9 +1339,9 @@ public class Constants
 				if(lvl == 80)
 					perso.learnSpell(59, 1, true, false, false);//Corruption
 				if(lvl == 90)
-					perso.learnSpell(57, 1, true, false, false);//Pelle Anim�e
+					perso.learnSpell(57, 1, true, false, false);//Pelle Anim?e
 				if(lvl == 100)
-					perso.learnSpell(60, 1, true, false, false);//Coffre Anim�
+					perso.learnSpell(60, 1, true, false, false);//Coffre Anim?
 				if(lvl == 200)
 					perso.learnSpell(1903, 1, true, false, false);//Invocation de Dopeul Enutrof
 			break;
@@ -1366,21 +1356,21 @@ public class Constants
 				if(lvl == 13)
 					perso.learnSpell(74, 1, true, false, false);//Double
 				if(lvl == 17)
-					perso.learnSpell(64, 1, true, false, false);//Rep�rage
+					perso.learnSpell(64, 1, true, false, false);//Rep?rage
 				if(lvl == 21)
-					perso.learnSpell(79, 1, true, false, false);//Pi�ge de Masse
+					perso.learnSpell(79, 1, true, false, false);//Pi?ge de Masse
 				if(lvl == 26)
-					perso.learnSpell(78, 1, true, false, false);//Invisibilit� d'Autrui
+					perso.learnSpell(78, 1, true, false, false);//Invisibilit? d'Autrui
 				if(lvl == 31)
-					perso.learnSpell(71, 1, true, false, false);//Pi�ge Empoisonn�
+					perso.learnSpell(71, 1, true, false, false);//Pi?ge Empoisonn?
 				if(lvl == 36)
 					perso.learnSpell(62, 1, true, false, false);//Concentration de Chakra
 				if(lvl == 42)
-					perso.learnSpell(69, 1, true, false, false);//Pi�ge d'Immobilisation
+					perso.learnSpell(69, 1, true, false, false);//Pi?ge d'Immobilisation
 				if(lvl == 48)
-					perso.learnSpell(77, 1, true, false, false);//Pi�ge de Silence
+					perso.learnSpell(77, 1, true, false, false);//Pi?ge de Silence
 				if(lvl == 54)
-					perso.learnSpell(73, 1, true, false, false);//Pi�ge r�pulsif
+					perso.learnSpell(73, 1, true, false, false);//Pi?ge r?pulsif
 				if(lvl == 60)
 					perso.learnSpell(67, 1, true, false, false);//Peur
 				if(lvl == 70)
@@ -1390,7 +1380,7 @@ public class Constants
 				if(lvl == 90)
 					perso.learnSpell(76, 1, true, false, false);//Attaque Mortelle
 				if(lvl == 100)
-					perso.learnSpell(80, 1, true, false, false);//Pi�ge Mortel
+					perso.learnSpell(80, 1, true, false, false);//Pi?ge Mortel
 				if(lvl == 200)
 					perso.learnSpell(1904, 1, true, false, false);//Invocation de Dopeul Sram
 			break;
@@ -1399,27 +1389,27 @@ public class Constants
 				if(lvl == 3)
 					perso.learnSpell(84, 1, true, false, false);//Gelure
 				if(lvl == 6)
-					perso.learnSpell(100, 1, true, false, false);//Sablier de X�lor
+					perso.learnSpell(100, 1, true, false, false);//Sablier de X?lor
 				if(lvl == 9)
 					perso.learnSpell(92, 1, true, false, false);//Rayon Obscur
 				if(lvl == 13)
-					perso.learnSpell(88, 1, true, false, false);//T�l�portation
+					perso.learnSpell(88, 1, true, false, false);//T?l?portation
 				if(lvl == 17)
-					perso.learnSpell(93, 1, true, false, false);//Fl�trissement
+					perso.learnSpell(93, 1, true, false, false);//Fl?trissement
 				if(lvl == 21)
 					perso.learnSpell(85, 1, true, false, false);//Flou
 				if(lvl == 26)
-					perso.learnSpell(96, 1, true, false, false);//Poussi�re Temporelle
+					perso.learnSpell(96, 1, true, false, false);//Poussi?re Temporelle
 				if(lvl == 31)
 					perso.learnSpell(98, 1, true, false, false);//Vol du Temps
 				if(lvl == 36)
 					perso.learnSpell(86, 1, true, false, false);//Aiguille Chercheuse
 				if(lvl == 42)
-					perso.learnSpell(89, 1, true, false, false);//D�vouement
+					perso.learnSpell(89, 1, true, false, false);//D?vouement
 				if(lvl == 48)
 					perso.learnSpell(90, 1, true, false, false);//Fuite
 				if(lvl == 54)
-					perso.learnSpell(87, 1, true, false, false);//D�motivation
+					perso.learnSpell(87, 1, true, false, false);//D?motivation
 				if(lvl == 60)
 					perso.learnSpell(94, 1, true, false, false);//Protection Aveuglante
 				if(lvl == 70)
@@ -1427,11 +1417,11 @@ public class Constants
 				if(lvl == 80)
 					perso.learnSpell(95, 1, true, false, false);//Horloge
 				if(lvl == 90)
-					perso.learnSpell(91, 1, true, false, false);//Frappe de X�lor
+					perso.learnSpell(91, 1, true, false, false);//Frappe de X?lor
 				if(lvl == 100)
-					perso.learnSpell(97, 1, true, false, false);//Cadran de X�lor
+					perso.learnSpell(97, 1, true, false, false);//Cadran de X?lor
 				if(lvl == 200)
-					perso.learnSpell(1905, 1, true, false, false);//Invocation de Dopeul X�lor
+					perso.learnSpell(1905, 1, true, false, false);//Invocation de Dopeul X?lor
 			break;
 
 			case CLASS_ECAFLIP:
@@ -1442,7 +1432,7 @@ public class Constants
 				if(lvl == 9)
 					perso.learnSpell(111, 1, true, false, false);//Contrecoup
 				if(lvl == 13)
-					perso.learnSpell(104, 1, true, false, false);//Tr�fle
+					perso.learnSpell(104, 1, true, false, false);//Tr?fle
 				if(lvl == 17)
 					perso.learnSpell(119, 1, true, false, false);//Tout ou rien
 				if(lvl == 21)
@@ -1450,17 +1440,17 @@ public class Constants
 				if(lvl == 26)
 					perso.learnSpell(107, 1, true, false, false);//Topkaj
 				if(lvl == 31)
-					perso.learnSpell(116, 1, true, false, false);//Langue R�peuse
+					perso.learnSpell(116, 1, true, false, false);//Langue R?peuse
 				if(lvl == 36)
 					perso.learnSpell(106, 1, true, false, false);//Roue de la Fortune
 				if(lvl == 42)
 					perso.learnSpell(117, 1, true, false, false);//Griffe Invocatrice
 				if(lvl == 48)
-					perso.learnSpell(108, 1, true, false, false);//Esprit F�lin
+					perso.learnSpell(108, 1, true, false, false);//Esprit F?lin
 				if(lvl == 54)
 					perso.learnSpell(115, 1, true, false, false);//Odorat
 				if(lvl == 60)
-					perso.learnSpell(118, 1, true, false, false);//R�flexes
+					perso.learnSpell(118, 1, true, false, false);//R?flexes
 				if(lvl == 70)
 					perso.learnSpell(110, 1, true, false, false);//Griffe Joueuse
 				if(lvl == 80)
@@ -1481,13 +1471,13 @@ public class Constants
 				if(lvl == 9)
 					perso.learnSpell(126, 1, true, false, false);//Mot Stimulant
 				if(lvl == 13)
-					perso.learnSpell(127, 1, true, false, false);//Mot de Pr�vention
+					perso.learnSpell(127, 1, true, false, false);//Mot de Pr?vention
 				if(lvl == 17)
 					perso.learnSpell(123, 1, true, false, false);//Mot Drainant
 				if(lvl == 21)
 					perso.learnSpell(130, 1, true, false, false);//Mot Revitalisant
 				if(lvl == 26)
-					perso.learnSpell(131, 1, true, false, false);//Mot de R�g�n�ration
+					perso.learnSpell(131, 1, true, false, false);//Mot de R?g?n?ration
 				if(lvl == 31)
 					perso.learnSpell(132, 1, true, false, false);//Mot d'Epine
 				if(lvl == 36)
@@ -1497,7 +1487,7 @@ public class Constants
 				if(lvl == 48)
 					perso.learnSpell(135, 1, true, false, false);//Mot de Sacrifice
 				if(lvl == 54)
-					perso.learnSpell(129, 1, true, false, false);//Mot d'Amiti�
+					perso.learnSpell(129, 1, true, false, false);//Mot d'Amiti?
 				if(lvl == 60)
 					perso.learnSpell(136, 1, true, false, false);//Mot d'Immobilisation
 				if(lvl == 70)
@@ -1516,76 +1506,76 @@ public class Constants
 				if(lvl == 3)
 					perso.learnSpell(144, 1, true, false, false);//Compulsion
 				if(lvl == 6)
-					perso.learnSpell(145, 1, true, false, false);//Ep�e Divine
+					perso.learnSpell(145, 1, true, false, false);//Ep?e Divine
 				if(lvl == 9)
-					perso.learnSpell(146, 1, true, false, false);//Ep�e du Destin
+					perso.learnSpell(146, 1, true, false, false);//Ep?e du Destin
 				if(lvl == 13)
 					perso.learnSpell(147, 1, true, false, false);//Guide de Bravoure
 				if(lvl == 17)
 					perso.learnSpell(148, 1, true, false, false);//Amplification
 				if(lvl == 21)
-					perso.learnSpell(154, 1, true, false, false);//Ep�e Destructrice
+					perso.learnSpell(154, 1, true, false, false);//Ep?e Destructrice
 				if(lvl == 26)
 					perso.learnSpell(150, 1, true, false, false);//Couper
 				if(lvl == 31)
 					perso.learnSpell(151, 1, true, false, false);//Souffle
 				if(lvl == 36)
-					perso.learnSpell(155, 1, true, false, false);//Vitalit�
+					perso.learnSpell(155, 1, true, false, false);//Vitalit?
 				if(lvl == 42)
-					perso.learnSpell(152, 1, true, false, false);//Ep�e du Jugement
+					perso.learnSpell(152, 1, true, false, false);//Ep?e du Jugement
 				if(lvl == 48)
 					perso.learnSpell(153, 1, true, false, false);//Puissance
 				if(lvl == 54)
 					perso.learnSpell(149, 1, true, false, false);//Mutilation
 				if(lvl == 60)
-					perso.learnSpell(156, 1, true, false, false);//Temp�te de Puissance
+					perso.learnSpell(156, 1, true, false, false);//Temp?te de Puissance
 				if(lvl == 70)
-					perso.learnSpell(157, 1, true, false, false);//Ep�e C�leste
+					perso.learnSpell(157, 1, true, false, false);//Ep?e C?leste
 				if(lvl == 80)
 					perso.learnSpell(158, 1, true, false, false);//Concentration
 				if(lvl == 90)
-					perso.learnSpell(160, 1, true, false, false);//Ep�e de Iop
+					perso.learnSpell(160, 1, true, false, false);//Ep?e de Iop
 				if(lvl == 100)
-					perso.learnSpell(159, 1, true, false, false);//Col�re de Iop
+					perso.learnSpell(159, 1, true, false, false);//Col?re de Iop
 				if(lvl == 200)
 					perso.learnSpell(1908, 1, true, false, false);//Invocation de Dopeul Iop
 			break;
 
 			case CLASS_CRA:
 				if(lvl == 3)
-					perso.learnSpell(163, 1, true, false, false);//Fl�che Glac�e
+					perso.learnSpell(163, 1, true, false, false);//Fl?che Glac?e
 				if(lvl == 6)
-					perso.learnSpell(165, 1, true, false, false);//Fl�che enflamm�e
+					perso.learnSpell(165, 1, true, false, false);//Fl?che enflamm?e
 				if(lvl == 9)
-					perso.learnSpell(172, 1, true, false, false);//Tir Eloign�
+					perso.learnSpell(172, 1, true, false, false);//Tir Eloign?
 				if(lvl == 13)
-					perso.learnSpell(167, 1, true, false, false);//Fl�che d'Expiation
+					perso.learnSpell(167, 1, true, false, false);//Fl?che d'Expiation
 				if(lvl == 17)
 					perso.learnSpell(168, 1, true, false, false);//Oeil de Taupe
 				if(lvl == 21)
 					perso.learnSpell(162, 1, true, false, false);//Tir Critique
 				if(lvl == 26)
-					perso.learnSpell(170, 1, true, false, false);//Fl�che d'Immobilisation
+					perso.learnSpell(170, 1, true, false, false);//Fl?che d'Immobilisation
 				if(lvl == 31)
-					perso.learnSpell(171, 1, true, false, false);//Fl�che Punitive
+					perso.learnSpell(171, 1, true, false, false);//Fl?che Punitive
 				if(lvl == 36)
 					perso.learnSpell(166, 1, true, false, false);//Tir Puissant
 				if(lvl == 42)
-					perso.learnSpell(173, 1, true, false, false);//Fl�che Harcelante
+					perso.learnSpell(173, 1, true, false, false);//Fl?che Harcelante
 				if(lvl == 48)
-					perso.learnSpell(174, 1, true, false, false);//Fl�che Cinglante
+					perso.learnSpell(174, 1, true, false, false);//Fl?che Cinglante
 				if(lvl == 54)
-					perso.learnSpell(176, 1, true, false, false);//Fl�che Pers�cutrice
+					perso.learnSpell(176, 1, true, false, false);//Fl?che Pers?cutrice
 				if(lvl == 60)
-					perso.learnSpell(175, 1, true, false, false);//Fl�che Destructrice
+					perso.learnSpell(175, 1, true, false, false);//Fl?che Destructrice
 				if(lvl == 70)
-					perso.learnSpell(178, 1, true, false, false);//Fl�che Absorbante
+					perso.learnSpell(178, 1, true, false, false);//Fl?che Absorbante
 				if(lvl == 80)
-					perso.learnSpell(177, 1, true, false, false);//Fl�che Ralentissante
+					perso.learnSpell(177, 1, true, false, false);//Fl?che Ralentissante
 				if(lvl == 90)
-					perso.learnSpell(179, 1, true, false, false);//Fl�che Explosive
+					perso.learnSpell(179, 1, true, false, false);//Fl?che Explosive
 				if(lvl == 100)
-					perso.learnSpell(180, 1, true, false, false);//Ma�trise de l'Arc
+					perso.learnSpell(180, 1, true, false, false);//Ma?trise de l'Arc
 				if(lvl == 200)
 					perso.learnSpell(1909, 1, true, false, false);//Invocation de Dopeul Cra
 			break;
@@ -1602,17 +1592,17 @@ public class Constants
 				if(lvl == 17)
 					perso.learnSpell(197, 1, true, false, false);//Puissance Sylvestre
 				if(lvl == 21)
-					perso.learnSpell(189, 1, true, false, false);//Invocation de la Sacrifi�e
+					perso.learnSpell(189, 1, true, false, false);//Invocation de la Sacrifi?e
 				if(lvl == 26)
 					perso.learnSpell(181, 1, true, false, false);//Tremblement
 				if(lvl == 31)
-					perso.learnSpell(199, 1, true, false, false);//Connaissance des Poup�es
+					perso.learnSpell(199, 1, true, false, false);//Connaissance des Poup?es
 				if(lvl == 36)
 					perso.learnSpell(191, 1, true, false, false);//Ronce Multiples
 				if(lvl == 42)
 					perso.learnSpell(186, 1, true, false, false);//Arbre
 				if(lvl == 48)
-					perso.learnSpell(196, 1, true, false, false);//Vent Empoisonn�
+					perso.learnSpell(196, 1, true, false, false);//Vent Empoisonn?
 				if(lvl == 54)
 					perso.learnSpell(190, 1, true, false, false);//Invocation de la Gonflable
 				if(lvl == 60)
@@ -1631,27 +1621,27 @@ public class Constants
 
 			case CLASS_SACRIEUR:
 				if(lvl == 3)
-					perso.learnSpell(444, 1, true, false, false);//D�robade
+					perso.learnSpell(444, 1, true, false, false);//D?robade
 				if(lvl == 6)
-					perso.learnSpell(449, 1, true, false, false);//D�tour
+					perso.learnSpell(449, 1, true, false, false);//D?tour
 				if(lvl == 9)
 					perso.learnSpell(436, 1, true, false, false);//Assaut
 				if(lvl == 13)
-					perso.learnSpell(437, 1, true, false, false);//Ch�timent Agile
+					perso.learnSpell(437, 1, true, false, false);//Ch?timent Agile
 				if(lvl == 17)
 					perso.learnSpell(439, 1, true, false, false);//Dissolution
 				if(lvl == 21)
-					perso.learnSpell(433, 1, true, false, false);//Ch�timent Os�
+					perso.learnSpell(433, 1, true, false, false);//Ch?timent Os?
 				if(lvl == 26)
-					perso.learnSpell(443, 1, true, false, false);//Ch�timent Spirituel
+					perso.learnSpell(443, 1, true, false, false);//Ch?timent Spirituel
 				if(lvl == 31)
 					perso.learnSpell(440, 1, true, false, false);//Sacrifice
 				if(lvl == 36)
 					perso.learnSpell(442, 1, true, false, false);//Absorption
 				if(lvl == 42)
-					perso.learnSpell(441, 1, true, false, false);//Ch�timent Vilatesque
+					perso.learnSpell(441, 1, true, false, false);//Ch?timent Vilatesque
 				if(lvl == 48)
-					perso.learnSpell(445, 1, true, false, false);//Coop�ration
+					perso.learnSpell(445, 1, true, false, false);//Coop?ration
 				if(lvl == 54)
 					perso.learnSpell(438, 1, true, false, false);//Transposition
 				if(lvl == 60)
@@ -1659,7 +1649,7 @@ public class Constants
 				if(lvl == 70)
 					perso.learnSpell(447, 1, true, false, false);//Furie
 				if(lvl == 80)
-					perso.learnSpell(448, 1, true, false, false);//Ep�e Volante
+					perso.learnSpell(448, 1, true, false, false);//Ep?e Volante
 				if(lvl == 90)
 					perso.learnSpell(435, 1, true, false, false);//Tansfert de Vie
 				if(lvl == 100)
@@ -1672,29 +1662,29 @@ public class Constants
 				if(lvl == 3)
 					perso.learnSpell(689, 1, true, false, false);//Epouvante
 				if(lvl == 6)
-					perso.learnSpell(690, 1, true, false, false);//Souffle Alcoolis�
+					perso.learnSpell(690, 1, true, false, false);//Souffle Alcoolis?
 				if(lvl == 9)
-					perso.learnSpell(691, 1, true, false, false);//Vuln�rabilit� Aqueuse
+					perso.learnSpell(691, 1, true, false, false);//Vuln?rabilit? Aqueuse
 				if(lvl == 13)
-					perso.learnSpell(688, 1, true, false, false);//Vuln�rabilit� Incandescente
+					perso.learnSpell(688, 1, true, false, false);//Vuln?rabilit? Incandescente
 				if(lvl == 17)
 					perso.learnSpell(693, 1, true, false, false);//Karcham
 				if(lvl == 21)
-					perso.learnSpell(694, 1, true, false, false);//Vuln�rabilit� Venteuse
+					perso.learnSpell(694, 1, true, false, false);//Vuln?rabilit? Venteuse
 				if(lvl == 26)
 					perso.learnSpell(695, 1, true, false, false);//Stabilisation
 				if(lvl == 31)
 					perso.learnSpell(696, 1, true, false, false);//Chamrak
 				if(lvl == 36)
-					perso.learnSpell(697, 1, true, false, false);//Vuln�rabilit� Terrestre
+					perso.learnSpell(697, 1, true, false, false);//Vuln?rabilit? Terrestre
 				if(lvl == 42)
 					perso.learnSpell(698, 1, true, false, false);//Souillure
 				if(lvl == 48)
 					perso.learnSpell(699, 1, true, false, false);//Lait de Bambou
 				if(lvl == 54)
-					perso.learnSpell(700, 1, true, false, false);//Vague � Lame
+					perso.learnSpell(700, 1, true, false, false);//Vague ? Lame
 				if(lvl == 60)
-					perso.learnSpell(701, 1, true, false, false);//Col�re de Zato�shwan
+					perso.learnSpell(701, 1, true, false, false);//Col?re de Zato?shwan
 				if(lvl == 70)
 					perso.learnSpell(702, 1, true, false, false);//Flasque Explosive
 				if(lvl == 80)
@@ -1713,7 +1703,7 @@ public class Constants
 	{
 		switch(spell)
 		{
-			case 10://Enflamm�
+			case 10://Enflamm?
 			case 2033://Dopeul
 				return 4;//Rouge
 			case 12://Aveuglement
@@ -1742,7 +1732,7 @@ public class Constants
 				return 7;
 			case 69://Immobilisation
 				return 10;
-			case 71://Empoisonn�e
+			case 71://Empoisonn?e
 			case 2068://Dopeul
 				return 9;
 			case 73://Repulsif
@@ -1780,7 +1770,7 @@ public class Constants
 			case 20:
 			stats.addOneStat(STATS_ADD_INIT, lvl*10); // 100*10 = 1000
 			break;
-			//Dor�e
+			//Dor?e
 			case 18:
 			stats.addOneStat(STATS_ADD_VITA, (lvl/2)); 
 			stats.addOneStat(STATS_ADD_SAGE, (int)(lvl/2.50)); // 100/2.50 = 40
@@ -1791,12 +1781,12 @@ public class Constants
 			stats.addOneStat(STATS_ADD_VITA, lvl); 
 			stats.addOneStat(STATS_CREATURE, (lvl/50)); // 100/50 = 2
 			break;
-			//Rousse-Dor�e
+			//Rousse-Dor?e
 			case 46:
 			stats.addOneStat(STATS_ADD_VITA, lvl);
 			stats.addOneStat(STATS_ADD_SAGE, (lvl/4)); //100/4 = 25
 		    break;
-			//Amande-Dor�e
+			//Amande-Dor?e
 			case 33:
 			stats.addOneStat(STATS_ADD_INIT, lvl*5);
 			stats.addOneStat(STATS_ADD_SAGE, (lvl/4));
@@ -1813,7 +1803,7 @@ public class Constants
 			stats.addOneStat(STATS_ADD_VITA,(int)(lvl*1.50)); // 100*1.50 = 150
 			stats.addOneStat(STATS_ADD_CHAN, (int)(lvl/1.65));
 			break;
-			//Rousse-Eb�ne
+			//Rousse-Eb?ne
 			case 12:
 			stats.addOneStat(STATS_ADD_VITA,(int)(lvl*1.50));
 			stats.addOneStat(STATS_ADD_AGIL, (int)(lvl/1.65));
@@ -1830,12 +1820,12 @@ public class Constants
 			stats.addOneStat(STATS_ADD_FORC, (int)(lvl/1.25));
 			stats.addOneStat(STATS_ADD_VITA, (lvl/2));
 			break;
-			//Orchid�e
+			//Orchid?e
 			case 22:
 			stats.addOneStat(STATS_ADD_INTE, (int)(lvl/1.25));
 			stats.addOneStat(STATS_ADD_VITA, (lvl/2));
 			break;
-			//Dor�e-Orchid�e |
+			//Dor?e-Orchid?e |
 			case 48:
 			stats.addOneStat(STATS_ADD_VITA, (lvl));
 			stats.addOneStat(STATS_ADD_SAGE, (lvl/4));
@@ -1847,25 +1837,25 @@ public class Constants
 			stats.addOneStat(STATS_ADD_CHAN, (lvl/2));
 			stats.addOneStat(STATS_ADD_FORC, (lvl/2));
 			break;
-			//Indigo-Orchid�e
+			//Indigo-Orchid?e
 			case 67:
 			stats.addOneStat(STATS_ADD_VITA, (lvl));
 			stats.addOneStat(STATS_ADD_CHAN, (lvl/2));
 			stats.addOneStat(STATS_ADD_INTE, (lvl/2));
 			break;
-			//Eb�ne-Pourpre
+			//Eb?ne-Pourpre
 			case 54:
 			stats.addOneStat(STATS_ADD_VITA, (lvl));
 			stats.addOneStat(STATS_ADD_FORC, (lvl/2));
 			stats.addOneStat(STATS_ADD_AGIL, (lvl/2));
 			break;
-			//Eb�ne-Orchid�e
+			//Eb?ne-Orchid?e
 			case 53:
 			stats.addOneStat(STATS_ADD_VITA, (lvl));
 			stats.addOneStat(STATS_ADD_AGIL, (lvl/2));
 			stats.addOneStat(STATS_ADD_INTE, (lvl/2));
 			break;
-			//Pourpre-Orchid�e
+			//Pourpre-Orchid?e
 			case 76:
 			stats.addOneStat(STATS_ADD_VITA, (lvl));
 			stats.addOneStat(STATS_ADD_INTE, (lvl/2));
@@ -1884,13 +1874,13 @@ public class Constants
 			stats.addOneStat(STATS_ADD_SAGE, (lvl/4));
 			stats.addOneStat(STATS_ADD_CHAN, (int)(lvl/1.65));
 			break;
-			// Dor�e-Eb�ne
+			// Dor?e-Eb?ne
 			case 42:
 			stats.addOneStat(STATS_ADD_VITA, lvl);
 			stats.addOneStat(STATS_ADD_SAGE, (lvl/4));
 			stats.addOneStat(STATS_ADD_AGIL, (int)(lvl/1.65));
 			break;
-			// Indigo-Eb�ne
+			// Indigo-Eb?ne
 			case 51:
 			stats.addOneStat(STATS_ADD_VITA, lvl);
 			stats.addOneStat(STATS_ADD_CHAN, (lvl/2));
@@ -1901,7 +1891,7 @@ public class Constants
 			stats.addOneStat(STATS_ADD_VITA, (int)(lvl*1.5));
 			stats.addOneStat(STATS_ADD_FORC, (int)(lvl/1.65));
 			break;
-			// Rousse-Orchid�e
+			// Rousse-Orchid?e
 			case 70:
 			stats.addOneStat(STATS_ADD_VITA, (int)(lvl*1.5));
 			stats.addOneStat(STATS_ADD_INTE, (int)(lvl/1.65));
@@ -1913,14 +1903,14 @@ public class Constants
 			stats.addOneStat(STATS_ADD_FORC, (int)(lvl/1.65));
 			stats.addOneStat(STATS_CREATURE, (lvl/100));
 			break;
-			// Amande-Orchid�e
+			// Amande-Orchid?e
 			case 40:
 			stats.addOneStat(STATS_ADD_INIT, lvl*5);
 			stats.addOneStat(STATS_ADD_VITA, (lvl/2)); 
 			stats.addOneStat(STATS_ADD_INTE, (int)(lvl/1.65));
 			stats.addOneStat(STATS_CREATURE, (lvl/100));
 			break;
-			// Dor�e-Pourpre
+			// Dor?e-Pourpre
 			case 49:
 			stats.addOneStat(STATS_ADD_VITA, lvl);
 			stats.addOneStat(STATS_ADD_SAGE, (lvl/4));
@@ -1953,13 +1943,13 @@ public class Constants
 			stats.addOneStat(STATS_ADD_PROS, (int)(lvl/2.50));
 			stats.addOneStat(STATS_CREATURE, (lvl/100));
 			break;
-			//Dor�e-Ivoire
+			//Dor?e-Ivoire
 			case 45:
 			stats.addOneStat(STATS_ADD_VITA, lvl);
 			stats.addOneStat(STATS_ADD_PERDOM, (int)(lvl/2.5));
 			stats.addOneStat(STATS_ADD_SAGE, (lvl/4));
 			break;
-			//Dor�e-Turquoise
+			//Dor?e-Turquoise
 			case 47:
 			stats.addOneStat(STATS_ADD_VITA, lvl);
 			stats.addOneStat(STATS_ADD_PROS, (int)(lvl/2.50));
@@ -1977,13 +1967,13 @@ public class Constants
 			stats.addOneStat(STATS_ADD_CHAN, (int)(lvl/1.65));
 			stats.addOneStat(STATS_ADD_PERDOM, (int)(lvl/2.5));
 			break;
-			//Eb�ne-Ivoire
+			//Eb?ne-Ivoire
 			case 9:
 			stats.addOneStat(STATS_ADD_VITA, lvl);
 			stats.addOneStat(STATS_ADD_AGIL, (int)(lvl/2.50));
 			stats.addOneStat(STATS_ADD_PERDOM, (int)(lvl/2.5));
 			break;
-			//Eb�ne-Turquoise
+			//Eb?ne-Turquoise
 			case 52:
 			stats.addOneStat(STATS_ADD_VITA, lvl);
 			stats.addOneStat(STATS_ADD_AGIL, (int)(lvl/1.65));
@@ -2001,7 +1991,7 @@ public class Constants
 			stats.addOneStat(STATS_ADD_FORC, (int)(lvl/1.65));
 			stats.addOneStat(STATS_ADD_PROS, (int)(lvl/2.50));
 			break;
-			//Orchid�e-Turquoise
+			//Orchid?e-Turquoise
 			case 72:
 			stats.addOneStat(STATS_ADD_VITA, lvl);
 			stats.addOneStat(STATS_ADD_INTE, (int)(lvl/1.65));
@@ -2047,13 +2037,13 @@ public class Constants
 			stats.addOneStat(STATS_ADD_PO, (lvl/100));
 			stats.addOneStat(STATS_CREATURE, (lvl/100));
 			break;
-			//Dor�e-Emeraude
+			//Dor?e-Emeraude
 			case 43:
 			stats.addOneStat(STATS_ADD_VITA, lvl);
 			stats.addOneStat(STATS_ADD_SAGE, (lvl/4));
 			stats.addOneStat(STATS_ADD_PM, (lvl/100));
 			break;
-			//Dor�e-Prune
+			//Dor?e-Prune
 			case 78:
 			stats.addOneStat(STATS_ADD_VITA, lvl*2);
 			stats.addOneStat(STATS_ADD_SAGE, (lvl/4));
@@ -2071,13 +2061,13 @@ public class Constants
 			stats.addOneStat(STATS_ADD_CHAN, (int)(lvl/1.65));
 			stats.addOneStat(STATS_ADD_PO, (lvl/100));
 			break;
-			//Eb�ne-Emeraude
+			//Eb?ne-Emeraude
 			case 50:
 			stats.addOneStat(STATS_ADD_VITA, lvl);
 			stats.addOneStat(STATS_ADD_AGIL, (int)(lvl/3.33));
 			stats.addOneStat(STATS_ADD_PM, (lvl/100));
 			break;
-			//Eb�ne-Prune
+			//Eb?ne-Prune
 			case 79:
 			stats.addOneStat(STATS_ADD_VITA, lvl*2);
 			stats.addOneStat(STATS_ADD_AGIL, (int)(lvl/1.65));
@@ -2095,13 +2085,13 @@ public class Constants
 			stats.addOneStat(STATS_ADD_FORC, (int)(lvl/1.65));
 			stats.addOneStat(STATS_ADD_PO, (lvl/100));
 			break;
-			//Orchid�e-Emeraude
+			//Orchid?e-Emeraude
 			case 59:
 			stats.addOneStat(STATS_ADD_VITA, lvl);
 			stats.addOneStat(STATS_ADD_INTE, (int)(lvl/3.33));
 			stats.addOneStat(STATS_ADD_PM, (lvl/100));
 			break;
-			//Orchid�e-Prune
+			//Orchid?e-Prune
 			case 86:
 			stats.addOneStat(STATS_ADD_VITA, lvl*2);
 			stats.addOneStat(STATS_ADD_INTE, (int)(lvl/1.65));
@@ -2173,7 +2163,7 @@ public class Constants
 			case 16: return World.data.getObjectTemplate(7815);
 			//Indigo
 			case 17: return World.data.getObjectTemplate(7816);
-			//Dor�e
+			//Dor?e
 			case 18: return World.data.getObjectTemplate(7817);
 			//Pourpre
 			case 19: return World.data.getObjectTemplate(7818);
@@ -2181,11 +2171,11 @@ public class Constants
 			case 20: return World.data.getObjectTemplate(7819);
 			//Emeraude
 			case 21: return World.data.getObjectTemplate(7820);
-			//Orchid�e
+			//Orchid?e
 			case 22: return World.data.getObjectTemplate(7821);
 			//Prune
 			case 23: return World.data.getObjectTemplate(7822);
-			//Amande-Dor�e
+			//Amande-Dor?e
 			case 33: return World.data.getObjectTemplate(7823);
 			//Amande-Ebene
 			case 34: return World.data.getObjectTemplate(7824);
@@ -2199,35 +2189,35 @@ public class Constants
 			case 38: return World.data.getObjectTemplate(7828);
 			//Amande-Turquoise
 			case 39: return World.data.getObjectTemplate(7829);
-			//Amande-Orchid�e
+			//Amande-Orchid?e
 			case 40: return World.data.getObjectTemplate(7830);
 			//Amande-Pourpre
 			case 41: return World.data.getObjectTemplate(7831);
-			//Dor�e-Eb�ne
+			//Dor?e-Eb?ne
 			case 42: return World.data.getObjectTemplate(7832);
-			//Dor�e-Emeraude
+			//Dor?e-Emeraude
 			case 43: return World.data.getObjectTemplate(7833);
-			//Dor�e-Indigo
+			//Dor?e-Indigo
 			case 44: return World.data.getObjectTemplate(7834);
-			//Dor�e-Ivoire
+			//Dor?e-Ivoire
 			case 45: return World.data.getObjectTemplate(7835);
-			//Dor�e-Rousse | Page 2
+			//Dor?e-Rousse | Page 2
 			case 46: return World.data.getObjectTemplate(7836);
-			//Dor�e-Turquoise
+			//Dor?e-Turquoise
 			case 47: return World.data.getObjectTemplate(7837);
-			//Dor�e-Orchid�e
+			//Dor?e-Orchid?e
 			case 48: return World.data.getObjectTemplate(7838);
-			//Dor�e-Pourpre
+			//Dor?e-Pourpre
 			case 49: return World.data.getObjectTemplate(7839);
-			//Eb�ne-Emeraude
+			//Eb?ne-Emeraude
 			case 50: return World.data.getObjectTemplate(7840);
-			//Eb�ne-Indigo
+			//Eb?ne-Indigo
 			case 51: return World.data.getObjectTemplate(7841);
-			//Eb�ne-Turquoise
+			//Eb?ne-Turquoise
 			case 52: return World.data.getObjectTemplate(7842);
-			//Eb�ne-Orchid�e
+			//Eb?ne-Orchid?e
 			case 53: return World.data.getObjectTemplate(7843);
-			//Eb�ne-Pourpre
+			//Eb?ne-Pourpre
 			case 54: return World.data.getObjectTemplate(7844);
 			//Emeraude-Indigo
 			case 55: return World.data.getObjectTemplate(7845);
@@ -2237,7 +2227,7 @@ public class Constants
 			case 57: return World.data.getObjectTemplate(7847);
 			//Emeraude-Turquoise
 			case 58: return World.data.getObjectTemplate(7848);
-			//Emeraude-Orchid�e
+			//Emeraude-Orchid?e
 			case 59: return World.data.getObjectTemplate(7849);
 			//Emeraude-Pourpre
 			case 60: return World.data.getObjectTemplate(7850);
@@ -2247,37 +2237,37 @@ public class Constants
 			case 62: return World.data.getObjectTemplate(7852);
 			//Indigo-Turquoise
 			case 63: return World.data.getObjectTemplate(7853);
-			//Indigo-Orchid�e
+			//Indigo-Orchid?e
 			case 64: return World.data.getObjectTemplate(7854);
 			//Indigo-Pourpre
 			case 65: return World.data.getObjectTemplate(7855);
 			//Ivoire-Turquoise
 			case 66: return World.data.getObjectTemplate(7856);
-			//Ivoire-Ochid�e
+			//Ivoire-Ochid?e
 			case 67: return World.data.getObjectTemplate(7857);
 			//Ivoire-Pourpre
 			case 68: return World.data.getObjectTemplate(7858);
 			//Turquoise-Rousse
 			case 69: return World.data.getObjectTemplate(7859);
-			//Ochid�e-Rousse
+			//Ochid?e-Rousse
 			case 70: return World.data.getObjectTemplate(7860);
 			//Pourpre-Rousse
 			case 71: return World.data.getObjectTemplate(7861);
-			//Turquoise-Orchid�e
+			//Turquoise-Orchid?e
 			case 72: return World.data.getObjectTemplate(7862);
 			//Turquoise-Pourpre
 			case 73: return World.data.getObjectTemplate(7863);
-			//Dor�e sauvage
+			//Dor?e sauvage
 			case 74: return World.data.getObjectTemplate(7864);
 			//Squelette
 			case 75: return World.data.getObjectTemplate(7865);
-			//Orchid�e-Pourpre
+			//Orchid?e-Pourpre
 			case 76: return World.data.getObjectTemplate(7866);
 			//Prune-Amande
 			case 77: return World.data.getObjectTemplate(7867);
-			//Prune-Dor�e
+			//Prune-Dor?e
 			case 78: return World.data.getObjectTemplate(7868);
-			//Prune-Eb�ne
+			//Prune-Eb?ne
 			case 79: return World.data.getObjectTemplate(7869);
 			//Prune-Emeraude
 			case 80: return World.data.getObjectTemplate(7870);
@@ -2289,7 +2279,7 @@ public class Constants
 			case 84: return World.data.getObjectTemplate(7873);
 			//Prune-Turquoise
 			case 85: return World.data.getObjectTemplate(7874);
-			//Prune-Orchid�e
+			//Prune-Orchid?e
 			case 86: return World.data.getObjectTemplate(7875);
 			//Prune-Pourpre
 			case 87: return World.data.getObjectTemplate(7876);
@@ -2306,10 +2296,10 @@ public class Constants
 	
 	public static void applyPlotIOAction(Player perso,int mID, int cID)
 	{
-		//G�re les differentes actions des "bornes" (IO des �motes)
+		//G?re les differentes actions des "bornes" (IO des ?motes)
 		switch(mID)
 		{
-		case 2196://Cr�ation de guilde
+		case 2196://Cr?ation de guilde
 			if(perso.isAway())return;
 			if(perso.getGuild() != null || perso.getGuildMember() != null)
 			{

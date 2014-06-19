@@ -8,6 +8,7 @@ import org.ancestra.evolutive.core.Console;
 import org.ancestra.evolutive.core.Log;
 import org.ancestra.evolutive.core.Server;
 import org.ancestra.evolutive.core.World;
+import org.ancestra.evolutive.entity.Alignement;
 import org.ancestra.evolutive.entity.collector.Collector;
 import org.ancestra.evolutive.entity.monster.MobGrade;
 import org.ancestra.evolutive.entity.monster.MobGroup;
@@ -74,7 +75,7 @@ public class Fight {
 	private Fighter protector;
 	
 	private Timer _turnTimer;
-	//TIMER d�compte toutes les secondes
+	//TIMER d?compte toutes les secondes
 	private Timer TurnTimer (final int timer, final Collector perco)
 	{
 	    ActionListener action = new ActionListener ()
@@ -99,7 +100,7 @@ public class Fight {
 	
 	public Fight(int type, int id,Maps map, Player init1, Player init2, boolean init2Protected){
         logger = (Logger) LoggerFactory.getLogger(init1.getName() + " vs " + init2.getName());
-        this.type = type; //0: D�fie (4: Pvm) 1:PVP (5:Perco)
+        this.type = type; //0: D?fie (4: Pvm) 1:PVP (5:Perco)
 		this.id = id;
 		this.map = map.getMapCopy();
 		setOldMap(map);
@@ -112,7 +113,7 @@ public class Fight {
 			team1.put(protector.getGUID(), protector);
 		}
 		SocketManager.GAME_SEND_FIGHT_GJK_PACKET_TO_FIGHT(Fight.this,7,2, this.type ==Constants.FIGHT_TYPE_CHALLENGE?1:0,1,0, this.type ==Constants.FIGHT_TYPE_CHALLENGE?0:45000, this.type);
-		//on desactive le timer de regen cot� client
+		//on desactive le timer de regen cot? client
 		SocketManager.GAME_SEND_ILF_PACKET(init1, 0);
 		SocketManager.GAME_SEND_ILF_PACKET(init2, 0);
 		if(this.type !=Constants.FIGHT_TYPE_CHALLENGE)
@@ -188,7 +189,7 @@ public class Fight {
 	public Fight(int id,Maps map,Player init1, MobGroup group) {
         logger = (Logger)LoggerFactory.getLogger(init1.getName());
 		_mobGroup = group;
-		type = Constants.FIGHT_TYPE_PVM; //(0: D�fie) 4: Pvm (1:PVP) (5:Perco)
+		type = Constants.FIGHT_TYPE_PVM; //(0: D?fie) 4: Pvm (1:PVP) (5:Perco)
 		this.id = id;
 		this.map = map.getMapCopy();
 		setOldMap(map);
@@ -204,7 +205,7 @@ public class Fight {
 		
 		SocketManager.GAME_SEND_FIGHT_GJK_PACKET_TO_FIGHT(Fight.this,1,2,0,1,0,45000, type);
 		
-		//on desactive le timer de regen cot� client
+		//on desactive le timer de regen cot? client
 		SocketManager.GAME_SEND_ILF_PACKET(init1, 0);
 		
 		set_turnTimer(TurnTimer(45000, null));
@@ -276,7 +277,7 @@ public class Fight {
 	public Fight(int id, Maps map, Player perso, MobGroup group, int type) 
 	{
 		_mobGroup = group;
-		this.type = type; //(0: D�fie) 4: Pvm (1:PVP) (5:Perco)
+		this.type = type; //(0: D?fie) 4: Pvm (1:PVP) (5:Perco)
 		this.id = id;
 		this.map = map.getMapCopy();
 		setOldMap(map);
@@ -291,7 +292,7 @@ public class Fight {
 		
 		SocketManager.GAME_SEND_FIGHT_GJK_PACKET_TO_FIGHT(this,1,2,0,1,0,45000, this.type);
 		
-		//on desactive le timer de regen cot� client
+		//on desactive le timer de regen cot? client
 		SocketManager.GAME_SEND_ILF_PACKET(perso, 0);
 		
 		set_turnTimer(TurnTimer(45000, null));
@@ -347,7 +348,7 @@ public class Fight {
 		perco.set_inFight((byte)1);
 		perco.set_inFightID((byte)id);
 		
-		type = Constants.FIGHT_TYPE_PVT; //(0: D�fie) (4: Pvm) (1:PVP) 5:Perco
+		type = Constants.FIGHT_TYPE_PVT; //(0: D?fie) (4: Pvm) (1:PVP) 5:Perco
 		this.id = id;
 		this.map = map.getMapCopy();
 		setOldMap(map);
@@ -361,7 +362,7 @@ public class Fight {
 
 		SocketManager.GAME_SEND_FIGHT_GJK_PACKET_TO_FIGHT(Fight.this,1,2,0,1,0,45000, type);
 		
-		//on desactive le timer de regen cot� client
+		//on desactive le timer de regen cot? client
 		SocketManager.GAME_SEND_ILF_PACKET(perso, 0);
 		
 		set_turnTimer(TurnTimer(45000, perco));
@@ -576,7 +577,7 @@ public class Fight {
 	}
 
     /**
-     * Lance le combat et préviens chacun des combattants
+     * Lance le combat et pr?viens chacun des combattants
      */
 	private void startFight()
 	{
@@ -606,10 +607,12 @@ public class Fight {
 			int align = -1;
 			if(team1.size() >0)
 			{
-				 team1.get(team1.keySet().toArray()[0]).getMob().getTemplate().getAlign();
+				 align = team1.get(team1.keySet().toArray()[0]).getMob().getTemplate().getAlign();
 			}
+            Alignement alignement = Alignement.getAlignement(align);
 			//Si groupe non fixe
-			if(!_mobGroup.isFix())World.data.getMap(map.getId()).spawnGroup(align, 1, true, _mobGroup.getCell().getId());//Respawn d'un groupe
+			if(!_mobGroup.isFix())World.data.getMap(map.getId()).spawnGroup(alignement, 1, true, _mobGroup.getCell().getId());//Respawn d'un groupe
+
 		}
 		SocketManager.GAME_SEND_GIC_PACKETS_TO_FIGHT(Fight.this, 7);
 		SocketManager.GAME_SEND_GS_PACKET_TO_FIGHT(Fight.this, 7);
@@ -680,15 +683,15 @@ public class Fight {
 		for(Glyphe g : glyphs)
 		{
 			if(_state >= Constants.FIGHT_STATE_FINISHED)return;
-			//Si c'est ce joueur qui l'a lanc�
+			//Si c'est ce joueur qui l'a lanc?
 			if(g.get_caster().getGUID() == _ordreJeu.get(_curPlayer).getGUID())
 			{
-				//on r�duit la dur�e restante, et si 0, on supprime
+				//on r?duit la dur?e restante, et si 0, on supprime
 				if(g.decrementDuration() == 0)
 				{
 					_glyphs.remove(g);
 					g.desapear();
-					continue;//Continue pour pas que le joueur active le glyphe s'il �tait dessus
+					continue;//Continue pour pas que le joueur active le glyphe s'il ?tait dessus
 				}
 			}
 			//Si dans le glyphe
@@ -767,7 +770,7 @@ public class Fight {
 						
 						set_curAction("");
 						
-						//Si empoisonn� (Cr�er une fonction applyEndTurnbuff si d'autres effets existent)
+						//Si empoisonn? (Cr?er une fonction applyEndTurnbuff si d'autres effets existent)
 						for(SpellEffect SE : _ordreJeu.get(_curPlayer).getBuffsByEffectID(131)) {
 							int pas = SE.getValue();
 							int val = -1;
@@ -789,7 +792,7 @@ public class Fight {
 							}
 							if(_ordreJeu.get(_curPlayer).hasBuff(184)) {
 								SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(Fight.this, 7, 105, _ordreJeu.get(_curPlayer).getGUID()+"", _ordreJeu.get(_curPlayer).getGUID()+","+_ordreJeu.get(_curPlayer).getBuff(184).getValue());
-								dgt = dgt-_ordreJeu.get(_curPlayer).getBuff(184).getValue();//R�duction physique
+								dgt = dgt-_ordreJeu.get(_curPlayer).getBuff(184).getValue();//R?duction physique
 							}
 							if(_ordreJeu.get(_curPlayer).hasBuff(105)) {
 								SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(Fight.this, 7, 105, _ordreJeu.get(_curPlayer).getGUID()+"", _ordreJeu.get(_curPlayer).getGUID()+","+_ordreJeu.get(_curPlayer).getBuff(105).getValue());
@@ -959,7 +962,7 @@ public class Fight {
 			perso.setFight(Fight.this);
 			f.set_fightCell(cell);
 			f.get_fightCell(false).addFighter(f);
-			//D�sactive le timer de regen
+			//D?sactive le timer de regen
 			SocketManager.GAME_SEND_ILF_PACKET(perso, 0);
 		}else if(team1.containsKey(guid))
 		{
@@ -1195,21 +1198,21 @@ public class Fight {
 		ArrayList<Fighter> tacle = Pathfinding.getEnemyFighterArround(f.get_fightCell(false).getId(), map, Fight.this);
 		if(tacle != null && !f.isState(6))//Tentative de Tacle : Si stabilisation alors pas de tacle possible
 		{
-			for(Fighter T : tacle)//Les stabilis�s ne taclent pas
+			for(Fighter T : tacle)//Les stabilis?s ne taclent pas
 			{ 
 				if(T.isState(6)) 
 				{ 
 					tacle.remove(T); 
 				} 
 			}
-			if(!tacle.isEmpty())//Si tous les tacleur ne sont pas stabilis�s
+			if(!tacle.isEmpty())//Si tous les tacleur ne sont pas stabilis?s
 			{
 				if(Server.config.isDebug()) Log.addToLog("Le personnage est a cote de ("+tacle.size()+") ennemi(s)");// ("+tacle.getPacketsName()+","+tacle.get_fightCell().getID()+") => Tentative de tacle:");
 				int chance = Formulas.getTacleChance(f, tacle);
 				int rand = Formulas.getRandomValue(0, 99);
 				if(rand > chance)
 				{
-					SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(Fight.this, 7,GA.getId(), "104",_ordreJeu.get(_curPlayer).getGUID()+";", "");//Joueur tacl�
+					SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(Fight.this, 7,GA.getId(), "104",_ordreJeu.get(_curPlayer).getGUID()+";", "");//Joueur tacl?
 					int pertePA = get_curFighterPA()*chance/100;
 					
 					if(pertePA  < 0)pertePA = -pertePA;
@@ -1247,17 +1250,17 @@ public class Fight {
         //Si le joueur n'est pas invisible
         if(!_ordreJeu.get(_curPlayer).isHide()) {
 	        SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(Fight.this, 7, GA.getId(), "1", _ordreJeu.get(_curPlayer).getGUID()+"", "a"+CryptManager.cellID_To_Code(f.get_fightCell(false).getId())+newPath);
-        } else//Si le joueur est planqu� x)
+        } else//Si le joueur est planqu? x)
         {
         	if(_ordreJeu.get(_curPlayer).getPersonnage() != null)
         	{
-        		//On envoie le path qu'au joueur qui se d�place
+        		//On envoie le path qu'au joueur qui se d?place
         		GameClient out = _ordreJeu.get(_curPlayer).getPersonnage().getAccount().getGameClient();
         		SocketManager.GAME_SEND_GA_PACKET(out,  GA.getId()+"", "1", _ordreJeu.get(_curPlayer).getGUID()+"", "a"+CryptManager.cellID_To_Code(f.get_fightCell(false).getId())+newPath);
         	}
         }
        
-        //Si port�
+        //Si port?
         Fighter po = _ordreJeu.get(_curPlayer).get_holdedBy();
         if(po != null
         && _ordreJeu.get(_curPlayer).isState(Constants.ETAT_PORTE)
@@ -1270,13 +1273,13 @@ public class Fight {
         	//si le joueur va bouger
        		if(nextCellID != po.get_fightCell(false).getId())
        		{
-       			//on retire les �tats
+       			//on retire les ?tats
        			po.setState(Constants.ETAT_PORTEUR, 0);
        			_ordreJeu.get(_curPlayer).setState(Constants.ETAT_PORTE,0);
-       			//on retire d� lie les 2 fighters
+       			//on retire d? lie les 2 fighters
        			po.set_isHolding(null);
        			_ordreJeu.get(_curPlayer).set_holdedBy(null);
-       			//La nouvelle case sera d�finie plus tard dans le code
+       			//La nouvelle case sera d?finie plus tard dans le code
        			//On envoie les packets
        			SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(Fight.this, 7, 950, po.getGUID()+"", po.getGUID()+","+Constants.ETAT_PORTEUR+",0");
     			SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(Fight.this, 7, 950, _ordreJeu.get(_curPlayer).getGUID()+"", _ordreJeu.get(_curPlayer).getGUID()+","+Constants.ETAT_PORTE+",0");
@@ -1287,7 +1290,7 @@ public class Fight {
 		if(Server.config.isDebug()) Log.addToLog("("+_curPlayer+") Fighter ID= "+f.getGUID()+" se deplace de la case "+_ordreJeu.get(_curPlayer).get_fightCell(false).getId()+" vers "+CryptManager.cellCode_To_ID(newPath.substring(newPath.length() - 2)));
         _ordreJeu.get(_curPlayer).set_fightCell(map.getCases().get(nextCellID));
         _ordreJeu.get(_curPlayer).get_fightCell(false).addFighter(_ordreJeu.get(_curPlayer));
-        if(po != null) po.get_fightCell(false).addFighter(po);// m�me erreur que tant�t, bug ou plus de fighter sur la case
+        if(po != null) po.get_fightCell(false).addFighter(po);// m?me erreur que tant?t, bug ou plus de fighter sur la case
        if(nStep < 0) 
        {
     	   if(Server.config.isDebug()) Log.addToLog("("+_curPlayer+") Fighter ID= "+f.getGUID()+" nStep negatives, reconversion");
@@ -1301,14 +1304,14 @@ public class Fight {
         && _ordreJeu.get(_curPlayer).isState(Constants.ETAT_PORTEUR)
         && po.isState(Constants.ETAT_PORTE))
         {
-       		//on d�place le port� sur la case
+       		//on d?place le port? sur la case
         	po.set_fightCell(_ordreJeu.get(_curPlayer).get_fightCell(false));
         	if(Server.config.isDebug()) Log.addToLog(po.getPacketsName()+" se deplace vers la case "+nextCellID);
       	}
         if(f.getPersonnage() == null)
         {
         	try {
-    			Thread.sleep(900+300*nStep);//Estimation de la dur�e du d�placement
+    			Thread.sleep(900+300*nStep);//Estimation de la dur?e du d?placement
     		} catch (InterruptedException e) {};
         	SocketManager.GAME_SEND_GAMEACTION_TO_FIGHT(Fight.this,7,get_curAction());
         	
@@ -1478,7 +1481,7 @@ public class Fight {
 			}
 			return false;
 		}
-		//Si la cellule vis�e n'existe pas
+		//Si la cellule vis?e n'existe pas
 		if(cell == null)
 		{
 			if(Server.config.isDebug()) Log.addToLog("("+_curPlayer+") La cellule visee n'existe pas");
@@ -1488,7 +1491,7 @@ public class Fight {
 			}
 			return false;
 		}
-		//Si la cellule vis�e n'est pas align�e avec le joueur alors que le sort le demande
+		//Si la cellule vis?e n'est pas align?e avec le joueur alors que le sort le demande
 		if(spell.isLineLaunch() && !Pathfinding.casesAreInSameLine(map, ValidlaunchCase, cell.getId(), 'z'))
 		{
 			if(Server.config.isDebug()) Log.addToLog("("+_curPlayer+") Le sort demande un lancer en ligne, or la case n'est pas alignee avec le joueur");
@@ -1498,7 +1501,7 @@ public class Fight {
 			}
 			return false;
 		}
-		//Si le sort demande une ligne de vue et que la case demand�e n'en fait pas partie
+		//Si le sort demande une ligne de vue et que la case demand?e n'en fait pas partie
 		if(spell.hasLDV() && !Pathfinding.checkLoS(map, ValidlaunchCase, cell.getId(), fighter))
 		{
 			if(Server.config.isDebug()) Log.addToLog("("+_curPlayer+") Le sort demande une ligne de vue, mais la case visee n'est pas visible pour le joueur");
@@ -1508,7 +1511,7 @@ public class Fight {
 			}
 			return false;
 		}
-		// Pour peur si la personne pouss�e a la ligne de vue vers la case
+		// Pour peur si la personne pouss?e a la ligne de vue vers la case
 		char dir = Pathfinding.getDirBetweenTwoCase(ValidlaunchCase, cell.getId(), map, true);
 		if(spell.getSpellID() == 67)
 			if(!Pathfinding.checkLoS(map, Pathfinding.GetCaseIDFromDirrection(ValidlaunchCase, dir, map, true), cell.getId(), null, true, getAllFighters())) {
@@ -1525,7 +1528,7 @@ public class Fight {
 			MaxPO += fighter.getTotalStats().getEffect(Constants.STATS_ADD_PO);
 			MaxPO = MaxPO <= 0 ? 1 : MaxPO;
 		}
-		//V�rification Port�e mini / maxi
+		//V?rification Port?e mini / maxi
 		if(dist < spell.getMinPO() || dist > MaxPO)
 		{
 			if(Server.config.isDebug()) Log.addToLog("("+_curPlayer+") La case est trop proche ou trop eloignee Min: "+spell.getMinPO()+" Max: "+spell.getMaxPO()+" Dist: "+dist);
@@ -1535,18 +1538,18 @@ public class Fight {
 			}
 			return false;
 		}
-		//v�rification cooldown
+		//v?rification cooldown
 		if(!LaunchedSpell.cooldownGood(fighter,spell.getSpellID()))
 		{
 			return false;
 		}
-		//v�rification nombre de lancer par tour
+		//v?rification nombre de lancer par tour
 		int nbLancer = spell.getMaxLaunchbyTurn();
 		if(nbLancer - LaunchedSpell.getNbLaunch(fighter, spell.getSpellID()) <= 0 && nbLancer > 0)
 		{
 			return false;
 		}
-		//v�rification nombre de lancer par cible
+		//v?rification nombre de lancer par cible
 		Fighter target = cell.getFirstFighter();
 		int nbLancerT = spell.getMaxLaunchbyByTarget();
 		if(nbLancerT - LaunchedSpell.getNbLaunchTarget(fighter, target, spell.getSpellID()) <= 0 && nbLancerT > 0)
@@ -1628,7 +1631,7 @@ public class Fight {
 	        		}
 	        	}
 	        }
-	        //On R�ordonne la liste en fonction de la PP
+	        //On R?ordonne la liste en fonction de la PP
 	        ArrayList<Fighter> Temp = new ArrayList<Fighter>();
 	        Fighter curMax = null;
 	        while(Temp.size() < TEAM1.size())
@@ -1636,7 +1639,7 @@ public class Fight {
 	        	int curPP = -1;
 		        for(Fighter F : TEAM1)
 		        {
-	        		//S'il a plus de PP et qu'il n'est pas list�
+	        		//S'il a plus de PP et qu'il n'est pas list?
 		        	if(F.getTotalStats().getEffect(Constants.STATS_ADD_PROS) > curPP && !Temp.contains(F))
 		        	{
 		        		curMax = F;
@@ -1662,7 +1665,7 @@ public class Fight {
 	        }
 	        logger.debug("TEAM1: xpTotal="+totalXP);
 	    //FIN XP SYSTEM
-		//Capture d'�mes
+		//Capture d'?mes
 	        boolean mobCapturable = true;
 	        for(Fighter F : TEAM2)
 	        {
@@ -1683,21 +1686,21 @@ public class Fight {
 		        String pierreStats = "";
 
 		        
-		        for(Fighter F : TEAM2)	//Cr�ation de la pierre et verifie si le groupe peut �tre captur�
+		        for(Fighter F : TEAM2)	//Cr?ation de la pierre et verifie si le groupe peut ?tre captur?
 		        {
 		        	if(!isFirst)
 		        		pierreStats += "|";
 		        	
-		        	pierreStats += F.getMob().getTemplate().getId() + "," + F.get_lvl();//Converti l'ID du monstre en Hex et l'ajoute au stats de la futur pierre d'�me
+		        	pierreStats += F.getMob().getTemplate().getId() + "," + F.get_lvl();//Converti l'ID du monstre en Hex et l'ajoute au stats de la futur pierre d'?me
 		        	
 		        	isFirst = false;
 		        	
 		        	if(F.get_lvl() > maxLvl)	//Trouve le monstre au plus haut lvl du groupe (pour la puissance de la pierre)
 		        		maxLvl = F.get_lvl();
 		        }
-		        pierrePleine = new SoulStone(World.data.getNewObjectGuid(),1,7010,Constants.ITEM_POS_NO_EQUIPED,pierreStats);	//Cr�e la pierre d'�me
+		        pierrePleine = new SoulStone(World.data.getNewObjectGuid(),1,7010,Constants.ITEM_POS_NO_EQUIPED,pierreStats);	//Cr?e la pierre d'?me
 		        
-		        for(Fighter F : TEAM1)	//R�cup�re les captureur
+		        for(Fighter F : TEAM1)	//R?cup?re les captureur
 		        {
 		        	if(!F.isInvocation() && F.isState(Constants.ETAT_CAPT_AME))
 		        	{
@@ -1710,13 +1713,13 @@ public class Fight {
 	    			{
 	    				try
 	    				{
-			        		Fighter f = _captureur.get(Formulas.getRandomValue(0, _captureur.size()-1));	//R�cup�re un captureur au hasard dans la liste
+			        		Fighter f = _captureur.get(Formulas.getRandomValue(0, _captureur.size()-1));	//R?cup?re un captureur au hasard dans la liste
 			        		if(!(f.getPersonnage().getObjectByPos(Constants.ITEM_POS_ARME).getTemplate().getType() == Constants.ITEM_TYPE_PIERRE_AME))
 		    				{
 			    				_captureur.remove(f);
 		    					continue;
 		    				}
-			    			Couple<Integer,Integer> pierreJoueur = Formulas.decompPierreAme(f.getPersonnage().getObjectByPos(Constants.ITEM_POS_ARME));//R�cup�re les stats de la pierre �quipp�
+			    			Couple<Integer,Integer> pierreJoueur = Formulas.decompPierreAme(f.getPersonnage().getObjectByPos(Constants.ITEM_POS_ARME));//R?cup?re les stats de la pierre ?quipp?
 			    			
 			    			if(pierreJoueur.second < maxLvl)	//Si la pierre est trop faible
 			    			{
@@ -1781,7 +1784,7 @@ public class Fight {
 
         			}
         		}
-        		if(i._id == captWinner && pierrePleine != null)	//S'il � captur� le groupe
+        		if(i._id == captWinner && pierrePleine != null)	//S'il ? captur? le groupe
         		{
         			if(drops.length() >0)drops += ",";
         			drops += pierrePleine.getTemplate().getId()+"~"+1;
@@ -2016,7 +2019,7 @@ public class Fight {
 			this._init0.getPersonnage().getMap().getFights().remove(this.id);
 			SocketManager.GAME_SEND_FIGHT_GE_PACKET_TO_FIGHT(Fight.this,7,winner);
 			
-			for(Entry<Integer, Fighter> entry : this.team0.entrySet())//Team mob sauf en d�fie/aggro
+			for(Entry<Integer, Fighter> entry : this.team0.entrySet())//Team mob sauf en d?fie/aggro
 			{
 				Player perso = entry.getValue().getPersonnage();
 				if(perso == null)continue;
@@ -2026,7 +2029,7 @@ public class Fight {
 			}
 			switch(type)//Team joueurs
 			{
-				case Constants.FIGHT_TYPE_CHALLENGE://D�fie
+				case Constants.FIGHT_TYPE_CHALLENGE://D?fie
 				case Constants.FIGHT_TYPE_AGRESSION://Aggro
 					for(Entry<Integer, Fighter> entry : this.team1.entrySet())
 					{
@@ -2173,16 +2176,16 @@ public class Fight {
 	public void onFighterDie(Fighter target) 
 	{ 
 		target.setIsDead(true);
-		if(!target.hasLeft()) deadList.put(target.getGUID(), target);//on ajoute le joueur � la liste des cadavres ;)
+		if(!target.hasLeft()) deadList.put(target.getGUID(), target);//on ajoute le joueur ? la liste des cadavres ;)
 		SocketManager.GAME_SEND_FIGHT_PLAYER_DIE_TO_FIGHT(Fight.this,7,target.getGUID());
-		target.get_fightCell(false).getFighters().clear();// Supprime tout causait bug si port�/porteur
+		target.get_fightCell(false).getFighters().clear();// Supprime tout causait bug si port?/porteur
 		
 		if(target.isState(Constants.ETAT_PORTEUR)) 
 		{ 
 			Fighter f = target.get_isHolding();
 			f.set_fightCell(f.get_fightCell(false));
 			f.get_fightCell(false).addFighter(f);//Le bug venait par manque de ceci, il ni avait plus de firstFighter
-			f.setState(Constants.ETAT_PORTE, 0);//J'ajoute ceci quand m�me pour signaler qu'ils ne sont plus en �tat port�/porteur
+			f.setState(Constants.ETAT_PORTE, 0);//J'ajoute ceci quand m?me pour signaler qu'ils ne sont plus en ?tat port?/porteur
 			target.setState(Constants.ETAT_PORTEUR, 0);
 			f.set_holdedBy(null);
 			target.set_isHolding(null);
@@ -2199,7 +2202,7 @@ public class Fight {
 				if(entry.getValue().getInvocator() == null)continue;
 				if(entry.getValue().getPDV() == 0)continue;
 				if(entry.getValue().isDead())continue;
-				if(entry.getValue().getInvocator().getGUID() == target.getGUID())//si il a �t� invoqu� par le joueur mort
+				if(entry.getValue().getInvocator().getGUID() == target.getGUID())//si il a ?t? invoqu? par le joueur mort
 				{
 					onFighterDie(entry.getValue());
 					
@@ -2220,7 +2223,7 @@ public class Fight {
 				if(entry.getValue().getInvocator() == null)continue;
 				if(entry.getValue().getPDV() == 0)continue;
 				if(entry.getValue().isDead())continue;
-				if(entry.getValue().getInvocator().getGUID() == target.getGUID())//si il a �t� invoqu� par le joueur mort
+				if(entry.getValue().getInvocator().getGUID() == target.getGUID())//si il a ?t? invoqu? par le joueur mort
 				{
 					onFighterDie(entry.getValue());
 					
@@ -2242,21 +2245,21 @@ public class Fight {
 				for(int id : Constants.STATIC_INVOCATIONS)if(id == target.getMob().getTemplate().getId())isStatic = true;
 				if(target.isInvocation() && !isStatic)
 				{
-					//Il ne peut plus jouer, et est mort on revient au joueur pr�cedent pour que le startTurn passe au suivant
+					//Il ne peut plus jouer, et est mort on revient au joueur pr?cedent pour que le startTurn passe au suivant
 					if(!target.canPlay() && _ordreJeu.get(_curPlayer).getGUID() == target.getGUID())
 					{
 						_curPlayer--;
 					}
-					//Il peut jouer, et est mort alors on passe son tour pour que l'autre joue, puis on le supprime de l'index sans probl�mes
+					//Il peut jouer, et est mort alors on passe son tour pour que l'autre joue, puis on le supprime de l'index sans probl?mes
 					if(target.canPlay() && _ordreJeu.get(_curPlayer).getGUID() == target.getGUID())
 					{
 	    				endTurn();
 					}
 					
-					//On ne peut pas supprimer l'index tant que le tour du prochain joueur n'est pas lanc�
+					//On ne peut pas supprimer l'index tant que le tour du prochain joueur n'est pas lanc?
 					int index = _ordreJeu.contains(target) ? _ordreJeu.indexOf(target) : -1; //TODO: to try john
 					
-					//Si le joueur courant a un index plus �lev�, on le diminue pour �viter le outOfBound
+					//Si le joueur courant a un index plus ?lev?, on le diminue pour ?viter le outOfBound
 					if(_curPlayer > index) _curPlayer--;
 					
 					if(index != -1)_ordreJeu.remove(index);
@@ -2273,7 +2276,7 @@ public class Fight {
 		glyphs.addAll(_glyphs);
 		for(Glyphe g : glyphs)
 		{
-			//Si c'est ce joueur qui l'a lanc�
+			//Si c'est ce joueur qui l'a lanc?
 			if(g.get_caster().getGUID() == target.getGUID())
 			{
 				SocketManager.GAME_SEND_GDZ_PACKET_TO_FIGHT(Fight.this, 7, "-", g.get_cell().getId(), g.get_size(), 4);
@@ -2332,7 +2335,7 @@ public class Fight {
 			if(get_curFighterPA() < 4)//S'il n'a pas assez de PA
 				return;
 
-            logger.trace("Pas d'armes détectées");
+            logger.trace("Pas d'armes d?tect?es");
 
 			SocketManager.GAME_SEND_GAS_PACKET_TO_FIGHT(Fight.this, 7, perso.getId());
 			
@@ -2345,13 +2348,13 @@ public class Fight {
 			
 			SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(Fight.this, 7, 303, perso.getId()+"", cellID+"");
 			if(target != null) {
-                logger.trace("Target trouvée");
+                logger.trace("Target trouv?e");
 				int dmg = Formulas.getRandomJet("1d5+0");
-                logger.trace("Aux dés : {} ", dmg);
+                logger.trace("Aux d?s : {} ", dmg);
 				int finalDommage = Formulas.calculFinalDommage(Fight.this,caster, target,Constants.ELEMENT_NEUTRE, dmg,false,true, -1);
-                logger.trace("Après calcul : {} ", finalDommage);
-                finalDommage = SpellEffect.applyOnHitBuffs(finalDommage,target,caster,Fight.this);//S'il y a des buffs sp�ciaux
-				logger.debug("Le dégats finaux devraient être : {}",finalDommage);
+                logger.trace("Apr?s calcul : {} ", finalDommage);
+                finalDommage = SpellEffect.applyOnHitBuffs(finalDommage,target,caster,Fight.this);//S'il y a des buffs sp?ciaux
+				logger.debug("Le d?gats finaux devraient ?tre : {}",finalDommage);
 				if(finalDommage>target.getPDV())finalDommage = target.getPDV();//Target va mourrir
 				target.removePDV(finalDommage);
 				finalDommage = -(finalDommage);
@@ -2370,7 +2373,7 @@ public class Fight {
 		{
 			Object arme = perso.getObjectByPos(Constants.ITEM_POS_ARME);
 			
-			//Pierre d'�mes = EC
+			//Pierre d'?mes = EC
 			if(arme.getTemplate().getType() == 83)
 			{
 				SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(Fight.this, 7, 305, perso.getId()+"", "");//Echec Critique Cac
@@ -2472,7 +2475,7 @@ public class Fight {
 			
 			switch(type)
 			{
-				case Constants.FIGHT_TYPE_CHALLENGE://D�fie
+				case Constants.FIGHT_TYPE_CHALLENGE://D?fie
 				case Constants.FIGHT_TYPE_AGRESSION://PVP
 				case Constants.FIGHT_TYPE_PVM://PVM
 				case Constants.FIGHT_TYPE_PVT://Perco
@@ -2488,7 +2491,7 @@ public class Fight {
 							StillInFight = verifyStillInFight();
 						}
 						
-						if(!StillInFight)//S'arr�te ici si il ne reste plus personne dans le combat et dans la team
+						if(!StillInFight)//S'arr?te ici si il ne reste plus personne dans le combat et dans la team
 						{
 							//Met fin au combat
 							verifIfTeamAllDead();
@@ -2549,7 +2552,7 @@ public class Fight {
 								P.refreshMapAfterFight();
 							}
 							
-							//si c'�tait a son tour de jouer
+							//si c'?tait a son tour de jouer
 							if(_ordreJeu.get(_curPlayer) == null)return;
 							if(_ordreJeu.get(_curPlayer).getGUID() == F.getGUID())
 							{
@@ -2614,7 +2617,7 @@ public class Fight {
 								}
 								for(Player z : getOldMap().getPlayers()) FightStateAddFlag(Fight.this.getOldMap(), z);
 							}
-						}else if(T == null)//Il leave de son plein gr� donc (T = null)
+						}else if(T == null)//Il leave de son plein gr? donc (T = null)
 						{
 							boolean isValid2 = false;
 							if(_init0 != null &&_init0.getPersonnage() != null)
@@ -2720,7 +2723,7 @@ public class Fight {
 										}
 									}
 								}
-								_state = 4;//Nous assure de ne pas d�marrer le combat
+								_state = 4;//Nous assure de ne pas d?marrer le combat
 								World.data.getMap(map.getId()).getFights().remove(id);
 								SocketManager.GAME_SEND_MAP_FIGHT_COUNT_TO_MAP(World.data.getMap(map.getId()));
 								SocketManager.GAME_SEND_GAME_REMFLAG_PACKET_TO_MAP(Fight.this.getOldMap(), _init0.getGUID());
@@ -2749,10 +2752,12 @@ public class Fight {
 									int align = -1;
 									if(team1.size() >0)
 									{
-										 team1.get(team1.keySet().toArray()[0]).getMob().getTemplate().getAlign();
+										 align = team1.get(team1.keySet().toArray()[0]).getMob().getTemplate().getAlign();
 									}
+                                    Alignement alignement = Alignement.getAlignement(align);
 									//Si groupe non fixe
-									if(!_mobGroup.isFix())World.data.getMap(map.getId()).spawnGroup(align, 1, true,_mobGroup.getCell().getId());//Respawn d'un groupe
+									if(!_mobGroup.isFix())World.data.getMap(map.getId()).spawnGroup(alignement, 1, true,_mobGroup.getCell().getId());//Respawn d'un groupe
+
 								}
 								map = null;
 								_ordreJeu = null;

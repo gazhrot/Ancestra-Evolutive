@@ -23,7 +23,7 @@ public class Hdv {
 	private Map<Integer,Couple<Integer, Integer>> path = new HashMap<>();//<LigneID,<CategID,TemplateID>>
 	private DecimalFormat pattern = new DecimalFormat("0.0"); 
 	
-	public Hdv(int hdvID, float taxe, short sellTime, short maxItemCompte,short lvlMax, String categories) {
+	public Hdv(int hdvID, float taxe, short sellTime, short maxItemCompte, short lvlMax, String categories) {
 		this.id = hdvID;
 		this.taxe = taxe;
 		this.maxObject = maxItemCompte;
@@ -155,7 +155,7 @@ public class Hdv {
 				return false;
 			
 			toBuy.setPurchased(true);
-			player.addKamas(price * -1);//Retire l'argent à l'acheteur (prix et taxe de vente)
+			player.addKamas(price * -1);//Retire l'argent ï¿½ l'acheteur (prix et taxe de vente)
 			
 			if(toBuy.getOwner() != -1) {
 				Account account = World.data.getCompte(toBuy.getOwner());
@@ -164,7 +164,7 @@ public class Hdv {
 			}
 			
 			SocketManager.GAME_SEND_STATS_PACKET(player);//Met a jour les kamas de l'acheteur
-			player.addObject(toBuy.getObject(), true);//Ajoute l'objet au nouveau propriétaire
+			player.addObject(toBuy.getObject(), true);//Ajoute l'objet au nouveau propriï¿½taire
 			toBuy.getObject().getTemplate().newSold(toBuy.getAmount(true), price);//Ajoute la ventes au statistiques
 			
 			this.delEntry(toBuy);//Retire l'item de l'HDV ainsi que de la liste du vendeur

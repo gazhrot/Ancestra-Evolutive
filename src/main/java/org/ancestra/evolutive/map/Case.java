@@ -23,9 +23,9 @@ import java.util.TreeMap;
 
 public class Case {
 
-    private Logger logger;
-	private int id;
-	private short map;
+    private final Logger logger;
+	private final int id;
+	private int map;
 	private boolean walkable = true;
 	private boolean LoS = true;
 	private InteractiveObject interactiveObject;
@@ -48,12 +48,8 @@ public class Case {
 	public int getId() {
 		return id;
 	}
-	
-	public void setId(int id) {
-		this.id = id;
-	}
 
-	public short getMap() {
+	public int getMap() {
 		return map;
 	}
 

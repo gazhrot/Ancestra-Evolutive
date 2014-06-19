@@ -13,34 +13,34 @@ public class Creature extends Entity {
     private Case cell;
     private STATE state;
     private int orientation;
-    protected Helper helper;
+
 
     /**
-     * Créer une créature sur la Map donnée avec l orientation voulue
-     * @param id id de la créature
-     * @param name nom de la créature
+     * Cr?er une cr?ature sur la Map donn?e avec l orientation voulue
+     * @param id id de la cr?ature
+     * @param name nom de la cr?ature
      * @param mapId id de la map
      * @param cellId id de la cellule
      */
-    public Creature(int id, String name, short mapId, int cellId,int orientation) {
-        this(id, name, World.data.getMap(mapId), World.data.getMap(mapId).getCases().get(cellId), orientation);
+    public Creature(int id, String name, int mapId, int cellId,int orientation) {
+        this(id, name,World.data.getMap(mapId),World.data.getMap(mapId).getCases().get(cellId),orientation);
     }
 
     /**
-     * Créer une créature sur la Map donnée
-     * @param id id de la créature
-     * @param name nom de la créature
+     * Cr?er une cr?ature sur la Map donn?e
+     * @param id id de la cr?ature
+     * @param name nom de la cr?ature
      * @param mapId id de la map
      * @param cellId id de la cellule
      */
-    public Creature(int id, String name, short mapId, int cellId) {
-        this(id, name, World.data.getMap(mapId), World.data.getMap(mapId).getCases().get(cellId), 0);
+    public Creature(int id, String name, int mapId, int cellId) {
+        this(id, name,World.data.getMap(mapId),World.data.getMap(mapId).getCases().get(cellId),0);
     }
 
     /**
-     * Créer une créature sur la Map donnee
-     * @param id id de la créature
-     * @param name nom de la créature
+     * Cr?er une cr?ature sur la Map donnee
+     * @param id id de la cr?ature
+     * @param name nom de la cr?ature
      * @param map map de la creature
      * @param cell cellule de la creature
      */
@@ -49,9 +49,9 @@ public class Creature extends Entity {
     }
 
     /**
-     * Créer une créature sur la Map donnee
-     * @param id id de la créature
-     * @param name nom de la créature
+     * Cr?er une cr?ature sur la Map donnee
+     * @param id id de la cr?ature
+     * @param name nom de la cr?ature
      * @param map map de la creature
      * @param cell cellule de la creature
      * @param orientation orientation initiale
@@ -139,11 +139,11 @@ public class Creature extends Entity {
     }
 
     /**
-     * Retourne le helper de la creature
-     * @return helper
+     * Envoie un message a la creature
+     * @param message
      */
-    public Helper getHelper() {
-        return this.helper;
+    public void send(String message) {
+        return;
     }
 
     /**
