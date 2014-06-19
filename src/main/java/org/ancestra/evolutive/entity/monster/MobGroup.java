@@ -38,7 +38,10 @@ public class MobGroup extends Creature {
 		this(id,map,cell,"", alignement,false,false);
         int groupSize = (maxSize == -1)?defaultMaxGroup:random.nextInt(maxSize)+1;
         possibles = getPossibleMob(alignement,possibles);
-
+        if(possibles.size() == 0){
+            this.aggroDistance = 0;
+            return;
+        }
 		for(int a = 0; a < groupSize; a++) {
             MobGrade Mob = possibles.get(random.nextInt(possibles.size())).getCopy();
 			this.mobs.put(-(mobs.size()), Mob);

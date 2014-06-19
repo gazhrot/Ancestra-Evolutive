@@ -196,7 +196,6 @@ public class Player extends Creature {
 
         helper = new PlayerHelper(this);
         regenRate = 2000;
-        regenTime = System.currentTimeMillis();
 	}
 	
 	public Player(Player player,int id){
@@ -548,7 +547,6 @@ public class Player extends Creature {
 
 	public void setPdv(int pdv) {
 		this.pdv = pdv<getMaxPdv()?pdv:maxPdv;
-        regenTime = System.currentTimeMillis();
 		if(this.getGroup() != null)
 			SocketManager.GAME_SEND_PM_MOD_PACKET_TO_GROUP(this.getGroup(), this);
 	}
@@ -1264,46 +1262,7 @@ public class Player extends Creature {
 	public String parseToOa() {
 		return "Oa" + this.getId() + "|" + this.getGMStuffString();
 	}
-	
-	public String parseToGM() {
-		StringBuilder str = new StringBuilder();
-		if(this.getFight() == null) {// Hors combat
-			str.append(this.getCell().getId()).append(";").append(this.getOrientation()).append(";");
-			str.append("0").append(";");//FIXME:?
-			str.append(this.getId()).append(";").append(this.getName()).append(";").append(this.getClasse().getId());
-			str.append((this.getTitle()>0?(","+this.getTitle()+";"):(";")));
-			str.append(this.getGfx()).append("^").append(this.getSize()).append(";");//gfxID^size
-			str.append(this.getSex()).append(";").append(this.getAlign()).append(",");//1,0,0,4055064
-			str.append("0").append(",");//FIXME(think)
-			str.append((this.isShowWings() ? getGrade() : "0")).append(",");
-			str.append(this.getLevel() + this.getId());
-			
-			if(this.isShowWings() && this.getDeshonor() > 0)
-				str.append(",").append(this.getDeshonor() > 0 ? 1 : 0).append(';');
-			else
-				str.append(";");
-			
-			str.append((this.getColor1()==-1?"-1":Integer.toHexString(this.getColor1()))).append(";");
-			str.append((this.getColor2()==-1?"-1":Integer.toHexString(this.getColor2()))).append(";");
-			str.append((this.getColor3()==-1?"-1":Integer.toHexString(this.getColor3()))).append(";");
-			str.append(getGMStuffString()).append(";");
-			if(Server.config.isAuraSystem())
-				str.append((this.getLevel() > 99 ? (this.getLevel() > 199 ? (2) : (1)) : (0))).append(";");
-			else
-				str.append("0;");
-			
-			str.append(";");//Emote
-			str.append(";");//Emote timer
-			if(this.getGuildMember() != null && this.getGuildMember().getGuild().getMembers().size()>9)
-				str.append(this.getGuildMember().getGuild().getName()).append(";").append(this.getGuildMember().getGuild().getEmblem()).append(";");
-			else 
-				str.append(";;");
-			str.append(this.getSpeed()).append(";");//Restriction
-			str.append((this.isOnMount() && this.getMount() != null ? this.getMount().getColor() : "")).append(";");
-			str.append(";");
-		}
-		return str.toString();
-	}
+
 	
     public String parseToMerchant() {
     	StringBuilder str = new StringBuilder();
@@ -1347,7 +1306,7 @@ public class Player extends Creature {
 	{
 		refreshStats();
         refreshLife();
-		
+
 		StringBuilder ASData = new StringBuilder();
 		ASData.append("As").append(this.getXpToString(",")).append("|");
 		ASData.append(this.getKamas()).append("|").append(this.getCapital()).append("|").append(this.getSpellPoints()).append("|");
@@ -1572,7 +1531,6 @@ public class Player extends Creature {
         SocketManager.GAME_SEND_STATS_PACKET(this);
         SocketManager.GAME_SEND_ILS_PACKET(this, 2000);
         this.regenRate=2000;
-        this.regenTime=System.currentTimeMillis();
 		this.setFight(null);
 		this.isAway = false;
 	}
@@ -3293,13 +3251,16 @@ public class Player extends Creature {
 	}
 
     void refreshLife() {
-        if(fight != null) return;
+        if(fight != null){
+            return;
+        }
         long time = (System.currentTimeMillis()-regenTime);
         int diff = (int)time/regenRate;
         setPdv(getPdv()+diff);
         if(diff>=10){
             send("ILF" + diff);
         }
+        regenTime = System.currentTimeMillis();
     }
 
     /**

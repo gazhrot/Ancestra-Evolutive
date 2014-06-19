@@ -211,6 +211,13 @@ public class Maps {
 		for(Case cell : this.getCases().values()){
             for(Player player : cell.getPlayers().values()){
                 players.add(player);
+                System.out.println("Methode 1 : " + player.getName());
+            }
+        }
+        for(Entity entity : entities){
+            if(entity instanceof Player){
+                if(((Player) entity).getFight() == null)
+                    System.out.println("Methode 2 : " + entity.getName());
             }
         }
 		return players;
