@@ -205,17 +205,12 @@ public class Maps {
         entities.add(player);
 		player.getCell().addPlayer(player);
 	}
-
-    public void removePlayer(Player player){
-        send("GM|-" + player.getId());
-        entities.remove(player);
-    }
 	
 	public ArrayList<Player> getPlayers() {
 		ArrayList<Player> players = new ArrayList<>();
-		for(Entity entity : entities){
-            if(entity instanceof Player){
-                players.add((Player)entity);
+		for(Case cell : this.getCases().values()){
+            for(Player player : cell.getPlayers().values()){
+                players.add(player);
             }
         }
 		return players;
@@ -560,7 +555,9 @@ public class Maps {
 
     public void send(String str){
         for(Player player : this.getPlayers()){
-            player.send(str);
+            if(player.getFight() == null) {
+                player.send(str);
+            }
         }
     }
 
