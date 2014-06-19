@@ -34,9 +34,6 @@ import org.ancestra.evolutive.object.Objet;
 import org.ancestra.evolutive.other.Exchange;
 import org.ancestra.evolutive.tool.time.waiter.Waiter;
 
-import javax.swing.Timer;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -3225,8 +3222,6 @@ public class Player extends Creature{
 		World.database.getCharacterData().update(this);
 		World.database.getAccountData().update(this.getAccount());
 	}
-
-	
 	
 	public void refresh(boolean smoke) {
 		if(!smoke)
@@ -3235,7 +3230,7 @@ public class Player extends Creature{
 			SocketManager.GAME_SEND_ALTER_GM_PACKET(this.getMap(), this);
 	}
 
-    void refreshLife(){
+    void refreshLife() {
         if(fight != null) return;
         long time = (System.currentTimeMillis()-regenTime);
         int diff = (int)time/regenRate;
@@ -3249,7 +3244,7 @@ public class Player extends Creature{
      * Envoie un message au player
      * @param message message a faire parvenir
      */
-    public void send(String message){
+    public void send(String message) {
         this.account.send(message);
     }
 }

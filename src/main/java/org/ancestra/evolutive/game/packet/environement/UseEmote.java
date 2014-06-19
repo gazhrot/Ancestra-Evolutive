@@ -1,7 +1,6 @@
 package org.ancestra.evolutive.game.packet.environement;
 
 import org.ancestra.evolutive.common.SocketManager;
-import org.ancestra.evolutive.core.Console;
 import org.ancestra.evolutive.game.GameClient;
 import org.ancestra.evolutive.tool.plugin.packet.Packet;
 import org.ancestra.evolutive.tool.plugin.packet.PacketParser;

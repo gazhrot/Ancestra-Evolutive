@@ -5,8 +5,8 @@ import org.ancestra.evolutive.common.SocketManager;
 import org.ancestra.evolutive.core.World;
 import org.ancestra.evolutive.entity.collector.Collector;
 import org.ancestra.evolutive.game.GameClient;
-import org.ancestra.evolutive.hdv.HDV;
-import org.ancestra.evolutive.hdv.HDV.HdvEntry;
+import org.ancestra.evolutive.hdv.Hdv;
+import org.ancestra.evolutive.hdv.HdvEntry;
 import org.ancestra.evolutive.house.Trunk;
 import org.ancestra.evolutive.object.Objet;
 import org.ancestra.evolutive.tool.plugin.packet.Packet;
@@ -133,13 +133,13 @@ public class MoveItemOrKamas implements PacketParser {
 					int price = Integer.parseInt(packet.substring(4).split("\\|")[2]);
 					if(amount <= 0 || price <= 0)return;
 					
-					HDV curHdv = World.data.getHdv(Math.abs(client.getPlayer().getIsTradingWith()));
+					Hdv curHdv = World.data.getHdv(Math.abs(client.getPlayer().getIsTradingWith()));
 					int taxe = (int)(price * (curHdv.getTaxe()/10));
 					
 					
 					if(!client.getPlayer().hasItemGuid(itmID))//V�rifie si le personnage a bien l'item sp�cifi� et l'argent pour payer la taxe
 						return;
-					if(client.getPlayer().getAccount().countHdvItems(curHdv.getHdvID()) >= curHdv.getMaxItemCompte()){
+					if(client.getPlayer().getAccount().countHdvItems(curHdv.getId()) >= curHdv.getMaxObject()){
 						SocketManager.GAME_SEND_Im_PACKET(client.getPlayer(), "058");
 						return;
 					}

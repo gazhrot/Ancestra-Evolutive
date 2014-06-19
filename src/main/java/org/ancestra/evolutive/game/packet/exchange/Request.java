@@ -6,7 +6,7 @@ import org.ancestra.evolutive.core.World;
 import org.ancestra.evolutive.entity.collector.Collector;
 import org.ancestra.evolutive.entity.npc.Npc;
 import org.ancestra.evolutive.game.GameClient;
-import org.ancestra.evolutive.hdv.HDV;
+import org.ancestra.evolutive.hdv.Hdv;
 import org.ancestra.evolutive.tool.plugin.packet.Packet;
 import org.ancestra.evolutive.tool.plugin.packet.PacketParser;
 
@@ -24,16 +24,16 @@ public class Request implements PacketParser {
 				return;
 			}
 			
-			HDV toOpen = World.data.getHdv(client.getPlayer().getMap().getId());
+			Hdv toOpen = World.data.getHdv(client.getPlayer().getMap().getId());
 			
 			if(toOpen == null) 
 				return;
 			
 			String info = "1,10,100;"+
-						toOpen.getStrCategories()+
+						toOpen.getStrCategorys()+
 						";"+toOpen.parseTaxe()+
-						";"+toOpen.getLvlMax()+
-						";"+toOpen.getMaxItemCompte()+
+						";"+toOpen.getLevelMax()+
+						";"+toOpen.getMaxObject()+
 						";-1;"+
 						toOpen.getSellTime();
 			SocketManager.GAME_SEND_ECK_PACKET(client.getPlayer(),11,info);
@@ -51,15 +51,15 @@ public class Request implements PacketParser {
 				return;
 			}
 			
-			HDV toOpen = World.data.getHdv(client.getPlayer().getMap().getId());
+			Hdv toOpen = World.data.getHdv(client.getPlayer().getMap().getId());
 			
 			if(toOpen == null) return;
 			
 			String info = "1,10,100;"+
-						toOpen.getStrCategories()+
+						toOpen.getStrCategorys()+
 						";"+toOpen.parseTaxe()+
-						";"+toOpen.getLvlMax()+
-						";"+toOpen.getMaxItemCompte()+
+						";"+toOpen.getLevelMax()+
+						";"+toOpen.getMaxObject()+
 						";-1;"+
 						toOpen.getSellTime();
 			SocketManager.GAME_SEND_ECK_PACKET(client.getPlayer(),10,info);

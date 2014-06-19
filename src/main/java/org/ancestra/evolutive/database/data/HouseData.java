@@ -3,7 +3,6 @@ package org.ancestra.evolutive.database.data;
 import ch.qos.logback.classic.Logger;
 import com.zaxxer.hikari.HikariDataSource;
 import org.ancestra.evolutive.client.Player;
-import org.ancestra.evolutive.core.Console;
 import org.ancestra.evolutive.core.World;
 import org.ancestra.evolutive.database.AbstractDAO;
 import org.ancestra.evolutive.guild.Guild;

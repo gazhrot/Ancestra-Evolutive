@@ -17,8 +17,8 @@ import org.ancestra.evolutive.game.GameClient;
 import org.ancestra.evolutive.game.GameServer;
 import org.ancestra.evolutive.guild.Guild;
 import org.ancestra.evolutive.guild.GuildMember;
-import org.ancestra.evolutive.hdv.HDV;
-import org.ancestra.evolutive.hdv.HDV.HdvEntry;
+import org.ancestra.evolutive.hdv.Hdv;
+import org.ancestra.evolutive.hdv.HdvEntry;
 import org.ancestra.evolutive.house.Trunk;
 import org.ancestra.evolutive.job.JobStat;
 import org.ancestra.evolutive.map.Case;
@@ -2377,7 +2377,7 @@ public class SocketManager {
 		if(Server.config.isDebug())
 			Log.addToSockLog("Game: Send>>" + packet);
 	}
-	public static void GAME_SEND_EHl(Player out, HDV seller,int templateID)
+	public static void GAME_SEND_EHl(Player out, Hdv seller,int templateID)
 	{
 		String packet = "EHl" + seller.parseToEHl(templateID);
 		send(out,packet);

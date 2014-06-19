@@ -20,8 +20,8 @@ import org.ancestra.evolutive.fight.spell.Animation;
 import org.ancestra.evolutive.fight.spell.Spell;
 import org.ancestra.evolutive.game.GameClient;
 import org.ancestra.evolutive.guild.Guild;
-import org.ancestra.evolutive.hdv.HDV;
-import org.ancestra.evolutive.hdv.HDV.HdvEntry;
+import org.ancestra.evolutive.hdv.Hdv;
+import org.ancestra.evolutive.hdv.HdvEntry;
 import org.ancestra.evolutive.house.House;
 import org.ancestra.evolutive.house.Trunk;
 import org.ancestra.evolutive.job.Job;
@@ -75,7 +75,7 @@ public class World {
 	private Map<Integer, ArrayList<Couple<Integer, Integer>>> crafts = new HashMap<>();
 	private Map<Integer, ItemSet> setItems = new HashMap<>();
 	private Map<Integer, Guild> guilds = new HashMap<>();
-	private Map<Integer, HDV> hdvs = new HashMap<>();
+	private Map<Integer, Hdv> hdvs = new HashMap<>();
 	private Map<Integer, Map<Integer, ArrayList<HdvEntry>>> hdvItems = new HashMap<>();
 	private Map<Integer, Player> married = new HashMap<>();
 	private Map<Integer, Animation> animations = new HashMap<>();
@@ -435,8 +435,8 @@ public class World {
 					}
 
 					Log.addToLog("Sauvegarde des hdvs...");
-					for (HDV curHdv : hdvs.values()) {
-						database.getHdvData().updateHdvItems(curHdv.getHdvID());
+					for (Hdv curHdv : hdvs.values()) {
+						database.getHdvData().updateHdvItems(curHdv.getId());
 					}
 
 					Log.addToLog("Sauvegarde effectuee !");
@@ -735,8 +735,8 @@ public class World {
 		gmAccess = GmAccess;
 	}
 
-	public HDV getHdv(int mapID) {
-		HDV object = hdvs.get(mapID);
+	public Hdv getHdv(int mapID) {
+		Hdv object = hdvs.get(mapID);
 		if(object == null)
 			object = World.database.getHdvData().load(mapID);
 		return object;
@@ -786,8 +786,8 @@ public class World {
 		return size;
 	}
 
-	public void addHdv(HDV toAdd) {
-		hdvs.put(toAdd.getHdvID(), toAdd);
+	public void addHdv(Hdv toAdd) {
+		hdvs.put(toAdd.getId(), toAdd);
 	}
 
 	public Map<Integer, ArrayList<HdvEntry>> getMyItems(int compteID) {

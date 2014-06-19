@@ -6,7 +6,7 @@ import org.ancestra.evolutive.common.SocketManager;
 import org.ancestra.evolutive.core.Server;
 import org.ancestra.evolutive.core.World;
 import org.ancestra.evolutive.game.GameClient;
-import org.ancestra.evolutive.hdv.HDV.HdvEntry;
+import org.ancestra.evolutive.hdv.HdvEntry;
 import org.ancestra.evolutive.login.LoginClient;
 import org.ancestra.evolutive.object.Objet;
 import org.slf4j.LoggerFactory;
@@ -443,8 +443,8 @@ public class Account {
 		HdvEntry entry = null;
 		
 		for(HdvEntry tempEntry : this.hdvs.get(hdvID)) {//Boucle dans la liste d'entry de l'HDV pour trouver un entry avec le meme cheapestID que sp�cifi�
-			logger.debug(tempEntry.getObjet().getTemplate().getName());
-            if(tempEntry.getLigneID() == line) {//Si la boucle trouve un objet avec le meme cheapestID, arrete la boucle
+			logger.debug(tempEntry.getObject().getTemplate().getName());
+            if(tempEntry.getLine() == line) {//Si la boucle trouve un objet avec le meme cheapestID, arrete la boucle
 				entry = tempEntry;
 				break;
 			}
@@ -454,7 +454,7 @@ public class Account {
 
 		this.hdvs.get(hdvID).remove(entry);//Retire l'item de la liste des objets a vendre du compte
         logger.info("La supression de l item va etre effectuee");
-		Objet obj = entry.getObjet();
+		Objet obj = entry.getObject();
 		
 		boolean b = this.getCurPlayer().addObjet(obj,true);//False = Meme item dans l'inventaire donc augmente la qua
 		if(!b)
