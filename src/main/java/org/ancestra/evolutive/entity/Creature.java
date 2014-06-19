@@ -4,8 +4,8 @@ import org.ancestra.evolutive.core.World;
 import org.ancestra.evolutive.map.Case;
 import org.ancestra.evolutive.map.Maps;
 
-public class Creature extends Entity{
-    public enum STATE{
+public class Creature extends Entity {
+    public enum STATE {
         IN_FIGHT
     }
 
@@ -23,7 +23,7 @@ public class Creature extends Entity{
      * @param cellId id de la cellule
      */
     public Creature(int id, String name, short mapId, int cellId,int orientation) {
-        this(id, name,World.data.getCarte(mapId),World.data.getCarte(mapId).getCases().get(cellId),orientation);
+        this(id, name, World.data.getMap(mapId), World.data.getMap(mapId).getCases().get(cellId), orientation);
     }
 
     /**
@@ -34,7 +34,7 @@ public class Creature extends Entity{
      * @param cellId id de la cellule
      */
     public Creature(int id, String name, short mapId, int cellId) {
-        this(id, name,World.data.getCarte(mapId),World.data.getCarte(mapId).getCases().get(cellId),0);
+        this(id, name, World.data.getMap(mapId), World.data.getMap(mapId).getCases().get(cellId), 0);
     }
 
     /**
@@ -45,7 +45,7 @@ public class Creature extends Entity{
      * @param cell cellule de la creature
      */
     public Creature(int id, String name, Maps map, Case cell) {
-        this(id,name,map,cell,0);
+        this(id, name, map, cell, 0);
     }
 
     /**
@@ -59,7 +59,7 @@ public class Creature extends Entity{
     public Creature(int id, String name, Maps map, Case cell,int orientation) {
         super(id, name);
         this.map = map;
-        this.cell = (cell != null)?cell:map.getCases().get(map.getRandomFreeCell());
+        this.cell = (cell != null) ? cell : map.getCases().get(map.getRandomFreeCell());
         this.orientation = orientation%8;
     }
 
@@ -75,8 +75,8 @@ public class Creature extends Entity{
      * Change la map de la creature et l y ajoute
      * @param newMapId Identifiant de la map de destination
      */
-    public void setMap(short newMapId){
-        setMap(World.data.getCarte(newMapId));
+    public void setMap(short newMapId) {
+        setMap(World.data.getMap(newMapId));
     }
 
     /**
@@ -84,7 +84,7 @@ public class Creature extends Entity{
      * @param newMap map de destination
      */
     public void setMap(Maps newMap) {
-        if(onMapChange(map,newMap)){
+        if(onMapChange(map,newMap)) {
             this.map = newMap;
         }
     }
@@ -109,7 +109,7 @@ public class Creature extends Entity{
      * Retourne l etat courant
      * @return etat courant
      */
-    public STATE getState(){
+    public STATE getState() {
         return this.state;
     }
 
@@ -117,7 +117,7 @@ public class Creature extends Entity{
      * Change l etat de la creature
      * @param state nouvel etat
      */
-    public void setState(STATE state){
+    public void setState(STATE state) {
         this.state = state;
     }
 
@@ -142,7 +142,7 @@ public class Creature extends Entity{
      * Retourne le helper de la creature
      * @return helper
      */
-    public Helper getHelper(){
+    public Helper getHelper() {
         return this.helper;
     }
 
@@ -152,9 +152,7 @@ public class Creature extends Entity{
      * @return retourne true si le changement a pu etre effectue
      * false sinon
      */
-    private boolean onMapChange(Maps oldMap,Maps newMap){
+    private boolean onMapChange(Maps oldMap, Maps newMap) {
         return true;
     }
-
-
 }

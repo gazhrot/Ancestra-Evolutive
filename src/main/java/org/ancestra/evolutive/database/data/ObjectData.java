@@ -14,9 +14,9 @@ import java.sql.ResultSet;
 
 
 
-public class ItemData extends AbstractDAO<Object>{
+public class ObjectData extends AbstractDAO<Object>{
 
-	public ItemData(HikariDataSource source) {
+	public ObjectData(HikariDataSource source) {
 		super(source);
         logger = (Logger) LoggerFactory.getLogger("factory.Item");
 	}

@@ -145,7 +145,7 @@ public class Collector extends Creature {
 		{
 			 if(perco.getValue().get_guildID() == GuildID)
     		 {
-				 	Maps map = World.data.getCarte(perco.getValue().getMap().getId());
+				 	Maps map = World.data.getMap(perco.getValue().getMap().getId());
 				 	if(isFirst) packet.append("+");
 	    			if(!isFirst) packet.append("|");
 	    			packet.append(perco.getValue().getId()).append(";").append(perco.getValue().getFirstNameId()).append(",").append(perco.getValue().getLastNameId()).append(";");
@@ -213,7 +213,7 @@ public class Collector extends Creature {
 		StringBuilder str = new StringBuilder();
 		str.append("+").append(guid);
 			
-		for(Entry<Integer, Fight> F : World.data.getCarte(mapid).getFights().entrySet())
+		for(Entry<Integer, Fight> F : World.data.getMap(mapid).getFights().entrySet())
 		{
 			//Je boucle les combats de la map bien qu'inutile :/
 			//Mais cela �viter le bug F.getValue().getFighters(1) == null
@@ -237,7 +237,7 @@ public class Collector extends Creature {
 		StringBuilder str = new StringBuilder();
 		str.append("+").append(guid);
 			
-		for(Entry<Integer, Fight> F : World.data.getCarte(mapid).getFights().entrySet())
+		for(Entry<Integer, Fight> F : World.data.getMap(mapid).getFights().entrySet())
 		{
 			//Je boucle les combats de la map bien qu'inutile :/
 			//Mais cela �viter le bug F.getValue().getFighters(2) == null

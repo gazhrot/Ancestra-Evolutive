@@ -24,7 +24,7 @@ public class Promote implements PacketParser {
 		byte xpGive = Byte.parseByte(infos[2]);
 		int right = Integer.parseInt(infos[3]);
 		
-		Player p = World.data.getPersonnage(guid);	//Cherche le personnage a qui l'on change les droits dans la m�moire
+		Player p = World.data.getPlayer(guid);	//Cherche le personnage a qui l'on change les droits dans la m�moire
 		GuildMember toChange;
 		GuildMember changer = client.getPlayer().getGuildMember();
 		

@@ -86,7 +86,7 @@ public class Request implements PacketParser {
 			case '1'://Si joueur
 				try	{
 					int guidTarget = Integer.parseInt(packet.substring(4));
-					Player target = World.data.getPersonnage(guidTarget);
+					Player target = World.data.getPlayer(guidTarget);
 					if(target == null) {
 						SocketManager.GAME_SEND_EXCHANGE_REQUEST_ERROR(client,'E');
 						return;
@@ -114,7 +114,7 @@ public class Request implements PacketParser {
 				if(client.getPlayer().getIsTradingWith() > 0 || client.getPlayer().getFight() != null || client.getPlayer().isAway())
 					return;
 				
-				Player seller = World.data.getPersonnage(id);
+				Player seller = World.data.getPlayer(id);
 				
 				if(seller == null) 
 					return;

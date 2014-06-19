@@ -24,9 +24,9 @@ public class Database {
 	private GuildData guildData;
 	private GuildMemberData guildMemberData;
 	private HouseData houseData;
-	private ItemData itemData;
+	private ObjectData itemData;
 	private ObjectSetData objectSetData;
-	private ItemTemplateData itemTemplateData;
+	private ObjectTemplateData itemTemplateData;
 	private JobData jobData;
 	private MapData mapData;
 	private MonsterData monsterData;
@@ -55,9 +55,9 @@ public class Database {
 		this.guildData = new GuildData(dataSource);
 		this.guildMemberData = new GuildMemberData(dataSource);
 		this.houseData = new HouseData(dataSource);
-		this.itemData = new ItemData(dataSource);
+		this.itemData = new ObjectData(dataSource);
 		this.objectSetData = new ObjectSetData(dataSource);
-		this.itemTemplateData = new ItemTemplateData(dataSource);
+		this.itemTemplateData = new ObjectTemplateData(dataSource);
 		this.jobData = new JobData(dataSource);
 		this.mapData = new MapData(dataSource);
 		this.monsterData = new MonsterData(dataSource);
@@ -123,13 +123,13 @@ public class Database {
 	public HouseData getHouseData() {
 		return houseData;
 	}
-	public ItemData getItemData() {
+	public ObjectData getItemData() {
 		return itemData;
 	}
 	public ObjectSetData getObjectSetData() {
 		return objectSetData;
 	}
-	public ItemTemplateData getItemTemplateData() {
+	public ObjectTemplateData getItemTemplateData() {
 		return itemTemplateData;
 	}
 	public JobData getJobData() {

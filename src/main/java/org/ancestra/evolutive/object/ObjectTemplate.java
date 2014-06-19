@@ -8,7 +8,6 @@ import org.ancestra.evolutive.common.Constants;
 import org.ancestra.evolutive.common.Formulas;
 import org.ancestra.evolutive.core.World;
 import org.ancestra.evolutive.fight.spell.SpellEffect;
-import org.ancestra.evolutive.other.Action;
 
 public class ObjectTemplate {
 	
@@ -25,7 +24,7 @@ public class ObjectTemplate {
 	private int price;
 	private long sold;
 	private int avgPrice;
-	private ArrayList<Action> actions = new ArrayList<Action>();
+	private ArrayList<ObjectAction> actions = new ArrayList<>();
 	
 	public ObjectTemplate(int id, String strStats, String name, int type, int level, int pod, int price, int set, String conditions, String infos, int sold, int avgPrice)
 	{
@@ -203,12 +202,12 @@ public class ObjectTemplate {
 		this.avgPrice = avgPrice;
 	}
 
-	public ArrayList<Action> getActions() {
+	public ArrayList<ObjectAction> getActions() {
 		return actions;
 	}
 
 	public void applyAction(Player player, Player target, int object, short cellid) {
-		for(Action action: this.getActions())
+		for(ObjectAction action: this.getActions())
 			action.apply(player, target, object, cellid);
 	}
 
@@ -219,6 +218,53 @@ public class ObjectTemplate {
 
 	private Stats generateNewStatsFromTemplate(String statsTemplate, boolean useMax) {
 		Stats itemStats = new Stats(false, null);
+		//Si stats Vides
+		if(statsTemplate.equals("") || statsTemplate == null) 
+			return itemStats;
+		
+		String[] splitted = statsTemplate.split(",");
+		for(String s : splitted)
+		{	
+			String[] stats = s.split("#");
+			int statID = Integer.parseInt(stats[0],16);
+			boolean follow = true;
+			
+			for(int a : Constants.ARMES_EFFECT_IDS)//Si c'est un Effet Actif
+				if(a == statID)
+					follow = false;
+			if(!follow)//Si c'était un effet Actif d'arme
+				continue;
+			boolean isStatsInvalid = false;
+			switch(statID) {
+				case 110:
+				case 139:
+				case 605:
+				case 614:
+					isStatsInvalid = true;
+				break;
+			}
+			if(isStatsInvalid)				
+				continue;
+			String jet = "";
+			int value  = 1;
+			try	{
+				jet = stats[4];
+				value = Formulas.getRandomJet(jet);
+				if(useMax)
+				{
+					try	{
+						//on prend le jet max
+						int min = Integer.parseInt(stats[1],16);
+						int max = Integer.parseInt(stats[2],16);
+						value = min;
+						if(max != 0)value = max;
+					}catch(Exception e){value = Formulas.getRandomJet(jet);};			
+				}
+			} catch(Exception e) {}
+			itemStats.addOneStat(statID, value);
+		}
+		return itemStats;
+		/*Stats itemStats = new Stats(false, null);
 		//Si stats Vides
 		if(statsTemplate.equals("") || statsTemplate == null) 
 			return itemStats;
@@ -255,31 +301,44 @@ public class ObjectTemplate {
 			} catch(Exception e) {}
 			itemStats.addOneStat(statID, value);
 		}
-		return itemStats;
+		return itemStats;*/
 	}
 	
 	private ArrayList<SpellEffect> getEffectTemplate(String statsTemplate) {
-		ArrayList<SpellEffect> Effets = new ArrayList<>();
-		
+		ArrayList<SpellEffect> effects = new ArrayList<>();
 		if(statsTemplate.equals("") || statsTemplate == null) 
-			return Effets;
+			return effects;
 		
 		String[] splitted = statsTemplate.split("\\,");
+		
 		for(String s : splitted) {	
+			
 			String[] stats = s.split("\\#");
-			int statID = Integer.parseInt(stats[0],16);
-			for(int a : Constants.ARMES_EFFECT_IDS)	{
-				if(a == statID)	{
-					int id = statID;
+			int id = Integer.parseInt(stats[0], 16);
+			
+			for(int a : Constants.ARMES_EFFECT_IDS) {
+				if(a == id) {
 					String min = stats[1];
 					String max = stats[2];
 					String jet = stats[4];
 					String args = min+";"+max+";-1;-1;0;"+jet;
-					Effets.add(new SpellEffect(id, args,0,-1));
+					effects.add(new SpellEffect(id, args, 0, -1));
 				}
 			}
+			switch(id) {
+				case 110:
+				case 139:
+				case 605:
+				case 614:
+					String min = stats[1];
+					String max = stats[2];
+					String jet = stats[4];
+					String args = min+";"+max+";-1;-1;0;"+jet;
+					effects.add(new SpellEffect(id, args, 0, -1));
+				break;
+			}
 		}
-		return Effets;
+		return effects;
 	}
 	
 	public synchronized void newSold(int amount, int price) {

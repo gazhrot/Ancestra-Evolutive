@@ -190,24 +190,19 @@ public class World {
 		npcTemplates.put(temp.getId(), temp);
 	}
 
-	public Maps getCarte(short id) {
+	public Maps getMap(short id) {
 		Maps map = maps.get(id);
 		if(map == null)
 			map = World.database.getMapData().load(id);
 		return map;
 	}
 
-	public void addCarte(Maps map) {
+	public void addMap(Maps map) {
 		if (!maps.containsKey(map.getId()))
 			maps.put(map.getId(), map);
 	}
 
-	public void delCarte(Maps map) {
-		if (maps.containsKey(map.getId()))
-			maps.remove(map.getId());
-	}
-
-	public Account getCompteByName(String name) {
+	public Account getAccountByName(String name) {
 		Account account = null;
 		
 		for(Account acc: accounts.values())
@@ -219,24 +214,24 @@ public class World {
 		return account;
 	}
 
-	public Player getPersonnage(int guid) {
-		return players.get(guid);
+	public Player getPlayer(int id) {
+		return players.get(id);
 	}
 
-	public void addAccount(Account compte) {
-		accounts.put(compte.getUUID(), compte);
+	public void addAccount(Account account) {
+		accounts.put(account.getUUID(), account);
 	}
 
-	public void addPersonnage(Player perso) {
-		players.put(perso.getId(), perso);
+	public void addPlayer(Player player) {
+		players.put(player.getId(), player);
 	}
 
-	public Player getPersoByName(String name) {
+	public Player getPlayerByName(String name) {
 		ArrayList<Player> Ps = new ArrayList<Player>();
 		Ps.addAll(players.values());
-		for (Player P : Ps)
-			if (P.getName().equalsIgnoreCase(name))
-				return P;
+		for (Player player : Ps)
+			if(player.getName().equalsIgnoreCase(name))
+				return player;
 		return null;
 	}
 
@@ -381,8 +376,7 @@ public class World {
 			@Override
 			public void run() {
 				GameClient _out = null;
-				Player saver = saverID != -1 ? getPersonnage(saverID)
-						: null;
+				Player saver = saverID != -1 ? getPlayer(saverID) : null;
 				if (saver != null)
 					_out = saver.getAccount().getGameClient();
 
@@ -639,9 +633,9 @@ public class World {
 	}
 
 	public int getEncloCellIdByMapId(short i) {
-		if (getCarte(i).getMountPark() != null) {
-			if (getCarte(i).getMountPark().getCellid() > 0) {
-				return getCarte(i).getMountPark().getCellid();
+		if (getMap(i).getMountPark() != null) {
+			if (getMap(i).getMountPark().getCellid() > 0) {
+				return getMap(i).getMountPark().getCellid();
 			}
 		}
 

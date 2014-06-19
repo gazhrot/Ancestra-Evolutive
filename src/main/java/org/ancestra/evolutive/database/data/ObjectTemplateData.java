@@ -5,15 +5,15 @@ import com.zaxxer.hikari.HikariDataSource;
 import org.ancestra.evolutive.core.Console;
 import org.ancestra.evolutive.core.World;
 import org.ancestra.evolutive.database.AbstractDAO;
+import org.ancestra.evolutive.object.ObjectAction;
 import org.ancestra.evolutive.object.ObjectTemplate;
-import org.ancestra.evolutive.other.Action;
 import org.slf4j.LoggerFactory;
 
 import java.sql.PreparedStatement;
 
-public class ItemTemplateData extends AbstractDAO<ObjectTemplate>{
+public class ObjectTemplateData extends AbstractDAO<ObjectTemplate>{
 
-	public ItemTemplateData(HikariDataSource source) {
+	public ObjectTemplateData(HikariDataSource source) {
 		super(source);
         logger = (Logger) LoggerFactory.getLogger("factory.ItemTemplate");
 	}
@@ -76,15 +76,15 @@ public class ItemTemplateData extends AbstractDAO<ObjectTemplate>{
 	
 	public void loadUseAction(int item) {
 		try {
-			Result result = getData("SELECT * FROM use_item_actions WHERE template = "+item);
+			Result result = getData("SELECT * FROM object_actions WHERE template = "+item);
 			while (result.resultSet.next()) {
 				int id = result.resultSet.getInt("template");
-				int type = result.resultSet.getInt("type");
+				String type = result.resultSet.getString("type");
 				String args = result.resultSet.getString("args");
 				if (World.data.getObjectTemplate(id) == null)
 					continue;
 				World.data.getObjectTemplate(id).getActions().add(
-						new Action(type, args, ""));
+						new ObjectAction(type, args, ""));
 			}
 			close(result);
 		} catch (Exception e) {

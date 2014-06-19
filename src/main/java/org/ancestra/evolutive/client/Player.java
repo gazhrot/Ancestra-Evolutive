@@ -276,12 +276,17 @@ public class Player extends Creature {
         if(!World.database.getCharacterData().create(perso))
 			return null;
 		
-		World.data.addPersonnage(perso);
+		World.data.addPlayer(perso);
 		return perso;
 	}
 
 	public int getSex() {
 		return sex;
+	}
+	
+	public void setSex(int sex) {
+		this.sex = sex;
+		World.database.getCharacterData().updateSex(this);
 	}
 
 	public Classe getClasse() {
@@ -836,6 +841,14 @@ public class Player extends Creature {
 	public ArrayList<Short> getZaaps() {
 		return zaaps;
 	}
+	
+	public void addZaap(short mapId) {
+		if(!this.zaaps.contains(Short.valueOf(mapId)))	{
+			this.zaaps.add(mapId);
+			SocketManager.GAME_SEND_Im_PACKET(this, "024");
+			World.database.getCharacterData().update(this);
+		}
+	}
 
 	public Map<Integer, SpellEffect> getBuffs() {
 		return buffs;
@@ -858,19 +871,19 @@ public class Player extends Creature {
 	}
 	
 	public void setMapAndCell(short curMap, int curCell) {
-		this.curMap = World.data.getCarte(curMap);
-		if(this.curMap == null && World.data.getCarte(Server.config.getStartMap()) != null)	{
-			this.curMap = World.data.getCarte(Server.config.getStartMap());
+		this.curMap = World.data.getMap(curMap);
+		if(this.curMap == null && World.data.getMap(Server.config.getStartMap()) != null)	{
+			this.curMap = World.data.getMap(Server.config.getStartMap());
 			this.curCell = this.curMap.getCases().get(Server.config.getStartCell());
 		}else 
-		if (this.curMap == null && World.data.getCarte(Server.config.getStartMap()) == null) {
+		if (this.curMap == null && World.data.getMap(Server.config.getStartMap()) == null) {
 			Console.instance.writeln(" > Le personnage " + this.getName() + " se trouve sur une map incorrecte.");
 			Main.closeServers();
 		}else 
 		if(this.curMap != null)	{
 			this.curCell = this.curMap.getCases().get(curCell);
 			if(this.curCell == null) {
-				this.curMap = World.data.getCarte(Server.config.getStartMap());
+				this.curMap = World.data.getMap(Server.config.getStartMap());
 				this.curCell = this.curMap.getCases().get(Server.config.getStartCell());
 			}
 		}
@@ -973,7 +986,7 @@ public class Player extends Creature {
 				int id = Integer.parseInt(e.split(";")[0]);
 				int lvl = Integer.parseInt(e.split(";")[1]);
 				char place = e.split(";")[2].charAt(0);
-				learnSpell(id, lvl, false, false);
+				learnSpell(id, lvl, false, false, false);
 				this.spellsPlace.put(id, place);
 			} catch(NumberFormatException e1) {
 				continue;
@@ -981,23 +994,71 @@ public class Player extends Creature {
 		}
 	}
 		
-	public boolean learnSpell(int id, int level, boolean save, boolean send) {
+	public boolean learnSpell(int id, int level, boolean save, boolean send, boolean learn) {
 		if(World.data.getSort(id).getStatsByLevel(level) == null) {
 			Log.addToLog("> Erreur spell : "+id+" | level : "+level+" non trouver !");
 			return false;
 		}
 		
-		this.spells.put(id, World.data.getSort(id).getStatsByLevel(level));
+		if(id == 366 && this.spells.containsKey(Integer.valueOf(id))) 
+	    	return false;
+	    
+		if(this.spells.containsKey(Integer.valueOf(id)) && learn) {
+			SocketManager.GAME_SEND_MESSAGE(this, "Tu possède déjà ce sort.", Server.config.getMotdColor());
+			return false;
+		} else {
+			this.spells.put(id, World.data.getSort(id).getStatsByLevel(level));
+			
+			if(send) {
+				SocketManager.GAME_SEND_SPELL_LIST(this);
+				SocketManager.GAME_SEND_Im_PACKET(this, "03;" + id);
+			}
+			
+			if(save)
+				save();
+			
+			return true;
+		}
+	}
+	
+	public boolean unlearnSpell(int id, int level, int ancLevel, boolean save, boolean send) {
+		int spellPoint = 1;
 		
-		if(send) {
-			SocketManager.GAME_SEND_SPELL_LIST(this);
-			SocketManager.GAME_SEND_Im_PACKET(this, "03;" + id);
+		switch(ancLevel) {
+		case 3:
+			spellPoint = 2+1;
+			break;
+		case 4:
+			spellPoint = 3+3;
+			break;
+		case 5:
+			spellPoint = 4+6;
+			break;
+		case 6:
+			spellPoint = 5+10;
+			break;
 		}
 		
-		if(save)
-			save();
-		
-		return true;
+	    if(World.data.getSort(id).getStatsByLevel(level) == null) {
+	    	Log.addToLog("> Erreur spell : "+id+" | level : "+level+" non trouver !");
+			return false;
+	    }
+
+	    if(id == 366 && this.spells.containsKey(Integer.valueOf(id))) 
+	    	return false;
+	    
+	    this.spells.put(Integer.valueOf(id), World.data.getSort(id).getStatsByLevel(level));
+	   
+	    if(send) {
+	    	SocketManager.GAME_SEND_SPELL_LIST(this);
+	    	SocketManager.GAME_SEND_Im_PACKET(this, "0154;" +"<b>"+ ancLevel +"</b>" +"~"+"<b>"+ spellPoint +"</b>");
+	    	addSpellPoint(spellPoint);
+	    	SocketManager.GAME_SEND_STATS_PACKET(this);
+	    }
+	    
+	    if(save) 
+	    	World.database.getCharacterData().update(this);
+	    return true;
 	}
 	
 	public boolean boostSpell(int id) {
@@ -1013,7 +1074,7 @@ public class Player extends Creature {
 		
 		if(this.spellPoints >= oldLevel && World.data.getSort(id).getStatsByLevel(oldLevel + 1).getReqLevel() <= this.getLevel())
 		{
-			if(learnSpell(id, oldLevel + 1, true, false)) {
+			if(learnSpell(id, oldLevel + 1, true, false, false)) {
 				this.spellPoints -= oldLevel;
 				save();
 				return true;
@@ -1037,7 +1098,7 @@ public class Player extends Creature {
 		if(oldLevel <= 1)
 			return false;
 		
-		if(learnSpell(id, 1, true, false)) {
+		if(learnSpell(id, 1, true, false, false)) {
 			this.spellPoints += Formulas.spellCost(oldLevel);	
 			save();
 			return true;
@@ -1516,8 +1577,7 @@ public class Player extends Creature {
 		this.isAway = false;
 	}
 
-	public void boostStat(int stat)
-	{
+	public void boostStat(int stat, boolean capital) {
 		int value = 0;
 		switch(stat)
 		{
@@ -1527,7 +1587,7 @@ public class Player extends Creature {
 			case 13://Chance
 				value = this.getStats().getEffect(Constants.STATS_ADD_CHAN);
 			break;
-			case 14://Agilitï¿½
+			case 14://Agilité
 				value = this.getStats().getEffect(Constants.STATS_ADD_AGIL);
 			break;
 			case 15://Intelligence
@@ -1535,12 +1595,14 @@ public class Player extends Creature {
 			break;
 		}
 		int cout = Constants.getReqPtsToBoostStatsByClass(this.getClasse().getId(), stat, value);
-		if(cout <= this.getCapital())
+		if(!capital)
+			cout = 0;
+		if(cout <= this.capital)
 		{
 			switch(stat)
 			{
 				case 11://Vita
-					if(this.getClasse() != Classe.SACRIEUR)
+					if(this.getClasse().getId() != Constants.CLASS_SACRIEUR)
 						this.getStats().addOneStat(Constants.STATS_ADD_VITA, 1);
 					else
 						this.getStats().addOneStat(Constants.STATS_ADD_VITA, 2);
@@ -1554,7 +1616,7 @@ public class Player extends Creature {
 				case 13://Chance
 					this.getStats().addOneStat(Constants.STATS_ADD_CHAN, 1);
 				break;
-				case 14://Agilitï¿½
+				case 14://Agilité
 					this.getStats().addOneStat(Constants.STATS_ADD_AGIL, 1);
 				break;
 				case 15://Intelligence
@@ -1565,10 +1627,10 @@ public class Player extends Creature {
 			}
 			this.capital -= cout;
 			SocketManager.GAME_SEND_STATS_PACKET(this);
-			save();
+			World.database.getCharacterData().update(this);
 		}
 	}
-
+	
 	public boolean isMuted() {
 		return this.getAccount().isMuted();
 	}
@@ -1943,11 +2005,11 @@ public class Player extends Creature {
 		{
 			PW = this.getAccount().getGameClient();
 		}
-		if(World.data.getCarte(newMapID) == null){
+		if(World.data.getMap(newMapID) == null){
 			Log.addToLog("Game: INVALID MAP : "+newMapID);
 			return;
 		}
-		if(World.data.getCarte(newMapID).getCases().get(newCellID) == null)
+		if(World.data.getMap(newMapID).getCases().get(newCellID) == null)
 		{
 			Log.addToLog("Game: INVALID CELL : "+newCellID+" ON MAP : "+newMapID);
 			return;
@@ -1959,7 +2021,7 @@ public class Player extends Creature {
 		}
 		
 		this.getCell().removePlayer(this.getId());
-		this.setMap(World.data.getCarte(newMapID));
+		this.setMap(World.data.getMap(newMapID));
 		this.setCell(this.getMap().getCases().get(newCellID));
 		
 
@@ -2206,8 +2268,8 @@ public class Player extends Creature {
 			SocketManager.GAME_SEND_ECK_PACKET(this, 16, str);
 		} else 
 		if(this.getGuildMember() != null) {
-			if(World.data.getPersonnage(this.getCurMountPark().getOwner()).getGuildMember() != null)
-				if(World.data.getPersonnage(this.getCurMountPark().getOwner()).getGuildMember().getGuild() == this.getGuildMember().getGuild() && getGuildMember().canDo(Constants.G_USEENCLOS))
+			if(World.data.getPlayer(this.getCurMountPark().getOwner()).getGuildMember() != null)
+				if(World.data.getPlayer(this.getCurMountPark().getOwner()).getGuildMember().getGuild() == this.getGuildMember().getGuild() && getGuildMember().canDo(Constants.G_USEENCLOS))
 					SocketManager.GAME_SEND_ECK_PACKET(this, 16, str);
 		} else {
 			SocketManager.GAME_SEND_Im_PACKET(this, "1101");
@@ -2551,11 +2613,11 @@ public class Player extends Creature {
 		str.append(map);
         int SubAreaID = this.getMap().getSubArea().getArea().getContinent().getId();
 		for(short i : this.zaaps) {
-			if(World.data.getCarte(i) == null)
+			if(World.data.getMap(i) == null)
 				continue;
-			if(World.data.getCarte(i).getSubArea().getArea().getContinent().getId() != SubAreaID)
+			if(World.data.getMap(i).getSubArea().getArea().getContinent().getId() != SubAreaID)
 				continue;
-			int cost = Formulas.calculZaapCost(this.getMap(), World.data.getCarte(i));
+			int cost = Formulas.calculZaapCost(this.getMap(), World.data.getMap(i));
 			if(i == this.getMap().getId())
 				cost = 0;
 			str.append("|").append(i).append(";").append(cost);
@@ -2596,32 +2658,32 @@ public class Player extends Creature {
 		if(!hasZaap(id))
 			return;//S'il n'a pas le zaap demandï¿½(ne devrais pas arriver)
 		
-		int cost = Formulas.calculZaapCost(this.getMap(), World.data.getCarte(id));
+		int cost = Formulas.calculZaapCost(this.getMap(), World.data.getMap(id));
 		if(this.getKamas() < cost)
 			return;//S'il n'a pas les kamas (verif cotï¿½ client)
 		
 		short mapID = id;
 		int SubAreaID = this.getMap().getSubArea().getArea().getContinent().getId();
 		int cellID = World.data.getZaapCellIdByMapId(id);
-		if(World.data.getCarte(mapID) == null)
+		if(World.data.getMap(mapID) == null)
 		{
 			Log.addToLog("La map "+id+" n'est pas implantee, Zaap refuse");
 			SocketManager.GAME_SEND_WUE_PACKET(this);
 			return;
 		}
-		if(World.data.getCarte(mapID).getCases().get(cellID) == null)
+		if(World.data.getMap(mapID).getCases().get(cellID) == null)
 		{
 			Log.addToLog("La cellule associee au zaap "+id+" n'est pas implantee, Zaap refuse");
 			SocketManager.GAME_SEND_WUE_PACKET(this);
 			return;
 		}
-		if(!World.data.getCarte(mapID).getCases().get(cellID).isWalkable(true))
+		if(!World.data.getMap(mapID).getCases().get(cellID).isWalkable(true))
 		{
 			Log.addToLog("La cellule associee au zaap "+id+" n'est pas 'walkable', Zaap refuse");
 			SocketManager.GAME_SEND_WUE_PACKET(this);
 			return;
 		}
-		if(World.data.getCarte(mapID).getSubArea().getArea().getContinent().getId() != SubAreaID)
+		if(World.data.getMap(mapID).getSubArea().getArea().getContinent().getId() != SubAreaID)
 		{
 			SocketManager.GAME_SEND_WUE_PACKET(this);
 			return;
@@ -2664,7 +2726,7 @@ public class Player extends Creature {
 	
 	public void Zaapi_use(String packet)
 	{
-		Maps map = World.data.getCarte(Short.valueOf(packet.substring(2)));
+		Maps map = World.data.getMap(Short.valueOf(packet.substring(2)));
 	
 		short idcelula = 100;
 		if (map != null)
@@ -2938,7 +3000,7 @@ public class Player extends Creature {
 	
 	public String get_wife_friendlist()
 	{
-		Player wife = World.data.getPersonnage(this.getWife());
+		Player wife = World.data.getPlayer(this.getWife());
 		StringBuilder str = new StringBuilder();
 		if(wife != null)
 		{
@@ -3001,7 +3063,7 @@ public class Player extends Creature {
 	public void Divorce()
 	{
 		if(isOnline())
-			SocketManager.GAME_SEND_Im_PACKET(this, "047;"+World.data.getPersonnage(this.getWife()).getName());
+			SocketManager.GAME_SEND_Im_PACKET(this, "047;"+World.data.getPlayer(this.getWife()).getName());
 		this.setWife(0);
 		save();
 	}

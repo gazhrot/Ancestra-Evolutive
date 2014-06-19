@@ -108,7 +108,7 @@ public class LoginClient implements Client {
         }
 
         //Verification des info
-        if((account = World.data.getCompteByName(name)) == null) {
+        if((account = World.data.getAccountByName(name)) == null) {
             send("AlEf");
             return false;
         }

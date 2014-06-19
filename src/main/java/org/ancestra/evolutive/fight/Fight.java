@@ -609,7 +609,7 @@ public class Fight {
 				 team1.get(team1.keySet().toArray()[0]).getMob().getTemplate().getAlign();
 			}
 			//Si groupe non fixe
-			if(!_mobGroup.isFix())World.data.getCarte(map.getId()).spawnGroup(align, 1, true, _mobGroup.getCell().getId());//Respawn d'un groupe
+			if(!_mobGroup.isFix())World.data.getMap(map.getId()).spawnGroup(align, 1, true, _mobGroup.getCell().getId());//Respawn d'un groupe
 		}
 		SocketManager.GAME_SEND_GIC_PACKETS_TO_FIGHT(Fight.this, 7);
 		SocketManager.GAME_SEND_GS_PACKET_TO_FIGHT(Fight.this, 7);
@@ -2050,8 +2050,8 @@ public class Fight {
 				perso.refreshMapAfterFight();
 			}
 			
-			World.data.getCarte(map.getId()).getFights().remove(id);
-			SocketManager.GAME_SEND_MAP_FIGHT_COUNT_TO_MAP(World.data.getCarte(map.getId()));
+			World.data.getMap(map.getId()).getFights().remove(id);
+			SocketManager.GAME_SEND_MAP_FIGHT_COUNT_TO_MAP(World.data.getMap(map.getId()));
 			map = null;
 			_ordreJeu = null;
 			ArrayList<Fighter> winTeam = new ArrayList<Fighter>();
@@ -2089,7 +2089,7 @@ public class Fight {
 							}
 							F._Perco.set_inFight((byte)0);
 							F._Perco.set_inFightID((byte)-1);
-							for(Player z : World.data.getCarte(F._Perco.getMap().getId()).getPlayers()){
+							for(Player z : World.data.getMap(F._Perco.getMap().getId()).getPlayers()){
 								if(z == null) continue;
 								SocketManager.GAME_SEND_MAP_PERCO_GMS_PACKETS(z.getAccount().getGameClient(), z.getMap());
 							}
@@ -2721,8 +2721,8 @@ public class Fight {
 									}
 								}
 								_state = 4;//Nous assure de ne pas d�marrer le combat
-								World.data.getCarte(map.getId()).getFights().remove(id);
-								SocketManager.GAME_SEND_MAP_FIGHT_COUNT_TO_MAP(World.data.getCarte(map.getId()));
+								World.data.getMap(map.getId()).getFights().remove(id);
+								SocketManager.GAME_SEND_MAP_FIGHT_COUNT_TO_MAP(World.data.getMap(map.getId()));
 								SocketManager.GAME_SEND_GAME_REMFLAG_PACKET_TO_MAP(Fight.this.getOldMap(), _init0.getGUID());
 								if(type == Constants.FIGHT_TYPE_PVT)
 								{
@@ -2738,7 +2738,7 @@ public class Fight {
 									}
 									_perco.set_inFight((byte)0);
 									_perco.set_inFightID((byte)-1);
-									for(Player z : World.data.getCarte(_perco.getMap().getId()).getPlayers())
+									for(Player z : World.data.getMap(_perco.getMap().getId()).getPlayers())
 									{
 										if(z == null) continue;
 										SocketManager.GAME_SEND_MAP_PERCO_GMS_PACKETS(z.getAccount().getGameClient(), z.getMap());
@@ -2752,7 +2752,7 @@ public class Fight {
 										 team1.get(team1.keySet().toArray()[0]).getMob().getTemplate().getAlign();
 									}
 									//Si groupe non fixe
-									if(!_mobGroup.isFix())World.data.getCarte(map.getId()).spawnGroup(align, 1, true,_mobGroup.getCell().getId());//Respawn d'un groupe
+									if(!_mobGroup.isFix())World.data.getMap(map.getId()).spawnGroup(align, 1, true,_mobGroup.getCell().getId());//Respawn d'un groupe
 								}
 								map = null;
 								_ordreJeu = null;

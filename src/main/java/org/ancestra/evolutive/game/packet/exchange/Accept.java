@@ -16,7 +16,7 @@ public class Accept implements PacketParser {
 		if(client.getPlayer().getIsTradingWith() == 0)
 			return;
 		
-		Player target = World.data.getPersonnage(client.getPlayer().getIsTradingWith());
+		Player target = World.data.getPlayer(client.getPlayer().getIsTradingWith());
 		
 		if(target == null)
 			return;

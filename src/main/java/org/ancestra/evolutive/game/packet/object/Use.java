@@ -31,8 +31,8 @@ public class Use implements PacketParser {
 		} catch(Exception e) {return;}
 		
 		//Si le joueur n'a pas l'objet
-		if(World.data.getPersonnage(targetGuid) != null)
-			Target = World.data.getPersonnage(targetGuid);
+		if(World.data.getPlayer(targetGuid) != null)
+			Target = World.data.getPlayer(targetGuid);
 		if(!client.getPlayer().hasItemGuid(guid) || client.getPlayer().getFight() != null || client.getPlayer().isAway())
 			return;
 		if(Target != null && (Target.getFight() != null || Target.isAway()))

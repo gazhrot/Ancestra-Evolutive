@@ -40,7 +40,7 @@ public class GuildMember {
 
 	public Player getPlayer() {
 		if(this.player == null)
-			this.player = World.data.getPersonnage(this.getUUID());
+			this.player = World.data.getPlayer(this.getUUID());
 		return player;
 	}
 

@@ -127,7 +127,7 @@ public class SendMessage implements PacketParser {
 				if(nom.length() <= 1) {
 					Log.addToLog("ChatHandler: Chanel non gere : "+nom);
 				}else {
-					Player target = World.data.getPersoByName(nom);
+					Player target = World.data.getPlayerByName(nom);
 					if(target == null) {
 						SocketManager.GAME_SEND_CHAT_ERROR_PACKET(client, nom);
 						return;

@@ -267,7 +267,7 @@ public class Action {
 				{
 					int sID = Integer.parseInt(args);
 					if(World.data.getSort(sID) == null)return;
-					perso.learnSpell(sID,1, true,true);
+					perso.learnSpell(sID,1, true,true, true);
 				}catch(Exception e){Log.addToLog(e.getMessage());};
 			break;
 			case 10://Pain/potion/viande/poisson
@@ -596,7 +596,7 @@ public class Action {
 				{
 					break;	
 				}
-				Player cible = World.data.getPersoByName(perr);
+				Player cible = World.data.getPlayerByName(perr);
 				if(cible==null)break;
 				if(!cible.isOnline())
 				{
@@ -638,7 +638,7 @@ public class Action {
 				}else
 				{
 					perso.setKamas(perso.getKamas()-50000);
-					Player wife = World.data.getPersonnage(perso.getWife());
+					Player wife = World.data.getPlayer(perso.getWife());
 					wife.Divorce();
 					perso.Divorce();
 				}

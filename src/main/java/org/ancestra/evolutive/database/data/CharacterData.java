@@ -199,7 +199,7 @@ public class CharacterData extends AbstractDAO<Player>{
 		return player;
 	}
 
-    public void load(){
+    public void load() {
         try {
             Result result = getData("SELECT * FROM personnages");
             while(loadFromResultSet(result.resultSet) != null);
@@ -311,7 +311,7 @@ public class CharacterData extends AbstractDAO<Player>{
             );
             //V�rifications pr�-connexion
             player.VerifAndChangeItemPlace();
-            World.data.addPersonnage(player);
+            World.data.addPlayer(player);
             int guildId = World.database.getGuildMemberData().getGuildByPlayer(player.getId());
             if(guildId >= 0) {
             	Guild guild =  World.data.getGuild(guildId);
@@ -324,4 +324,22 @@ public class CharacterData extends AbstractDAO<Player>{
         }
         return player;
     }
+
+	public boolean updateSex(Player obj) {
+		try {
+			String baseQuery = "UPDATE `personnages` SET `sexe`= ? WHERE `personnages`.`guid` = ? LIMIT 1;";
+			
+			PreparedStatement statement = getPreparedStatement(baseQuery);
+			
+			statement.setInt(1, obj.getSex());
+			statement.setInt(2, obj.getId());
+			
+			execute(statement);
+			logger.debug("Personnage "+obj.getName()+" sauvegarde");
+			return true;
+		} catch(Exception e) {
+			logger.error("Can't save character {}",obj.getName(),e);
+		}
+		return false;
+	}
 }

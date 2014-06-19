@@ -67,10 +67,10 @@ public class MountparkExchange implements PacketParser {
 					//S'il n'a pas la dinde
 					if(DD1 == null || !MP.getDatas().containsKey(DD1.getId()))return;
 					if(MP.getDatas().get(DD1.getId()) != client.getPlayer().getId() &&
-						World.data.getPersonnage(MP.getDatas().get(DD1.getId())).getGuild() != client.getPlayer().getGuild())
+						World.data.getPlayer(MP.getDatas().get(DD1.getId())).getGuild() != client.getPlayer().getGuild())
 						return;
 					if(MP.getDatas().get(DD1.getId()) != client.getPlayer().getId() &&
-							World.data.getPersonnage(MP.getDatas().get(DD1.getId())).getGuild() == client.getPlayer().getGuild() &&
+							World.data.getPlayer(MP.getDatas().get(DD1.getId())).getGuild() == client.getPlayer().getGuild() &&
 							!client.getPlayer().getGuildMember().canDo(Constants.G_OTHDINDE)) {
 						//M�me guilde, pas le droit
 						SocketManager.GAME_SEND_Im_PACKET(client.getPlayer(), "1101");
@@ -103,10 +103,10 @@ public class MountparkExchange implements PacketParser {
 					if(DD3 == null || !MP.getDatas().containsKey(DD3.getId()) || client.getPlayer().getMount() != null)return;
 					
 					if(MP.getDatas().get(DD3.getId()) != client.getPlayer().getId() &&
-							World.data.getPersonnage(MP.getDatas().get(DD3.getId())).getGuild() != client.getPlayer().getGuild())
+							World.data.getPlayer(MP.getDatas().get(DD3.getId())).getGuild() != client.getPlayer().getGuild())
 						return;
 					if(MP.getDatas().get(DD3.getId()) != client.getPlayer().getId() &&
-							World.data.getPersonnage(MP.getDatas().get(DD3.getId())).getGuild() == client.getPlayer().getGuild() &&
+							World.data.getPlayer(MP.getDatas().get(DD3.getId())).getGuild() == client.getPlayer().getGuild() &&
 							!client.getPlayer().getGuildMember().canDo(Constants.G_OTHDINDE)) {
 						//M�me guilde, pas le droit
 						SocketManager.GAME_SEND_Im_PACKET(client.getPlayer(), "1101");

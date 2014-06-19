@@ -37,7 +37,7 @@ public class ObjectSetData extends AbstractDAO<ObjectSet>{
 	public ObjectSet load(int id) {
 		ObjectSet set = null;
 		try {
-			Result result = getData("SELECT * FROM ObjectSets WHERE id = "+id);
+			Result result = getData("SELECT * FROM itemsets WHERE id = "+id);
 			
 			if(result.resultSet.next()) {
 				set = new ObjectSet(result.resultSet.getInt("id"), result.resultSet

@@ -16,7 +16,7 @@ public class Buy implements PacketParser {
 	public void parse(GameClient client, String packet) {
 		SocketManager.GAME_SEND_R_PACKET(client.getPlayer(), "v");//Fermeture du panneau
 		MountPark mountPark = client.getPlayer().getMap().getMountPark();
-		Player seller = World.data.getPersonnage(mountPark.getOwner());
+		Player seller = World.data.getPlayer(mountPark.getOwner());
 		
 		if(mountPark.getOwner() == -1) {
 			SocketManager.GAME_SEND_Im_PACKET(client.getPlayer(), "196");

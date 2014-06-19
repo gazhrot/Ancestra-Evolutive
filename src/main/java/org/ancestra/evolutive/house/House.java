@@ -365,7 +365,7 @@ public class House {
 		if(!house.isHouse(player, house)) 
 			return;
 		
-		Player target = World.data.getPersonnage(Integer.parseInt(packet));
+		Player target = World.data.getPlayer(Integer.parseInt(packet));
 		
 		if(target == null || !target.isOnline() || target.getFight() != null || target.getMap().getId() != player.getMap().getId()) 
 			return;
@@ -484,8 +484,8 @@ public class House {
 				if(!isFirst) packet.append("|");
 				
 				packet.append(house.getKey()).append(";");
-				packet.append(World.data.getPersonnage(house.getValue().getOwner()).getAccount().getPseudo()).append(";");
-				packet.append(World.data.getCarte((short)house.getValue().getToMapid()).getX()).append(",").append(World.data.getCarte((short)house.getValue().getToMapid()).getY()).append(";");
+				packet.append(World.data.getPlayer(house.getValue().getOwner()).getAccount().getPseudo()).append(";");
+				packet.append(World.data.getMap((short)house.getValue().getToMapid()).getX()).append(",").append(World.data.getMap((short)house.getValue().getToMapid()).getY()).append(";");
 				packet.append("0;");//TODO : Compétences ...
 				packet.append(house.getValue().getGuildRights());	
 				isFirst = false;

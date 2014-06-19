@@ -145,7 +145,7 @@ public class OtherData extends AbstractDAO<Object>{
 			Result result = getData("SELECT * from live_action;");
 
 			while (result.resultSet.next()) {
-				perso = World.data.getPersonnage(result.resultSet.getInt("PlayerID"));
+				perso = World.data.getPlayer(result.resultSet.getInt("PlayerID"));
 				if (perso == null) {
 					Log.addToShopLog("Personnage " + result.resultSet.getInt("PlayerID")
 							+ " non trouve, personnage non charge ?");

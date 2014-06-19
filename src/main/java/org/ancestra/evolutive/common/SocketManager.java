@@ -43,7 +43,6 @@ public class SocketManager {
 	}
 	
 
-	
 	public static void REALM_SEND_LOGIN_ERROR(Client _out)
 	{
 		String packet = "AlEf";
@@ -2424,7 +2423,7 @@ public class SocketManager {
 	public static void GAME_SEND_WEDDING(Maps c, int action, int homme, int femme, int parlant)
 	{
 		String packet = "GA;"+action+";"+homme+";"+homme+","+femme+","+parlant;
-		Player Homme = World.data.getPersonnage(homme);
+		Player Homme = World.data.getPlayer(homme);
 		send(Homme,packet);
 		if(Server.config.isDebug())
 			Log.addToSockLog("Game: Send>>" + packet);
@@ -2443,9 +2442,9 @@ public class SocketManager {
     	if(World.data.getSeller(P.getMap().getId()) == null) return;
         for (Integer pID : World.data.getSeller(P.getMap().getId()))
         {
-        	if(!World.data.getPersonnage(pID).isOnline() && World.data.getPersonnage(pID).isSeeSeller())
+        	if(!World.data.getPlayer(pID).isOnline() && World.data.getPlayer(pID).isSeeSeller())
         	{
-        		packet.append(World.data.getPersonnage(pID).parseToMerchant()).append("|");
+        		packet.append(World.data.getPlayer(pID).parseToMerchant()).append("|");
             }
         }
         if(packet.length() < 5) return;

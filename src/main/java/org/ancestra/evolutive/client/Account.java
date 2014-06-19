@@ -364,7 +364,7 @@ public class Account {
 	public void sendOnline() {
 		for(int uuid: this.friends) {
 			if(this.isFriendWith(uuid)) {
-				Player player = World.data.getPersonnage(uuid);
+				Player player = World.data.getPlayer(uuid);
 				if(player != null && player.isShowFriendConnection() && player.isOnline())
 					SocketManager.GAME_SEND_FRIEND_ONLINE(this.getCurPlayer(), player);
 			}
@@ -378,7 +378,7 @@ public class Account {
 		}
 		if(!this.enemys.contains(guid))	{
 			this.enemys.add(guid);
-			Player player = World.data.getPersoByName(packet);
+			Player player = World.data.getPlayerByName(packet);
 			SocketManager.GAME_SEND_ADD_ENEMY(this.getCurPlayer(), player);
 			World.database.getAccountData().update(this);
 		} else {
@@ -499,7 +499,7 @@ public class Account {
 		Player player = Player.create(name, sexe, classe, color1, color2, color3, this);
 		if(player == null)
 			return false;
-		World.data.addPersonnage(player);
+		World.data.addPlayer(player);
 		return true;
 	}
 

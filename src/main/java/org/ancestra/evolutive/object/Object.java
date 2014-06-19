@@ -137,8 +137,26 @@ public class Object {
 		return effets;
 	}
 	
-	/***********FM SYSTEM***********/
-	/**   Rien a été changé ici   **/
+	public int getRandomValue(String statsTemplate, int statsId) {
+		if(statsTemplate.equals("") || statsTemplate == null) 
+			return 0;
+
+		String[] splitted = statsTemplate.split("\\,");
+		int value = 0;
+		for(String s : splitted) {	
+			String[] stats = s.split("\\#");
+			int statID = Integer.parseInt(stats[0], 16);
+			if(statID != statsId)
+				continue;
+			String jet = "";
+			try	{
+				jet = stats[4];
+				value = Formulas.getRandomJet(jet);
+			}catch(Exception e){return 0;};
+		}
+		return value;
+	}
+	
 	public Stats generateNewStatsFromTemplate(String statsTemplate, boolean useMax) {
 		Stats itemStats = new Stats(false, null);
 		//Si stats Vides
@@ -178,7 +196,8 @@ public class Object {
 		}
 		return itemStats;
 	}
-	
+	/***********FM SYSTEM***********/
+	/**   Rien a été changé ici   **/
 	public static int getPoidOfActualItem(String statsTemplate)//Donne le poid de l'item actuel
 	{
 		int poid = 0;
@@ -575,7 +594,56 @@ public class Object {
 	}
 	
 	public void parseStringToStats(String strStats) {
-		String[] split = strStats.split("\\,");
+		String[] split = strStats.split(",");
+		for(String s : split)
+		{	
+			try {
+				String[] stats = s.split("\\#");
+				int id = Integer.parseInt(stats[0],16);
+				
+				if(id == 997 || id == 996) {
+					txtStats.put(id, stats[4]);
+					continue;
+				}
+				//Si stats avec Texte (Signature, apartenance, etc)
+				if((!stats[3].equals("") && !stats[3].equals("0")))	{
+					txtStats.put(id, stats[3]);
+					continue;
+				}
+				
+				boolean follow1 = true;
+				switch(id) {
+					case 110:
+					case 139:
+					case 605:
+					case 614:
+						String min = stats[1];
+						String max = stats[2];
+						String jet = stats[4];
+						String args = min+";"+max+";-1;-1;0;"+jet;
+						this.effects.add(new SpellEffect(id, args ,0, -1));
+						follow1 = false;
+					break;
+				}
+				if(!follow1)
+					continue;
+				
+				boolean follow2 = true;
+				for(int a : Constants.ARMES_EFFECT_IDS) {
+					if(a == id)	{
+						this.effects.add(new SpellEffect(id, stats[1]+";"+stats[2]+";-1;-1;0;"+stats[4], 0, -1));
+						follow2 = false;
+					}
+				}
+				if(!follow2)
+					continue;//Si c'était un effet Actif d'arme ou une signature
+				this.stats.addOneStat(id, Integer.parseInt(stats[1], 16));
+			} catch(Exception e) {
+				continue;
+			}
+		}
+		
+		/*String[] split = strStats.split("\\,");
 		for(String s : split) {	
 			try	{
 				String[] stats = s.split("\\#");
@@ -613,6 +681,6 @@ public class Object {
 			} catch(Exception e) { 
 				continue;
 			}
-		}
+		}*/
 	}
 }

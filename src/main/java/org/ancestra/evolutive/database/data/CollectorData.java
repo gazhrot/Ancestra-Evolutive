@@ -130,8 +130,10 @@ public class CollectorData extends AbstractDAO<Collector>{
     protected Collector loadFromResultSet(ResultSet resultSet) throws SQLException {
         Collector collector = null;
         if(resultSet.next()) {
-            Maps map = World.data.getCarte(resultSet.getShort("mapid"));
-            if(map == null) return null;
+            Maps map = World.data.getMap(resultSet.getShort("mapid"));
+           
+            if(map == null) 
+            	return null;
 
             collector = new Collector(
                     resultSet.getInt("guid"),

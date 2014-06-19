@@ -26,7 +26,7 @@ public class FollowAll implements PacketParser {
 		if(toFollow == -1) 
 			return;
 		
-		Player player = World.data.getPersonnage(toFollow);
+		Player player = World.data.getPlayer(toFollow);
 		
 		if(player == null || !player.isOnline()) 
 			return;

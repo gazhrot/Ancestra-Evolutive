@@ -60,7 +60,7 @@ public class MountparkData extends AbstractDAO<MountPark>{
 		try {
 			Result result = getData("SELECT * FROM mountpark_data WHERE mapid ="+id);
 			while(result.resultSet.next()) {
-				Maps map = World.data.getCarte(result.resultSet.getShort("mapid"));
+				Maps map = World.data.getMap(result.resultSet.getShort("mapid"));
 				
 				if (map == null)
 					continue;

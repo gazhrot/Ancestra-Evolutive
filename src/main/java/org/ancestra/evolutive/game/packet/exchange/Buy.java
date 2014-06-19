@@ -19,7 +19,7 @@ public class Buy implements PacketParser {
 		String[] infos = packet.substring(2).split("\\|");
 		
         if(client.getPlayer().getIsTradingWith() > 0) {
-            Player seller = World.data.getPersonnage(client.getPlayer().getIsTradingWith());
+            Player seller = World.data.getPlayer(client.getPlayer().getIsTradingWith());
             
             if(seller != null) {
             	int itemID = 0, qua = 0, price = 0;
