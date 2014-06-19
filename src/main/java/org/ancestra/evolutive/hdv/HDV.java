@@ -123,11 +123,11 @@ public class Hdv {
 	public void addEntry(HdvEntry entry) {
 		entry.setHdv(this.getId());
 		int categ = entry.getObject().getTemplate().getType();
-		int template = entry.getObject().getTemplate().getID();
+		int template = entry.getObject().getTemplate().getId();
 		this.getCategorys().get(categ).addEntry(entry);
 		this.getPath().put(entry.getLine(), new Couple<Integer, Integer>(categ, template));
 		
-		World.data.addHdvItem(entry.getOwner(), this.getId(), entry);		
+		World.data.addHdvObject(entry.getOwner(), this.getId(), entry);		
 	}
 	
 	public boolean delEntry(HdvEntry entry) {
@@ -135,7 +135,7 @@ public class Hdv {
 	
 		if(toReturn) {
 			this.getPath().remove(entry.getLine());
-			World.data.removeHdvItem(entry.getOwner(), entry.getHdv(), entry);
+			World.data.removeHdvObject(entry.getOwner(), entry.getHdv(), entry);
 		}
 		
 		return toReturn;
@@ -164,13 +164,13 @@ public class Hdv {
 			}
 			
 			SocketManager.GAME_SEND_STATS_PACKET(player);//Met a jour les kamas de l'acheteur
-			player.addObjet(toBuy.getObject(), true);//Ajoute l'objet au nouveau propriétaire
+			player.addObject(toBuy.getObject(), true);//Ajoute l'objet au nouveau propriétaire
 			toBuy.getObject().getTemplate().newSold(toBuy.getAmount(true), price);//Ajoute la ventes au statistiques
 			
 			this.delEntry(toBuy);//Retire l'item de l'HDV ainsi que de la liste du vendeur
 			
 			if(World.data.getCompte(toBuy.getOwner()) != null && World.data.getCompte(toBuy.getOwner()).getCurPlayer() != null)
-				SocketManager.GAME_SEND_Im_PACKET(World.data.getCompte(toBuy.getOwner()).getCurPlayer(),"065;"+price+"~"+toBuy.getObject().getTemplate().getID()+"~"+toBuy.getObject().getTemplate().getID()+"~1");
+				SocketManager.GAME_SEND_Im_PACKET(World.data.getCompte(toBuy.getOwner()).getCurPlayer(),"065;"+price+"~"+toBuy.getObject().getTemplate().getId()+"~"+toBuy.getObject().getTemplate().getId()+"~1");
 				//Si le vendeur est connecter, envoie du packet qui lui annonce la vente de son objet
 			if(toBuy.getOwner() == -1)
 				World.database.getItemData().update(toBuy.getObject());
@@ -191,7 +191,7 @@ public class Hdv {
 	}
 	
 	public String parseToEHl(int template) {
-		int type = World.data.getObjTemplate(template).getType();
+		int type = World.data.getObjectTemplate(template).getType();
 		return this.getCategorys().get(type).getTemplate(template).parseToEHl();
 	}	
 }

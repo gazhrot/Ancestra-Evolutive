@@ -12,7 +12,7 @@ import org.ancestra.evolutive.fight.spell.SpellEffect;
 import org.ancestra.evolutive.guild.Guild;
 import org.ancestra.evolutive.guild.GuildMember;
 import org.ancestra.evolutive.map.Maps;
-import org.ancestra.evolutive.object.Objet;
+import org.ancestra.evolutive.object.Object;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -174,9 +174,9 @@ public class Formulas {
 		
 		if(statC<0)statC=0;
 
-        if(caster.getPersonnage() != null && isCaC && caster.getPersonnage().getObjetByPos(1) != null) {
+        if(caster.getPersonnage() != null && isCaC && caster.getPersonnage().getObjectByPos(1) != null) {
 
-			int ArmeType = caster.getPersonnage().getObjetByPos(1).getTemplate().getType();
+			int ArmeType = caster.getPersonnage().getObjectByPos(1).getTemplate().getType();
 
             if((caster.getSpellValueBool(392) == true) && ArmeType == 2)//ARC
 			{
@@ -772,7 +772,7 @@ public class Formulas {
 		return base * Server.config.getRateHonor();
 	}
 	
-	public static Couple<Integer, Integer> decompPierreAme(Objet toDecomp)
+	public static Couple<Integer, Integer> decompPierreAme(Object toDecomp)
 	{
 		Couple<Integer, Integer> toReturn;
 		String[] stats = toDecomp.parseStatsString().split("#");

@@ -8,7 +8,7 @@ import org.ancestra.evolutive.fight.Fight;
 import org.ancestra.evolutive.fight.Fighter;
 import org.ancestra.evolutive.guild.Guild;
 import org.ancestra.evolutive.map.Maps;
-import org.ancestra.evolutive.object.Objet;
+import org.ancestra.evolutive.object.Object;
 
 import java.util.Map;
 import java.util.Map.Entry;
@@ -22,14 +22,14 @@ public class Collector extends Creature {
 	private final short lastNameId;
 	private byte _inFight = 0;
 	private int _inFightID = -1;
-	private Map<Integer,Objet> _objets = new TreeMap<>();
+	private Map<Integer, Object> _objets = new TreeMap<>();
 	private long _kamas = 0;
 	private long _xp = 0;
 	private boolean _inExchange = false;
 	//Timer
 	private int _timeTurn = 45000;
 	//Les logs
-	private Map<Integer,Objet> _LogObjets = new TreeMap<>();
+	private Map<Integer, Object> _LogObjects = new TreeMap<>();
 	private long _LogXP = 0;
 	
 	public Collector(int guid, short map, int cellID, byte orientation, int GuildID, 
@@ -46,9 +46,9 @@ public class Collector extends Creature {
 			if(item.equals(""))continue;
 			String[] infos = item.split(":");
 			int id = Integer.parseInt(infos[0]);
-			Objet obj = World.data.getObjet(id);
+			Object obj = World.data.getObject(id);
 			if(obj == null)continue;
-			_objets.put(obj.getGuid(), obj);
+			_objets.put(obj.getId(), obj);
 		}
 		_xp = xp;
 		_kamas = kamas;
@@ -74,17 +74,17 @@ public class Collector extends Creature {
 		this._xp = xp;
 	}
 	
-	public Map<Integer, Objet> getObjets() 
+	public Map<Integer, Object> getObjects() 
 	{
 		return _objets;
 	}
 	
-	public void removeObjet(int guid)
+	public void removeObject(int guid)
 	{
 		_objets.remove(guid);
 	}
 	
-	public boolean HaveObjet(int guid)
+	public boolean HaveObject(int guid)
 	{
         return _objets.get(guid) != null;
 	}
@@ -109,9 +109,9 @@ public class Collector extends Creature {
 	}
 	
 	public void DelPerco(int percoGuid){
-		for(Objet obj : _objets.values()){
+		for(Object obj : _objets.values()){
 			//On supprime les objets non ramasser/drop
-			World.data.removeItem(obj.getGuid());
+			World.data.removeObject(obj.getId());
 		}
 		World.data.getPercos().remove(percoGuid);
 	}
@@ -266,7 +266,7 @@ public class Collector extends Creature {
 		StringBuilder items = new StringBuilder();
 		if(!_objets.isEmpty())
 		{
-			for(Objet obj : _objets.values())
+			for(Object obj : _objets.values())
 			{
 				items.append("O").append(obj.parseItem()).append(";");
 			}
@@ -278,9 +278,9 @@ public class Collector extends Creature {
 	public String parseItemPercepteur()
 	{
 		String items = "";
-		for(Objet obj : _objets.values())
+		for(Object obj : _objets.values())
 		{
-			items+= obj.getGuid()+"|";
+			items+= obj.getId()+"|";
 		}
 		return items;
 	}
@@ -288,8 +288,8 @@ public class Collector extends Creature {
 	
 	public void removeFromPercepteur(Player P, int guid, int qua)
 	{
-		Objet PercoObj = World.data.getObjet(guid);
-		Objet PersoObj = P.getSimilarItem(PercoObj);
+		Object PercoObj = World.data.getObject(guid);
+		Object PersoObj = P.getSimilarItem(PercoObj);
 		
 		int newQua = PercoObj.getQuantity() - qua;
 		
@@ -299,9 +299,9 @@ public class Collector extends Creature {
 			if(newQua <= 0)
 			{
 				//On retire l'item
-				removeObjet(guid);
+				removeObject(guid);
 				//On l'ajoute au joueur
-				P.addObjet(PercoObj);
+				P.addObject(PercoObj);
 				
 				//On envoie les packets
 				SocketManager.GAME_SEND_OAKO_PACKET(P,PercoObj);
@@ -311,17 +311,17 @@ public class Collector extends Creature {
 			}else //S'il reste des objets
 			{
 				//On cr�e une copy de l'item
-				PersoObj = Objet.getCloneObjet(PercoObj, qua);
+				PersoObj = Object.getClone(PercoObj, qua);
 				//On l'ajoute au monde
-				World.data.addObjet(PersoObj, true);
+				World.data.addObject(PersoObj, true);
 				//On retire X objet
 				PercoObj.setQuantity(newQua);
 				//On l'ajoute au joueur
-				P.addObjet(PersoObj);
+				P.addObject(PersoObj);
 				
 				//On envoie les packets
 				SocketManager.GAME_SEND_OAKO_PACKET(P,PersoObj);
-				String str = "O+"+PercoObj.getGuid()+"|"+PercoObj.getQuantity()+"|"+PercoObj.getTemplate().getID()+"|"+PercoObj.parseStatsString();
+				String str = "O+"+PercoObj.getId()+"|"+PercoObj.getQuantity()+"|"+PercoObj.getTemplate().getId()+"|"+PercoObj.parseStatsString();
 				SocketManager.GAME_SEND_EsK_PACKET(P, str);
 				
 			}
@@ -332,8 +332,8 @@ public class Collector extends Creature {
 			if(newQua <= 0)
 			{
 				//On retire l'item
-				this.removeObjet(guid);
-				World.data.removeItem(PercoObj.getGuid());
+				this.removeObject(guid);
+				World.data.removeObject(PercoObj.getId());
 				//On Modifie la quantit� de l'item du sac du joueur
 				PersoObj.setQuantity(PersoObj.getQuantity() + PercoObj.getQuantity());
 				
@@ -352,7 +352,7 @@ public class Collector extends Creature {
 				
 				//On envoie les packets
 				SocketManager.GAME_SEND_OBJECT_QUANTITY_PACKET(P,PersoObj);
-				String str = "O+"+PercoObj.getGuid()+"|"+PercoObj.getQuantity()+"|"+PercoObj.getTemplate().getID()+"|"+PercoObj.parseStatsString();
+				String str = "O+"+PercoObj.getId()+"|"+PercoObj.getQuantity()+"|"+PercoObj.getTemplate().getId()+"|"+PercoObj.parseStatsString();
 				SocketManager.GAME_SEND_EsK_PACKET(P, str);
 				
 			}
@@ -366,9 +366,9 @@ public class Collector extends Creature {
 		_LogXP += Xp;
 	}
 	
-	public void LogObjetDrop(int guid, Objet obj)
+	public void LogObjectDrop(int guid, Object obj)
 	{
-		_LogObjets.put(guid, obj);
+		_LogObjects.put(guid, obj);
 	}
 	
 	public long get_LogXp()
@@ -380,19 +380,19 @@ public class Collector extends Creature {
 	{
 		StringBuilder str = new StringBuilder();
 		boolean isFirst = true;
-		if(_LogObjets.isEmpty()) return "";
-		for(Objet obj : _LogObjets.values())
+		if(_LogObjects.isEmpty()) return "";
+		for(Object obj : _LogObjects.values())
 		{
 			if(!isFirst) str.append(";");
-			 str.append(obj.getTemplate().getID()).append(",").append(obj.getQuantity());
+			 str.append(obj.getTemplate().getId()).append(",").append(obj.getQuantity());
 			isFirst = false;
 		}
 		return str.toString();
 	}
 	
-	public void addObjet(Objet newObj)
+	public void addObject(Object newObj)
 	{
-		_objets.put(newObj.getGuid(), newObj);
+		_objets.put(newObj.getId(), newObj);
 	}
 	
 	public void set_Exchange(boolean Exchange)

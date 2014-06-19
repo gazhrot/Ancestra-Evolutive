@@ -9,7 +9,7 @@ import org.ancestra.evolutive.core.World;
 import org.ancestra.evolutive.database.AbstractDAO;
 import org.ancestra.evolutive.guild.Guild;
 import org.ancestra.evolutive.guild.GuildMember;
-import org.ancestra.evolutive.object.Objet;
+import org.ancestra.evolutive.object.Object;
 import org.slf4j.LoggerFactory;
 
 import java.sql.PreparedStatement;
@@ -164,14 +164,14 @@ public class CharacterData extends AbstractDAO<Player>{
 	
 	public boolean updateItems(Player obj) {
 		try {
-			for(Objet item: obj.getItems().values()) {
+			for(Object item: obj.getItems().values()) {
 				World.database.getItemData().update(item);
 			}
 			
 			for(String s : obj.getBankItemsIDSplitByChar(":").split(":")) {
 				try {
 					int guid = Integer.parseInt(s);
-					Objet item = World.data.getObjet(guid);
+					Object item = World.data.getObject(guid);
 					if(item == null)continue;
 					
 					World.database.getItemData().update(item);

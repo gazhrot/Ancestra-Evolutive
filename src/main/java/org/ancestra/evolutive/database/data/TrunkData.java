@@ -39,7 +39,7 @@ public class TrunkData extends AbstractDAO<Trunk>{
 			PreparedStatement statement = getPreparedStatement(query);
 			
 			statement.setLong(1, obj.getKamas());
-			statement.setString(2, obj.parseTrunkObjetsToDB());
+			statement.setString(2, obj.parseTrunkObjectsToDB());
 			statement.setInt(3, obj.getId());
 
 			execute(statement);

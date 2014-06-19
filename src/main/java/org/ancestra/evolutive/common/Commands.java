@@ -15,9 +15,9 @@ import org.ancestra.evolutive.game.GameClient;
 import org.ancestra.evolutive.job.JobStat;
 import org.ancestra.evolutive.map.Maps;
 import org.ancestra.evolutive.map.MountPark;
-import org.ancestra.evolutive.object.ItemSet;
-import org.ancestra.evolutive.object.Objet;
-import org.ancestra.evolutive.object.Objet.ObjTemplate;
+import org.ancestra.evolutive.object.ObjectSet;
+import org.ancestra.evolutive.object.Object;
+import org.ancestra.evolutive.object.ObjectTemplate;
 import org.ancestra.evolutive.other.Action;
 
 import javax.swing.*;
@@ -989,7 +989,7 @@ public class Commands {
 			{
 				tID = Integer.parseInt(infos[1]);
 			}catch(Exception e){};
-			ItemSet IS = World.data.getItemSet(tID);
+			ObjectSet IS = World.data.getItemSet(tID);
 			if(tID == 0 || IS == null)
 			{
 				String mess = "La panoplie "+tID+" n'existe pas ";
@@ -1000,11 +1000,11 @@ public class Commands {
 			if(infos.length == 3)useMax = infos[2].equals("MAX");//Si un jet est sp�cifi�
 
 			
-			for(ObjTemplate t : IS.getItemTemplates())
+			for(ObjectTemplate t : IS.getItemTemplates())
 			{
-				Objet obj = t.createNewItem(1,useMax);
-				if(_perso.addObjet(obj, true))//Si le joueur n'avait pas d'item similaire
-					World.data.addObjet(obj,true);
+				Object obj = t.createNewItem(1,useMax);
+				if(_perso.addObject(obj, true))//Si le joueur n'avait pas d'item similaire
+					World.data.addObject(obj,true);
 			}
 			String str = "Creation de la panoplie "+tID+" reussie";
 			if(useMax) str += " avec des stats maximums";
@@ -1140,7 +1140,7 @@ public class Commands {
 			{
 				if(infos[3].equalsIgnoreCase("MAX"))useMax = true;
 			}
-			ObjTemplate t = World.data.getObjTemplate(tID);
+			ObjectTemplate t = World.data.getObjectTemplate(tID);
 			if(t == null)
 			{
 				String mess = "Le template "+tID+" n'existe pas ";
@@ -1148,9 +1148,9 @@ public class Commands {
 				return;
 			}
 			if(qua <1)qua =1;
-			Objet obj = t.createNewItem(qua,useMax);
-			if(_perso.addObjet(obj, true))//Si le joueur n'avait pas d'item similaire
-				World.data.addObjet(obj,true);
+			Object obj = t.createNewItem(qua,useMax);
+			if(_perso.addObject(obj, true))//Si le joueur n'avait pas d'item similaire
+				World.data.addObject(obj,true);
 			String str = "Creation de l'item "+tID+" reussie";
 			if(useMax) str += " avec des stats maximums";
 			SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out,str);
@@ -1511,7 +1511,7 @@ public class Commands {
 				itmID = Integer.parseInt(infos[2]);
 			}catch(Exception e){};
 			NpcTemplate npc =  _perso.getMap().getNpcs().get(npcGUID).getTemplate();
-			ObjTemplate item =  World.data.getObjTemplate(itmID);
+			ObjectTemplate item =  World.data.getObjectTemplate(itmID);
 			if(npcGUID == 0 || itmID == -1 || npc == null || item == null)
 			{
 				String str = "NpcGUID ou itmID invalide";

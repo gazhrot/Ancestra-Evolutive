@@ -10,8 +10,8 @@ import org.ancestra.evolutive.core.Console;
 import org.ancestra.evolutive.core.Log;
 import org.ancestra.evolutive.core.World;
 import org.ancestra.evolutive.database.AbstractDAO;
-import org.ancestra.evolutive.object.Objet;
-import org.ancestra.evolutive.object.Objet.ObjTemplate;
+import org.ancestra.evolutive.object.ObjectTemplate;
+import org.ancestra.evolutive.object.Object;
 import org.slf4j.LoggerFactory;
 
 import java.sql.PreparedStatement;
@@ -138,8 +138,8 @@ public class OtherData extends AbstractDAO<Object>{
 		int action, nombre, id;
 		String sortie, couleur = "DF0101";
 									
-		ObjTemplate t;
-		Objet obj;
+		ObjectTemplate t;
+		Object obj;
 		/* FIN */
 		try {
 			Result result = getData("SELECT * from live_action;");
@@ -202,7 +202,7 @@ public class OtherData extends AbstractDAO<Object>{
 					sortie += nombre + " Point(s) de sort";
 					break;
 				case 20: // Ajouter un item avec des jets al�atoire
-					t = World.data.getObjTemplate(nombre);
+					t = World.data.getObjectTemplate(nombre);
 					if (t == null)
 						continue;
 					obj = t.createNewItem(1, false); // Si mis � "true" l'objet
@@ -211,9 +211,9 @@ public class OtherData extends AbstractDAO<Object>{
 														// al�atoire
 					if (obj == null)
 						continue;
-					if (perso.addObjet(obj, true))// Si le joueur n'avait pas
+					if (perso.addObject(obj, true))// Si le joueur n'avait pas
 													// d'item similaire
-						World.data.addObjet(obj, true);
+						World.data.addObject(obj, true);
 					Log.addToSockLog("Objet " + nombre + " ajouter a "
 							+ perso.getName() + " avec des stats aleatoire");
 					SocketManager
@@ -225,7 +225,7 @@ public class OtherData extends AbstractDAO<Object>{
 									couleur);
 					break;
 				case 21: // Ajouter un item avec des jets MAX
-					t = World.data.getObjTemplate(nombre);
+					t = World.data.getObjectTemplate(nombre);
 					if (t == null)
 						continue;
 					obj = t.createNewItem(1, true); // Si mis � "true" l'objet �
@@ -233,9 +233,9 @@ public class OtherData extends AbstractDAO<Object>{
 													// sont des jets al�atoire
 					if (obj == null)
 						continue;
-					if (perso.addObjet(obj, true))// Si le joueur n'avait pas
+					if (perso.addObject(obj, true))// Si le joueur n'avait pas
 													// d'item similaire
-						World.data.addObjet(obj, true);
+						World.data.addObject(obj, true);
 					Log.addToSockLog("Objet " + nombre + " ajoute a "
 							+ perso.getName() + " avec des stats MAX");
 					SocketManager

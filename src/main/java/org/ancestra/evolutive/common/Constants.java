@@ -8,11 +8,10 @@ import org.ancestra.evolutive.core.World;
 import org.ancestra.evolutive.enums.EmulatorInfos;
 import org.ancestra.evolutive.fight.Fighter;
 import org.ancestra.evolutive.fight.spell.SpellStats;
-import org.ancestra.evolutive.object.Objet.ObjTemplate;
+import org.ancestra.evolutive.object.ObjectTemplate;
 
 import java.util.Map;
 import java.util.TreeMap;
-
 
 public class Constants
 {
@@ -1143,7 +1142,7 @@ public class Constants
 		return aggro;
 	}
 
-	public static boolean isValidPlaceForItem(ObjTemplate template, int place)
+	public static boolean isValidPlaceForItem(ObjectTemplate template, int place)
 	{
 		switch(template.getType())
 		{
@@ -2150,158 +2149,158 @@ public class Constants
 		}
 		return stats;
 	}
-	public static ObjTemplate getParchoTemplateByMountColor(int color)
+	public static ObjectTemplate getParchoTemplateByMountColor(int color)
 	{
 		switch(color)
 		{
 			//Ammande sauvage
-			case 2: return World.data.getObjTemplate(7807);
+			case 2: return World.data.getObjectTemplate(7807);
 			//Ebene | Page 1
-			case 3: return World.data.getObjTemplate(7808);
+			case 3: return World.data.getObjectTemplate(7808);
 			//Rousse sauvage
-			case 4: return World.data.getObjTemplate(7809);
+			case 4: return World.data.getObjectTemplate(7809);
 			//Ebene-ivoire
-			case 9: return World.data.getObjTemplate(7810);
+			case 9: return World.data.getObjectTemplate(7810);
 			//Rousse
-			case 10: return World.data.getObjTemplate(7811);
+			case 10: return World.data.getObjectTemplate(7811);
 			//Ivoire-Rousse
-			case 11: return World.data.getObjTemplate(7812);
+			case 11: return World.data.getObjectTemplate(7812);
 			//Ebene-rousse
-			case 12: return World.data.getObjTemplate(7813);
+			case 12: return World.data.getObjectTemplate(7813);
 			//Turquoise
-			case 15: return World.data.getObjTemplate(7814);
+			case 15: return World.data.getObjectTemplate(7814);
 			//Ivoire
-			case 16: return World.data.getObjTemplate(7815);
+			case 16: return World.data.getObjectTemplate(7815);
 			//Indigo
-			case 17: return World.data.getObjTemplate(7816);
+			case 17: return World.data.getObjectTemplate(7816);
 			//Dor�e
-			case 18: return World.data.getObjTemplate(7817);
+			case 18: return World.data.getObjectTemplate(7817);
 			//Pourpre
-			case 19: return World.data.getObjTemplate(7818);
+			case 19: return World.data.getObjectTemplate(7818);
 			//Amande
-			case 20: return World.data.getObjTemplate(7819);
+			case 20: return World.data.getObjectTemplate(7819);
 			//Emeraude
-			case 21: return World.data.getObjTemplate(7820);
+			case 21: return World.data.getObjectTemplate(7820);
 			//Orchid�e
-			case 22: return World.data.getObjTemplate(7821);
+			case 22: return World.data.getObjectTemplate(7821);
 			//Prune
-			case 23: return World.data.getObjTemplate(7822);
+			case 23: return World.data.getObjectTemplate(7822);
 			//Amande-Dor�e
-			case 33: return World.data.getObjTemplate(7823);
+			case 33: return World.data.getObjectTemplate(7823);
 			//Amande-Ebene
-			case 34: return World.data.getObjTemplate(7824);
+			case 34: return World.data.getObjectTemplate(7824);
 			//Amande-Emeraude
-			case 35: return World.data.getObjTemplate(7825);
+			case 35: return World.data.getObjectTemplate(7825);
 			//Amande-Indigo
-			case 36: return World.data.getObjTemplate(7826);
+			case 36: return World.data.getObjectTemplate(7826);
 			//Amande-Ivoire
-			case 37: return World.data.getObjTemplate(7827);
+			case 37: return World.data.getObjectTemplate(7827);
 			//Amande-Rousse
-			case 38: return World.data.getObjTemplate(7828);
+			case 38: return World.data.getObjectTemplate(7828);
 			//Amande-Turquoise
-			case 39: return World.data.getObjTemplate(7829);
+			case 39: return World.data.getObjectTemplate(7829);
 			//Amande-Orchid�e
-			case 40: return World.data.getObjTemplate(7830);
+			case 40: return World.data.getObjectTemplate(7830);
 			//Amande-Pourpre
-			case 41: return World.data.getObjTemplate(7831);
+			case 41: return World.data.getObjectTemplate(7831);
 			//Dor�e-Eb�ne
-			case 42: return World.data.getObjTemplate(7832);
+			case 42: return World.data.getObjectTemplate(7832);
 			//Dor�e-Emeraude
-			case 43: return World.data.getObjTemplate(7833);
+			case 43: return World.data.getObjectTemplate(7833);
 			//Dor�e-Indigo
-			case 44: return World.data.getObjTemplate(7834);
+			case 44: return World.data.getObjectTemplate(7834);
 			//Dor�e-Ivoire
-			case 45: return World.data.getObjTemplate(7835);
+			case 45: return World.data.getObjectTemplate(7835);
 			//Dor�e-Rousse | Page 2
-			case 46: return World.data.getObjTemplate(7836);
+			case 46: return World.data.getObjectTemplate(7836);
 			//Dor�e-Turquoise
-			case 47: return World.data.getObjTemplate(7837);
+			case 47: return World.data.getObjectTemplate(7837);
 			//Dor�e-Orchid�e
-			case 48: return World.data.getObjTemplate(7838);
+			case 48: return World.data.getObjectTemplate(7838);
 			//Dor�e-Pourpre
-			case 49: return World.data.getObjTemplate(7839);
+			case 49: return World.data.getObjectTemplate(7839);
 			//Eb�ne-Emeraude
-			case 50: return World.data.getObjTemplate(7840);
+			case 50: return World.data.getObjectTemplate(7840);
 			//Eb�ne-Indigo
-			case 51: return World.data.getObjTemplate(7841);
+			case 51: return World.data.getObjectTemplate(7841);
 			//Eb�ne-Turquoise
-			case 52: return World.data.getObjTemplate(7842);
+			case 52: return World.data.getObjectTemplate(7842);
 			//Eb�ne-Orchid�e
-			case 53: return World.data.getObjTemplate(7843);
+			case 53: return World.data.getObjectTemplate(7843);
 			//Eb�ne-Pourpre
-			case 54: return World.data.getObjTemplate(7844);
+			case 54: return World.data.getObjectTemplate(7844);
 			//Emeraude-Indigo
-			case 55: return World.data.getObjTemplate(7845);
+			case 55: return World.data.getObjectTemplate(7845);
 			//Emeraude-Ivoire
-			case 56: return World.data.getObjTemplate(7846);
+			case 56: return World.data.getObjectTemplate(7846);
 			//Emeraude-Rousse
-			case 57: return World.data.getObjTemplate(7847);
+			case 57: return World.data.getObjectTemplate(7847);
 			//Emeraude-Turquoise
-			case 58: return World.data.getObjTemplate(7848);
+			case 58: return World.data.getObjectTemplate(7848);
 			//Emeraude-Orchid�e
-			case 59: return World.data.getObjTemplate(7849);
+			case 59: return World.data.getObjectTemplate(7849);
 			//Emeraude-Pourpre
-			case 60: return World.data.getObjTemplate(7850);
+			case 60: return World.data.getObjectTemplate(7850);
 			//Indigo-Ivoire
-			case 61: return World.data.getObjTemplate(7851);
+			case 61: return World.data.getObjectTemplate(7851);
 			//Indigo-Rousse
-			case 62: return World.data.getObjTemplate(7852);
+			case 62: return World.data.getObjectTemplate(7852);
 			//Indigo-Turquoise
-			case 63: return World.data.getObjTemplate(7853);
+			case 63: return World.data.getObjectTemplate(7853);
 			//Indigo-Orchid�e
-			case 64: return World.data.getObjTemplate(7854);
+			case 64: return World.data.getObjectTemplate(7854);
 			//Indigo-Pourpre
-			case 65: return World.data.getObjTemplate(7855);
+			case 65: return World.data.getObjectTemplate(7855);
 			//Ivoire-Turquoise
-			case 66: return World.data.getObjTemplate(7856);
+			case 66: return World.data.getObjectTemplate(7856);
 			//Ivoire-Ochid�e
-			case 67: return World.data.getObjTemplate(7857);
+			case 67: return World.data.getObjectTemplate(7857);
 			//Ivoire-Pourpre
-			case 68: return World.data.getObjTemplate(7858);
+			case 68: return World.data.getObjectTemplate(7858);
 			//Turquoise-Rousse
-			case 69: return World.data.getObjTemplate(7859);
+			case 69: return World.data.getObjectTemplate(7859);
 			//Ochid�e-Rousse
-			case 70: return World.data.getObjTemplate(7860);
+			case 70: return World.data.getObjectTemplate(7860);
 			//Pourpre-Rousse
-			case 71: return World.data.getObjTemplate(7861);
+			case 71: return World.data.getObjectTemplate(7861);
 			//Turquoise-Orchid�e
-			case 72: return World.data.getObjTemplate(7862);
+			case 72: return World.data.getObjectTemplate(7862);
 			//Turquoise-Pourpre
-			case 73: return World.data.getObjTemplate(7863);
+			case 73: return World.data.getObjectTemplate(7863);
 			//Dor�e sauvage
-			case 74: return World.data.getObjTemplate(7864);
+			case 74: return World.data.getObjectTemplate(7864);
 			//Squelette
-			case 75: return World.data.getObjTemplate(7865);
+			case 75: return World.data.getObjectTemplate(7865);
 			//Orchid�e-Pourpre
-			case 76: return World.data.getObjTemplate(7866);
+			case 76: return World.data.getObjectTemplate(7866);
 			//Prune-Amande
-			case 77: return World.data.getObjTemplate(7867);
+			case 77: return World.data.getObjectTemplate(7867);
 			//Prune-Dor�e
-			case 78: return World.data.getObjTemplate(7868);
+			case 78: return World.data.getObjectTemplate(7868);
 			//Prune-Eb�ne
-			case 79: return World.data.getObjTemplate(7869);
+			case 79: return World.data.getObjectTemplate(7869);
 			//Prune-Emeraude
-			case 80: return World.data.getObjTemplate(7870);
+			case 80: return World.data.getObjectTemplate(7870);
 			//Prune et Indigo
-			case 82: return World.data.getObjTemplate(7871);
+			case 82: return World.data.getObjectTemplate(7871);
 			//Prune-Ivoire
-			case 83: return World.data.getObjTemplate(7872);
+			case 83: return World.data.getObjectTemplate(7872);
 			//Prune-Rousse
-			case 84: return World.data.getObjTemplate(7873);
+			case 84: return World.data.getObjectTemplate(7873);
 			//Prune-Turquoise
-			case 85: return World.data.getObjTemplate(7874);
+			case 85: return World.data.getObjectTemplate(7874);
 			//Prune-Orchid�e
-			case 86: return World.data.getObjTemplate(7875);
+			case 86: return World.data.getObjectTemplate(7875);
 			//Prune-Pourpre
-			case 87: return World.data.getObjTemplate(7876);
+			case 87: return World.data.getObjectTemplate(7876);
 			//Armure
-			case 88: return World.data.getObjTemplate(9582);		
+			case 88: return World.data.getObjectTemplate(9582);		
 		}
 		return null;
 	}
 	public static int getMountColorByParchoTemplate(int tID)
 	{
-		for(int a = 1;a<100;a++)if(getParchoTemplateByMountColor(a)!=null)if(getParchoTemplateByMountColor(a).getID() == tID)return a; 
+		for(int a = 1;a<100;a++)if(getParchoTemplateByMountColor(a)!=null)if(getParchoTemplateByMountColor(a).getId() == tID)return a; 
 		return -1;
 	}
 	

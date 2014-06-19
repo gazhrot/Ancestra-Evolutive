@@ -67,7 +67,7 @@ public class HdvData extends AbstractDAO<Hdv>{
 
 				tempHdv.addEntry(new HdvEntry(result.resultSet.getInt("price"),
                         result.resultSet.getByte("count"), result.resultSet.getInt("ownerGuid"), World.data
-						.getObjet(result.resultSet.getInt("itemID"))));
+						.getObject(result.resultSet.getInt("itemID"))));
 			}
 			close(result);
 		} catch (Exception e) {
@@ -90,7 +90,7 @@ public class HdvData extends AbstractDAO<Hdv>{
 				statement.setInt(2, curEntry.getOwner());
 				statement.setInt(3, curEntry.getPrice());
 				statement.setInt(4, curEntry.getAmount(false));
-				statement.setInt(5, curEntry.getObject().getGuid());
+				statement.setInt(5, curEntry.getObject().getId());
 				
 				statement.execute();
 				World.database.getItemTemplateData().update(curEntry.getObject().getTemplate());

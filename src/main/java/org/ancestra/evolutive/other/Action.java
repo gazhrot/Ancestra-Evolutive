@@ -15,9 +15,9 @@ import org.ancestra.evolutive.fight.spell.Animation;
 import org.ancestra.evolutive.game.GameClient;
 import org.ancestra.evolutive.house.House;
 import org.ancestra.evolutive.job.JobStat;
-import org.ancestra.evolutive.object.Objet;
-import org.ancestra.evolutive.object.Objet.ObjTemplate;
-import org.ancestra.evolutive.object.PierreAme;
+import org.ancestra.evolutive.object.Object;
+import org.ancestra.evolutive.object.ObjectTemplate;
+import org.ancestra.evolutive.object.SoulStone;
 
 public class Action {
 
@@ -143,12 +143,12 @@ public class Action {
 					//Si on ajoute
 					if(count > 0)
 					{
-						ObjTemplate T = World.data.getObjTemplate(tID);
+						ObjectTemplate T = World.data.getObjectTemplate(tID);
 						if(T == null)return;
-						Objet O = T.createNewItem(count, false);
+						Object O = T.createNewItem(count, false);
 						//Si retourne true, on l'ajoute au monde
-						if(perso.addObjet(O, true))
-							World.data.addObjet(O, true);
+						if(perso.addObject(O, true))
+							World.data.addObject(O, true);
 					}else
 					{
 						perso.removeByTemplateID(tID,-count);
@@ -310,7 +310,7 @@ public class Action {
 
 					if(inArena && !World.data.isArenaMap(perso.getMap().getId()))return;	//Si la map du personnage n'est pas class� comme �tant dans l'ar�ne
 
-					PierreAme pierrePleine = (PierreAme)World.data.getObjet(itemID);
+					SoulStone pierrePleine = (SoulStone) World.data.getObject(itemID);
 
 					String groupData = pierrePleine.parseGroupData();
 					String condition = "MiS = "+perso.getId();	//Condition pour que le groupe ne soit lan�able que par le personnage qui � utiliser l'objet
@@ -407,10 +407,10 @@ public class Action {
 			case 18://T�l�portation chez sois
 				if(House.AlreadyHaveHouse(perso))//Si il a une maison
 				{
-					Objet obj = World.data.getObjet(itemID);
-					if (perso.hasItemTemplate(obj.getTemplate().getID(), 1))
+					Object obj = World.data.getObject(itemID);
+					if (perso.hasItemTemplate(obj.getTemplate().getId(), 1))
 					{
-						perso.removeByTemplateID(obj.getTemplate().getID(),1);
+						perso.removeByTemplateID(obj.getTemplate().getId(),1);
 						House h = House.getHouseByPlayer(perso);
 						if(h == null) return;
 						perso.teleport((short)h.getToMapid(), h.getToCellid());
@@ -545,11 +545,11 @@ public class Action {
 					perso.getStalk().setTime(System.currentTimeMillis());
 					
 					
-					ObjTemplate T = World.data.getObjTemplate(10085);
+					ObjectTemplate T = World.data.getObjectTemplate(10085);
 					if(T == null)return;
-					perso.removeByTemplateID(T.getID(),100);
+					perso.removeByTemplateID(T.getId(),100);
 					
-					Objet newObj = T.createNewItem(20, false);
+					Object newObj = T.createNewItem(20, false);
 					//On ajoute le nom du type � recherch�
 					/*
 					newObj.addTxtStat(962, Integer.toString(tempP.get_lvl()));
@@ -573,14 +573,14 @@ public class Action {
 					}
 					newObj.addTxtStat(960, align);
 					*/
-					newObj.addTxtStat(989, tempP.getName());
+					newObj.getTxtStats().put(989, tempP.getName());
 					
 					//Si retourne true, on l'ajoute au monde
-					if(perso.addObjet(newObj, true)){
-						World.data.addObjet(newObj, true);
+					if(perso.addObject(newObj, true)){
+						World.data.addObject(newObj, true);
 			}else
 			{
-				perso.removeByTemplateID(T.getID(),20);
+				perso.removeByTemplateID(T.getId(),20);
 			}
 			}
 			else{
@@ -591,7 +591,7 @@ public class Action {
 			case 51://Cible sur la g�oposition
 				String perr = "";
 				
-				perr = World.data.getObjet(itemID).getTraquedName();
+				perr = World.data.getObject(itemID).getTraquedName();
 				if(perr == null)
 				{
 					break;	

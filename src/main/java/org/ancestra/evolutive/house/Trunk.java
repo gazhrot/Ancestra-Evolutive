@@ -15,7 +15,7 @@ import org.ancestra.evolutive.core.World;
 import org.ancestra.evolutive.house.House;
 import org.ancestra.evolutive.house.Trunk;
 
-import org.ancestra.evolutive.object.Objet;
+import org.ancestra.evolutive.object.Object;
 
 public class Trunk {
 	
@@ -26,7 +26,7 @@ public class Trunk {
 	private short mapid;
 	private int cellid;
 	private long kamas;	
-	private Map<Integer, Objet> objects = new TreeMap<>();
+	private Map<Integer, Object> objects = new TreeMap<>();
 	
 	public Trunk(int id, int house, short mapid, int cellid, String objects, long kamas, String key, int owner) {
 		this.id = id;
@@ -44,12 +44,12 @@ public class Trunk {
 			String[] infos = object.split("\\:");
 			int guid = Integer.parseInt(infos[0]);
 
-			Objet obj = World.data.getObjet(guid);
+			Object obj = World.data.getObject(guid);
 			
 			if(obj == null)
 				continue;
 			
-			this.objects.put(obj.getGuid(), obj);
+			this.objects.put(obj.getId(), obj);
 		}
 	}
 	
@@ -109,7 +109,7 @@ public class Trunk {
 		this.kamas = kamas;
 	}
 
-	public Map<Integer, Objet> getObjects() {
+	public Map<Integer, Object> getObjects() {
 		return objects;
 	}
 
@@ -213,7 +213,7 @@ public class Trunk {
 			return;
 		}
 		
-		Objet object = World.data.getObjet(id);
+		Object object = World.data.getObject(id);
 		
 		if(object == null) 
 			return;
@@ -229,29 +229,29 @@ public class Trunk {
 		if(object.getPosition() != Constants.ITEM_POS_NO_EQUIPED)
 			return;
 		
-		Objet TrunkObj = this.getSimilarTrunkItem(object);
+		Object TrunkObj = this.getSimilarTrunkItem(object);
 		int newQua = object.getQuantity() - qua;
 		
 		if(TrunkObj == null) {//S'il n'y pas d'item du meme Template
 			//S'il ne reste pas d'item dans le sac
 			if(newQua <= 0) {
 				//On enleve l'objet du sac du joueur
-				player.removeItem(object.getGuid());
+				player.removeItem(object.getId());
 				//On met l'objet du sac dans le coffre, avec la meme quantité
-				this.getObjects().put(object.getGuid() ,object);
-				str = "O+"+object.getGuid()+"|"+object.getQuantity()+"|"+object.getTemplate().getID()+"|"+object.parseStatsString();
+				this.getObjects().put(object.getId() ,object);
+				str = "O+"+object.getId()+"|"+object.getQuantity()+"|"+object.getTemplate().getId()+"|"+object.parseStatsString();
 				SocketManager.GAME_SEND_REMOVE_ITEM_PACKET(player, id);
 				
 			} else {//S'il reste des objets au joueur
 				//on modifie la quantité d'item du sac
 				object.setQuantity(newQua);
 				//On ajoute l'objet au coffre et au monde
-				TrunkObj = Objet.getCloneObjet(object, qua);
-				World.data.addObjet(TrunkObj, true);
-				this.getObjects().put(TrunkObj.getGuid() ,TrunkObj);
+				TrunkObj = Object.getClone(object, qua);
+				World.data.addObject(TrunkObj, true);
+				this.getObjects().put(TrunkObj.getId() ,TrunkObj);
 				
 				//Envoie des packets
-				str = "O+"+TrunkObj.getGuid()+"|"+TrunkObj.getQuantity()+"|"+TrunkObj.getTemplate().getID()+"|"+TrunkObj.parseStatsString();
+				str = "O+"+TrunkObj.getId()+"|"+TrunkObj.getQuantity()+"|"+TrunkObj.getTemplate().getId()+"|"+TrunkObj.parseStatsString();
 				SocketManager.GAME_SEND_OBJECT_QUANTITY_PACKET(player, object);
 				
 			}
@@ -259,13 +259,13 @@ public class Trunk {
 			//S'il ne reste pas d'item dans le sac
 			if(newQua <= 0)	{
 				//On enleve l'objet du sac du joueur
-				player.removeItem(object.getGuid());
+				player.removeItem(object.getId());
 				//On enleve l'objet du monde
-				World.data.removeItem(object.getGuid());
+				World.data.removeObject(object.getId());
 				//On ajoute la quantité a l'objet dans le coffre
 				TrunkObj.setQuantity(TrunkObj.getQuantity() + object.getQuantity());
 				//on envoie l'ajout au coffre de l'objet
-			    str = "O+"+TrunkObj.getGuid()+"|"+TrunkObj.getQuantity()+"|"+TrunkObj.getTemplate().getID()+"|"+TrunkObj.parseStatsString();
+			    str = "O+"+TrunkObj.getId()+"|"+TrunkObj.getQuantity()+"|"+TrunkObj.getTemplate().getId()+"|"+TrunkObj.parseStatsString();
 				//on envoie la supression de l'objet du sac au joueur
 				SocketManager.GAME_SEND_REMOVE_ITEM_PACKET(player, id);
 				
@@ -273,7 +273,7 @@ public class Trunk {
 				//on modifie la quantité d'item du sac
 				object.setQuantity(newQua);
 				TrunkObj.setQuantity(TrunkObj.getQuantity() + qua);
-				str = "O+"+TrunkObj.getGuid()+"|"+TrunkObj.getQuantity()+"|"+TrunkObj.getTemplate().getID()+"|"+TrunkObj.parseStatsString();
+				str = "O+"+TrunkObj.getId()+"|"+TrunkObj.getQuantity()+"|"+TrunkObj.getTemplate().getId()+"|"+TrunkObj.parseStatsString();
 				SocketManager.GAME_SEND_OBJECT_QUANTITY_PACKET(player, object);
 			}
 		}
@@ -290,7 +290,7 @@ public class Trunk {
 		if(player.getCurTrunk().getId() != this.getId()) 
 			return;
 		
-		Objet object = World.data.getObjet(id);
+		Object object = World.data.getObject(id);
 		
 		if(object == null) 
 			return;
@@ -301,7 +301,7 @@ public class Trunk {
 			return;
 		}
 		
-		Objet object2 = player.getSimilarItem(object);
+		Object object2 = player.getSimilarItem(object);
 		
 		String str = "";
 		
@@ -321,23 +321,23 @@ public class Trunk {
 				
 			} else {
 				//On crée une copy de l'item dans le coffre
-				object2 = Objet.getCloneObjet(object, qua);
+				object2 = Object.getClone(object, qua);
 				//On l'ajoute au monde
-				World.data.addObjet(object2, true);
+				World.data.addObject(object2, true);
 				//On retire X objet du coffre
 				object.setQuantity(newQua);
 				//On l'ajoute au joueur
-				player.getItems().put(object2.getGuid(), object2);
+				player.getItems().put(object2.getId(), object2);
 				//On envoie les packets
 				SocketManager.GAME_SEND_OAKO_PACKET(player, object2);
-				str = "O+"+object.getGuid()+"|"+object.getQuantity()+"|"+object.getTemplate().getID()+"|"+object.parseStatsString();
+				str = "O+"+object.getId()+"|"+object.getQuantity()+"|"+object.getTemplate().getId()+"|"+object.parseStatsString();
 			}
 		} else {
 			//S'il ne reste rien dans le coffre
 			if(newQua <= 0) {
 				//On retire l'item du coffre
-				this.getObjects().remove(object.getGuid());
-				World.data.removeItem(object.getGuid());
+				this.getObjects().remove(object.getId());
+				World.data.removeObject(object.getId());
 				//On Modifie la quantité de l'item du sac du joueur
 				object2.setQuantity(object2.getQuantity() + object.getQuantity());	
 				//On envoie les packets
@@ -350,7 +350,7 @@ public class Trunk {
 				object2.setQuantity(object2.getQuantity() + qua);
 				//On envoie les packets
 				SocketManager.GAME_SEND_OBJECT_QUANTITY_PACKET(player, object2);
-				str = "O+"+object.getGuid()+"|"+object.getQuantity()+"|"+object.getTemplate().getID()+"|"+object.parseStatsString();
+				str = "O+"+object.getId()+"|"+object.getQuantity()+"|"+object.getTemplate().getId()+"|"+object.parseStatsString();
 			}
 		}
 		
@@ -362,38 +362,38 @@ public class Trunk {
 		World.database.getTrunkData().update(this);
 	}
 	
-	private Objet getSimilarTrunkItem(Objet object) {
-		for(Objet value : this.getObjects().values()) {
+	private Object getSimilarTrunkItem(Object object) {
+		for(Object value : this.getObjects().values()) {
 			if(value.getTemplate().getType() == 85)
 				continue;
-			if(value.getTemplate().getID() == object.getTemplate().getID() && value.getStats().isSameStats(object.getStats()))
+			if(value.getTemplate().getId() == object.getTemplate().getId() && value.getStats().isSameStats(object.getStats()))
 				return value;
 		}
 		return null;
 	}
 	
 	public void purgeTrunk() {
-		for(Entry<Integer, Objet> obj : this.getObjects().entrySet())
-			World.data.removeItem(obj.getKey());
+		for(Entry<Integer, Object> obj : this.getObjects().entrySet())
+			World.data.removeObject(obj.getKey());
 		this.getObjects().clear();
 	}
 	
 	public void moveTrunkToBank(Account account) {
-		for(Entry<Integer, Objet> obj : this.getObjects().entrySet())
+		for(Entry<Integer, Object> obj : this.getObjects().entrySet())
 			account.getBank().put(obj.getKey(), obj.getValue());
 		this.getObjects().clear();
 	}
 	
-	public String parseTrunkObjetsToDB() {
+	public String parseTrunkObjectsToDB() {
 		StringBuilder str = new StringBuilder();
-		for(Entry<Integer, Objet> entry : this.getObjects().entrySet()) 
-			str.append(entry.getValue().getGuid()).append("|");
+		for(Entry<Integer, Object> entry : this.getObjects().entrySet()) 
+			str.append(entry.getValue().getId()).append("|");
 		return str.toString();
 	}
 	
 	public String parseToTrunkPacket() {
 		StringBuilder packet = new StringBuilder();
-		for(Objet object: this.getObjects().values())
+		for(Object object: this.getObjects().values())
 			packet.append("O").append(object.parseItem()).append(";");
 		if(this.getKamas() != 0)
 			packet.append("G").append(this.getKamas());

@@ -1,6 +1,6 @@
 package org.ancestra.evolutive.hdv;
 
-import org.ancestra.evolutive.object.Objet;
+import org.ancestra.evolutive.object.Object;
 
 public class HdvEntry implements Comparable<HdvEntry> {
 	
@@ -9,10 +9,10 @@ public class HdvEntry implements Comparable<HdvEntry> {
 	private int owner;
 	private int price;
 	private byte amount;//Dans le format : 1=1 2=10 3=100
-	private Objet object;
+	private Object object;
 	private boolean purchased = false;
 	
-	public HdvEntry(int price, byte amount, int owner, Objet object) {
+	public HdvEntry(int price, byte amount, int owner, Object object) {
 		this.owner = owner;
 		this.price = price;
 		this.amount = amount;
@@ -62,11 +62,11 @@ public class HdvEntry implements Comparable<HdvEntry> {
 		this.amount = amount;
 	}
 
-	public Objet getObject() {
+	public Object getObject() {
 		return object;
 	}
 
-	public void setObject(Objet object) {
+	public void setObject(Object object) {
 		this.object = object;
 	}
 
@@ -94,14 +94,14 @@ public class HdvEntry implements Comparable<HdvEntry> {
 	public String parseToEL() {
 		StringBuilder toReturn = new StringBuilder();
 		int count = getAmount(true);//Transfère dans le format (1,10,100) le montant qui etait dans le format (1,2,3)
-		toReturn.append(this.getLine()).append(";").append(count).append(";").append(this.getObject().getTemplate().getID()).append(";").append(this.getObject().parseStatsString()).append(";").append(this.getPrice()).append(";350");//350 = temps restant
+		toReturn.append(this.getLine()).append(";").append(count).append(";").append(this.getObject().getTemplate().getId()).append(";").append(this.getObject().parseStatsString()).append(";").append(this.getPrice()).append(";350");//350 = temps restant
 		return toReturn.toString();
 	}
 	
 	public String parseToEmK() {
 		StringBuilder toReturn = new StringBuilder();
 		int count = getAmount(true);//Transfère dans le format (1,10,100) le montant qui etait dans le format (1,2,3)
-		toReturn.append(this.getObject().getGuid()).append("|").append(count).append("|").append(this.getObject().getTemplate().getID()).append("|").append(this.getObject().parseStatsString()).append("|").append(this.getPrice()).append("|350");//350 = temps restant
+		toReturn.append(this.getObject().getId()).append("|").append(count).append("|").append(this.getObject().getTemplate().getId()).append("|").append(this.getObject().parseStatsString()).append("|").append(this.getPrice()).append("|350");//350 = temps restant
 		return toReturn.toString();
 	}
 }

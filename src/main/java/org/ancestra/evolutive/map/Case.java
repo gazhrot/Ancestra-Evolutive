@@ -12,7 +12,7 @@ import org.ancestra.evolutive.game.GameAction;
 import org.ancestra.evolutive.house.House;
 import org.ancestra.evolutive.house.Trunk;
 import org.ancestra.evolutive.job.JobConstant;
-import org.ancestra.evolutive.object.Objet;
+import org.ancestra.evolutive.object.Object;
 import org.ancestra.evolutive.other.Action;
 import org.slf4j.LoggerFactory;
 
@@ -29,7 +29,7 @@ public class Case {
 	private boolean walkable = true;
 	private boolean LoS = true;
 	private InteractiveObject interactiveObject;
-	private Objet object;
+	private Object object;
 	private ArrayList<Action> onCellStop;
 	private Map<Integer, Player> players;
 	private Map<Integer, Fighter> fighters;
@@ -95,11 +95,11 @@ public class Case {
 		this.interactiveObject = interactiveObject;
 	}
 	
-	public Objet getObject() {
+	public Object getObject() {
 		return object;
 	}
 
-	public void setObject(Objet object) {
+	public void setObject(Object object) {
 		this.object = object;
 	}
 
@@ -385,9 +385,9 @@ public class Case {
 				this.interactiveObject.startTimer();
 				SocketManager.GAME_SEND_GDF_PACKET_TO_MAP(perso.getMap(),this);
 				int qua = Formulas.getRandomValue(1, 10);//On a entre 1 et 10 eaux
-				Objet obj = World.data.getObjTemplate(311).createNewItem(qua, false);
-				if(perso.addObjet(obj, true))
-					World.data.addObjet(obj,true);
+				Object obj = World.data.getObjectTemplate(311).createNewItem(qua, false);
+				if(perso.addObject(obj, true))
+					World.data.addObject(obj,true);
 				SocketManager.GAME_SEND_IQ_PACKET(perso,perso.getId(),qua);
 			break;
 			

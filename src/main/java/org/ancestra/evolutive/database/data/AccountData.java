@@ -49,7 +49,7 @@ public class AccountData extends AbstractDAO<Account>{
 			PreparedStatement statement = getPreparedStatement(baseQuery);
 			
 			statement.setLong(1, obj.getBankKamas());
-			statement.setString(2, obj.parseBankObjetsToDB());
+			statement.setString(2, obj.parseBankObjectsToDB());
 			statement.setInt(3, obj.getGmLvl());
 			statement.setInt(4, (obj.isBanned()?1:0));
 			statement.setString(5, obj.parseFriendToDb());

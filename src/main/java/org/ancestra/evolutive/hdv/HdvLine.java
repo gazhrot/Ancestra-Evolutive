@@ -13,7 +13,7 @@ public class HdvLine {
 	public HdvLine(int id, HdvEntry entry) {
 		this.id = id;
 		this.stats = entry.getObject().parseStatsString();
-		this.template = entry.getObject().getTemplate().getID();
+		this.template = entry.getObject().getTemplate().getId();
 		
 		for(int i = 0; i < 3; i++)
 			entries.add(new ArrayList<HdvEntry>());//Boucle 3 fois pour ajouter 3 List vide dans la SuperList

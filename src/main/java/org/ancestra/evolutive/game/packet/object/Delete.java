@@ -3,7 +3,7 @@ package org.ancestra.evolutive.game.packet.object;
 import org.ancestra.evolutive.common.SocketManager;
 import org.ancestra.evolutive.core.World;
 import org.ancestra.evolutive.game.GameClient;
-import org.ancestra.evolutive.object.Objet;
+import org.ancestra.evolutive.object.Object;
 import org.ancestra.evolutive.tool.plugin.packet.Packet;
 import org.ancestra.evolutive.tool.plugin.packet.PacketParser;
 
@@ -20,7 +20,7 @@ public class Delete implements PacketParser {
 				qua = Integer.parseInt(infos[1]);
 			} catch(Exception e) {}
 			
-			Objet obj = World.data.getObjet(guid);
+			Object obj = World.data.getObject(guid);
 			if(obj == null || !client.getPlayer().hasItemGuid(guid) || qua <= 0 || client.getPlayer().getFight() != null || client.getPlayer().isAway()) {
 				SocketManager.GAME_SEND_DELETE_OBJECT_FAILED_PACKET(client);
 				return;
@@ -30,7 +30,7 @@ public class Delete implements PacketParser {
 			
 			if(newQua <=0) {
 				client.getPlayer().removeItem(guid);
-				World.data.removeItem(guid);
+				World.data.removeObject(guid);
 				World.database.getItemData().delete(obj);
 				SocketManager.GAME_SEND_REMOVE_ITEM_PACKET(client.getPlayer(), guid);
 			}else {

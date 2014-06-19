@@ -25,7 +25,7 @@ public class Database {
 	private GuildMemberData guildMemberData;
 	private HouseData houseData;
 	private ItemData itemData;
-	private ItemSetData itemSetData;
+	private ObjectSetData objectSetData;
 	private ItemTemplateData itemTemplateData;
 	private JobData jobData;
 	private MapData mapData;
@@ -56,7 +56,7 @@ public class Database {
 		this.guildMemberData = new GuildMemberData(dataSource);
 		this.houseData = new HouseData(dataSource);
 		this.itemData = new ItemData(dataSource);
-		this.itemSetData = new ItemSetData(dataSource);
+		this.objectSetData = new ObjectSetData(dataSource);
 		this.itemTemplateData = new ItemTemplateData(dataSource);
 		this.jobData = new JobData(dataSource);
 		this.mapData = new MapData(dataSource);
@@ -126,8 +126,8 @@ public class Database {
 	public ItemData getItemData() {
 		return itemData;
 	}
-	public ItemSetData getItemSetData() {
-		return itemSetData;
+	public ObjectSetData getObjectSetData() {
+		return objectSetData;
 	}
 	public ItemTemplateData getItemTemplateData() {
 		return itemTemplateData;

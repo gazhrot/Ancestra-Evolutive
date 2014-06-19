@@ -38,7 +38,7 @@ public class HdvCategory {
 	}
 	
 	public void addEntry(HdvEntry entry) {
-		int tempID = entry.getObject().getTemplate().getID();
+		int tempID = entry.getObject().getTemplate().getId();
 		
 		if(this.getTemplates().get(tempID) == null)
 			addTemplate(tempID, entry);
@@ -48,10 +48,10 @@ public class HdvCategory {
 	
 	public boolean delEntry(HdvEntry entry) {
 		boolean toReturn = false;
-		this.getTemplates().get(entry.getObject().getTemplate().getID()).delEntry(entry);
+		this.getTemplates().get(entry.getObject().getTemplate().getId()).delEntry(entry);
 		
-		if((toReturn = this.getTemplates().get(entry.getObject().getTemplate().getID()).isEmpty()))
-			delTemplate(entry.getObject().getTemplate().getID());
+		if((toReturn = this.getTemplates().get(entry.getObject().getTemplate().getId()).isEmpty()))
+			delTemplate(entry.getObject().getTemplate().getId());
 		
 		return toReturn;
 	}
