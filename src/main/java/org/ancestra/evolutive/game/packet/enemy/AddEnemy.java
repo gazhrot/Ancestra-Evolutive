@@ -8,7 +8,6 @@ import org.ancestra.evolutive.game.GameClient;
 import org.ancestra.evolutive.tool.plugin.packet.Packet;
 import org.ancestra.evolutive.tool.plugin.packet.PacketParser;
 
-
 @Packet("iA")
 public class AddEnemy implements PacketParser {
 
@@ -19,11 +18,10 @@ public class AddEnemy implements PacketParser {
 		
 		int guid = -1;
 		
-		switch(packet.charAt(2))
-		{
+		switch(packet.charAt(2)) {
 			case '%'://Nom de perso
 				packet = packet.substring(3);
-				Player player = World.data.getPersoByName(packet);
+				Player player = World.data.getPlayerByName(packet);
 				if(player == null) {
 					SocketManager.GAME_SEND_FD_PACKET(client.getPlayer(), "Ef");
 					return;
@@ -41,7 +39,7 @@ public class AddEnemy implements PacketParser {
 			break;
 			default:
 				packet = packet.substring(2);
-				player = World.data.getPersoByName(packet);
+				player = World.data.getPlayerByName(packet);
 				if(player == null?true:!player.isOnline())
 				{
 					SocketManager.GAME_SEND_FD_PACKET(client.getPlayer(), "Ef");

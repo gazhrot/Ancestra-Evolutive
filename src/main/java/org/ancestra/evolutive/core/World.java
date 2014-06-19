@@ -20,18 +20,18 @@ import org.ancestra.evolutive.fight.spell.Animation;
 import org.ancestra.evolutive.fight.spell.Spell;
 import org.ancestra.evolutive.game.GameClient;
 import org.ancestra.evolutive.guild.Guild;
-import org.ancestra.evolutive.hdv.HDV;
-import org.ancestra.evolutive.hdv.HDV.HdvEntry;
+import org.ancestra.evolutive.hdv.Hdv;
+import org.ancestra.evolutive.hdv.HdvEntry;
 import org.ancestra.evolutive.house.House;
 import org.ancestra.evolutive.house.Trunk;
 import org.ancestra.evolutive.job.Job;
 import org.ancestra.evolutive.map.InteractiveObject.InteractiveObjectTemplate;
 import org.ancestra.evolutive.map.Maps;
 import org.ancestra.evolutive.map.MountPark;
-import org.ancestra.evolutive.object.ItemSet;
-import org.ancestra.evolutive.object.Objet;
-import org.ancestra.evolutive.object.Objet.ObjTemplate;
-import org.ancestra.evolutive.object.PierreAme;
+import org.ancestra.evolutive.object.ObjectSet;
+import org.ancestra.evolutive.object.Object;
+import org.ancestra.evolutive.object.ObjectTemplate;
+import org.ancestra.evolutive.object.SoulStone;
 import org.ancestra.evolutive.other.ExpLevel;
 import org.ancestra.evolutive.tool.command.Command;
 import org.ancestra.evolutive.tool.plugin.PluginLoader;
@@ -58,10 +58,11 @@ public class World {
 	private Map<Integer, Account> accounts = new HashMap<>();
 	private Map<Integer, Player> players = new HashMap<>();
 	private Map<Integer, Maps> maps = new HashMap<>();
-	private Map<Integer, Objet> objects = new HashMap<>();
+	private Map<Integer, Object> objects = new HashMap<>();
+
 	private Map<Integer, ExpLevel> expLevels = new HashMap<>();
 	private Map<Integer, Spell> spells = new HashMap<>();
-	private Map<Integer, ObjTemplate> templateObjects = new HashMap<>();
+	private Map<Integer, ObjectTemplate> templateObjects = new HashMap<>();
 	private Map<Integer, MobTemplate> templateMobs = new HashMap<>();
 	private Map<Integer, NpcTemplate> npcTemplates = new HashMap<>();
 	private Map<Integer, NpcQuestion> npcQuestions = new HashMap<>();
@@ -73,9 +74,9 @@ public class World {
 	private Map<Integer, SubArea> subAreas = new HashMap<>();
 	private Map<Integer, Job> jobs = new HashMap<>();
 	private Map<Integer, ArrayList<Couple<Integer, Integer>>> crafts = new HashMap<>();
-	private Map<Integer, ItemSet> setItems = new HashMap<>();
+	private Map<Integer, ObjectSet> setItems = new HashMap<>();
 	private Map<Integer, Guild> guilds = new HashMap<>();
-	private Map<Integer, HDV> hdvs = new HashMap<>();
+	private Map<Integer, Hdv> hdvs = new HashMap<>();
 	private Map<Integer, Map<Integer, ArrayList<HdvEntry>>> hdvItems = new HashMap<>();
 	private Map<Integer, Player> married = new HashMap<>();
 	private Map<Integer, Animation> animations = new HashMap<>();
@@ -103,14 +104,14 @@ public class World {
 	public int initialize() {
 		long startTime = System.currentTimeMillis();
 		
-		//chargement des donn�es statiques
+		//chargement des donn?es statiques
 		database.getOtherData().loadBannedIps();
 		database.getOtherData().loadCrafts();
 		database.getOtherData().loadZaaps();
 		database.getOtherData().loadZaapis();
 		database.getExpData().loadAll();
 		
-		//truc pourri � refaire plus tard
+		//truc pourri ? refaire plus tard
 		nextObjectID = database.getItemData().nextId();
 		return (int)(System.currentTimeMillis() - startTime);
 	}
@@ -190,24 +191,20 @@ public class World {
 		npcTemplates.put(temp.getId(), temp);
 	}
 
-	public Maps getCarte(int id) {
+
+	public Maps getMap(int id) {
 		Maps map = maps.get(id);
 		if(map == null)
 			map = World.database.getMapData().load(id);
 		return map;
 	}
 
-	public void addCarte(Maps map) {
+	public void addMap(Maps map) {
 		if (!maps.containsKey(map.getId()))
 			maps.put(map.getId(), map);
 	}
 
-	public void delCarte(Maps map) {
-		if (maps.containsKey(map.getId()))
-			maps.remove(map.getId());
-	}
-
-	public Account getCompteByName(String name) {
+	public Account getAccountByName(String name) {
 		Account account = null;
 		
 		for(Account acc: accounts.values())
@@ -219,24 +216,24 @@ public class World {
 		return account;
 	}
 
-	public Player getPersonnage(int guid) {
-		return players.get(guid);
+	public Player getPlayer(int id) {
+		return players.get(id);
 	}
 
-	public void addAccount(Account compte) {
-		accounts.put(compte.getUUID(), compte);
+	public void addAccount(Account account) {
+		accounts.put(account.getUUID(), account);
 	}
 
-	public void addPersonnage(Player perso) {
-		players.put(perso.getId(), perso);
+	public void addPlayer(Player player) {
+		players.put(player.getId(), player);
 	}
 
-	public Player getPersoByName(String name) {
+	public Player getPlayerByName(String name) {
 		ArrayList<Player> Ps = new ArrayList<Player>();
 		Ps.addAll(players.values());
-		for (Player P : Ps)
-			if (P.getName().equalsIgnoreCase(name))
-				return P;
+		for (Player player : Ps)
+			if(player.getName().equalsIgnoreCase(name))
+				return player;
 		return null;
 	}
 
@@ -292,8 +289,8 @@ public class World {
 		spells.put(sort.getSpellID(), sort);
 	}
 
-	public void addObjTemplate(ObjTemplate obj) {
-		templateObjects.put(obj.getID(), obj);
+	public void addObjectTemplate(ObjectTemplate obj) {
+		templateObjects.put(obj.getId(), obj);
 	}
 
 	public Spell getSort(int id) {
@@ -303,14 +300,14 @@ public class World {
 		return spell;
 	}
 
-	public ObjTemplate getObjTemplate(int id) {
-		ObjTemplate template = templateObjects.get(id);
+	public ObjectTemplate getObjectTemplate(int id) {
+		ObjectTemplate template = templateObjects.get(id);
 		if(template == null)
 			template = World.database.getItemTemplateData().load(id);
 		return template;
 	}
 
-	public synchronized int getNewItemGuid() {
+	public synchronized int getNewObjectGuid() {
 		return nextObjectID++;
 	}
 
@@ -338,23 +335,23 @@ public class World {
 		return online;
 	}
 
-	public void addObjet(Objet item, boolean saveSQL) {
-		objects.put(item.getGuid(), item);
-		if (saveSQL)
-			World.database.getItemData().create(item);
+	public void addObject(Object object, boolean save) {
+		objects.put(object.getId(), object);
+		if (save)
+			World.database.getItemData().create(object);
 	}
 
-	public Objet getObjet(int guid) {
-		Objet item = objects.get(guid);
-		if(item == null)
-			item = World.database.getItemData().load(guid);
-		return item;
+	public Object getObject(int id) {
+		Object object = objects.get(id);
+		if(object == null)
+			object = World.database.getItemData().load(id);
+		return object;
 	}
 
-	public void removeItem(int guid) {
-		Objet o = objects.get(guid);
-        database.getItemData().delete(o);
-        objects.remove(guid);
+	public void removeObject(int id) {
+		Object object = objects.get(id);
+        database.getItemData().delete(object);
+        objects.remove(id);
 	}
 
 	public void addInteractiveObjectTemplate(InteractiveObjectTemplate IOT) {
@@ -381,8 +378,7 @@ public class World {
 			@Override
 			public void run() {
 				GameClient _out = null;
-				Player saver = saverID != -1 ? getPersonnage(saverID)
-						: null;
+				Player saver = saverID != -1 ? getPlayer(saverID) : null;
 				if (saver != null)
 					_out = saver.getAccount().getGameClient();
 
@@ -415,14 +411,14 @@ public class World {
 
 					Log.addToLog("Sauvegarde des maisons...");
 					for (House house : houses.values()) {
-						if (house.get_owner_id() > 0) {
+						if (house.getOwner() > 0) {
 							database.getHouseData().update(house);
 						}
 					}
 
 					Log.addToLog("Sauvegarde des coffres...");
 					for (Trunk t : trunks.values()) {
-						if (t.get_owner_id() > 0) {
+						if (t.getOwner() > 0) {
 							database.getTrunkData().update(t);
 						}
 					}
@@ -435,8 +431,8 @@ public class World {
 					}
 
 					Log.addToLog("Sauvegarde des hdvs...");
-					for (HDV curHdv : hdvs.values()) {
-						database.getHdvData().updateHdvItems(curHdv.getHdvID());
+					for (Hdv curHdv : hdvs.values()) {
+						database.getHdvData().updateHdvItems(curHdv.getId());
 					}
 
 					Log.addToLog("Sauvegarde effectuee !");
@@ -537,7 +533,7 @@ public class World {
 				continue;
 			boolean ok = true;
 			for (Couple<Integer, Integer> c : craft) {
-				// si ingredient non pr�sent ou mauvaise quantit�
+				// si ingredient non pr?sent ou mauvaise quantit?
 				if (ingredients.get(c.first) != c.second)
 					ok = false;
 			}
@@ -554,14 +550,14 @@ public class World {
 		return null;
 	}
 
-	public void addItemSet(ItemSet itemSet) {
-		setItems.put(itemSet.getId(), itemSet);
+	public void addItemSet(ObjectSet set) {
+		setItems.put(set.getId(), set);
 	}
 
-	public ItemSet getItemSet(int tID) {
-		ItemSet set = setItems.get(tID);
+	public ObjectSet getItemSet(int tID) {
+		ObjectSet set = setItems.get(tID);
 		if(set == null)
-			set = World.database.getItemSetData().load(tID);
+			set = World.database.getObjectSetData().load(tID);
 		return set;
 	}
 
@@ -639,9 +635,9 @@ public class World {
 	}
 
 	public int getEncloCellIdByMapId(short i) {
-		if (getCarte(i).getMountPark() != null) {
-			if (getCarte(i).getMountPark().getCellid() > 0) {
-				return getCarte(i).getMountPark().getCellid();
+		if (getMap(i).getMountPark() != null) {
+			if (getMap(i).getMountPark().getCellid() > 0) {
+				return getMap(i).getMountPark().getCellid();
 			}
 		}
 
@@ -677,7 +673,7 @@ public class World {
 	public void unloadPerso(int g) {
 		Player toRem = players.get(g);
 		if (!toRem.getItems().isEmpty()) {
-			for (Entry<Integer, Objet> curObj : toRem.getItems().entrySet()) {
+			for (Entry<Integer, Object> curObj : toRem.getItems().entrySet()) {
 				objects.remove(curObj.getKey());
 			}
 		}
@@ -705,18 +701,18 @@ public class World {
 		return false;
 	}
 
-	public Objet newObjet(int Guid, int template, int qua, int pos,
+	public Object newObject(int id, int template, int qua, int pos,
 			String strStats) {
-		if (getObjTemplate(template) == null) {
+		if (getObjectTemplate(template) == null) {
 			Console.instance.println("ItemTemplate " + template
-					+ " inexistant, GUID dans la table `items`:" + Guid);
+					+ " inexistant, GUID dans la table `items`:" + id);
 			Main.closeServers();
 		}
 
-		if (getObjTemplate(template).getType() == 85)
-			return new PierreAme(Guid, qua, template, pos, strStats);
+		if (getObjectTemplate(template).getType() == 85)
+			return new SoulStone(id, qua, template, pos, strStats);
 		else
-			return new Objet(Guid, template, qua, pos, strStats);
+			return new Object(id, template, qua, pos, strStats);
 	}
 
 	public short get_state() {
@@ -735,8 +731,8 @@ public class World {
 		gmAccess = GmAccess;
 	}
 
-	public HDV getHdv(int mapID) {
-		HDV object = hdvs.get(mapID);
+	public Hdv getHdv(int mapID) {
+		Hdv object = hdvs.get(mapID);
 		if(object == null)
 			object = World.database.getHdvData().load(mapID);
 		return object;
@@ -756,7 +752,7 @@ public class World {
 		nextLigneID = ligneID;
 	}
 
-	public void addHdvItem(int compteID, int hdvID, HdvEntry toAdd) {
+	public void addHdvObject(int compteID, int hdvID, HdvEntry toAdd) {
 		if (hdvItems.get(compteID) == null) // Si le compte n'est pas dans la
 											// memoire
 			hdvItems.put(compteID, new HashMap<Integer, ArrayList<HdvEntry>>()); 
@@ -767,7 +763,7 @@ public class World {
 		hdvItems.get(compteID).get(hdvID).add(toAdd);
 	}
 
-	public void removeHdvItem(int compteID, int hdvID, HdvEntry toDel) {
+	public void removeHdvObject(int compteID, int hdvID, HdvEntry toDel) {
 		hdvItems.get(compteID).get(hdvID).remove(toDel);
 	}
 
@@ -775,7 +771,7 @@ public class World {
 		return hdvs.size();
 	}
 
-	public int getHdvObjetsNumber() {
+	public int getHdvObjectsNumber() {
 		int size = 0;
 
 		for (Map<Integer, ArrayList<HdvEntry>> curCompte : hdvItems.values()) {
@@ -786,17 +782,17 @@ public class World {
 		return size;
 	}
 
-	public void addHdv(HDV toAdd) {
-		hdvs.put(toAdd.getHdvID(), toAdd);
+	public void addHdv(Hdv toAdd) {
+		hdvs.put(toAdd.getId(), toAdd);
 	}
 
-	public Map<Integer, ArrayList<HdvEntry>> getMyItems(int compteID) {
-		if (hdvItems.get(compteID) == null)// Si le compte n'est pas dans la memoire
-			hdvItems.put(compteID, new HashMap<Integer, ArrayList<HdvEntry>>());
-		return hdvItems.get(compteID);
+	public Map<Integer, ArrayList<HdvEntry>> getMyObjects(int account) {
+		if (hdvItems.get(account) == null)// Si le compte n'est pas dans la memoire
+			hdvItems.put(account, new HashMap<Integer, ArrayList<HdvEntry>>());
+		return hdvItems.get(account);
 	}
 
-	public Collection<ObjTemplate> getObjTemplates() {
+	public Collection<ObjectTemplate> getObjectTemplates() {
 		return templateObjects.values();
 	}
 
@@ -838,8 +834,8 @@ public class World {
 			return;
 		}
 		SocketManager.GAME_SEND_cMK_PACKET_TO_MAP(perso.getMap(), "", -1,
-				"Pr�tre", perso.getName()
-						+ " acceptez-vous d'�pouser "
+				"Pr?tre", perso.getName()
+						+ " acceptez-vous d'?pouser "
 						+ getMarried((perso.getSex() == 1 ? 0 : 1))
 								.getName() + " ?");
 		SocketManager.GAME_SEND_WEDDING(carte, 617,
@@ -851,9 +847,9 @@ public class World {
 	public void Wedding(Player Homme, Player Femme, int isOK) {
 		if (isOK > 0) {
 			SocketManager.GAME_SEND_cMK_PACKET_TO_MAP(Homme.getMap(), "",
-					-1, "Pr�tre", "Je d�clare " + Homme.getName() + " et "
+					-1, "Pr?tre", "Je d?clare " + Homme.getName() + " et "
 							+ Femme.getName()
-							+ " unis par les liens sacr�s du mariage.");
+							+ " unis par les liens sacr?s du mariage.");
 			Homme.MarryTo(Femme);
 			Femme.MarryTo(Homme);
 		} else {
@@ -878,7 +874,7 @@ public class World {
 
 	public void addHouse(House house) {
         if(house != null) {
-            houses.put(house.get_id(), house);
+            houses.put(house.getId(), house);
         }
 	}
 
@@ -915,7 +911,7 @@ public class World {
 	}
 
 	public void addTrunk(Trunk trunk) {
-		trunks.put(trunk.get_id(), trunk);
+		trunks.put(trunk.getId(), trunk);
 	}
 
 	public Trunk getTrunk(int id) {

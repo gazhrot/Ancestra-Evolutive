@@ -9,7 +9,7 @@ import org.ancestra.evolutive.core.World;
 import org.ancestra.evolutive.database.AbstractDAO;
 import org.ancestra.evolutive.guild.Guild;
 import org.ancestra.evolutive.guild.GuildMember;
-import org.ancestra.evolutive.object.Objet;
+import org.ancestra.evolutive.object.Object;
 import org.slf4j.LoggerFactory;
 
 import java.sql.PreparedStatement;
@@ -164,14 +164,14 @@ public class CharacterData extends AbstractDAO<Player>{
 	
 	public boolean updateItems(Player obj) {
 		try {
-			for(Objet item: obj.getItems().values()) {
+			for(Object item: obj.getItems().values()) {
 				World.database.getItemData().update(item);
 			}
 			
 			for(String s : obj.getBankItemsIDSplitByChar(":").split(":")) {
 				try {
 					int guid = Integer.parseInt(s);
-					Objet item = World.data.getObjet(guid);
+					Object item = World.data.getObject(guid);
 					if(item == null)continue;
 					
 					World.database.getItemData().update(item);
@@ -199,7 +199,7 @@ public class CharacterData extends AbstractDAO<Player>{
 		return player;
 	}
 
-    public void load(){
+    public void load() {
         try {
             Result result = getData("SELECT * FROM personnages");
             while(loadFromResultSet(result.resultSet) != null);
@@ -311,7 +311,7 @@ public class CharacterData extends AbstractDAO<Player>{
             );
             //V�rifications pr�-connexion
             player.VerifAndChangeItemPlace();
-            World.data.addPersonnage(player);
+            World.data.addPlayer(player);
             int guildId = World.database.getGuildMemberData().getGuildByPlayer(player.getId());
             if(guildId >= 0) {
             	Guild guild =  World.data.getGuild(guildId);
@@ -324,4 +324,22 @@ public class CharacterData extends AbstractDAO<Player>{
         }
         return player;
     }
+
+	public boolean updateSex(Player obj) {
+		try {
+			String baseQuery = "UPDATE `personnages` SET `sexe`= ? WHERE `personnages`.`guid` = ? LIMIT 1;";
+			
+			PreparedStatement statement = getPreparedStatement(baseQuery);
+			
+			statement.setInt(1, obj.getSex());
+			statement.setInt(2, obj.getId());
+			
+			execute(statement);
+			logger.debug("Personnage "+obj.getName()+" sauvegarde");
+			return true;
+		} catch(Exception e) {
+			logger.error("Can't save character {}",obj.getName(),e);
+		}
+		return false;
+	}
 }

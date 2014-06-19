@@ -38,9 +38,9 @@ public class TrunkData extends AbstractDAO<Trunk>{
 			String query = "UPDATE `coffres` SET `kamas`=?, `object`=? WHERE `id`=?";
 			PreparedStatement statement = getPreparedStatement(query);
 			
-			statement.setLong(1, obj.get_kamas());
-			statement.setString(2, obj.parseTrunkObjetsToDB());
-			statement.setInt(3, obj.get_id());
+			statement.setLong(1, obj.getKamas());
+			statement.setString(2, obj.parseTrunkObjectsToDB());
+			statement.setInt(3, obj.getId());
 
 			execute(statement);
 			return true;
@@ -56,7 +56,7 @@ public class TrunkData extends AbstractDAO<Trunk>{
 			PreparedStatement statement = getPreparedStatement(query);
 			
 			statement.setString(1, packet);
-			statement.setInt(2, trunk.get_id());
+			statement.setInt(2, trunk.getId());
 			statement.setInt(3, player.getAccount().getUUID());
 
 			execute(statement);

@@ -3,7 +3,7 @@ package org.ancestra.evolutive.entity;
 import org.ancestra.evolutive.client.other.Stats;
 import org.ancestra.evolutive.common.Constants;
 import org.ancestra.evolutive.core.World;
-import org.ancestra.evolutive.object.Objet;
+import org.ancestra.evolutive.object.Object;
 
 import java.util.ArrayList;
 import java.util.Map.Entry;
@@ -25,7 +25,7 @@ public class Mount {
 	private int serenite;
 	private Stats stats = new Stats();
 	private String ancestor = ",,,,,,,,,,,,,";
-	private ArrayList<Objet> objects = new ArrayList<Objet>();
+	private ArrayList<Object> objects = new ArrayList<Object>();
 	
 	public Mount(int color) {
 		this.id = World.data.getNextIdForMount();
@@ -67,7 +67,7 @@ public class Mount {
 		
 		for(String str : items.split("\\;")) {
 			try	{		
-				Objet obj = World.data.getObjet(Integer.parseInt(str));
+				Object obj = World.data.getObject(Integer.parseInt(str));
 				if(obj != null)
 					this.objects.add(obj);
 			} catch(Exception e) {}
@@ -197,11 +197,11 @@ public class Mount {
 		this.ancestor = ancestor;
 	}
 
-	public ArrayList<Objet> getObjects() {
+	public ArrayList<Object> getObjects() {
 		return objects;
 	}
 
-	public void setObjects(ArrayList<Objet> objects) {
+	public void setObjects(ArrayList<Object> objects) {
 		this.objects = objects;
 	}	
 
@@ -213,8 +213,8 @@ public class Mount {
 
 	public String getObjectsId() {
 		String str = "";
-		for(Objet obj : this.getObjects())
-			str += (str.length()>0 ? ";" : "") + obj.getGuid();
+		for(Object obj : this.getObjects())
+			str += (str.length()>0 ? ";" : "") + obj.getId();
 		return str;
 	}
 

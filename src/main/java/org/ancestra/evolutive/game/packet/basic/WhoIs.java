@@ -13,7 +13,7 @@ public class WhoIs implements PacketParser {
 	@Override
 	public void parse(GameClient client, String packet) {
 		packet = packet.substring(2);
-		Player player = World.data.getPersoByName(packet);
+		Player player = World.data.getPlayerByName(packet);
 		if(player == null) 
 			return;
 		SocketManager.GAME_SEND_BWK(client.getPlayer(), player.getAccount().getPseudo()+"|1|"+player.getName()+"|"+player.getMap().getSubArea().getArea().getId());

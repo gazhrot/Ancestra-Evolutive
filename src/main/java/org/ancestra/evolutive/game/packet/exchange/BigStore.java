@@ -3,7 +3,7 @@ package org.ancestra.evolutive.game.packet.exchange;
 import org.ancestra.evolutive.common.SocketManager;
 import org.ancestra.evolutive.core.World;
 import org.ancestra.evolutive.game.GameClient;
-import org.ancestra.evolutive.hdv.HDV;
+import org.ancestra.evolutive.hdv.Hdv;
 import org.ancestra.evolutive.tool.plugin.packet.Packet;
 import org.ancestra.evolutive.tool.plugin.packet.PacketParser;
 
@@ -19,7 +19,7 @@ public class BigStore implements PacketParser {
 		{
 			case 'B': //Confirmation d'achat
 				String[] info = packet.substring(3).split("\\|");//ligneID|amount|price
-				HDV curHdv = World.data.getHdv(Math.abs(client.getPlayer().getIsTradingWith()));
+				Hdv curHdv = World.data.getHdv(Math.abs(client.getPlayer().getIsTradingWith()));
 				int ligneID = Integer.parseInt(info[0]);
 				byte amount = Byte.parseByte(info[1]);
 				

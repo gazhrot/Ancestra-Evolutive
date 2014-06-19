@@ -63,7 +63,7 @@ public class MapData extends AbstractDAO<Maps>{
                         result.resultSet.getString("cells"), result.resultSet.getString("monsters"), 
                         result.resultSet.getString("mappos"), result.resultSet.getByte("numgroup"), 
                         result.resultSet.getByte("groupmaxsize"));
-				World.data.addCarte(map);
+				World.data.addMap(map);
 				World.database.getCollectorData().loadByMap(id);
 				World.database.getHouseData().load(map);
 				World.database.getHdvData().load(id);
@@ -119,7 +119,7 @@ public class MapData extends AbstractDAO<Maps>{
 					cont2 = World.data.getSubArea(Integer.parseInt(mappos[2])).getArea().getContinent().getId();
 				} catch(Exception e) {}
 				if(x1 == x2 && y1 == y2 && cont1 == cont2) {
-					carte = World.data.getCarte(result.resultSet.getShort("id"));
+					carte = World.data.getMap(result.resultSet.getShort("id"));
 					break;
 				}
 			}

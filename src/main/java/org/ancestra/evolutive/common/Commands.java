@@ -15,9 +15,9 @@ import org.ancestra.evolutive.game.GameClient;
 import org.ancestra.evolutive.job.JobStat;
 import org.ancestra.evolutive.map.Maps;
 import org.ancestra.evolutive.map.MountPark;
-import org.ancestra.evolutive.object.ItemSet;
-import org.ancestra.evolutive.object.Objet;
-import org.ancestra.evolutive.object.Objet.ObjTemplate;
+import org.ancestra.evolutive.object.ObjectSet;
+import org.ancestra.evolutive.object.Object;
+import org.ancestra.evolutive.object.ObjectTemplate;
 import org.ancestra.evolutive.other.Action;
 
 import javax.swing.*;
@@ -267,7 +267,7 @@ public class Commands {
 			Player perso = _perso;
 			if(infos.length >1)
 			{
-				perso = World.data.getPersoByName(infos[1]);
+				perso = World.data.getPlayerByName(infos[1]);
 			}
 			if(perso == null)
 			{
@@ -303,7 +303,7 @@ public class Commands {
 				name = infos[1];
 			}catch(Exception e){};
 			
-			perso = World.data.getPersoByName(name);
+			perso = World.data.getPlayerByName(name);
 			
 			if(perso == null)
 			{
@@ -335,7 +335,7 @@ public class Commands {
 			Player target = _perso;
 			if(infos.length > 1)//Si un nom de perso est sp�cifi�
 			{
-				target = World.data.getPersoByName(infos[1]);
+				target = World.data.getPlayerByName(infos[1]);
 				if(target == null)
 				{
 					String str = "Le personnage n'a pas ete trouve";
@@ -353,7 +353,7 @@ public class Commands {
 		else
 		if(command.equalsIgnoreCase("GONAME") || command.equalsIgnoreCase("JOIN"))
 		{
-			Player P = World.data.getPersoByName(infos[1]);
+			Player P = World.data.getPlayerByName(infos[1]);
 			if(P == null)
 			{
 				String str = "Le personnage n'existe pas";
@@ -366,7 +366,7 @@ public class Commands {
 			Player target = _perso;
 			if(infos.length > 2)//Si un nom de perso est sp�cifi�
 			{
-				target = World.data.getPersoByName(infos[2]);
+				target = World.data.getPlayerByName(infos[2]);
 				if(target == null)
 				{
 					String str = "Le personnage n'a pas ete trouve";
@@ -386,7 +386,7 @@ public class Commands {
 		}else
 		if(command.equalsIgnoreCase("NAMEGO"))
 		{
-			Player target = World.data.getPersoByName(infos[1]);
+			Player target = World.data.getPlayerByName(infos[1]);
 			if(target == null)
 			{
 				String str = "Le personnage n'existe pas";
@@ -402,7 +402,7 @@ public class Commands {
 			Player P = _perso;
 			if(infos.length > 2)//Si un nom de perso est sp�cifi�
 			{
-				P = World.data.getPersoByName(infos[2]);
+				P = World.data.getPlayerByName(infos[2]);
 				if(P == null)
 				{
 					String str = "Le personnage n'a pas ete trouve";
@@ -439,13 +439,13 @@ public class Commands {
 				mapID = Short.parseShort(infos[1]);
 				cellID = Integer.parseInt(infos[2]);
 			}catch(Exception e){};
-			if(mapID == -1 || cellID == -1 || World.data.getCarte(mapID) == null)
+			if(mapID == -1 || cellID == -1 || World.data.getMap(mapID) == null)
 			{
 				String str = "MapID ou cellID invalide";
 				SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out,str);
 				return;
 			}
-			if(World.data.getCarte(mapID).getCases().get(cellID) == null)
+			if(World.data.getMap(mapID).getCases().get(cellID) == null)
 			{
 				String str = "MapID ou cellID invalide";
 				SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out,str);
@@ -454,7 +454,7 @@ public class Commands {
 			Player target = _perso;
 			if(infos.length > 3)//Si un nom de perso est sp�cifi�
 			{
-				target = World.data.getPersoByName(infos[3]);
+				target = World.data.getPlayerByName(infos[3]);
 				if(target == null  || target.getFight() != null)
 				{
 					String str = "Le personnage n'a pas ete trouve ou est en combat";
@@ -496,7 +496,7 @@ public class Commands {
 			Player target = _perso;
 			if(infos.length > 5)//Si un nom de perso est sp�cifi�
 			{
-				target = World.data.getPersoByName(infos[5]);
+				target = World.data.getPlayerByName(infos[5]);
 				if(target == null || target.getFight() != null)
 				{
 					String str = "Le personnage n'a pas ete trouve ou est en combat";
@@ -528,7 +528,7 @@ public class Commands {
 			Player perso = _perso;
 			try
 			{
-				perso = World.data.getPersoByName(infos[1]);
+				perso = World.data.getPlayerByName(infos[1]);
 				if(perso == null)perso = _perso;
 				type = Integer.parseInt(infos[2]);
 				args = infos[3];
@@ -572,7 +572,7 @@ public class Commands {
 				time = Integer.parseInt(infos[2]);
 			}catch(Exception e){};
 			
-			perso = World.data.getPersoByName(name);
+			perso = World.data.getPlayerByName(name);
 			if(perso == null || time < 0)
 			{
 				String mess = "Le personnage n'existe pas ou la duree est invalide.";
@@ -609,7 +609,7 @@ public class Commands {
 				name = infos[1];
 			}catch(Exception e){};
 			
-			perso = World.data.getPersoByName(name);
+			perso = World.data.getPlayerByName(name);
 			if(perso == null)
 			{
 				String mess = "Le personnage n'existe pas.";
@@ -635,7 +635,7 @@ public class Commands {
 			{
 				name = infos[1];
 			}catch(Exception e){};
-			perso = World.data.getPersoByName(name);
+			perso = World.data.getPlayerByName(name);
 			if(perso == null)
 			{
 				String mess = "Le personnage n'existe pas.";
@@ -670,7 +670,7 @@ public class Commands {
 			Player target = _perso;
 			if(infos.length > 2)//Si un nom de perso est sp�cifi�
 			{
-				target = World.data.getPersoByName(infos[2]);
+				target = World.data.getPlayerByName(infos[2]);
 				if(target == null)
 				{
 					String str = "Le personnage n'a pas ete trouve";
@@ -699,7 +699,7 @@ public class Commands {
 			Player target = _perso;
 			if(infos.length > 2)//Si un nom de perso est sp�cifi�
 			{
-				target = World.data.getPersoByName(infos[2]);
+				target = World.data.getPlayerByName(infos[2]);
 				if(target == null)
 				{
 					String str = "Le personnage n'a pas ete trouve";
@@ -708,7 +708,7 @@ public class Commands {
 				}
 			}
 			
-			target.learnSpell(spell, 1, true,true);
+			target.learnSpell(spell, 1, true, true, true);
 			
 			String str = "Le sort a ete appris";
 			SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out,str);
@@ -729,7 +729,7 @@ public class Commands {
 			Player target = _perso;
 			if(infos.length > 2)//Si un nom de perso est sp�cifi�
 			{
-				target = World.data.getPersoByName(infos[2]);
+				target = World.data.getPlayerByName(infos[2]);
 				if(target == null)
 				{
 					String str = "Le personnage n'a pas ete trouve";
@@ -772,7 +772,7 @@ public class Commands {
 			Player target = _perso;
 			if(infos.length > 2)//Si un nom de perso est sp�cifi�
 			{
-				target = World.data.getPersoByName(infos[2]);
+				target = World.data.getPlayerByName(infos[2]);
 				if(target == null)
 				{
 					String str = "Le personnage n'a pas ete trouve";
@@ -809,7 +809,7 @@ public class Commands {
 				Player target = _perso;
 			if(infos.length > 3)//Si un nom de perso est sp�cifi�
 			{
-				target = World.data.getPersoByName(infos[3]);
+				target = World.data.getPlayerByName(infos[3]);
 				if(target == null)
 				{
 					String str = "Le personnage n'a pas ete trouve";
@@ -846,7 +846,7 @@ public class Commands {
 			Player target = _perso;
 			if(infos.length > 2)//Si un nom de perso est sp�cifi�
 			{
-				target = World.data.getPersoByName(infos[2]);
+				target = World.data.getPlayerByName(infos[2]);
 				if(target == null)
 				{
 					String str = "Le personnage n'a pas ete trouve";
@@ -876,7 +876,7 @@ public class Commands {
 			Player target = _perso;
 			if(infos.length > 2)//Si un nom de perso est sp�cifi�
 			{
-				target = World.data.getPersoByName(infos[2]);
+				target = World.data.getPlayerByName(infos[2]);
 				if(target == null)
 				{
 					String str = "Le personnage n'a pas ete trouve";
@@ -905,7 +905,7 @@ public class Commands {
 			Player target = _perso;
 			if(infos.length > 2)//Si un nom de perso est sp�cifi�
 			{
-				target = World.data.getPersoByName(infos[2]);
+				target = World.data.getPlayerByName(infos[2]);
 				if(target == null)
 				{
 					String str = "Le personnage n'a pas ete trouve";
@@ -935,7 +935,7 @@ public class Commands {
 			Player target = _perso;
 			if(infos.length > 2)//Si un nom de perso est sp�cifi�
 			{
-				target = World.data.getPersoByName(infos[2]);
+				target = World.data.getPlayerByName(infos[2]);
 				if(target == null)
 				{
 					String str = "Le personnage n'a pas ete trouve";
@@ -989,7 +989,7 @@ public class Commands {
 			{
 				tID = Integer.parseInt(infos[1]);
 			}catch(Exception e){};
-			ItemSet IS = World.data.getItemSet(tID);
+			ObjectSet IS = World.data.getItemSet(tID);
 			if(tID == 0 || IS == null)
 			{
 				String mess = "La panoplie "+tID+" n'existe pas ";
@@ -1000,11 +1000,11 @@ public class Commands {
 			if(infos.length == 3)useMax = infos[2].equals("MAX");//Si un jet est sp�cifi�
 
 			
-			for(ObjTemplate t : IS.getItemTemplates())
+			for(ObjectTemplate t : IS.getItemTemplates())
 			{
-				Objet obj = t.createNewItem(1,useMax);
-				if(_perso.addObjet(obj, true))//Si le joueur n'avait pas d'item similaire
-					World.data.addObjet(obj,true);
+				Object obj = t.createNewItem(1,useMax);
+				if(_perso.addObject(obj, true))//Si le joueur n'avait pas d'item similaire
+					World.data.addObject(obj,true);
 			}
 			String str = "Creation de la panoplie "+tID+" reussie";
 			if(useMax) str += " avec des stats maximums";
@@ -1022,7 +1022,7 @@ public class Commands {
 				if(infos.length == 3)//Si le nom du perso est sp�cifi�
 				{
 					String name = infos[2];
-					perso = World.data.getPersoByName(name);
+					perso = World.data.getPlayerByName(name);
 					if(perso == null)
 						perso = _perso;
 				}
@@ -1059,7 +1059,7 @@ public class Commands {
 				if(infos.length == 3)//Si le nom du perso est sp�cifi�
 				{
 					String name = infos[2];
-					perso = World.data.getPersoByName(name);
+					perso = World.data.getPlayerByName(name);
 					if(perso == null)
 						perso = _perso;
 				}
@@ -1092,7 +1092,7 @@ public class Commands {
 			if(infos.length == 3)//Si le nom du perso est sp�cifi�
 			{
 				String name = infos[2];
-				perso = World.data.getPersoByName(name);
+				perso = World.data.getPlayerByName(name);
 				if(perso == null)
 					perso = _perso;
 			}
@@ -1140,7 +1140,7 @@ public class Commands {
 			{
 				if(infos[3].equalsIgnoreCase("MAX"))useMax = true;
 			}
-			ObjTemplate t = World.data.getObjTemplate(tID);
+			ObjectTemplate t = World.data.getObjectTemplate(tID);
 			if(t == null)
 			{
 				String mess = "Le template "+tID+" n'existe pas ";
@@ -1148,9 +1148,9 @@ public class Commands {
 				return;
 			}
 			if(qua <1)qua =1;
-			Objet obj = t.createNewItem(qua,useMax);
-			if(_perso.addObjet(obj, true))//Si le joueur n'avait pas d'item similaire
-				World.data.addObjet(obj,true);
+			Object obj = t.createNewItem(qua,useMax);
+			if(_perso.addObject(obj, true))//Si le joueur n'avait pas d'item similaire
+				World.data.addObject(obj,true);
 			String str = "Creation de l'item "+tID+" reussie";
 			if(useMax) str += " avec des stats maximums";
 			SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out,str);
@@ -1172,7 +1172,7 @@ public class Commands {
 			byte TitleID = 0;
 			try
 			{
-				target = World.data.getPersoByName(infos[1]);
+				target = World.data.getPlayerByName(infos[1]);
 				TitleID = Byte.parseByte(infos[2]);
 			}catch(Exception e){};
 			
@@ -1256,7 +1256,7 @@ public class Commands {
 		}else
 		if(command.equalsIgnoreCase("BAN"))
 		{
-			Player P = World.data.getPersoByName(infos[1]);
+			Player P = World.data.getPlayerByName(infos[1]);
 			if(P == null)
 			{
 				SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out, "Personnage non trouve");
@@ -1276,7 +1276,7 @@ public class Commands {
 		}else
 		if(command.equalsIgnoreCase("UNBAN"))
 		{
-			Player P = World.data.getPersoByName(infos[1]);
+			Player P = World.data.getPlayerByName(infos[1]);
 			if(P == null)
 			{
 				SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out, "Personnage non trouve");
@@ -1511,7 +1511,7 @@ public class Commands {
 				itmID = Integer.parseInt(infos[2]);
 			}catch(Exception e){};
 			NpcTemplate npc =  _perso.getMap().getNpcs().get(npcGUID).getTemplate();
-			ObjTemplate item =  World.data.getObjTemplate(itmID);
+			ObjectTemplate item =  World.data.getObjectTemplate(itmID);
 			if(npcGUID == 0 || itmID == -1 || npc == null || item == null)
 			{
 				String str = "NpcGUID ou itmID invalide";
@@ -1619,7 +1619,7 @@ public class Commands {
 			Player target = _perso;
 			if(infos.length > 2)//Si un nom de perso est sp�cifi�
 			{
-				target = World.data.getPersoByName(infos[2]);
+				target = World.data.getPlayerByName(infos[2]);
 				if(target == null)
 				{
 					String str = "Le personnage n'a pas ete trouve";
@@ -1681,7 +1681,7 @@ public class Commands {
 			Player P = null;
 			try
 			{
-				P = World.data.getPersoByName(infos[1]);
+				P = World.data.getPlayerByName(infos[1]);
 			}catch(Exception e){};
 			if(P == null || !P.isOnline())
 			{

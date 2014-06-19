@@ -1,12 +1,10 @@
 package org.ancestra.evolutive.game.packet.exchange;
 
-
 import org.ancestra.evolutive.common.SocketManager;
 import org.ancestra.evolutive.core.World;
 import org.ancestra.evolutive.game.GameClient;
 import org.ancestra.evolutive.tool.plugin.packet.Packet;
 import org.ancestra.evolutive.tool.plugin.packet.PacketParser;
-
 
 @Packet("ES")
 public class Sell implements PacketParser {
@@ -22,7 +20,7 @@ public class Sell implements PacketParser {
 				SocketManager.GAME_SEND_SELL_ERROR_PACKET(client);
 				return;
 			} else 
-			if(World.data.getObjet(guid) == null || World.data.getObjet(guid).getQuantity() < qua) {
+			if(World.data.getObject(guid) == null || World.data.getObject(guid).getQuantity() < qua) {
 				return;
 			}
 			

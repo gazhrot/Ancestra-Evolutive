@@ -12,6 +12,6 @@ public class Price implements PacketParser {
 	@Override
 	public void parse(GameClient client, String packet) {
 		packet = packet.substring(2);
-		House.SellPrice(client.getPlayer(), packet);
+		House.sell(client.getPlayer(), packet);
 	}
 }

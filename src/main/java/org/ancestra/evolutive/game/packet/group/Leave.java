@@ -36,7 +36,7 @@ public class Leave implements PacketParser {
 			if(guid == -1)
 				return;
 			
-			Player player = World.data.getPersonnage(guid);
+			Player player = World.data.getPlayer(guid);
 			
 			group.leave(player);
 			SocketManager.GAME_SEND_PV_PACKET(player.getAccount().getGameClient(), String.valueOf(client.getPlayer().getId()));

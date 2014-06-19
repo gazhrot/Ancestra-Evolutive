@@ -1,7 +1,5 @@
 package org.ancestra.evolutive.game.packet.friend;
 
-
-
 import org.ancestra.evolutive.client.Account;
 import org.ancestra.evolutive.client.Player;
 import org.ancestra.evolutive.common.SocketManager;
@@ -9,7 +7,6 @@ import org.ancestra.evolutive.core.World;
 import org.ancestra.evolutive.game.GameClient;
 import org.ancestra.evolutive.tool.plugin.packet.Packet;
 import org.ancestra.evolutive.tool.plugin.packet.PacketParser;
-
 
 @Packet("FA")
 public class AddFriend implements PacketParser {
@@ -25,7 +22,7 @@ public class AddFriend implements PacketParser {
 		{
 			case '%'://Nom de perso
 				packet = packet.substring(3);
-				Player player = World.data.getPersoByName(packet);
+				Player player = World.data.getPlayerByName(packet);
 				if(player == null?true:!player.isOnline()) {//Si P est nul, ou si P est nonNul et P offline
 					SocketManager.GAME_SEND_FA_PACKET(client.getPlayer(), "Ef");
 					return;
@@ -43,7 +40,7 @@ public class AddFriend implements PacketParser {
 			break;
 			default:
 				packet = packet.substring(2);
-				player = World.data.getPersoByName(packet);
+				player = World.data.getPlayerByName(packet);
 				if(player == null?true:!player.isOnline()) {//Si P est nul, ou si P est nonNul et P offline
 					SocketManager.GAME_SEND_FA_PACKET(client.getPlayer(), "Ef");
 					return;

@@ -33,8 +33,7 @@ public class SendActions implements PacketParser {
         }
 	}
 	
-	public static void parseGameActionPacket(GameClient client, String packet)
-	{
+	public static void parseGameActionPacket(GameClient client, String packet) {
 		int action, next = 0;
 		
 		try	{
@@ -111,14 +110,14 @@ public class SendActions implements PacketParser {
 			switch(action)
 			{
 				case 81://V�rouiller maison
-					house.Lock(client.getPlayer());
+					house.lock(client.getPlayer());
 				break;
 				case 97://Acheter maison
-					house.BuyIt(client.getPlayer());
+					house.buyIt(client.getPlayer());
 				break;
 				case 98://Vendre
 				case 108://Modifier prix de vente
-					house.SellIt(client.getPlayer());
+					house.sellIt(client.getPlayer());
 				break;
 			}
 		}
@@ -157,7 +156,7 @@ public class SendActions implements PacketParser {
 				if(client.getPlayer() == null)return;
 				if(client.getPlayer().getFight() != null)return;
 				int id = Integer.parseInt(packet.substring(5));
-				Player target = World.data.getPersonnage(id);
+				Player target = World.data.getPlayer(id);
 				if(target == null || !target.isOnline() || target.getFight() != null
 					|| target.getMap().getId() != client.getPlayer().getMap().getId()
 					|| target.getAlign() == client.getPlayer().getAlign()
@@ -253,8 +252,8 @@ public class SendActions implements PacketParser {
 						SocketManager.GAME_SEND_GA903_ERROR_PACKET(client,'o',guid);
 						return;
 					}
-					if(World.data.getPersonnage(guid) == null)return;
-					World.data.getPersonnage(guid).getFight().joinFight(client.getPlayer(),guid);
+					if(World.data.getPlayer(guid) == null)return;
+					World.data.getPlayer(guid).getFight().joinFight(client.getPlayer(),guid);
 				}catch(Exception e){return;};
 			}
 		}
@@ -265,9 +264,9 @@ public class SendActions implements PacketParser {
 			try{guid = Integer.parseInt(packet.substring(5));}catch(NumberFormatException e){return;};
 			if(client.getPlayer().getDuel() != guid || client.getPlayer().getDuel() == -1)return;
 			SocketManager.GAME_SEND_MAP_START_DUEL_TO_MAP(client.getPlayer().getMap(),client.getPlayer().getDuel(),client.getPlayer().getId());
-			Fight fight = client.getPlayer().getMap().newFight(World.data.getPersonnage(client.getPlayer().getDuel()),client.getPlayer(),Constants.FIGHT_TYPE_CHALLENGE, false);
+			Fight fight = client.getPlayer().getMap().newFight(World.data.getPlayer(client.getPlayer().getDuel()),client.getPlayer(),Constants.FIGHT_TYPE_CHALLENGE, false);
 			client.getPlayer().setFight(fight);
-			World.data.getPersonnage(client.getPlayer().getDuel()).setFight(fight);
+			World.data.getPlayer(client.getPlayer().getDuel()).setFight(fight);
 		}
 	
 		public static void game_cancel_duel(GameClient client, String packet)
@@ -276,8 +275,8 @@ public class SendActions implements PacketParser {
 			{
 				if(client.getPlayer().getDuel() == -1)return;
 				SocketManager.GAME_SEND_CANCEL_DUEL_TO_MAP(client.getPlayer().getMap(),client.getPlayer().getDuel(),client.getPlayer().getId());
-				World.data.getPersonnage(client.getPlayer().getDuel()).setAway(false);
-				World.data.getPersonnage(client.getPlayer().getDuel()).setDuel(-1);
+				World.data.getPlayer(client.getPlayer().getDuel()).setAway(false);
+				World.data.getPlayer(client.getPlayer().getDuel()).setDuel(-1);
 				client.getPlayer().setAway(false);
 				client.getPlayer().setDuel(-1);	
 			}catch(NumberFormatException e){return;};
@@ -298,7 +297,7 @@ public class SendActions implements PacketParser {
 					return;
 				}
 				
-				Player Target = World.data.getPersonnage(guid);
+				Player Target = World.data.getPlayer(guid);
 				
 				if(Target == null) 
 					return;
@@ -309,8 +308,8 @@ public class SendActions implements PacketParser {
 				
 				client.getPlayer().setDuel(guid);
 				client.getPlayer().setAway(true);
-				World.data.getPersonnage(guid).setDuel(client.getPlayer().getId());
-				World.data.getPersonnage(guid).setAway(true);
+				World.data.getPlayer(guid).setDuel(client.getPlayer().getId());
+				World.data.getPlayer(guid).setAway(true);
 				SocketManager.GAME_SEND_MAP_NEW_DUEL_TO_MAP(client.getPlayer().getMap(),client.getPlayer().getId(),guid);
 			}catch(NumberFormatException e){return;}
 		}

@@ -18,7 +18,7 @@ public class Join implements PacketParser {
 		switch(packet.charAt(2))
 		{
 			case 'R'://Nom perso			
-				Player P = World.data.getPersoByName(packet.substring(3));
+				Player P = World.data.getPlayerByName(packet.substring(3));
 				
 				if(P == null || client.getPlayer().getGuild() == null) {
 					SocketManager.GAME_SEND_gJ_PACKET(client.getPlayer(), "Eu");
@@ -54,7 +54,7 @@ public class Join implements PacketParser {
 			case 'E'://ou Refus
 				if(packet.substring(3).equalsIgnoreCase(client.getPlayer().getInviting()+""))
 				{
-					Player p = World.data.getPersonnage(client.getPlayer().getInviting());
+					Player p = World.data.getPlayer(client.getPlayer().getInviting());
 					if(p == null)return;//Pas cens� arriver
 					SocketManager.GAME_SEND_gJ_PACKET(p,"Ec");
 				}
@@ -62,7 +62,7 @@ public class Join implements PacketParser {
 			case 'K'://Accepte
 				if(packet.substring(3).equalsIgnoreCase(client.getPlayer().getInviting()+""))
 				{
-					Player p = World.data.getPersonnage(client.getPlayer().getInviting());
+					Player p = World.data.getPlayer(client.getPlayer().getInviting());
 					if(p == null)return;//Pas cens� arriver
 					Guild G = p.getGuild();
 					GuildMember GM = G.addNewMember(client.getPlayer());

@@ -20,7 +20,7 @@ public class Kick implements PacketParser {
 			return;
 		
 		String name = packet.substring(2);
-		Player P = World.data.getPersoByName(name);
+		Player P = World.data.getPlayerByName(name);
 		int guid = -1, guildId = -1;
 		Guild toRemGuild;
 		GuildMember toRemMember;

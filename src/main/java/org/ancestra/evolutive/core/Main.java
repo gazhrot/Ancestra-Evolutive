@@ -19,7 +19,7 @@ public class Main {
         });
 	}
 	
-	public static void main(String[] args) {
+	public static void main(String[] args) {		
 		//creation de la console
 		Console console = new Console();
 		Console.instance = console;

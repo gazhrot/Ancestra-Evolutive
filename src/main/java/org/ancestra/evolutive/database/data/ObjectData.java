@@ -5,7 +5,7 @@ import com.zaxxer.hikari.HikariDataSource;
 import org.ancestra.evolutive.core.Console;
 import org.ancestra.evolutive.core.World;
 import org.ancestra.evolutive.database.AbstractDAO;
-import org.ancestra.evolutive.object.Objet;
+import org.ancestra.evolutive.object.Object;
 import org.slf4j.LoggerFactory;
 
 import java.sql.PreparedStatement;
@@ -14,25 +14,25 @@ import java.sql.ResultSet;
 
 
 
-public class ItemData extends AbstractDAO<Objet>{
+public class ObjectData extends AbstractDAO<Object>{
 
-	public ItemData(HikariDataSource source) {
+	public ObjectData(HikariDataSource source) {
 		super(source);
         logger = (Logger) LoggerFactory.getLogger("factory.Item");
 	}
 
 	@Override
-	public boolean create(Objet obj) {
+	public boolean create(Object obj) {
 		try {
 			String baseQuery = "INSERT INTO `items` VALUES(?,?,?,?,?);";
 
 			PreparedStatement statement = getPreparedStatement(baseQuery);
 
-			statement.setInt(1, obj.getGuid());
-			statement.setInt(2, obj.getTemplate().getID());
+			statement.setInt(1, obj.getId());
+			statement.setInt(2, obj.getTemplate().getId());
 			statement.setInt(3, obj.getQuantity());
 			statement.setInt(4, obj.getPosition());
-			statement.setString(5, obj.parseToSave());
+			statement.setString(5, obj.parseStatsString());
 
 			execute(statement);
 			return true;
@@ -43,24 +43,24 @@ public class ItemData extends AbstractDAO<Objet>{
 	}
 
 	@Override
-	public boolean delete(Objet obj) {
-		String baseQuery = "DELETE FROM items WHERE guid = "+obj.getGuid();
+	public boolean delete(Object obj) {
+		String baseQuery = "DELETE FROM items WHERE guid = "+obj.getId();
 		execute(baseQuery);
 		return true;
 	}
 
 	@Override
-	public boolean update(Objet obj) {
+	public boolean update(Object obj) {
 		try {
 			String baseQuery = "REPLACE INTO `items` VALUES(?,?,?,?,?);";
 
 			PreparedStatement statement = getPreparedStatement(baseQuery);
 
-			statement.setInt(1, obj.getGuid());
-			statement.setInt(2, obj.getTemplate().getID());
+			statement.setInt(1, obj.getId());
+			statement.setInt(2, obj.getTemplate().getId());
 			statement.setInt(3, obj.getQuantity());
 			statement.setInt(4, obj.getPosition());
-			statement.setString(5, obj.parseToSave());
+			statement.setString(5, obj.parseStatsString());
 
 			execute(statement);
 			return true;
@@ -71,8 +71,8 @@ public class ItemData extends AbstractDAO<Objet>{
 	}
 
 	@Override
-	public Objet load(int id) {
-		Objet item = null;
+	public Object load(int id) {
+		Object item = null;
 		try {
 			Result result = getData("SELECT * FROM items WHERE guid = "+id);
 			ResultSet RS = result.resultSet;
@@ -82,9 +82,9 @@ public class ItemData extends AbstractDAO<Objet>{
 				int qua = RS.getInt("qua");
 				int pos = RS.getInt("pos");
 				String stats = RS.getString("stats");
-				item = new Objet(guid, tempID, qua, pos, stats);
+				item = new Object(guid, tempID, qua, pos, stats);
 				
-				World.data.addObjet(item, false);
+				World.data.addObject(item, false);
 			}
 			close(result);
 		} catch (Exception e) {
@@ -106,7 +106,7 @@ public class ItemData extends AbstractDAO<Objet>{
 				
 				String stats = result.resultSet.getString("stats");
 				
-				World.data.addObjet(World.data.newObjet(guid, tempID, qua, pos, stats),false);
+				World.data.addObject(World.data.newObject(guid, tempID, qua, pos, stats),false);
 			}
 			close(result);
 		} catch (Exception e) {

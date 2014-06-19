@@ -14,31 +14,33 @@ public class GoToHouse implements PacketParser {
 	@Override
 	public void parse(GameClient client, String packet) {
 		packet = packet.substring(2);
+		
 		if(client.getPlayer().getGuild() == null) {
 			SocketManager.GAME_SEND_Im_PACKET(client.getPlayer(), "1135");
 			return;
 		}
 		
-		if(client.getPlayer().getFight() != null || client.getPlayer().isAway())return;
-		int HouseID = Integer.parseInt(packet);
-		House h = World.data.getHouses().get(HouseID);
-		if(h == null) return;
-		if(client.getPlayer().getGuild().getId() != h.get_guild_id()) 
-		{
+		if(client.getPlayer().getFight() != null || client.getPlayer().isAway())
+			return;
+		
+		House house = World.data.getHouses().get(Integer.parseInt(packet));
+		
+		if(house == null) 
+			return;
+		if(client.getPlayer().getGuild().getId() != house.getGuildId()) {
 			SocketManager.GAME_SEND_Im_PACKET(client.getPlayer(), "1135");
 			return;
 		}
-		if(!h.canDo(Constants.H_GTELE))
-		{
+		
+		if(!house.canDo(Constants.H_GTELE)) {
 			SocketManager.GAME_SEND_Im_PACKET(client.getPlayer(), "1136");
 			return;
 		}
-		if (client.getPlayer().hasItemTemplate(8883, 1))
-		{
+		
+		if (client.getPlayer().hasItemTemplate(8883, 1)) {
 			client.getPlayer().removeByTemplateID(8883,1);
-			client.getPlayer().teleport((short)h.get_mapid(), h.get_caseid());
-		}else
-		{
+			client.getPlayer().teleport((short) house.getToMapid(), house.getToCellid());
+		} else {
 			SocketManager.GAME_SEND_Im_PACKET(client.getPlayer(), "1137");
 			return;
 		}

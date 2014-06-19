@@ -13,7 +13,7 @@ public class SetCharacter implements PacketParser {
 	public void parse(GameClient client, String packet) {
 		int id = Integer.parseInt(packet.substring(2));
 		if(client.getAccount().getPlayers().get(id) != null) {
-			client.setPlayer(World.data.getPersonnage(id));
+			client.setPlayer(World.data.getPlayer(id));
 			if(client.getPlayer() != null) { 
 				client.getPlayer().onJoinGame();
 				return;

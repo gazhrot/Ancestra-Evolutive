@@ -11,6 +11,6 @@ public class Buy implements PacketParser {
 
 	@Override
 	public void parse(GameClient client, String packet) {
-		House.HouseAchat(client.getPlayer());
+		House.buy(client.getPlayer());
 	}
 }

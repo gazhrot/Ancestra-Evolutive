@@ -18,7 +18,7 @@ public class Accept implements PacketParser {
 		if(client.getPlayer().getInviting() == 0)
 			return;
 		
-		Player player = World.data.getPersonnage(client.getPlayer().getInviting());
+		Player player = World.data.getPlayer(client.getPlayer().getInviting());
 		
 		if(player == null)
 			return;

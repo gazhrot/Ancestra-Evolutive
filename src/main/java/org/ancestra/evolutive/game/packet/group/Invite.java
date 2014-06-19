@@ -16,7 +16,7 @@ public class Invite implements PacketParser {
 			return;
 		
 		String name = packet.substring(2);
-		Player target = World.data.getPersoByName(name);
+		Player target = World.data.getPlayerByName(name);
 		
 		if(target == null)
 			return;

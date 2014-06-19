@@ -17,17 +17,17 @@ import org.ancestra.evolutive.game.GameClient;
 import org.ancestra.evolutive.game.GameServer;
 import org.ancestra.evolutive.guild.Guild;
 import org.ancestra.evolutive.guild.GuildMember;
-import org.ancestra.evolutive.hdv.HDV;
-import org.ancestra.evolutive.hdv.HDV.HdvEntry;
+import org.ancestra.evolutive.hdv.Hdv;
+import org.ancestra.evolutive.hdv.HdvEntry;
 import org.ancestra.evolutive.house.Trunk;
 import org.ancestra.evolutive.job.JobStat;
 import org.ancestra.evolutive.map.Case;
 import org.ancestra.evolutive.map.InteractiveObject;
 import org.ancestra.evolutive.map.Maps;
 import org.ancestra.evolutive.map.MountPark;
-import org.ancestra.evolutive.object.ItemSet;
-import org.ancestra.evolutive.object.Objet;
-import org.ancestra.evolutive.object.Objet.ObjTemplate;
+import org.ancestra.evolutive.object.ObjectSet;
+import org.ancestra.evolutive.object.Object;
+import org.ancestra.evolutive.object.ObjectTemplate;
 
 import java.util.ArrayList;
 import java.util.Map.Entry;
@@ -43,7 +43,6 @@ public class SocketManager {
 	}
 	
 
-	
 	public static void REALM_SEND_LOGIN_ERROR(Client _out)
 	{
 		String packet = "AlEf";
@@ -1367,15 +1366,15 @@ public class SocketManager {
 			Log.addToSockLog("Game: Send>>"+packet);
 	}
 
-	public static void GAME_SEND_OBJECT_QUANTITY_PACKET(Player out, Objet obj)
+	public static void GAME_SEND_OBJECT_QUANTITY_PACKET(Player out, Object obj)
 	{
-		String packet = "OQ"+obj.getGuid()+"|"+obj.getQuantity();
+		String packet = "OQ"+obj.getId()+"|"+obj.getQuantity();
 		send(out,packet);
 		if(Server.config.isDebug())
 			Log.addToSockLog("Game: Send>>"+packet);
 	}
 	
-	public static void GAME_SEND_OAKO_PACKET(Player out, Objet obj)
+	public static void GAME_SEND_OAKO_PACKET(Player out, Object obj)
 	{
 		String packet = "OAKO"+obj.parseItem();
 		send(out,packet);
@@ -1407,9 +1406,9 @@ public class SocketManager {
 			Log.addToSockLog("Game: Send>>"+packet);
 	}
 
-	public static void GAME_SEND_OBJET_MOVE_PACKET(Player out,Objet obj)
+	public static void GAME_SEND_OBJET_MOVE_PACKET(Player out,Object obj)
 	{
-		String packet = "OM"+obj.getGuid()+"|";
+		String packet = "OM"+obj.getId()+"|";
 		if(obj.getPosition() != Constants.ITEM_POS_NO_EQUIPED)
 			packet += obj.getPosition();
 		
@@ -1904,19 +1903,19 @@ public class SocketManager {
 		else
 		{
 			packet.append("+").append(pano).append("|");
-			ItemSet IS = World.data.getItemSet(pano);
+			ObjectSet IS = World.data.getItemSet(pano);
 			if(IS != null)
 			{
 				StringBuilder items = new StringBuilder();
 				//Pour chaque objet de la pano
-				for(ObjTemplate OT : IS.getItemTemplates())
+				for(ObjectTemplate OT : IS.getItemTemplates())
 				{
 					//Si le joueur l'a �quip�
-					if(perso.hasEquiped(OT.getID()))
+					if(perso.hasEquiped(OT.getId()))
 					{
 						//On l'ajoute au packet
 						if(items.length() >0)items.append(";");
-						items.append(OT.getID());
+						items.append(OT.getId());
 					}
 				}
 				packet.append(items.toString()).append("|").append(IS.getBonusStatByItemNumb(num).parseToItemSetStats());
@@ -2371,13 +2370,13 @@ public class SocketManager {
 	public static void GAME_SEND_EHP_PACKET(Player out, int templateID)	//Packet d'envoie du prix moyen du template (En r�ponse a un packet EHP)
 	{
 		
-		String packet = "EHP"+templateID+"|"+World.data.getObjTemplate(templateID).getAvgPrice();
+		String packet = "EHP"+templateID+"|"+World.data.getObjectTemplate(templateID).getAvgPrice();
 		
 		send(out,packet);
 		if(Server.config.isDebug())
 			Log.addToSockLog("Game: Send>>" + packet);
 	}
-	public static void GAME_SEND_EHl(Player out, HDV seller,int templateID)
+	public static void GAME_SEND_EHl(Player out, Hdv seller,int templateID)
 	{
 		String packet = "EHl" + seller.parseToEHl(templateID);
 		send(out,packet);
@@ -2424,7 +2423,7 @@ public class SocketManager {
 	public static void GAME_SEND_WEDDING(Maps c, int action, int homme, int femme, int parlant)
 	{
 		String packet = "GA;"+action+";"+homme+";"+homme+","+femme+","+parlant;
-		Player Homme = World.data.getPersonnage(homme);
+		Player Homme = World.data.getPlayer(homme);
 		send(Homme,packet);
 		if(Server.config.isDebug())
 			Log.addToSockLog("Game: Send>>" + packet);
@@ -2443,9 +2442,9 @@ public class SocketManager {
     	if(World.data.getSeller(P.getMap()) == null) return;
         for (Integer pID : World.data.getSeller(P.getMap()))
         {
-        	if(!World.data.getPersonnage(pID).isOnline() && World.data.getPersonnage(pID).isSeeSeller())
+        	if(!World.data.getPlayer(pID).isOnline() && World.data.getPlayer(pID).isSeeSeller())
         	{
-        		packet.append(World.data.getPersonnage(pID).parseToMerchant()).append("|");
+        		packet.append(World.data.getPlayer(pID).parseToMerchant()).append("|");
             }
         }
         if(packet.length() < 5) return;

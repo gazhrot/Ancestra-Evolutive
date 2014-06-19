@@ -12,7 +12,7 @@ public class Join implements PacketParser {
 
 	@Override
 	public void parse(GameClient client, String packet) {
-		Player player = World.data.getPersonnage(client.getPlayer().getWife());
+		Player player = World.data.getPlayer(client.getPlayer().getWife());
 		
 		if(player == null) 
 			return;

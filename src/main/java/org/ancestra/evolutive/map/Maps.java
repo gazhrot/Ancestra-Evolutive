@@ -15,7 +15,7 @@ import org.ancestra.evolutive.entity.npc.Npc;
 import org.ancestra.evolutive.entity.npc.NpcTemplate;
 import org.ancestra.evolutive.fight.Fight;
 import org.ancestra.evolutive.fight.Fighter;
-import org.ancestra.evolutive.object.Objet;
+import org.ancestra.evolutive.object.Object;
 import org.ancestra.evolutive.other.Action;
 import org.slf4j.LoggerFactory;
 
@@ -395,12 +395,12 @@ public class Maps {
 		if(this.getCases().get(cell) == null)
 			return;
 		
-		Objet obj = this.getCases().get(cell).getObject();
+		Object obj = this.getCases().get(cell).getObject();
 		
 		if(obj != null) {
 			this.getCases().get(cell).setObject(null);
-			if(player.addObjet(obj, true))
-				World.data.addObjet(obj, true);
+			if(player.addObject(obj, true))
+				World.data.addObject(obj, true);
 			SocketManager.GAME_SEND_GDO_PACKET_TO_MAP(this,'-', cell,0,0);
 			SocketManager.GAME_SEND_Ow_PACKET(player);	
 		}
@@ -473,7 +473,7 @@ public class Maps {
 	public void sendFloorItems(Player player) {
 		for(Case cell: this.getCases().values())
 			if(cell.getObject() != null)
-				SocketManager.GAME_SEND_GDO_PACKET(player, '+', cell.getId(), cell.getObject().getTemplate().getID(), 0);
+				SocketManager.GAME_SEND_GDO_PACKET(player, '+', cell.getId(), cell.getObject().getTemplate().getId(), 0);
 	}
 
 	public int getStoreCount() {
@@ -562,12 +562,10 @@ public class Maps {
     }
 
     @Override
-    public boolean equals(Object object){
-        if(object instanceof Maps){
-            if(((Maps)object).getId() == this.getId()){
+    public boolean equals(java.lang.Object object){
+        if(object instanceof Maps)
+            if(((Maps) object).getId() == this.getId())
                 return true;
-            }
-        }
         return false;
     }
 

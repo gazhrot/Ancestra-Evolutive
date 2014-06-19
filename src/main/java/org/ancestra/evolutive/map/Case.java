@@ -12,7 +12,7 @@ import org.ancestra.evolutive.game.GameAction;
 import org.ancestra.evolutive.house.House;
 import org.ancestra.evolutive.house.Trunk;
 import org.ancestra.evolutive.job.JobConstant;
-import org.ancestra.evolutive.object.Objet;
+import org.ancestra.evolutive.object.Object;
 import org.ancestra.evolutive.other.Action;
 import org.slf4j.LoggerFactory;
 
@@ -29,7 +29,7 @@ public class Case {
 	private boolean walkable = true;
 	private boolean LoS = true;
 	private InteractiveObject interactiveObject;
-	private Objet object;
+	private Object object;
 	private ArrayList<Action> onCellStop;
 	private Map<Integer, Player> players;
 	private Map<Integer, Fighter> fighters;
@@ -91,11 +91,11 @@ public class Case {
 		this.interactiveObject = interactiveObject;
 	}
 	
-	public Objet getObject() {
+	public Object getObject() {
 		return object;
 	}
 
-	public void setObject(Objet object) {
+	public void setObject(Object object) {
 		this.object = object;
 	}
 
@@ -290,51 +290,54 @@ public class Case {
 				perso.getAccount().getGameClient().removeAction(GA);
 			break;
 			case 81://V�rouiller maison
-				House h = House.get_house_id_by_coord(perso.getMap().getId(), CcellID);
-				if(h == null)return;
+				House h = House.getHouseByCoord(perso.getMap().getId(), CcellID);
+				if(h == null)
+					return;
 				perso.setCurHouse(h);
-				h.Lock(perso);
+				h.lock(perso);
 			break;
 			case 84://Rentrer dans une maison
-				House h2 = House.get_house_id_by_coord(perso.getMap().getId(), CcellID);
-				if(h2 == null)return;
+				House h2 = House.getHouseByCoord(perso.getMap().getId(), CcellID);
+				if(h2 == null)
+					return;
 				perso.setCurHouse(h2);
-				h2.HopIn(perso);
+				h2.open(perso);
 			break;
 			case 97://Acheter maison
-				House h3 = House.get_house_id_by_coord(perso.getMap().getId(), CcellID);
-				if(h3 == null)return;
+				House h3 = House.getHouseByCoord(perso.getMap().getId(), CcellID);
+				if(h3 == null)
+					return;
 				perso.setCurHouse(h3);
-				h3.BuyIt(perso);
+				h3.buyIt(perso);
 			break;
 			
             case 104://Ouvrir coffre priv�
-            	Trunk trunk = Trunk.get_trunk_id_by_coord(perso.getMap().getId(), CcellID);
+            	Trunk trunk = Trunk.getTrunkByPos(perso.getMap().getId(), CcellID);
             	if(trunk == null)
                 {
                 	Log.addToLog("Game: INVALID TRUNK ON MAP : "+perso.getMap().getId()+" CELLID : "+CcellID);
                 	return;
                 }
                 perso.setCurTrunk(trunk);
-                trunk.HopIn(perso);
+                trunk.open(perso);
             break;
             case 105://V�rouiller coffre
-                Trunk t = Trunk.get_trunk_id_by_coord(perso.getMap().getId(), CcellID);
+                Trunk t = Trunk.getTrunkByPos(perso.getMap().getId(), CcellID);
                 if(t == null)
                 {
                 	Log.addToLog("Game: INVALID TRUNK ON MAP : "+perso.getMap().getId()+" CELLID : "+CcellID);
                 	return;
                 }
                 perso.setCurTrunk(t);
-                t.Lock(perso);
+                t.lock(perso);
             break;
             
 			case 98://Vendre
 			case 108://Modifier prix de vente
-				House h4 = House.get_house_id_by_coord(perso.getMap().getId(), CcellID);
+				House h4 = House.getHouseByCoord(perso.getMap().getId(), CcellID);
 				if(h4 == null)return;
 				perso.setCurHouse(h4);
-				h4.SellIt(perso);
+				h4.sellIt(perso);
 			break;
 			
 			default:
@@ -378,9 +381,9 @@ public class Case {
 				this.interactiveObject.startTimer();
 				SocketManager.GAME_SEND_GDF_PACKET_TO_MAP(perso.getMap(),this);
 				int qua = Formulas.getRandomValue(1, 10);//On a entre 1 et 10 eaux
-				Objet obj = World.data.getObjTemplate(311).createNewItem(qua, false);
-				if(perso.addObjet(obj, true))
-					World.data.addObjet(obj,true);
+				Object obj = World.data.getObjectTemplate(311).createNewItem(qua, false);
+				if(perso.addObject(obj, true))
+					World.data.addObject(obj,true);
 				SocketManager.GAME_SEND_IQ_PACKET(perso,perso.getId(),qua);
 			break;
 			

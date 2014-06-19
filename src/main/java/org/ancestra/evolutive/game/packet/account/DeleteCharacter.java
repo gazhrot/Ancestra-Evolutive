@@ -14,8 +14,7 @@ public class DeleteCharacter implements PacketParser {
 		String answer = split.length>1?split[1]:"";
 		if(client.getAccount().deletePlayer(playerId,answer)) {
             client.send(client.getAccount().getAccountHelper().getPlayersList());
-        }
-        else {
+        } else {
             client.send("ADE");
         }
 	}

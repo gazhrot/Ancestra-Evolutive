@@ -29,8 +29,8 @@ import org.ancestra.evolutive.map.Case;
 import org.ancestra.evolutive.map.InteractiveObject;
 import org.ancestra.evolutive.map.Maps;
 import org.ancestra.evolutive.map.MountPark;
-import org.ancestra.evolutive.object.ItemSet;
-import org.ancestra.evolutive.object.Objet;
+import org.ancestra.evolutive.object.ObjectSet;
+import org.ancestra.evolutive.object.Object;
 import org.ancestra.evolutive.other.Exchange;
 import org.ancestra.evolutive.tool.time.waiter.Waiter;
 
@@ -39,7 +39,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.Map.Entry;
 
-public class Player extends Creature{
+public class Player extends Creature {
     public static boolean regenWhenOffline = true;
 
 	private int sex;
@@ -133,7 +133,7 @@ public class Player extends Creature{
 	public Map<Integer,Player> followers = new TreeMap<>();
 	private ArrayList<Integer> zaaps = new ArrayList<>();
 	private Map<Integer, SpellEffect> buffs = new TreeMap<>(); 
-	private Map<Integer, Objet> objects = new TreeMap<>();
+	private Map<Integer, Object> objects = new TreeMap<>();
 	private Map<Integer, JobStat> jobs = new TreeMap<>();
 	private Map<Integer , Integer> stores = new TreeMap<>();//<ObjID, Prix>	
 	
@@ -276,12 +276,17 @@ public class Player extends Creature{
         if(!World.database.getCharacterData().create(perso))
 			return null;
 		
-		World.data.addPersonnage(perso);
+		World.data.addPlayer(perso);
 		return perso;
 	}
 
 	public int getSex() {
 		return sex;
+	}
+	
+	public void setSex(int sex) {
+		this.sex = sex;
+		World.database.getCharacterData().updateSex(this);
 	}
 
 	public Classe getClasse() {
@@ -836,12 +841,20 @@ public class Player extends Creature{
 	public ArrayList<Integer> getZaaps() {
 		return zaaps;
 	}
+	
+	public void addZaap(int mapId) {
+		if(!this.zaaps.contains(Integer.valueOf(mapId)))	{
+			this.zaaps.add(mapId);
+			SocketManager.GAME_SEND_Im_PACKET(this, "024");
+			World.database.getCharacterData().update(this);
+		}
+	}
 
 	public Map<Integer, SpellEffect> getBuffs() {
 		return buffs;
 	}
 
-	public Map<Integer, Objet> getObjects() {
+	public Map<Integer, Object> getObjects() {
 		return objects;
 	}
 
@@ -858,19 +871,19 @@ public class Player extends Creature{
 	}
 	
 	public void setMapAndCell(short curMap, int curCell) {
-		this.curMap = World.data.getCarte(curMap);
-		if(this.curMap == null && World.data.getCarte(Server.config.getStartMap()) != null)	{
-			this.curMap = World.data.getCarte(Server.config.getStartMap());
+		this.curMap = World.data.getMap(curMap);
+		if(this.curMap == null && World.data.getMap(Server.config.getStartMap()) != null)	{
+			this.curMap = World.data.getMap(Server.config.getStartMap());
 			this.curCell = this.curMap.getCases().get(Server.config.getStartCell());
 		}else 
-		if (this.curMap == null && World.data.getCarte(Server.config.getStartMap()) == null) {
+		if (this.curMap == null && World.data.getMap(Server.config.getStartMap()) == null) {
 			Console.instance.writeln(" > Le personnage " + this.getName() + " se trouve sur une map incorrecte.");
 			Main.closeServers();
 		}else 
 		if(this.curMap != null)	{
 			this.curCell = this.curMap.getCases().get(curCell);
 			if(this.curCell == null) {
-				this.curMap = World.data.getCarte(Server.config.getStartMap());
+				this.curMap = World.data.getMap(Server.config.getStartMap());
 				this.curCell = this.curMap.getCases().get(Server.config.getStartCell());
 			}
 		}
@@ -901,12 +914,12 @@ public class Player extends Creature{
 				continue;
 			}
 			
-			Objet object = World.data.getObjet(id);
+			Object object = World.data.getObject(id);
 			
 			if(object == null)
 				continue;
 			
-			this.objects.put(object.getGuid(), object);
+			this.objects.put(object.getId(), object);
 		}
 	}
 	
@@ -923,12 +936,12 @@ public class Player extends Creature{
 					continue;
 				}
 				
-				Objet object = World.data.getObjet(id);
+				Object object = World.data.getObject(id);
 				
 				if(object == null)
 					continue;
 				
-				this.stores.put(object.getGuid(), price);
+				this.stores.put(object.getId(), price);
 			}
 		}
 	}
@@ -973,7 +986,7 @@ public class Player extends Creature{
 				int id = Integer.parseInt(e.split(";")[0]);
 				int lvl = Integer.parseInt(e.split(";")[1]);
 				char place = e.split(";")[2].charAt(0);
-				learnSpell(id, lvl, false, false);
+				learnSpell(id, lvl, false, false, false);
 				this.spellsPlace.put(id, place);
 			} catch(NumberFormatException e1) {
 				continue;
@@ -981,23 +994,71 @@ public class Player extends Creature{
 		}
 	}
 		
-	public boolean learnSpell(int id, int level, boolean save, boolean send) {
+	public boolean learnSpell(int id, int level, boolean save, boolean send, boolean learn) {
 		if(World.data.getSort(id).getStatsByLevel(level) == null) {
 			Log.addToLog("> Erreur spell : "+id+" | level : "+level+" non trouver !");
 			return false;
 		}
 		
-		this.spells.put(id, World.data.getSort(id).getStatsByLevel(level));
+		if(id == 366 && this.spells.containsKey(Integer.valueOf(id))) 
+	    	return false;
+	    
+		if(this.spells.containsKey(Integer.valueOf(id)) && learn) {
+			SocketManager.GAME_SEND_MESSAGE(this, "Tu poss�de d�j� ce sort.", Server.config.getMotdColor());
+			return false;
+		} else {
+			this.spells.put(id, World.data.getSort(id).getStatsByLevel(level));
+			
+			if(send) {
+				SocketManager.GAME_SEND_SPELL_LIST(this);
+				SocketManager.GAME_SEND_Im_PACKET(this, "03;" + id);
+			}
+			
+			if(save)
+				save();
+			
+			return true;
+		}
+	}
+	
+	public boolean unlearnSpell(int id, int level, int ancLevel, boolean save, boolean send) {
+		int spellPoint = 1;
 		
-		if(send) {
-			SocketManager.GAME_SEND_SPELL_LIST(this);
-			SocketManager.GAME_SEND_Im_PACKET(this, "03;" + id);
+		switch(ancLevel) {
+		case 3:
+			spellPoint = 2+1;
+			break;
+		case 4:
+			spellPoint = 3+3;
+			break;
+		case 5:
+			spellPoint = 4+6;
+			break;
+		case 6:
+			spellPoint = 5+10;
+			break;
 		}
 		
-		if(save)
-			save();
-		
-		return true;
+	    if(World.data.getSort(id).getStatsByLevel(level) == null) {
+	    	Log.addToLog("> Erreur spell : "+id+" | level : "+level+" non trouver !");
+			return false;
+	    }
+
+	    if(id == 366 && this.spells.containsKey(Integer.valueOf(id))) 
+	    	return false;
+	    
+	    this.spells.put(Integer.valueOf(id), World.data.getSort(id).getStatsByLevel(level));
+	   
+	    if(send) {
+	    	SocketManager.GAME_SEND_SPELL_LIST(this);
+	    	SocketManager.GAME_SEND_Im_PACKET(this, "0154;" +"<b>"+ ancLevel +"</b>" +"~"+"<b>"+ spellPoint +"</b>");
+	    	addSpellPoint(spellPoint);
+	    	SocketManager.GAME_SEND_STATS_PACKET(this);
+	    }
+	    
+	    if(save) 
+	    	World.database.getCharacterData().update(this);
+	    return true;
 	}
 	
 	public boolean boostSpell(int id) {
@@ -1013,7 +1074,7 @@ public class Player extends Creature{
 		
 		if(this.spellPoints >= oldLevel && World.data.getSort(id).getStatsByLevel(oldLevel + 1).getReqLevel() <= this.getLevel())
 		{
-			if(learnSpell(id, oldLevel + 1, true, false)) {
+			if(learnSpell(id, oldLevel + 1, true, false, false)) {
 				this.spellPoints -= oldLevel;
 				save();
 				return true;
@@ -1037,7 +1098,7 @@ public class Player extends Creature{
 		if(oldLevel <= 1)
 			return false;
 		
-		if(learnSpell(id, 1, true, false)) {
+		if(learnSpell(id, 1, true, false, false)) {
 			this.spellPoints += Formulas.spellCost(oldLevel);	
 			save();
 			return true;
@@ -1127,11 +1188,11 @@ public class Player extends Creature{
 			SocketManager.GAME_SEND_JS_PACKET(this, list);
 			SocketManager.GAME_SEND_JX_PACKET(this, list);
 			SocketManager.GAME_SEND_JO_PACKET(this, list);
-			Objet obj = getObjetByPos(Constants.ITEM_POS_ARME);
+			Object obj = getObjectByPos(Constants.ITEM_POS_ARME);
 			
 			if(obj != null)
 				for(JobStat sm : list)
-					if(sm.getTemplate().isValidTool(obj.getTemplate().getID()))
+					if(sm.getTemplate().isValidTool(obj.getTemplate().getId()))
 						SocketManager.GAME_SEND_OT_PACKET(this.getAccount().getGameClient(),sm.getTemplate().getId());
 		}
 		//Fin m�tier
@@ -1265,20 +1326,20 @@ public class Player extends Creature{
 	
     public	String getGMStuffString() {
 		StringBuilder str = new StringBuilder();
-		if(getObjetByPos(Constants.ITEM_POS_ARME) != null)
-		 	str.append(Integer.toHexString(getObjetByPos(Constants.ITEM_POS_ARME).getTemplate().getID()));	
+		if(getObjectByPos(Constants.ITEM_POS_ARME) != null)
+		 	str.append(Integer.toHexString(getObjectByPos(Constants.ITEM_POS_ARME).getTemplate().getId()));	
 		str.append(",");
-		if(getObjetByPos(Constants.ITEM_POS_COIFFE) != null)
-			str.append(Integer.toHexString(getObjetByPos(Constants.ITEM_POS_COIFFE).getTemplate().getID()));	
+		if(getObjectByPos(Constants.ITEM_POS_COIFFE) != null)
+			str.append(Integer.toHexString(getObjectByPos(Constants.ITEM_POS_COIFFE).getTemplate().getId()));	
 		str.append(",");
-		if(getObjetByPos(Constants.ITEM_POS_CAPE) != null)
-			str.append(Integer.toHexString(getObjetByPos(Constants.ITEM_POS_CAPE).getTemplate().getID()));	
+		if(getObjectByPos(Constants.ITEM_POS_CAPE) != null)
+			str.append(Integer.toHexString(getObjectByPos(Constants.ITEM_POS_CAPE).getTemplate().getId()));	
 		str.append(",");
-		if(getObjetByPos(Constants.ITEM_POS_FAMILIER) != null)
-			str.append(Integer.toHexString(getObjetByPos(Constants.ITEM_POS_FAMILIER).getTemplate().getID()));	
+		if(getObjectByPos(Constants.ITEM_POS_FAMILIER) != null)
+			str.append(Integer.toHexString(getObjectByPos(Constants.ITEM_POS_FAMILIER).getTemplate().getId()));	
 		str.append(",");
-		if(getObjetByPos(Constants.ITEM_POS_BOUCLIER) != null)
-			str.append(Integer.toHexString(getObjetByPos(Constants.ITEM_POS_BOUCLIER).getTemplate().getID()));	
+		if(getObjectByPos(Constants.ITEM_POS_BOUCLIER) != null)
+			str.append(Integer.toHexString(getObjectByPos(Constants.ITEM_POS_BOUCLIER).getTemplate().getId()));	
 		return str.toString();
 	}
 
@@ -1374,14 +1435,14 @@ public class Player extends Creature{
 		Stats stats = new Stats(false,null);
 		ArrayList<Integer> itemSetApplied = new ArrayList<Integer>();
 		
-		for(Entry<Integer, Objet> entry : this.objects.entrySet()) {
+		for(Entry<Integer, Object> entry : this.objects.entrySet()) {
 			if(entry.getValue().getPosition() != Constants.ITEM_POS_NO_EQUIPED) {
 				stats = Stats.cumulStat(stats,entry.getValue().getStats());
-				int panID = entry.getValue().getTemplate().getPanopID();
+				int panID = entry.getValue().getTemplate().getSet();
 				//Si panoplie, et si l'effet de pano n'a pas encore �t� ajout�
 				if(panID > 0 && !itemSetApplied.contains(panID)) {
 					itemSetApplied.add(panID);
-					ItemSet IS = World.data.getItemSet(panID);
+					ObjectSet IS = World.data.getItemSet(panID);
 					//Si la pano existe
 					if(IS != null)
 						stats = Stats.cumulStat(stats, IS.getBonusStatByItemNumb(this.getNumbEquipedItemOfPanoplie(panID)));
@@ -1452,7 +1513,7 @@ public class Player extends Creature{
         
         int total = 0;
 		for(Entry<Integer,Integer> obj : this.stores.entrySet()) {
-        	Objet object = World.data.getObjet(obj.getKey());
+        	Object object = World.data.getObject(obj.getKey());
         	if(object != null)
         		total += object.getTemplate().getPod() * object.getQuantity();
         }
@@ -1462,7 +1523,7 @@ public class Player extends Creature{
 	
 	public int getPodUsed() {
 		int pod = 0;
-		for(Entry<Integer,Objet> entry : this.objects.entrySet())
+		for(Entry<Integer,Object> entry : this.objects.entrySet())
 			pod += entry.getValue().getTemplate().getPod() * entry.getValue().getQuantity();
 		pod += this.getPodsInStore();
 		return pod;
@@ -1516,8 +1577,7 @@ public class Player extends Creature{
 		this.isAway = false;
 	}
 
-	public void boostStat(int stat)
-	{
+	public void boostStat(int stat, boolean capital) {
 		int value = 0;
 		switch(stat)
 		{
@@ -1535,12 +1595,14 @@ public class Player extends Creature{
 			break;
 		}
 		int cout = Constants.getReqPtsToBoostStatsByClass(this.getClasse().getId(), stat, value);
-		if(cout <= this.getCapital())
+		if(!capital)
+			cout = 0;
+		if(cout <= this.capital)
 		{
 			switch(stat)
 			{
 				case 11://Vita
-					if(this.getClasse() != Classe.SACRIEUR)
+					if(this.getClasse().getId() != Constants.CLASS_SACRIEUR)
 						this.getStats().addOneStat(Constants.STATS_ADD_VITA, 1);
 					else
 						this.getStats().addOneStat(Constants.STATS_ADD_VITA, 2);
@@ -1565,10 +1627,10 @@ public class Player extends Creature{
 			}
 			this.capital -= cout;
 			SocketManager.GAME_SEND_STATS_PACKET(this);
-			save();
+			World.database.getCharacterData().update(this);
 		}
 	}
-
+	
 	public boolean isMuted() {
 		return this.getAccount().isMuted();
 	}
@@ -1579,16 +1641,16 @@ public class Player extends Creature{
 		if(this.objects.isEmpty())
 			return "";
 		
-		for(Entry<Integer,Objet> entry : this.objects.entrySet()) 
-			str.append(entry.getValue().getGuid()).append("|");
+		for(Entry<Integer,Object> entry : this.objects.entrySet()) 
+			str.append(entry.getValue().getId()).append("|");
 
 		return str.toString();
 	}
 	
-	public boolean addObjet(Objet newObj, boolean stackIfSimilar) {
-		for(Entry<Integer,Objet> entry : this.objects.entrySet()) {
-			Objet obj = entry.getValue();
-			if(obj.getTemplate().getID() == newObj.getTemplate().getID() && obj.getStats().isSameStats(newObj.getStats())
+	public boolean addObject(Object newObj, boolean stackIfSimilar) {
+		for(Entry<Integer,Object> entry : this.objects.entrySet()) {
+			Object obj = entry.getValue();
+			if(obj.getTemplate().getId() == newObj.getTemplate().getId() && obj.getStats().isSameStats(newObj.getStats())
 					&& stackIfSimilar && newObj.getTemplate().getType() != 85 && obj.getPosition() == Constants.ITEM_POS_NO_EQUIPED) {
 				obj.setQuantity(obj.getQuantity()+newObj.getQuantity());//On ajoute QUA item a la quantit� de l'objet existant
 				World.database.getItemData().update(obj);
@@ -1597,17 +1659,17 @@ public class Player extends Creature{
 				return false;
 			}
 		}
-		this.objects.put(newObj.getGuid(), newObj);
+		this.objects.put(newObj.getId(), newObj);
 		SocketManager.GAME_SEND_OAKO_PACKET(this,newObj);
 		return true;
 	}
 	
-	public void addObjet(Objet newObj)
+	public void addObject(Object newObj)
 	{
-		this.objects.put(newObj.getGuid(), newObj);
+		this.objects.put(newObj.getId(), newObj);
 	}
 	
-	public Map<Integer,Objet> getItems()
+	public Map<Integer,Object> getItems()
 	{
 		return this.objects;
 	}
@@ -1616,7 +1678,7 @@ public class Player extends Creature{
 	{
 		StringBuilder str = new StringBuilder();
 		if(this.objects.isEmpty())return "";
-		for(Objet  obj : this.objects.values())
+		for(Object  obj : this.objects.values())
 		{ 
 			str.append(obj.parseItem());
 		}
@@ -1666,7 +1728,7 @@ public class Player extends Creature{
 	public int storeAllBuy() {
 		int total = 0;
 		for(java.util.Map.Entry<Integer, Integer> value : this.stores.entrySet()) {
-			Objet O = World.data.getObjet(value.getKey());
+			Object O = World.data.getObject(value.getKey());
 			int multiple = O.getQuantity();
 			int add = value.getValue() * multiple;
 			total += add;
@@ -1681,13 +1743,13 @@ public class Player extends Creature{
 		if(this.objects.get(guid).getQuantity() < qua)//Si il a moins d'item que ce qu'on veut Del
 			qua = this.objects.get(guid).getQuantity();
 		
-		int prix = qua * (this.objects.get(guid).getTemplate().getPrix()/10);//Calcul du prix de vente (prix d'achat/10)
+		int prix = qua * (this.objects.get(guid).getTemplate().getPrice()/10);//Calcul du prix de vente (prix d'achat/10)
 		int newQua =  this.objects.get(guid).getQuantity() - qua;
 		if(newQua <= 0)//Ne devrait pas etre <0, S'il n'y a plus d'item apres la vente 
 		{
-			Objet o = this.objects.get(guid);
+			Object o = this.objects.get(guid);
 			this.objects.remove(guid);
-			World.data.removeItem(guid);
+			World.data.removeObject(guid);
 			World.database.getItemData().delete(o);
 			SocketManager.GAME_SEND_REMOVE_ITEM_PACKET(this,guid);
 		}else//S'il reste des items apres la vente
@@ -1708,7 +1770,7 @@ public class Player extends Creature{
 	}
 	public void removeItem(int guid, int nombre,boolean send,boolean deleteFromWorld)
 	{
-		Objet obj = this.objects.get(guid);
+		Object obj = this.objects.get(guid);
 		
 		if(nombre > obj.getQuantity())
 			nombre = obj.getQuantity();
@@ -1724,27 +1786,27 @@ public class Player extends Creature{
 			}else
 			{
 				//on supprime de l'inventaire et du Monde
-				this.objects.remove(obj.getGuid());
+				this.objects.remove(obj.getId());
 				if(deleteFromWorld)
-					World.data.removeItem(obj.getGuid());
+					World.data.removeObject(obj.getId());
 				//on envoie le packet si connect�
 				if(send && this.isOnline)
-					SocketManager.GAME_SEND_REMOVE_ITEM_PACKET(this, obj.getGuid());
+					SocketManager.GAME_SEND_REMOVE_ITEM_PACKET(this, obj.getId());
 			}
 		}
 	}
 	public void deleteItem(int guid)
 	{
 		this.objects.remove(guid);
-		World.data.removeItem(guid);
+		World.data.removeObject(guid);
 	}
-	public Objet getObjetByPos(int pos)
+	public Object getObjectByPos(int pos)
 	{
 		if(pos == Constants.ITEM_POS_NO_EQUIPED)return null;
 		
-		for(Entry<Integer,Objet> entry : this.objects.entrySet())
+		for(Entry<Integer,Object> entry : this.objects.entrySet())
 		{
-			Objet obj = entry.getValue();
+			Object obj = entry.getValue();
 			if(obj.getPosition() == pos)
 				return obj;
 		}
@@ -1807,15 +1869,15 @@ public class Player extends Creature{
 		this.kamas += l;
 	}
 
-	public Objet getSimilarItem(Objet exObj)
+	public Object getSimilarItem(Object exObj)
 	{
-		for(Entry<Integer,Objet> entry : this.objects.entrySet())
+		for(Entry<Integer,Object> entry : this.objects.entrySet())
 		{
-			Objet obj = entry.getValue();
+			Object obj = entry.getValue();
 			
-			if(obj.getTemplate().getID() == exObj.getTemplate().getID()
+			if(obj.getTemplate().getId() == exObj.getTemplate().getId()
 				&& obj.getStats().isSameStats(exObj.getStats())
-				&& obj.getGuid() != exObj.getGuid()
+				&& obj.getId() != exObj.getId()
 				&& obj.getPosition() == Constants.ITEM_POS_NO_EQUIPED)
 			return obj;
 		}
@@ -1859,9 +1921,9 @@ public class Player extends Creature{
 			//Packet JO (Job Option)
 			SocketManager.GAME_SEND_JO_PACKET(this,list);
 			
-			Objet obj = getObjetByPos(Constants.ITEM_POS_ARME);
+			Object obj = getObjectByPos(Constants.ITEM_POS_ARME);
 			if(obj != null)
-				if(sm.getTemplate().isValidTool(obj.getTemplate().getID()))
+				if(sm.getTemplate().isValidTool(obj.getTemplate().getId()))
 					SocketManager.GAME_SEND_OT_PACKET(this.getAccount().getGameClient(),m.getId());
 		}
 		return pos;
@@ -1874,8 +1936,8 @@ public class Player extends Creature{
 
 	public boolean hasEquiped(int id)
 	{
-		for(Entry<Integer,Objet> entry : this.objects.entrySet())
-			if(entry.getValue().getTemplate().getID() == id && entry.getValue().getPosition() != Constants.ITEM_POS_NO_EQUIPED)
+		for(Entry<Integer,Object> entry : this.objects.entrySet())
+			if(entry.getValue().getTemplate().getId() == id && entry.getValue().getPosition() != Constants.ITEM_POS_NO_EQUIPED)
 				return true;
 		return false;
 	}
@@ -1901,10 +1963,10 @@ public class Player extends Creature{
 	public int getNumbEquipedItemOfPanoplie(int panID)
 	{
 		int nb = 0;
-		for(Entry<Integer, Objet> i : this.objects.entrySet()) {
+		for(Entry<Integer, Object> i : this.objects.entrySet()) {
 			if(i.getValue().getPosition() == Constants.ITEM_POS_NO_EQUIPED)
 				continue;
-			if(i.getValue().getTemplate().getPanopID() == panID)
+			if(i.getValue().getTemplate().getSet() == panID)
 				nb++;
 		}
 		return nb;
@@ -1943,11 +2005,11 @@ public class Player extends Creature{
 		{
 			PW = this.getAccount().getGameClient();
 		}
-		if(World.data.getCarte(newMapID) == null){
+		if(World.data.getMap(newMapID) == null){
 			Log.addToLog("Game: INVALID MAP : "+newMapID);
 			return;
 		}
-		if(World.data.getCarte(newMapID).getCases().get(newCellID) == null)
+		if(World.data.getMap(newMapID).getCases().get(newCellID) == null)
 		{
 			Log.addToLog("Game: INVALID CELL : "+newCellID+" ON MAP : "+newMapID);
 			return;
@@ -1959,7 +2021,7 @@ public class Player extends Creature{
 		}
 		
 		this.getCell().removePlayer(this.getId());
-		this.setMap(World.data.getCarte(newMapID));
+		this.setMap(World.data.getMap(newMapID));
 		this.setCell(this.getMap().getCases().get(newCellID));
 		
 
@@ -2006,7 +2068,7 @@ public class Player extends Creature{
 	public String parseBankPacket()
 	{
 		StringBuilder packet = new StringBuilder();
-		for(Entry<Integer, Objet> entry : this.getAccount().getBank().entrySet())
+		for(Entry<Integer, Object> entry : this.getAccount().getBank().entrySet())
 			packet.append("O").append(entry.getValue().parseItem()).append(";");
 		if(getBankKamas() != 0)
 			packet.append("G").append(getBankKamas());
@@ -2025,7 +2087,7 @@ public class Player extends Creature{
 
 	public void addInBank(int guid, int qua)
 	{
-		Objet PersoObj = World.data.getObjet(guid);
+		Object PersoObj = World.data.getObject(guid);
 		//Si le joueur n'a pas l'item dans son sac ...
 		if(this.objects.get(guid) == null)
 		{
@@ -2035,7 +2097,7 @@ public class Player extends Creature{
 		//Si c'est un item �quip� ...
 		if(PersoObj.getPosition() != Constants.ITEM_POS_NO_EQUIPED)return;
 		
-		Objet BankObj = getSimilarBankItem(PersoObj);
+		Object BankObj = getSimilarBankItem(PersoObj);
 		int newQua = PersoObj.getQuantity() - qua;
 		if(BankObj == null)//S'il n'y pas d'item du meme Template
 		{
@@ -2043,10 +2105,10 @@ public class Player extends Creature{
 			if(newQua <= 0)
 			{
 				//On enleve l'objet du sac du joueur
-				removeItem(PersoObj.getGuid());
+				removeItem(PersoObj.getId());
 				//On met l'objet du sac dans la banque, avec la meme quantit�
-				this.getAccount().getBank().put(PersoObj.getGuid(), PersoObj);
-				String str = "O+"+PersoObj.getGuid()+"|"+PersoObj.getQuantity()+"|"+PersoObj.getTemplate().getID()+"|"+PersoObj.parseStatsString();
+				this.getAccount().getBank().put(PersoObj.getId(), PersoObj);
+				String str = "O+"+PersoObj.getId()+"|"+PersoObj.getQuantity()+"|"+PersoObj.getTemplate().getId()+"|"+PersoObj.parseStatsString();
 				SocketManager.GAME_SEND_EsK_PACKET(this, str);
 				SocketManager.GAME_SEND_REMOVE_ITEM_PACKET(this, guid);
 				
@@ -2056,12 +2118,12 @@ public class Player extends Creature{
 				//on modifie la quantit� d'item du sac
 				PersoObj.setQuantity(newQua);
 				//On ajoute l'objet a la banque et au monde
-				BankObj = Objet.getCloneObjet(PersoObj, qua);
-				World.data.addObjet(BankObj, true);
-				this.getAccount().getBank().put(BankObj.getGuid(), BankObj);
+				BankObj = Object.getClone(PersoObj, qua);
+				World.data.addObject(BankObj, true);
+				this.getAccount().getBank().put(BankObj.getId(), BankObj);
 				
 				//Envoie des packets
-				String str = "O+"+BankObj.getGuid()+"|"+BankObj.getQuantity()+"|"+BankObj.getTemplate().getID()+"|"+BankObj.parseStatsString();
+				String str = "O+"+BankObj.getId()+"|"+BankObj.getQuantity()+"|"+BankObj.getTemplate().getId()+"|"+BankObj.parseStatsString();
 				SocketManager.GAME_SEND_EsK_PACKET(this, str);
 				SocketManager.GAME_SEND_OBJECT_QUANTITY_PACKET(this, PersoObj);
 				
@@ -2072,13 +2134,13 @@ public class Player extends Creature{
 			if(newQua <= 0)
 			{
 				//On enleve l'objet du sac du joueur
-				removeItem(PersoObj.getGuid());
+				removeItem(PersoObj.getId());
 				//On enleve l'objet du monde
-				World.data.removeItem(PersoObj.getGuid());
+				World.data.removeObject(PersoObj.getId());
 				//On ajoute la quantit� a l'objet en banque
 				BankObj.setQuantity(BankObj.getQuantity() + PersoObj.getQuantity());
 				//on envoie l'ajout a la banque de l'objet
-				String str = "O+"+BankObj.getGuid()+"|"+BankObj.getQuantity()+"|"+BankObj.getTemplate().getID()+"|"+BankObj.parseStatsString();
+				String str = "O+"+BankObj.getId()+"|"+BankObj.getQuantity()+"|"+BankObj.getTemplate().getId()+"|"+BankObj.parseStatsString();
 				SocketManager.GAME_SEND_EsK_PACKET(this, str);
 				//on envoie la supression de l'objet du sac au joueur
 				SocketManager.GAME_SEND_REMOVE_ITEM_PACKET(this, guid);
@@ -2088,7 +2150,7 @@ public class Player extends Creature{
 				//on modifie la quantit� d'item du sac
 				PersoObj.setQuantity(newQua);
 				BankObj.setQuantity(BankObj.getQuantity() + qua);
-				String str = "O+"+BankObj.getGuid()+"|"+BankObj.getQuantity()+"|"+BankObj.getTemplate().getID()+"|"+BankObj.parseStatsString();
+				String str = "O+"+BankObj.getId()+"|"+BankObj.getQuantity()+"|"+BankObj.getTemplate().getId()+"|"+BankObj.parseStatsString();
 				SocketManager.GAME_SEND_EsK_PACKET(this, str);
 				SocketManager.GAME_SEND_OBJECT_QUANTITY_PACKET(this, PersoObj);
 				
@@ -2098,13 +2160,13 @@ public class Player extends Creature{
 		World.database.getAccountData().update(this.getAccount());
 	}
 
-	private Objet getSimilarBankItem(Objet obj)
+	private Object getSimilarBankItem(Object obj)
 	{
-		for(Objet value : this.getAccount().getBank().values())
+		for(Object value : this.getAccount().getBank().values())
 		{
 			if(value.getTemplate().getType() == 85)
 				continue;
-			if(value.getTemplate().getID() == obj.getTemplate().getID() && value.getStats().isSameStats(obj.getStats()))
+			if(value.getTemplate().getId() == obj.getTemplate().getId() && value.getStats().isSameStats(obj.getStats()))
 				return value;
 		}
 		return null;
@@ -2112,7 +2174,7 @@ public class Player extends Creature{
 
 	public void removeFromBank(int guid, int qua)
 	{
-		Objet BankObj = World.data.getObjet(guid);
+		Object BankObj = World.data.getObject(guid);
 		//Si le joueur n'a pas l'item dans sa banque ...
 		if(this.getAccount().getBank().get(guid) == null)
 		{
@@ -2120,7 +2182,7 @@ public class Player extends Creature{
 			return;
 		}
 		
-		Objet PersoObj = getSimilarItem(BankObj);
+		Object PersoObj = getSimilarItem(BankObj);
 		
 		int newQua = BankObj.getQuantity() - qua;
 		
@@ -2142,17 +2204,17 @@ public class Player extends Creature{
 			}else //S'il reste des objets en banque
 			{
 				//On cr�e une copy de l'item en banque
-				PersoObj = Objet.getCloneObjet(BankObj, qua);
+				PersoObj = Object.getClone(BankObj, qua);
 				//On l'ajoute au monde
-				World.data.addObjet(PersoObj, true);
+				World.data.addObject(PersoObj, true);
 				//On retire X objet de la banque
 				BankObj.setQuantity(newQua);
 				//On l'ajoute au joueur
-				this.objects.put(PersoObj.getGuid(), PersoObj);
+				this.objects.put(PersoObj.getId(), PersoObj);
 				
 				//On envoie les packets
 				SocketManager.GAME_SEND_OAKO_PACKET(this,PersoObj);
-				String str = "O+"+BankObj.getGuid()+"|"+BankObj.getQuantity()+"|"+BankObj.getTemplate().getID()+"|"+BankObj.parseStatsString();
+				String str = "O+"+BankObj.getId()+"|"+BankObj.getQuantity()+"|"+BankObj.getTemplate().getId()+"|"+BankObj.parseStatsString();
 				SocketManager.GAME_SEND_EsK_PACKET(this, str);
 				
 			}
@@ -2163,8 +2225,8 @@ public class Player extends Creature{
 			if(newQua <= 0)
 			{
 				//On retire l'item de la banque
-				this.getAccount().getBank().remove(BankObj.getGuid());
-				World.data.removeItem(BankObj.getGuid());
+				this.getAccount().getBank().remove(BankObj.getId());
+				World.data.removeObject(BankObj.getId());
 				//On Modifie la quantit� de l'item du sac du joueur
 				PersoObj.setQuantity(PersoObj.getQuantity() + BankObj.getQuantity());
 				
@@ -2183,7 +2245,7 @@ public class Player extends Creature{
 				
 				//On envoie les packets
 				SocketManager.GAME_SEND_OBJECT_QUANTITY_PACKET(this,PersoObj);
-				String str = "O+"+BankObj.getGuid()+"|"+BankObj.getQuantity()+"|"+BankObj.getTemplate().getID()+"|"+BankObj.parseStatsString();
+				String str = "O+"+BankObj.getId()+"|"+BankObj.getQuantity()+"|"+BankObj.getTemplate().getId()+"|"+BankObj.parseStatsString();
 				SocketManager.GAME_SEND_EsK_PACKET(this, str);
 				
 			}
@@ -2206,8 +2268,8 @@ public class Player extends Creature{
 			SocketManager.GAME_SEND_ECK_PACKET(this, 16, str);
 		} else 
 		if(this.getGuildMember() != null) {
-			if(World.data.getPersonnage(this.getCurMountPark().getOwner()).getGuildMember() != null)
-				if(World.data.getPersonnage(this.getCurMountPark().getOwner()).getGuildMember().getGuild() == this.getGuildMember().getGuild() && getGuildMember().canDo(Constants.G_USEENCLOS))
+			if(World.data.getPlayer(this.getCurMountPark().getOwner()).getGuildMember() != null)
+				if(World.data.getPlayer(this.getCurMountPark().getOwner()).getGuildMember().getGuild() == this.getGuildMember().getGuild() && getGuildMember().canDo(Constants.G_USEENCLOS))
 					SocketManager.GAME_SEND_ECK_PACKET(this, 16, str);
 		} else {
 			SocketManager.GAME_SEND_Im_PACKET(this, "1101");
@@ -2226,17 +2288,17 @@ public class Player extends Creature{
 	public void removeByTemplateID(int tID, int count)
 	{
 		//Copie de la liste pour eviter les modif concurrentes
-		ArrayList<Objet> list = new ArrayList<Objet>();
+		ArrayList<Object> list = new ArrayList<Object>();
 		list.addAll(this.objects.values());
 		
-		ArrayList<Objet> remove = new ArrayList<Objet>();
+		ArrayList<Object> remove = new ArrayList<Object>();
 		int tempCount = count;
 		
 		//on verifie pour chaque objet
-		for(Objet obj : list)
+		for(Object obj : list)
 		{
 			//Si mauvais TemplateID, on passe
-			if(obj.getTemplate().getID() != tID)continue;
+			if(obj.getTemplate().getId() != tID)continue;
 			
 			if(obj.getQuantity() >= count)
 			{
@@ -2249,11 +2311,11 @@ public class Player extends Creature{
 				}else
 				{
 					//on supprime de l'inventaire et du Monde
-					this.objects.remove(obj.getGuid());
-					World.data.removeItem(obj.getGuid());
+					this.objects.remove(obj.getId());
+					World.data.removeObject(obj.getId());
 					//on envoie le packet si connect�
 					if(this.isOnline)
-						SocketManager.GAME_SEND_REMOVE_ITEM_PACKET(this, obj.getGuid());
+						SocketManager.GAME_SEND_REMOVE_ITEM_PACKET(this, obj.getId());
 				}
 				return;
 			}
@@ -2270,14 +2332,14 @@ public class Player extends Creature{
 					}
 					else remove.add(obj);
 					
-					for(Objet o : remove)
+					for(Object o : remove)
 					{
 						//on supprime de l'inventaire et du Monde
-						this.objects.remove(o.getGuid());
-						World.data.removeItem(o.getGuid());
+						this.objects.remove(o.getId());
+						World.data.removeObject(o.getId());
 						//on envoie le packet si connect�
 						if(this.isOnline)
-							SocketManager.GAME_SEND_REMOVE_ITEM_PACKET(this, o.getGuid());
+							SocketManager.GAME_SEND_REMOVE_ITEM_PACKET(this, o.getId());
 					}
 				}else
 				{
@@ -2424,7 +2486,7 @@ public class Player extends Creature{
 	public void toogleOnMount()
 	{
 		this.setOnMount(!this.isOnMount());
-		Objet obj = getObjetByPos(Constants.ITEM_POS_FAMILIER);
+		Object obj = getObjectByPos(Constants.ITEM_POS_FAMILIER);
 		
 		if(this.isOnMount() && obj != null)	{
 			obj.setPosition(Constants.ITEM_POS_NO_EQUIPED);
@@ -2549,13 +2611,13 @@ public class Player extends Creature{
 		
 		StringBuilder str = new StringBuilder();
 		str.append(map);
-        int SubAreaID = this.getMap().getSubArea().getArea().getContinent().getId();
+	        int SubAreaID = this.getMap().getSubArea().getArea().getContinent().getId();
 		for(int i : this.zaaps) {
-			if(World.data.getCarte(i) == null)
+			if(World.data.getMap(i) == null)
 				continue;
-			if(World.data.getCarte(i).getSubArea().getArea().getContinent().getId() != SubAreaID)
+			if(World.data.getMap(i).getSubArea().getArea().getContinent().getId() != SubAreaID)
 				continue;
-			int cost = Formulas.calculZaapCost(this.getMap(), World.data.getCarte(i));
+			int cost = Formulas.calculZaapCost(this.getMap(), World.data.getMap(i));
 			if(i == this.getMap().getId())
 				cost = 0;
 			str.append("|").append(i).append(";").append(cost);
@@ -2596,32 +2658,32 @@ public class Player extends Creature{
 		if(!hasZaap(id))
 			return;//S'il n'a pas le zaap demand�(ne devrais pas arriver)
 		
-		int cost = Formulas.calculZaapCost(this.getMap(), World.data.getCarte(id));
+		int cost = Formulas.calculZaapCost(this.getMap(), World.data.getMap(id));
 		if(this.getKamas() < cost)
 			return;//S'il n'a pas les kamas (verif cot� client)
 		
 		short mapID = id;
 		int SubAreaID = this.getMap().getSubArea().getArea().getContinent().getId();
 		int cellID = World.data.getZaapCellIdByMapId(id);
-		if(World.data.getCarte(mapID) == null)
+		if(World.data.getMap(mapID) == null)
 		{
 			Log.addToLog("La map "+id+" n'est pas implantee, Zaap refuse");
 			SocketManager.GAME_SEND_WUE_PACKET(this);
 			return;
 		}
-		if(World.data.getCarte(mapID).getCases().get(cellID) == null)
+		if(World.data.getMap(mapID).getCases().get(cellID) == null)
 		{
 			Log.addToLog("La cellule associee au zaap "+id+" n'est pas implantee, Zaap refuse");
 			SocketManager.GAME_SEND_WUE_PACKET(this);
 			return;
 		}
-		if(!World.data.getCarte(mapID).getCases().get(cellID).isWalkable(true))
+		if(!World.data.getMap(mapID).getCases().get(cellID).isWalkable(true))
 		{
 			Log.addToLog("La cellule associee au zaap "+id+" n'est pas 'walkable', Zaap refuse");
 			SocketManager.GAME_SEND_WUE_PACKET(this);
 			return;
 		}
-		if(World.data.getCarte(mapID).getSubArea().getArea().getContinent().getId() != SubAreaID)
+		if(World.data.getMap(mapID).getSubArea().getArea().getContinent().getId() != SubAreaID)
 		{
 			SocketManager.GAME_SEND_WUE_PACKET(this);
 			return;
@@ -2664,7 +2726,7 @@ public class Player extends Creature{
 	
 	public void Zaapi_use(String packet)
 	{
-		Maps map = World.data.getCarte(Short.valueOf(packet.substring(2)));
+		Maps map = World.data.getMap(Short.valueOf(packet.substring(2)));
 	
 		short idcelula = 100;
 		if (map != null)
@@ -2695,10 +2757,10 @@ public class Player extends Creature{
 		
 	public boolean hasItemTemplate(int i, int q)
 	{
-		for(Objet obj : this.objects.values())
+		for(Object obj : this.objects.values())
 		{
 			if(obj.getPosition() != Constants.ITEM_POS_NO_EQUIPED)continue;
-			if(obj.getTemplate().getID() != i)continue;
+			if(obj.getTemplate().getId() != i)continue;
 			if(obj.getQuantity() >= q)return true;
 		}
 		return false;
@@ -2744,7 +2806,7 @@ public class Player extends Creature{
 		boolean isFirstDe = true;
 		boolean isFirstDf = true;
 		boolean isFirstFA = true;
-		for(Objet obj : this.objects.values())
+		for(Object obj : this.objects.values())
 		{
 			if(obj.getPosition() == Constants.ITEM_POS_NO_EQUIPED)continue;
 			if(obj.getPosition() == Constants.ITEM_POS_AMULETTE)
@@ -2938,7 +3000,7 @@ public class Player extends Creature{
 	
 	public String get_wife_friendlist()
 	{
-		Player wife = World.data.getPersonnage(this.getWife());
+		Player wife = World.data.getPlayer(this.getWife());
 		StringBuilder str = new StringBuilder();
 		if(wife != null)
 		{
@@ -3001,7 +3063,7 @@ public class Player extends Creature{
 	public void Divorce()
 	{
 		if(isOnline())
-			SocketManager.GAME_SEND_Im_PACKET(this, "047;"+World.data.getPersonnage(this.getWife()).getName());
+			SocketManager.GAME_SEND_Im_PACKET(this, "047;"+World.data.getPlayer(this.getWife()).getName());
 		this.setWife(0);
 		save();
 	}
@@ -3056,9 +3118,9 @@ public class Player extends Creature{
         if(this.getStores().isEmpty())return "";
         for(Entry<Integer,Integer> obj : this.getStores().entrySet()) 
         {
-        	Objet O = World.data.getObjet(obj.getKey());
+        	Object O = World.data.getObject(obj.getKey());
         	if(O == null) continue;
-        	list.append(O.getGuid()).append(";").append(O.getQuantity()).append(";").append(O.getTemplate().getID()).append(";").append(O.parseStatsString()).append(";").append(obj.getValue()).append("|");
+        	list.append(O.getId()).append(";").append(O.getQuantity()).append(";").append(O.getTemplate().getId()).append(";").append(O.parseStatsString()).append(";").append(obj.getValue()).append("|");
         }
         return (list.length()>0?list.toString().substring(0, list.length()-1):list.toString());
     }
@@ -3066,20 +3128,20 @@ public class Player extends Creature{
     public String parseStoreItemstoBD()
     {
     	StringBuilder str = new StringBuilder();
-		for(Entry<Integer, Integer> _storeObjets : this.getStores().entrySet())
+		for(Entry<Integer, Integer> _storeObjects : this.getStores().entrySet())
 		{
-			str.append(_storeObjets.getKey()).append(",").append(_storeObjets.getValue()).append("|");
+			str.append(_storeObjects.getKey()).append(",").append(_storeObjects.getValue()).append("|");
 		}
 		return str.toString();
     }
 
     public void addinStore(int objectId, int price, int quantity) {
-        Objet objet = this.objects.get(objectId);
+        Object objet = this.objects.get(objectId);
 		if(this.objects.get(objectId) == null){
 			return;
 		}
 
-		Objet SimilarObj = getSimilarStoreItem(objet);
+		Object SimilarObj = getSimilarStoreItem(objet);
 		int newQuantity = objet.getQuantity() - quantity;
 		if(SimilarObj == null)//S'il n'y pas d'item du meme Template
 		{
@@ -3097,9 +3159,9 @@ public class Player extends Creature{
 				//on modifie la quantit� d'item du sac
 				objet.setQuantity(newQuantity);
 				//On ajoute l'objet a la banque et au monde
-				SimilarObj = Objet.getCloneObjet(objet, quantity);
-				World.data.addObjet(SimilarObj, true);
-				this.getStores().put(SimilarObj.getGuid(), price);
+				SimilarObj = Object.getClone(objet, quantity);
+				World.data.addObject(SimilarObj, true);
+				this.getStores().put(SimilarObj.getId(), price);
 				
 				//Envoie des packets
 				SocketManager.GAME_SEND_ITEM_LIST_PACKET_SELLER(this, this);
@@ -3112,24 +3174,24 @@ public class Player extends Creature{
 			if(newQuantity <= 0)
 			{
 				//On enleve l'objet du sac du joueur
-				removeItem(objet.getGuid());
+				removeItem(objet.getId());
 				//On enleve l'objet du monde
-				World.data.removeItem(objet.getGuid());
+				World.data.removeObject(objet.getId());
 				//On ajoute la quantit� a l'objet en banque
 				SimilarObj.setQuantity(SimilarObj.getQuantity() + objet.getQuantity());
-				this.getStores().remove(SimilarObj.getGuid());
-				this.getStores().put(SimilarObj.getGuid(), price);
+				this.getStores().remove(SimilarObj.getId());
+				this.getStores().put(SimilarObj.getId(), price);
 				//on envoie l'ajout a la banque de l'objet
 				SocketManager.GAME_SEND_ITEM_LIST_PACKET_SELLER(this, this);
 				//on envoie la supression de l'objet du sac au joueur
-				SocketManager.GAME_SEND_REMOVE_ITEM_PACKET(this, objet.getGuid());
+				SocketManager.GAME_SEND_REMOVE_ITEM_PACKET(this, objet.getId());
 			}else //S'il restait des objets
 			{
 				//on modifie la quantit� d'item du sac
 				objet.setQuantity(newQuantity);
 				SimilarObj.setQuantity(SimilarObj.getQuantity() + quantity);
-				this.getStores().remove(SimilarObj.getGuid());
-				this.getStores().put(SimilarObj.getGuid(), price);
+				this.getStores().remove(SimilarObj.getId());
+				this.getStores().put(SimilarObj.getId(), price);
 				SocketManager.GAME_SEND_ITEM_LIST_PACKET_SELLER(this, this);
 				SocketManager.GAME_SEND_OBJECT_QUANTITY_PACKET(this, objet);
 				
@@ -3139,14 +3201,14 @@ public class Player extends Creature{
 		save();
     }
 
-	private Objet getSimilarStoreItem(Objet obj)
+	private Object getSimilarStoreItem(Object obj)
 	{
 		for(Entry<Integer, Integer> value : this.getStores().entrySet())
 		{
-			Objet obj2 = World.data.getObjet(value.getKey());
+			Object obj2 = World.data.getObject(value.getKey());
 			if(obj2.getTemplate().getType() == 85)
 				continue;
-			if(obj2.getTemplate().getID() == obj.getTemplate().getID() && obj2.getStats().isSameStats(obj.getStats()))
+			if(obj2.getTemplate().getId() == obj.getTemplate().getId() && obj2.getStats().isSameStats(obj.getStats()))
 				return obj2;
 		}
 		return null;
@@ -3154,7 +3216,7 @@ public class Player extends Creature{
 	
 	public void removeFromStore(int guid, int qua)
 	{
-		Objet SimilarObj = World.data.getObjet(guid);
+		Object SimilarObj = World.data.getObject(guid);
 		//Si le joueur n'a pas l'item dans son store ...
 		if(this.getStores().get(guid) == null)
 		{
@@ -3162,7 +3224,7 @@ public class Player extends Creature{
 			return;
 		}
 		
-		Objet PersoObj = getSimilarItem(SimilarObj);
+		Object PersoObj = getSimilarItem(SimilarObj);
 		
 		int newQua = SimilarObj.getQuantity() - qua;
 		
@@ -3188,8 +3250,8 @@ public class Player extends Creature{
 			if(newQua <= 0)
 			{
 				//On retire l'item de la banque
-				this.getStores().remove(SimilarObj.getGuid());
-				World.data.removeItem(SimilarObj.getGuid());
+				this.getStores().remove(SimilarObj.getId());
+				World.data.removeObject(SimilarObj.getId());
 				//On Modifie la quantit� de l'item du sac du joueur
 				PersoObj.setQuantity(PersoObj.getQuantity() + SimilarObj.getQuantity());
 				
@@ -3222,8 +3284,6 @@ public class Player extends Creature{
 		World.database.getCharacterData().update(this);
 		World.database.getAccountData().update(this.getAccount());
 	}
-
-	
 	
 	public void refresh(boolean smoke) {
 		if(!smoke)
@@ -3232,7 +3292,7 @@ public class Player extends Creature{
 			SocketManager.GAME_SEND_ALTER_GM_PACKET(this.getMap(), this);
 	}
 
-    void refreshLife(){
+    void refreshLife() {
         if(fight != null) return;
         long time = (System.currentTimeMillis()-regenTime);
         int diff = (int)time/regenRate;
@@ -3246,7 +3306,7 @@ public class Player extends Creature{
      * Envoie un message au player
      * @param message message a faire parvenir
      */
-    public void send(String message){
+    public void send(String message) {
         this.account.send(message);
     }
 }

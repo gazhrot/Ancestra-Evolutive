@@ -37,7 +37,7 @@ public class Finish implements PacketParser {
 			client.getPlayer().setCurMountPark(null);
 		//prop d'echange avec un joueur
 		if(client.getPlayer().getIsTradingWith() > 0) {
-			Player p = World.data.getPersonnage(client.getPlayer().getIsTradingWith());
+			Player p = World.data.getPlayer(client.getPlayer().getIsTradingWith());
 			if(p != null) {
 				if(p.isOnline()) {
 					SocketManager.GAME_SEND_EV_PACKET(client);
@@ -55,7 +55,7 @@ public class Finish implements PacketParser {
 					SocketManager.GAME_SEND_gITM_PACKET(z, Collector.parsetoGuild(z.getGuild().getId()));
 					String str = "";
 					str += "G"+perco.getFirstNameId()+","+perco.getLastNameId();
-					str += "|.|"+World.data.getCarte(perco.getMap().getId()).getX()+"|"+World.data.getCarte(perco.getMap().getId()).getY()+"|";
+					str += "|.|"+World.data.getMap(perco.getMap().getId()).getX()+"|"+World.data.getMap(perco.getMap().getId()).getY()+"|";
 					str += client.getPlayer().getName()+"|";
 					str += perco.get_LogXp()+";";
 					str += perco.get_LogItems();

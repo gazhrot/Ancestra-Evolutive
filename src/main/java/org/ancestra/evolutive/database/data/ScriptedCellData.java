@@ -67,14 +67,14 @@ public class ScriptedCellData extends AbstractDAO<Case>{
 		try {
 			Result result = getData("SELECT * FROM scripted_cells WHERE mapid = "+mapid);
 			while (result.resultSet.next()) {
-				if (World.data.getCarte(result.resultSet.getShort("MapID")) == null)
+				if (World.data.getMap(result.resultSet.getShort("MapID")) == null)
 					continue;
-				if (World.data.getCarte(result.resultSet.getShort("MapID")).getCases().get(
+				if (World.data.getMap(result.resultSet.getShort("MapID")).getCases().get(
 						result.resultSet.getInt("CellID")) == null)
 					continue;
 
 				if(result.resultSet.getInt("EventID") == 1) {
-					World.data.getCarte(result.resultSet.getShort("MapID"))
+					World.data.getMap(result.resultSet.getShort("MapID"))
 							.getCases().get(result.resultSet.getInt("CellID"))
 							.addOnCellStopAction(result.resultSet.getInt("ActionID"),
 							result.resultSet.getString("ActionsArgs"),
