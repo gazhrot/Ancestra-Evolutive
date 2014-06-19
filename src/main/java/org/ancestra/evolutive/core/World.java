@@ -415,14 +415,14 @@ public class World {
 
 					Log.addToLog("Sauvegarde des maisons...");
 					for (House house : houses.values()) {
-						if (house.get_owner_id() > 0) {
+						if (house.getOwner() > 0) {
 							database.getHouseData().update(house);
 						}
 					}
 
 					Log.addToLog("Sauvegarde des coffres...");
 					for (Trunk t : trunks.values()) {
-						if (t.get_owner_id() > 0) {
+						if (t.getOwner() > 0) {
 							database.getTrunkData().update(t);
 						}
 					}
@@ -878,7 +878,7 @@ public class World {
 
 	public void addHouse(House house) {
         if(house != null) {
-            houses.put(house.get_id(), house);
+            houses.put(house.getId(), house);
         }
 	}
 
@@ -915,7 +915,7 @@ public class World {
 	}
 
 	public void addTrunk(Trunk trunk) {
-		trunks.put(trunk.get_id(), trunk);
+		trunks.put(trunk.getId(), trunk);
 	}
 
 	public Trunk getTrunk(int id) {

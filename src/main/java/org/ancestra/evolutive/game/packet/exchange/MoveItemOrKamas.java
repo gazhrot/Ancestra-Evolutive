@@ -323,7 +323,7 @@ public class MoveItemOrKamas implements PacketParser {
                         if(kamas > 0)//Si On ajoute des kamas au coffre
                         {
                             if(client.getPlayer().getKamas() < kamas)kamas = client.getPlayer().getKamas();
-                            t.set_kamas(t.get_kamas() + kamas);//On ajoute les kamas au coffre
+                            t.setKamas(t.getKamas() + kamas);//On ajoute les kamas au coffre
                             client.getPlayer().setKamas(client.getPlayer().getKamas()-kamas);//On retire les kamas du personnage
                             SocketManager.GAME_SEND_STATS_PACKET(client.getPlayer());
                         }else // On retire des kamas au coffre
@@ -331,14 +331,14 @@ public class MoveItemOrKamas implements PacketParser {
                         	kamas = -kamas;//On repasse en positif
                             if(kamas <= 0) // - - = +
                                 return;
-                        	if(t.get_kamas() < kamas)kamas = t.get_kamas();
-                        	t.set_kamas(t.get_kamas()-kamas);//On retire les kamas de la banque
+                        	if(t.getKamas() < kamas)kamas = t.getKamas();
+                        	t.setKamas(t.getKamas()-kamas);//On retire les kamas de la banque
                          	client.getPlayer().setKamas(client.getPlayer().getKamas()+kamas);//On ajoute les kamas du personnage
                          	SocketManager.GAME_SEND_STATS_PACKET(client.getPlayer());
                         }
                         for(Player P : World.data.getOnlinePersos())
-                        	if(P.getCurTrunk() != null && client.getPlayer().getCurTrunk().get_id() == P.getCurTrunk().get_id())
-                        		SocketManager.GAME_SEND_EsK_PACKET(P,"G"+t.get_kamas());
+                        	if(P.getCurTrunk() != null && client.getPlayer().getCurTrunk().getId() == P.getCurTrunk().getId())
+                        		SocketManager.GAME_SEND_EsK_PACKET(P,"G"+t.getKamas());
                         World.database.getTrunkData().update(t);
                     break;
               	

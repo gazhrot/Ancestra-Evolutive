@@ -1,5 +1,10 @@
 package org.ancestra.evolutive.house;
 
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.Map.Entry;
+
 import org.ancestra.evolutive.client.Account;
 import org.ancestra.evolutive.client.Player;
 import org.ancestra.evolutive.common.Constants;
@@ -7,450 +12,391 @@ import org.ancestra.evolutive.common.SocketManager;
 import org.ancestra.evolutive.core.Log;
 import org.ancestra.evolutive.core.Server;
 import org.ancestra.evolutive.core.World;
-import org.ancestra.evolutive.object.Objet;
+import org.ancestra.evolutive.house.House;
+import org.ancestra.evolutive.house.Trunk;
 
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.TreeMap;
+import org.ancestra.evolutive.object.Objet;
 
 public class Trunk {
 	
-	private int _id;
-	private int _house_id;
-	private short _mapid;
-	private int _cellid;
-	private Map<Integer, Objet> _object = new TreeMap<Integer, Objet>();
-	private long _kamas;
-	private String _key;
-	private int _owner_id;
+	private int id;
+	private int house;
+	private int owner;
+	private String key;
+	private short mapid;
+	private int cellid;
+	private long kamas;	
+	private Map<Integer, Objet> objects = new TreeMap<>();
 	
-	public Trunk(int id, int house_id, short mapid, int cellid, String object, long kamas, String key, int owner_id)
-	{
-		_id = id;
-		_house_id = house_id;
-		_mapid = mapid;
-		_cellid = cellid;
+	public Trunk(int id, int house, short mapid, int cellid, String objects, long kamas, String key, int owner) {
+		this.id = id;
+		this.house = house;
+		this.mapid = mapid;
+		this.cellid = cellid;
+		this.kamas = kamas;
+		this.key = key;
+		this.owner = owner;
 		
-		for(String item : object.split("\\|"))
-		{
-			if(item.equals(""))continue;
-			String[] infos = item.split(":");
+		for(String object: objects.split("\\|")) {
+			if(object.equals(""))
+				continue;
+			
+			String[] infos = object.split("\\:");
 			int guid = Integer.parseInt(infos[0]);
 
 			Objet obj = World.data.getObjet(guid);
-			if( obj == null)continue;
-			_object.put(obj.getGuid(), obj);
+			
+			if(obj == null)
+				continue;
+			
+			this.objects.put(obj.getGuid(), obj);
 		}
+	}
+	
+	public int getId() {
+		return id;
+	}
 
-		_kamas = kamas;
-		_key = key;
-		_owner_id = owner_id;
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	public int getHouse() {
+		return house;
+	}
+
+	public void setHouse(int house) {
+		this.house = house;
+	}
+
+	public int getOwner() {
+		return owner;
+	}
+
+	public void setOwner(int owner) {
+		this.owner = owner;
+	}
+
+	public String getKey() {
+		return key;
+	}
+
+	public void setKey(String key) {
+		this.key = key;
+	}
+
+	public short getMapid() {
+		return mapid;
+	}
+
+	public void setMapid(short mapid) {
+		this.mapid = mapid;
+	}
+
+	public int getCellid() {
+		return cellid;
+	}
+
+	public void setCellid(int cellid) {
+		this.cellid = cellid;
+	}
+
+	public long getKamas() {
+		return kamas;
+	}
+
+	public void setKamas(long kamas) {
+		this.kamas = kamas;
+	}
+
+	public Map<Integer, Objet> getObjects() {
+		return objects;
+	}
+
+	public void lock(Player player) {
+		SocketManager.GAME_SEND_KODE(player, "CK1|8");
 	}
 	
-	public int get_id()
-	{
-		return _id;
-	}
-	
-    public int get_house_id()
-    {
-            return _house_id;
-    }
-	
-	public int get_mapid()
-	{
-		return _mapid;
-	}
-	
-	public int get_cellid()
-	{
-		return _cellid;
-	}
-	
-	public Map<Integer, Objet> get_object()
-	{
-		return _object;
-	}
-	
-	public long get_kamas()
-	{
-		return _kamas;
-	}
-	
-	public void set_kamas(long kamas)
-	{
-		_kamas = kamas;
-	}
-	
-	public String get_key()
-	{
-		return _key;
-	}
-	
-	public void set_key(String key)
-	{
-		_key = key;
-	}
-	
-	public int get_owner_id()
-	{
-		return _owner_id;
-	}
-	
-	public void set_owner_id(int owner_id)
-	{
-		_owner_id = owner_id;
-	}
-	
-	public void Lock(Player P) 
-	{
-		SocketManager.GAME_SEND_KODE(P, "CK1|8");
-	}
-	
-	public static Trunk get_trunk_id_by_coord(int map_id, int cell_id)
-	{
-		for(Entry<Integer, Trunk> trunk : World.data.getTrunks().entrySet())
-		{
-			if(trunk.getValue().get_mapid() == map_id && trunk.getValue().get_cellid() == cell_id)
-			{
-				return trunk.getValue();
-			}
+	public static void lock(Player player, String packet) {
+		Trunk trunk = player.getCurTrunk();
+		if(trunk == null) 
+			return;
+		if(trunk.isTrunk(player, trunk)) {
+			World.database.getTrunkData().update(player, trunk, packet);
+			trunk.setKey(packet);
+			closeCode(player);
+		} else {
+			closeCode(player);
 		}
+		player.setCurTrunk(null);
+		return;
+	}
+	
+	public static Trunk getTrunkByPos(int mapid, int cellid) {
+		for(Entry<Integer, Trunk> trunk : World.data.getTrunks().entrySet())
+			if(trunk.getValue().getMapid() == mapid && trunk.getValue().getCellid() == cellid)
+				return trunk.getValue();
 		return null;
 	}
+		
+	public void open(Player player) {//Ouvrir coffre
+		if(player.getFight() != null || player.getIsTalkingWith() != 0 || player.getIsTradingWith() != 0 || player.getCurJobAction() != null || player.getCurExchange() != null)
+			return;
+		
+		House house = World.data.getHouse(this.getHouse());
+		Trunk trunk = player.getCurTrunk();
+		
+		if(trunk == null) 
+			return;
+		
+		if(trunk.getOwner() == player.getAccount().getUUID() || (player.getGuild() == null ? false : player.getGuild().getId() == house.getGuildId() && house.canDo(Constants.C_GNOCODE))) {
+			open(player, "-", true);
+	    } else 
+	    if(player.getGuild() == null && house.canDo(Constants.C_OCANTOPEN)) {//si on compare par id ça bug (guild null)
+			SocketManager.GAME_SEND_MESSAGE(player, "Ce coffre ne peut être ouvert que par les membres de la guilde !", Server.config.getMotdColor());
+			return;
+		} else
+		if(trunk.getOwner() > 0) {//Une personne autre le possède, il faut le code pour rentrer
+			SocketManager.GAME_SEND_KODE(player, "CK0|8");//8 étant le nombre de chiffre du code
+		} else
+		if(trunk.getOwner() == 0) {//Coffre a personne
+			return;
+		} else {
+			return;
+		}
+	}
 	
-	public static void LockTrunk(Player P, String packet) 
-	{
-		Trunk t = P.getCurTrunk();
-		if(t == null) return;
-		if(t.isTrunk(P, t))
-		{
-			World.database.getTrunkData().update(P, t, packet);//Change le code
-			t.set_key(packet);
-			closeCode(P);
+	public static void open(Player player, String packet, boolean isTrunk) {//Ouvrir un coffre
+		Trunk trunk = player.getCurTrunk();
+		
+		if(trunk == null) 
+			return;
+		
+		if(packet.compareTo(trunk.getKey()) == 0 || isTrunk) {//Si c'est chez lui ou que le mot de passe est bon
+			SocketManager.GAME_SEND_ECK_PACKET(player.getAccount().getGameClient(), 5, "");
+			SocketManager.GAME_SEND_EL_TRUNK_PACKET(player, trunk);
+			closeCode(player);
 		}else
-		{
-			closeCode(P);
-		}
-		P.setCurTrunk(null);
-		return;
-	}
-	
-	public void HopIn(Player P)//Ouvrir coffre
-	{
-		// En gros si il fait quelque chose :)
-		if(P.getFight() != null ||
-		   P.getIsTalkingWith() != 0 ||
-		   P.getIsTradingWith() != 0 ||
-		   P.getCurJobAction() != null ||
-		   P.getCurExchange() != null)
-		{
-			return;
-		}
-		
-		Trunk t = P.getCurTrunk();
-		House h = World.data.getHouse(_house_id);
-		
-		if(t == null) return;
-		if(t.get_owner_id() == P.getAccount().getUUID() || (P.getGuild() == null ? false : P.getGuild().getId() == h.get_guild_id() && h.canDo(Constants.C_GNOCODE)))
-		{
-			OpenTrunk(P, "-", true);
-		}
-		else if(P.getGuild() == null && h.canDo(Constants.C_OCANTOPEN))//si on compare par id ï¿½a bug (guild null)
-		{
-			SocketManager.GAME_SEND_MESSAGE(P, "Ce coffre ne peut ï¿½tre ouvert que par les membres de la guilde !", Server.config.getMotdColor());
-		return;
-		}
-		else if(t.get_owner_id() > 0)//Une personne autre le possï¿½de, il faut le code pour rentrer
-		{
-			SocketManager.GAME_SEND_KODE(P, "CK0|8");//8 ï¿½tant le nombre de chiffre du code
-		}
-		else if(t.get_owner_id() == 0)//Coffre a personne
-		{
-			return;
-		}else
-		{
-			return;
+		if(packet.compareTo(trunk.getKey()) != 0) {//Mauvais code
+			SocketManager.GAME_SEND_KODE(player, "KE");
+			Trunk.closeCode(player);
+			player.setCurTrunk(null);
 		}
 	}
 	
-	public static void OpenTrunk(Player P, String packet, boolean isTrunk)//Ouvrir un coffre
-	{	
-		Trunk t = P.getCurTrunk();
-		if(t == null) return;
-		
-		if(packet.compareTo(t.get_key()) == 0 || isTrunk)//Si c'est chez lui ou que le mot de passe est bon
-		{
-			SocketManager.GAME_SEND_ECK_PACKET(P.getAccount().getGameClient(), 5, "");
-			SocketManager.GAME_SEND_EL_TRUNK_PACKET(P, t);
-			closeCode(P);
-		}
-		
-		else if(packet.compareTo(t.get_key()) != 0)//Mauvais code
-		{
-			SocketManager.GAME_SEND_KODE(P, "KE");
-			closeCode(P);
-			P.setCurTrunk(null);
-		}
+	public static void closeCode(Player player) {
+		SocketManager.GAME_SEND_KODE(player, "V");
 	}
 	
-	public static void closeCode(Player P)
-	{
-		SocketManager.GAME_SEND_KODE(P, "V");
+	public boolean isTrunk(Player player, Trunk trunk) {//Savoir si c'est son coffre
+		if(trunk.getOwner() == player.getAccount().getUUID()) 
+			return true;
+		else 
+			return false;
 	}
 	
-	public boolean isTrunk(Player P, Trunk t)//Savoir si c'est son coffre
-	{
-		if(t.get_owner_id() == P.getAccount().getUUID()) return true;
-		else return false;
-	}
-	
-    public static ArrayList<Trunk> getTrunksByHouse(House h)
+    public static ArrayList<Trunk> getTrunksByHouse(House house)
     {
-            ArrayList<Trunk> trunks = new ArrayList<Trunk>();
-            for(Entry<Integer, Trunk> trunk : World.data.getTrunks().entrySet())
-            {
-                    if(trunk.getValue().get_house_id() == h.get_id())
-                    {
-                            trunks.add(trunk.getValue());
-                    }
-            }
-           
-            return trunks;
+    	ArrayList<Trunk> trunks = new ArrayList<Trunk>();
+    	for(Entry<Integer, Trunk> trunk: World.data.getTrunks().entrySet())
+    		if(trunk.getValue().getHouse() == house.getId())
+    			trunks.add(trunk.getValue());           
+    	return trunks;
     }
-    
-	public String parseToTrunkPacket()
-	{
-		StringBuilder packet = new StringBuilder();
-		for(Objet obj : _object.values())
-			packet.append("O").append(obj.parseItem()).append(";");
-		if(get_kamas() != 0)
-			packet.append("G").append(get_kamas());
-		return packet.toString();
-	}
-	
-	public void addInTrunk(int guid, int qua, Player P)
-	{
-		if(P.getCurTrunk().get_id() != get_id()) return;
+    	
+	public void addInTrunk(int id, int qua, Player player) {
+		if(player.getCurTrunk().getId() != this.getId()) 
+			return;
 		
-		if(_object.size() >= 80) // Le plus grand c'est pour si un admin ajoute des objets via la bdd...
-		{
-			SocketManager.GAME_SEND_MESSAGE(P, "Le nombre d'objets maximal de ce coffre ï¿½ ï¿½tï¿½ atteint !", Server.config.getMotdColor());
+		if(this.getObjects().size() >= 80) {// Le plus grand c'est pour si un admin ajoute des objets via la bdd...
+			SocketManager.GAME_SEND_MESSAGE(player, "Le nombre d'objets maximal de ce coffre à été atteint !", Server.config.getMotdColor());
 			return;
 		}
 		
-		Objet PersoObj = World.data.getObjet(guid);
-		if(PersoObj == null) return;
-		//Si le joueur n'a pas l'item dans son sac ...
-		if(P.getItems().get(guid) == null)
-		{
-			Log.addToLog("Le joueur "+P.getName()+" a tenter d'ajouter un objet dans un coffre qu'il n'avait pas.");
+		Objet object = World.data.getObjet(id);
+		
+		if(object == null) 
+			return;
+
+		if(player.getItems().get(id) == null) {
+			Log.addToLog("Le joueur "+player.getName()+" a tenter d'ajouter un objet dans un coffre qu'il n'avait pas.");
 			return;
 		}
 		
 		String str = "";
 		
-		//Si c'est un item ï¿½quipï¿½ ...
-		if(PersoObj.getPosition() != Constants.ITEM_POS_NO_EQUIPED)return;
+		//Si c'est un item équipé ...
+		if(object.getPosition() != Constants.ITEM_POS_NO_EQUIPED)
+			return;
 		
-		Objet TrunkObj = getSimilarTrunkItem(PersoObj);
-		int newQua = PersoObj.getQuantity() - qua;
-		if(TrunkObj == null)//S'il n'y pas d'item du meme Template
-		{
+		Objet TrunkObj = this.getSimilarTrunkItem(object);
+		int newQua = object.getQuantity() - qua;
+		
+		if(TrunkObj == null) {//S'il n'y pas d'item du meme Template
 			//S'il ne reste pas d'item dans le sac
-			if(newQua <= 0)
-			{
+			if(newQua <= 0) {
 				//On enleve l'objet du sac du joueur
-				P.removeItem(PersoObj.getGuid());
-				//On met l'objet du sac dans le coffre, avec la meme quantitï¿½
-				_object.put(PersoObj.getGuid() ,PersoObj);
-				str = "O+"+PersoObj.getGuid()+"|"+PersoObj.getQuantity()+"|"+PersoObj.getTemplate().getID()+"|"+PersoObj.parseStatsString();
-				SocketManager.GAME_SEND_REMOVE_ITEM_PACKET(P, guid);
+				player.removeItem(object.getGuid());
+				//On met l'objet du sac dans le coffre, avec la meme quantité
+				this.getObjects().put(object.getGuid() ,object);
+				str = "O+"+object.getGuid()+"|"+object.getQuantity()+"|"+object.getTemplate().getID()+"|"+object.parseStatsString();
+				SocketManager.GAME_SEND_REMOVE_ITEM_PACKET(player, id);
 				
-			}
-			else//S'il reste des objets au joueur
-			{
-				//on modifie la quantitï¿½ d'item du sac
-				PersoObj.setQuantity(newQua);
+			} else {//S'il reste des objets au joueur
+				//on modifie la quantité d'item du sac
+				object.setQuantity(newQua);
 				//On ajoute l'objet au coffre et au monde
-				TrunkObj = Objet.getCloneObjet(PersoObj, qua);
+				TrunkObj = Objet.getCloneObjet(object, qua);
 				World.data.addObjet(TrunkObj, true);
-				_object.put(TrunkObj.getGuid() ,TrunkObj);
+				this.getObjects().put(TrunkObj.getGuid() ,TrunkObj);
 				
 				//Envoie des packets
 				str = "O+"+TrunkObj.getGuid()+"|"+TrunkObj.getQuantity()+"|"+TrunkObj.getTemplate().getID()+"|"+TrunkObj.parseStatsString();
-				SocketManager.GAME_SEND_OBJECT_QUANTITY_PACKET(P, PersoObj);
+				SocketManager.GAME_SEND_OBJECT_QUANTITY_PACKET(player, object);
 				
 			}
-		}else // S'il y avait un item du meme template
-		{
+		} else {// S'il y avait un item du meme template
 			//S'il ne reste pas d'item dans le sac
-			if(newQua <= 0)
-			{
+			if(newQua <= 0)	{
 				//On enleve l'objet du sac du joueur
-				P.removeItem(PersoObj.getGuid());
+				player.removeItem(object.getGuid());
 				//On enleve l'objet du monde
-				World.data.removeItem(PersoObj.getGuid());
-				//On ajoute la quantitï¿½ a l'objet dans le coffre
-				TrunkObj.setQuantity(TrunkObj.getQuantity() + PersoObj.getQuantity());
+				World.data.removeItem(object.getGuid());
+				//On ajoute la quantité a l'objet dans le coffre
+				TrunkObj.setQuantity(TrunkObj.getQuantity() + object.getQuantity());
 				//on envoie l'ajout au coffre de l'objet
 			    str = "O+"+TrunkObj.getGuid()+"|"+TrunkObj.getQuantity()+"|"+TrunkObj.getTemplate().getID()+"|"+TrunkObj.parseStatsString();
 				//on envoie la supression de l'objet du sac au joueur
-				SocketManager.GAME_SEND_REMOVE_ITEM_PACKET(P, guid);
+				SocketManager.GAME_SEND_REMOVE_ITEM_PACKET(player, id);
 				
-			}else //S'il restait des objets
-			{
-				//on modifie la quantitï¿½ d'item du sac
-				PersoObj.setQuantity(newQua);
+			} else {//S'il restait des objets
+				//on modifie la quantité d'item du sac
+				object.setQuantity(newQua);
 				TrunkObj.setQuantity(TrunkObj.getQuantity() + qua);
 				str = "O+"+TrunkObj.getGuid()+"|"+TrunkObj.getQuantity()+"|"+TrunkObj.getTemplate().getID()+"|"+TrunkObj.parseStatsString();
-				SocketManager.GAME_SEND_OBJECT_QUANTITY_PACKET(P, PersoObj);
-				
+				SocketManager.GAME_SEND_OBJECT_QUANTITY_PACKET(player, object);
 			}
 		}
 		
-		for(Player perso : P.getMap().getPlayers())
-		{
-			if(perso.getCurTrunk() != null && get_id() == perso.getCurTrunk().get_id())
-			{
+		for(Player perso: player.getMap().getPlayers())
+			if(perso.getCurTrunk() != null && getId() == perso.getCurTrunk().getId())
 				SocketManager.GAME_SEND_EsK_PACKET(perso, str);
-			}
-		}
 		
-		SocketManager.GAME_SEND_Ow_PACKET(P);
+		SocketManager.GAME_SEND_Ow_PACKET(player);
 		World.database.getTrunkData().update(this);
 	}
 	
-	public void removeFromTrunk(int guid, int qua, Player P)
-	{
-		if(P.getCurTrunk().get_id() != get_id()) return;
+	public void removeFromTrunk(int id, int qua, Player player) {
+		if(player.getCurTrunk().getId() != this.getId()) 
+			return;
 		
-		Objet TrunkObj = World.data.getObjet(guid);
-		if(TrunkObj == null) return;
+		Objet object = World.data.getObjet(id);
+		
+		if(object == null) 
+			return;
+		
 		//Si le joueur n'a pas l'item dans son coffre
-		if(_object.get(guid) == null)
-		{
-			Log.addToLog("Le joueur "+P.getName()+" a tenter de retirer un objet dans un coffre qu'il n'avait pas.");
+		if(this.getObjects().get(id) == null) {
+			Log.addToLog("Le joueur "+player.getName()+" a tenter de retirer un objet dans un coffre qu'il n'avait pas.");
 			return;
 		}
 		
-		Objet PersoObj = P.getSimilarItem(TrunkObj);
+		Objet object2 = player.getSimilarItem(object);
 		
 		String str = "";
 		
-		int newQua = TrunkObj.getQuantity() - qua;
+		int newQua = object.getQuantity() - qua;
 		
-		if(PersoObj == null)//Si le joueur n'avait aucun item similaire
-		{
+		if(object2 == null) {
 			//S'il ne reste rien dans le coffre
-			if(newQua <= 0)
-			{
+			if(newQua <= 0) {
 				//On retire l'item du coffre
-				_object.remove(guid);
+				this.getObjects().remove(id);
 				//On l'ajoute au joueur
-				P.getItems().put(guid, TrunkObj);
+				player.getItems().put(id, object);
 				
 				//On envoie les packets
-				SocketManager.GAME_SEND_OAKO_PACKET(P,TrunkObj);
-				str = "O-"+guid;
+				SocketManager.GAME_SEND_OAKO_PACKET(player, object);
+				str = "O-"+id;
 				
-			}else //S'il reste des objets dans le coffre
-			{
-				//On crï¿½e une copy de l'item dans le coffre
-				PersoObj = Objet.getCloneObjet(TrunkObj, qua);
+			} else {
+				//On crée une copy de l'item dans le coffre
+				object2 = Objet.getCloneObjet(object, qua);
 				//On l'ajoute au monde
-				World.data.addObjet(PersoObj, true);
+				World.data.addObjet(object2, true);
 				//On retire X objet du coffre
-				TrunkObj.setQuantity(newQua);
+				object.setQuantity(newQua);
 				//On l'ajoute au joueur
-				P.getItems().put(PersoObj.getGuid(), PersoObj);
-				
+				player.getItems().put(object2.getGuid(), object2);
 				//On envoie les packets
-				SocketManager.GAME_SEND_OAKO_PACKET(P,PersoObj);
-				str = "O+"+TrunkObj.getGuid()+"|"+TrunkObj.getQuantity()+"|"+TrunkObj.getTemplate().getID()+"|"+TrunkObj.parseStatsString();
-				
+				SocketManager.GAME_SEND_OAKO_PACKET(player, object2);
+				str = "O+"+object.getGuid()+"|"+object.getQuantity()+"|"+object.getTemplate().getID()+"|"+object.parseStatsString();
 			}
-		}
-		else
-		{
+		} else {
 			//S'il ne reste rien dans le coffre
-			if(newQua <= 0)
-			{
+			if(newQua <= 0) {
 				//On retire l'item du coffre
-				_object.remove(TrunkObj.getGuid());
-				World.data.removeItem(TrunkObj.getGuid());
-				//On Modifie la quantitï¿½ de l'item du sac du joueur
-				PersoObj.setQuantity(PersoObj.getQuantity() + TrunkObj.getQuantity());
-				
+				this.getObjects().remove(object.getGuid());
+				World.data.removeItem(object.getGuid());
+				//On Modifie la quantité de l'item du sac du joueur
+				object2.setQuantity(object2.getQuantity() + object.getQuantity());	
 				//On envoie les packets
-				SocketManager.GAME_SEND_OBJECT_QUANTITY_PACKET(P, PersoObj);
-				str = "O-"+guid;
-				
-			}
-			else//S'il reste des objets dans le coffre
-			{
+				SocketManager.GAME_SEND_OBJECT_QUANTITY_PACKET(player, object2);
+				str = "O-"+id;	
+			} else {//S'il reste des objets dans le coffre
 				//On retire X objet du coffre
-				TrunkObj.setQuantity(newQua);
+				object.setQuantity(newQua);
 				//On ajoute X objets au joueurs
-				PersoObj.setQuantity(PersoObj.getQuantity() + qua);
-				
+				object2.setQuantity(object2.getQuantity() + qua);
 				//On envoie les packets
-				SocketManager.GAME_SEND_OBJECT_QUANTITY_PACKET(P,PersoObj);
-				str = "O+"+TrunkObj.getGuid()+"|"+TrunkObj.getQuantity()+"|"+TrunkObj.getTemplate().getID()+"|"+TrunkObj.parseStatsString();
+				SocketManager.GAME_SEND_OBJECT_QUANTITY_PACKET(player, object2);
+				str = "O+"+object.getGuid()+"|"+object.getQuantity()+"|"+object.getTemplate().getID()+"|"+object.parseStatsString();
 			}
 		}
 		
-		for(Player perso : P.getMap().getPlayers())
-		{
-			if(perso.getCurTrunk() != null && get_id() == perso.getCurTrunk().get_id())
-			{
-				SocketManager.GAME_SEND_EsK_PACKET(perso, str);
-			}
-		}
+		for(Player p: player.getMap().getPlayers())
+			if(p.getCurTrunk() != null && getId() == p.getCurTrunk().getId())
+				SocketManager.GAME_SEND_EsK_PACKET(p, str);
 		
-		SocketManager.GAME_SEND_Ow_PACKET(P);
+		SocketManager.GAME_SEND_Ow_PACKET(player);
 		World.database.getTrunkData().update(this);
 	}
 	
-	private Objet getSimilarTrunkItem(Objet obj)
-	{
-		for(Objet value : _object.values())
-		{
+	private Objet getSimilarTrunkItem(Objet object) {
+		for(Objet value : this.getObjects().values()) {
 			if(value.getTemplate().getType() == 85)
 				continue;
-			if(value.getTemplate().getID() == obj.getTemplate().getID() && value.getStats().isSameStats(obj.getStats()))
+			if(value.getTemplate().getID() == object.getTemplate().getID() && value.getStats().isSameStats(object.getStats()))
 				return value;
 		}
 		return null;
 	}
 	
-	public String parseTrunkObjetsToDB()
-	{
+	public void purgeTrunk() {
+		for(Entry<Integer, Objet> obj : this.getObjects().entrySet())
+			World.data.removeItem(obj.getKey());
+		this.getObjects().clear();
+	}
+	
+	public void moveTrunkToBank(Account account) {
+		for(Entry<Integer, Objet> obj : this.getObjects().entrySet())
+			account.getBank().put(obj.getKey(), obj.getValue());
+		this.getObjects().clear();
+	}
+	
+	public String parseTrunkObjetsToDB() {
 		StringBuilder str = new StringBuilder();
-		for(Entry<Integer,Objet> entry : _object.entrySet())
-		{
-			Objet obj = entry.getValue();
-			str.append(obj.getGuid()).append("|");
-		}
+		for(Entry<Integer, Objet> entry : this.getObjects().entrySet()) 
+			str.append(entry.getValue().getGuid()).append("|");
 		return str.toString();
 	}
 	
-	public void purgeTrunk()
-	{
-		for(Entry<Integer, Objet> obj : get_object().entrySet())
-		{
-			World.data.removeItem(obj.getKey());
-		}
-		get_object().clear();
-	}
-	
-	public void moveTrunktoBank(Account Cbank)
-	{
-		for(Entry<Integer, Objet> obj : get_object().entrySet())
-		{
-			Cbank.getBank().put(obj.getKey(), obj.getValue());
-		}
-		get_object().clear();
+	public String parseToTrunkPacket() {
+		StringBuilder packet = new StringBuilder();
+		for(Objet object: this.getObjects().values())
+			packet.append("O").append(object.parseItem()).append(";");
+		if(this.getKamas() != 0)
+			packet.append("G").append(this.getKamas());
+		return packet.toString();
 	}
 }

@@ -33,8 +33,7 @@ public class SendActions implements PacketParser {
         }
 	}
 	
-	public static void parseGameActionPacket(GameClient client, String packet)
-	{
+	public static void parseGameActionPacket(GameClient client, String packet) {
 		int action, next = 0;
 		
 		try	{
@@ -111,14 +110,14 @@ public class SendActions implements PacketParser {
 			switch(action)
 			{
 				case 81://V�rouiller maison
-					house.Lock(client.getPlayer());
+					house.lock(client.getPlayer());
 				break;
 				case 97://Acheter maison
-					house.BuyIt(client.getPlayer());
+					house.buyIt(client.getPlayer());
 				break;
 				case 98://Vendre
 				case 108://Modifier prix de vente
-					house.SellIt(client.getPlayer());
+					house.sellIt(client.getPlayer());
 				break;
 			}
 		}

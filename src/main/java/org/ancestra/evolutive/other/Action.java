@@ -411,9 +411,9 @@ public class Action {
 					if (perso.hasItemTemplate(obj.getTemplate().getID(), 1))
 					{
 						perso.removeByTemplateID(obj.getTemplate().getID(),1);
-						House h = House.get_HouseByPerso(perso);
+						House h = House.getHouseByPlayer(perso);
 						if(h == null) return;
-						perso.teleport((short)h.get_mapid(), h.get_caseid());
+						perso.teleport((short)h.getToMapid(), h.getToCellid());
 					}
 				}
 			break;
