@@ -5,9 +5,6 @@ import org.ancestra.evolutive.map.Case;
 import org.ancestra.evolutive.map.Maps;
 
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 
 public class CryptManager {
 	

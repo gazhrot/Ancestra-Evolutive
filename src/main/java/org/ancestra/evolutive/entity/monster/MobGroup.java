@@ -1,7 +1,5 @@
 package org.ancestra.evolutive.entity.monster;
 
-import org.ancestra.evolutive.common.Constants;
-import org.ancestra.evolutive.common.Formulas;
 import org.ancestra.evolutive.core.Server;
 import org.ancestra.evolutive.core.World;
 import org.ancestra.evolutive.entity.Alignement;
@@ -10,7 +8,6 @@ import org.ancestra.evolutive.map.Case;
 import org.ancestra.evolutive.map.Maps;
 
 import java.util.*;
-import java.util.Map.Entry;
 
 import static org.ancestra.evolutive.entity.Alignement.NEUTRE;
 

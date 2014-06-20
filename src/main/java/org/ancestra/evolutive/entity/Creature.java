@@ -22,8 +22,8 @@ public class Creature extends Entity {
      * @param mapId id de la map
      * @param cellId id de la cellule
      */
-    public Creature(int id, String name, int mapId, int cellId,int orientation) {
-        this(id, name,World.data.getMap(mapId),World.data.getMap(mapId).getCases().get(cellId),orientation);
+    public Creature(int id, String name, int mapId, int cellId, int orientation) {
+        this(id, name, World.data.getMap(mapId), World.data.getMap(mapId).getCases().get(cellId), orientation);
     }
 
     /**
@@ -34,7 +34,7 @@ public class Creature extends Entity {
      * @param cellId id de la cellule
      */
     public Creature(int id, String name, int mapId, int cellId) {
-        this(id, name,World.data.getMap(mapId),World.data.getMap(mapId).getCases().get(cellId),0);
+        this(id, name, World.data.getMap(mapId), World.data.getMap(mapId).getCases().get(cellId), 0);
     }
 
     /**
