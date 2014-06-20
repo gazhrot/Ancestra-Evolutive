@@ -16,9 +16,9 @@ public class Creature extends Entity {
 
 
     /**
-     * Cr?er une cr?ature sur la Map donn?e avec l orientation voulue
-     * @param id id de la cr?ature
-     * @param name nom de la cr?ature
+     * Creer une creature sur la Map donnee avec l orientation voulue
+     * @param id id de la creature
+     * @param name nom de la creature
      * @param mapId id de la map
      * @param cellId id de la cellule
      */
@@ -27,9 +27,9 @@ public class Creature extends Entity {
     }
 
     /**
-     * Cr?er une cr?ature sur la Map donn?e
-     * @param id id de la cr?ature
-     * @param name nom de la cr?ature
+     * Creer une creature sur la Map donnee
+     * @param id id de la creature
+     * @param name nom de la creature
      * @param mapId id de la map
      * @param cellId id de la cellule
      */
@@ -38,9 +38,9 @@ public class Creature extends Entity {
     }
 
     /**
-     * Cr?er une cr?ature sur la Map donnee
-     * @param id id de la cr?ature
-     * @param name nom de la cr?ature
+     * Creer une creature sur la Map donnee
+     * @param id id de la creature
+     * @param name nom de la creature
      * @param map map de la creature
      * @param cell cellule de la creature
      */
@@ -49,9 +49,9 @@ public class Creature extends Entity {
     }
 
     /**
-     * Cr?er une cr?ature sur la Map donnee
-     * @param id id de la cr?ature
-     * @param name nom de la cr?ature
+     * Creer une creature sur la Map donnee
+     * @param id id de la creature
+     * @param name nom de la creature
      * @param map map de la creature
      * @param cell cellule de la creature
      * @param orientation orientation initiale
@@ -157,7 +157,8 @@ public class Creature extends Entity {
      * false sinon
      */
     private boolean onPositionChange(Case oldCell, Case newCell) {
-        if(newCell == null) return false;
+        if(newCell == null) 
+        	return false;
         return true;
     }
 }
