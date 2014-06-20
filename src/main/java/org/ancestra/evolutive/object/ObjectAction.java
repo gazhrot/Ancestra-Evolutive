@@ -325,11 +325,9 @@ public class ObjectAction {
 					break;
 					
 					case 15://TP au foyer.
-						for(House i: World.data.getHouses().values()) {
-							if(i.getOwner() == perso.getId()) {
-								perso.setPosition((short) i.getToMapid(), i.getToCellid());
-								break;
-							}
+						House house = World.database.getHouseData().load(perso);
+						if(house != null){
+							perso.setPosition(house.getToMapid(), house.getToCellid());
 						}
 					break;
 					

@@ -1,6 +1,7 @@
 package org.ancestra.evolutive.house;
 
 import java.util.Map;
+
 import java.util.TreeMap;
 import java.util.Map.Entry;
 
@@ -12,6 +13,7 @@ import org.ancestra.evolutive.core.Server;
 import org.ancestra.evolutive.core.World;
 import org.ancestra.evolutive.guild.Guild;
 
+@SuppressWarnings("deprecation")
 public class House {
 	
 	private int id;
@@ -21,7 +23,7 @@ public class House {
 	private int sale;
 	private short mapid;
 	private int cellid;
-	private int toMapid;// _mapid
+	private int toMapid;
 	private int toCellid;
 	private int guildId;
 	private int guildRights;
@@ -135,10 +137,10 @@ public class House {
 	}
 
 	public static House getHouseByCoord(int map, int cell) {
-		for(Entry<Integer, House> house : World.data.getHouses().entrySet())
-			if(house.getValue().getMapid() == map && house.getValue().getCellid() == cell)
-				return house.getValue();
-		return null;
+		for(House house : World.data.getHouses().values())
+			if(house.getMapid() == map && house.getCellid() == cell)
+				return house;
+		return World.database.getHouseData().load(map, cell);
 	}
 	
 	public static void load(Player player, int newMapID) {
@@ -351,10 +353,10 @@ public class House {
 	}
 	
 	public static boolean AlreadyHaveHouse(Player player) {
-		for(Entry<Integer, House> house : World.data.getHouses().entrySet())
-			if(house.getValue().getOwner() == player.getAccount().getUUID())
+		for(House house : World.data.getHouses().values())
+			if(house.getOwner() == player.getAccount().getUUID())
 				return true;
-		return false;
+		return (World.database.getHouseData().load(player) != null ? true : false);
 	}
 		
 	public static void leave(Player player, String packet) {
@@ -372,28 +374,29 @@ public class House {
 		SocketManager.GAME_SEND_Im_PACKET(target, "018;"+player.getName());
 	}
 	
-	
 	public static House getHouseByPlayer(Player player) {
-		for(Entry<Integer, House> house : World.data.getHouses().entrySet())
-			if(house.getValue().getOwner() == player.getAccount().getUUID())
-				return house.getValue();
-		return null;
+		for(House house : World.data.getHouses().values())
+			if(house.getOwner() == player.getAccount().getUUID())
+				return house;
+		return World.database.getHouseData().load(player);
 	}
 	
-	public static byte onGuild(int guild) {
+	public static byte onGuild(Guild guild) {
 		byte i = 0;
-		for(Entry<Integer, House> house : World.data.getHouses().entrySet())
-			if(house.getValue().getGuildId() == guild)
+		World.database.getHouseData().load(guild);
+		for(House house : World.data.getHouses().values())
+			if(house.getGuildId() == guild.getId())
 				i++;
 		return i;
 	}
 	
-	public static void removeHouseGuild(int guild) {
-		for(Entry<Integer, House> h : World.data.getHouses().entrySet()) {
-			if(h.getValue().getGuildId() == guild) {
-				h.getValue().setGuildRights(0);
-				h.getValue().setGuildId(0);
-				World.database.getHouseData().update(h.getValue());//Supprime les maisons de guilde
+	public static void removeHouseGuild(Guild guild) {
+		World.database.getHouseData().load(guild);
+		for(House house : World.data.getHouses().values()) {
+			if(house.getGuildId() == guild.getId()) {
+				house.setGuildRights(0);
+				house.setGuildId(0);
+				World.database.getHouseData().update(house);//Supprime les maisons de guilde
 			}
 		}	
 	}
@@ -448,7 +451,7 @@ public class House {
 			if(packet.charAt(0) == '+')	{
 				byte HouseMaxOnGuild = (byte) Math.floor(player.getGuild().getLevel()/10);
 				
-				if(House.onGuild(player.getGuild().getId()) >= HouseMaxOnGuild)
+				if(House.onGuild(player.getGuild()) >= HouseMaxOnGuild)
 					return;
 				if(player.getGuild().getMembers().size() < 10)
 					return;

@@ -189,11 +189,53 @@ public class HouseData extends AbstractDAO<House>{
         try {
             Result result = getData("SELECT * FROM houses WHERE map_id = "+map.getId());
             House house;
-            while((house = load(result.resultSet)) != null) houses.add(house);
+            while((house = load(result.resultSet)) != null)
+            	houses.add(house);
             close(result);
-            logger.debug("{} houses has been loaded,ids : ",houses.size()+1,houses);
+            logger.debug("{} houses has been loaded",houses.size());
         } catch (Exception e) {
             logger.error("can t load house id {}", map.getId(), e);
+        }
+        return houses;
+    }
+    
+    public House load(Player player) {
+        House house = null;
+        try {
+            Result result = getData("SELECT * FROM houses WHERE owner_id = "+player.getAccount().getUUID());
+            house = load(result.resultSet);
+            close(result);
+            logger.debug("{} house id has been loaded for owner id {}",house.getId(), player.getAccount().getUUID());
+        } catch (Exception e) {
+            logger.error("can t load house for owner id {}", player.getAccount().getUUID(), e);
+        }
+        return house;
+    }
+    
+    public House load(int mapid, int cellid) {
+    	House house = null;
+        try {
+            Result result = getData("SELECT * FROM houses WHERE map_id = "+mapid+" AND cell_id = "+cellid);
+            house = load(result.resultSet);
+            close(result);
+            logger.debug("{} house id has been loaded", house.getId());
+        } catch (Exception e) {
+            logger.error("can t load house on map {} ", mapid, e);
+        }
+        return house;
+    }
+    
+    public ArrayList<House> load(Guild guild) {
+        ArrayList<House> houses = new ArrayList<>();
+        try {
+        	Result result = getData("SELECT * FROM houses WHERE guild_id = "+guild.getId());
+            House house;
+            while((house = load(result.resultSet)) != null)
+            	houses.add(house);
+            close(result);
+            logger.debug("{} houses has been loaded",houses.size());
+        } catch (Exception e) {
+            logger.error("can t load house guild id {}", guild.getId(), e);
         }
         return houses;
     }
