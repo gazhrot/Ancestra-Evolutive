@@ -11,8 +11,6 @@ import org.ancestra.evolutive.common.SocketManager;
 import org.ancestra.evolutive.core.Server;
 import org.ancestra.evolutive.core.World;
 import org.ancestra.evolutive.guild.Guild;
-import org.ancestra.evolutive.house.House;
-import org.ancestra.evolutive.house.Trunk;
 
 public class House {
 	
@@ -223,7 +221,7 @@ public class House {
 		House house = player.getCurHouse();
 		
 		if((!house.canDo(Constants.H_OCANTOPEN) && (packet.compareTo(house.getKey()) == 0)) || isHome) {
-			player.teleport((short)house.getToMapid(), house.getToCellid());
+			player.setPosition((short) house.getToMapid(), house.getToCellid());
 			closeCode(player);
 		} else 
 		if((packet.compareTo(house.getKey()) != 0) || house.canDo(Constants.H_OCANTOPEN)) {
@@ -370,7 +368,7 @@ public class House {
 		if(target == null || !target.isOnline() || target.getFight() != null || target.getMap().getId() != player.getMap().getId()) 
 			return;
 		
-		target.teleport(house.getMapid(), house.getCellid());
+		target.setPosition(house.getMapid(), house.getCellid());
 		SocketManager.GAME_SEND_Im_PACKET(target, "018;"+player.getName());
 	}
 	

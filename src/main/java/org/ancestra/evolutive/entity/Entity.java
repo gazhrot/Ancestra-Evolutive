@@ -41,4 +41,12 @@ public class Entity {
         return this.helper;
     }
 
+    /**
+     * Envoie un message a la creature
+     * @param message
+     */
+    public void send(String message) {
+        return;
+    }
+
 }

@@ -39,7 +39,7 @@ public class GoToHouse implements PacketParser {
 		
 		if (client.getPlayer().hasItemTemplate(8883, 1)) {
 			client.getPlayer().removeByTemplateID(8883,1);
-			client.getPlayer().teleport((short) house.getToMapid(), house.getToCellid());
+			client.getPlayer().setPosition((short) house.getToMapid(), house.getToCellid());
 		} else {
 			SocketManager.GAME_SEND_Im_PACKET(client.getPlayer(), "1137");
 			return;

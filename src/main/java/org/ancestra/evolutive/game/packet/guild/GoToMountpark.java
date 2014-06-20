@@ -34,7 +34,7 @@ public class GoToMountpark implements PacketParser {
 		
 		if (client.getPlayer().hasItemTemplate(9035, 1)) {
 			client.getPlayer().removeByTemplateID(9035,1);
-			client.getPlayer().teleport(MapID, CellID);
+			client.getPlayer().setPosition(MapID, CellID);
 		} else {
 			SocketManager.GAME_SEND_Im_PACKET(client.getPlayer(), "1159");
 			return;

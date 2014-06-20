@@ -380,7 +380,7 @@ public class Commands {
 					return;
 				}
 			}
-			target.teleport(mapID, cellID);
+			target.setPosition(mapID, cellID);
 			String str = "Le joueur a ete teleporte";
 			SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out,str);
 		}else
@@ -414,7 +414,7 @@ public class Commands {
 			{
 				int mapID = P.getMap().getId();
 				int cellID = P.getCell().getId();
-				target.teleport(mapID, cellID);
+				target.setPosition(mapID, cellID);
 				String str = "Le joueur a ete teleporte";
 				SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out,str);
 			}else
@@ -462,7 +462,7 @@ public class Commands {
 					return;
 				}
 			}
-			target.teleport(mapID, cellID);
+			target.setPosition(mapID, cellID);
 			String str = "Le joueur a ete teleporte";
 			SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out,str);
 		}else
@@ -510,7 +510,7 @@ public class Commands {
 					return;
 				}
 			}
-			target.teleport(map.getId(), cellID);
+			target.setPosition(map.getId(), cellID);
 			String str = "Le joueur a ete teleporte";
 			SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out,str);
 		}else

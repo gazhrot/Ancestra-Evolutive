@@ -25,36 +25,34 @@ public class Case {
 
     private final Logger logger;
 	private final int id;
-	private int map;
-	private boolean walkable = true;
-	private boolean LoS = true;
-	private InteractiveObject interactiveObject;
+	private final Maps map;
+	private final boolean walkable;
+	private final boolean LoS;
+	private final InteractiveObject interactiveObject;
 	private Object object;
 	private ArrayList<Action> onCellStop;
 	private Map<Integer, Player> players;
 	private Map<Integer, Fighter> fighters;
 	
-	public Case(Maps map, int id, boolean walkable, boolean LoS, int interactiveObject)
-	{
-        this.map = map.getId();
+	public Case(Maps map, int id, boolean walkable, boolean LoS, int interactiveObject){
+        this.map = map;
 		this.id = id;
         this.logger = (Logger)LoggerFactory.getLogger("Maps : "+map.getId() +" Case : " + id);
 		this.walkable = walkable;
 		this.LoS = LoS;
-		if(interactiveObject != -1)
-			this.interactiveObject = new InteractiveObject(interactiveObject, map, this);
+		if(interactiveObject != -1) {
+            this.interactiveObject = new InteractiveObject(interactiveObject, map, this);
+        } else {
+            this.interactiveObject = null;
+        }
 	}
 	
 	public int getId() {
 		return id;
 	}
 
-	public int getMap() {
+	public Maps getMap() {
 		return map;
-	}
-
-	public void setMap(short map) {
-		this.map = map;
 	}
 	
 	public boolean isWalkable(boolean object) {
@@ -62,11 +60,7 @@ public class Case {
 			return walkable && interactiveObject.isWalkable();
 		return walkable;
 	}
-	
-	public void setWalkable(boolean walkable) {
-		this.walkable = walkable;
-	}
-	
+
 	public boolean isLoS() {
 		return LoS;
 	}
@@ -87,10 +81,6 @@ public class Case {
 		return interactiveObject;
 	}
 	
-	public void setInteractiveObject(InteractiveObject interactiveObject) {
-		this.interactiveObject = interactiveObject;
-	}
-	
 	public Object getObject() {
 		return object;
 	}
@@ -101,14 +91,15 @@ public class Case {
 
 	public void addOnCellStopAction(int id, String args, String condition) {
 		if(this.onCellStop == null) 
-			this.onCellStop = new ArrayList<Action>();	
+			this.onCellStop = new ArrayList<>();
 		this.onCellStop.add(new Action(id, args, condition));
 	}
 	
 	public void applyOnCellStopActions(Player player) {
 		if(this.onCellStop != null) 
-			for(Action action: this.onCellStop)
-				action.apply(player, null, -1, -1);
+			for(Action action: this.onCellStop) {
+                action.apply(player, null, -1, -1);
+            }
 	}
 	
 	public void clearOnCellAction() {
@@ -117,14 +108,15 @@ public class Case {
 	
 	public Map<Integer, Player> getPlayers() {
 		if(this.players == null) 
-			return new TreeMap<Integer, Player>();
+			return new TreeMap<>();
 		return this.players;
 	}
 	
 	public void addPlayer(Player player) {
 		if(this.players == null) 
-			this.players = new TreeMap<Integer, Player>();
+			this.players = new TreeMap<>();
 		this.players.put(player.getId(), player);
+        this.map.addPlayer(player);
 	}
 	
 	public void removePlayer(int id) {
@@ -137,13 +129,13 @@ public class Case {
 	
 	public Map<Integer, Fighter> getFighters() {
 		if(this.fighters == null) 
-			return new TreeMap<Integer, Fighter>();
+			return new TreeMap<>();
 		return this.fighters;
 	}
 	
 	public void addFighter(Fighter fighter) {
 		if(this.fighters == null) 
-			this.fighters = new TreeMap<Integer, Fighter>();
+			this.fighters = new TreeMap<>();
 		this.fighters.put(fighter.getGUID(), fighter);
 	}
 	
@@ -158,8 +150,7 @@ public class Case {
 		return null;
 	}
 	
-	public void startAction(Player perso, GameAction GA)
-	{
+	public void startAction(Player perso, GameAction GA){
 		int actionID = -1;
 		short CcellID = -1;
 		
@@ -285,7 +276,7 @@ public class Case {
 				} else {
                     short mapID = perso.getClasse().getInkarnamStartMap();
                     int cellID = perso.getClasse().getInkarnamStartCell();
-                    perso.teleport(mapID, cellID);
+                    perso.setPosition(mapID, cellID);
                 }
 				perso.getAccount().getGameClient().removeAction(GA);
 			break;
@@ -346,8 +337,7 @@ public class Case {
 		}
 	}
 	
-	public void finishAction(Player perso, GameAction GA)
-	{
+	public void finishAction(Player perso, GameAction GA){
 		int actionID = -1;
 		
 		try	{

@@ -122,7 +122,7 @@ public class InteractiveObject {
 				{
 					player.removeByTemplateID(1570, 1);
 					SocketManager.GAME_SEND_Im_PACKET(player, "022;" + 1 + "~" + 1570);
-					player.teleport((short) 2110, 118);
+					player.setPosition((short) 2110, 118);
 				}
 			break;
 			
@@ -222,12 +222,12 @@ public class InteractiveObject {
 			
 			case 1694://Village brigandin tire �olienne
 				SocketManager.GAME_SEND_GA_PACKET(player.getAccount().getGameClient(), "", "2", player.getId()+"", "4");
-				player.teleport((short) 6848, 390);
+				player.setPosition((short) 6848, 390);
 			break;
 			
 			case 1695://Village brigandin tire �olienne
 				SocketManager.GAME_SEND_GA_PACKET(player.getAccount().getGameClient(), "", "2", player.getId()+"", "3");
-				player.teleport((short) 6844, 268 );
+				player.setPosition((short) 6844, 268);
 			break;
 			
 			/*case 7045: TODO : :D

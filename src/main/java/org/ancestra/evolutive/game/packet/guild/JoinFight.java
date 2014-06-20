@@ -51,7 +51,7 @@ public class JoinFight implements PacketParser {
 					return;
 				if(client.getPlayer().getFight() == null && !client.getPlayer().isAway())	{
 					if(client.getPlayer().getMap().getId() != map)
-						client.getPlayer().teleport(map, cell);
+						client.getPlayer().setPosition(map, cell);
 					World.data.getMap(map).getFights().get(fight).joinPercepteurFight(client.getPlayer(),client.getPlayer().getId(), id);
 				}
 			break;

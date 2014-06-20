@@ -1942,36 +1942,14 @@ public class Player extends Creature {
 		this.getAccount().getGameClient().removeAction(GA);
 	}
 	
-	public void teleport(int newMapID, int newCellID){
-		GameClient PW = null;
-		if(this.getAccount().getGameClient() != null)
-		{
-			PW = this.getAccount().getGameClient();
-		}
-
-		if(PW != null)
-		{
-			SocketManager.GAME_SEND_GA2_PACKET(PW, this.getId());
-			getMap().send("GM|-" + this.getId());
-		}
-		
-		this.getCell().removePlayer(this.getId());
-		this.setPosition(newMapID,newCellID);
-		
-
-		
-		if(PW != null) {
-			SocketManager.GAME_SEND_MAPDATA(PW,	newMapID, this.getMap().getDate(), this.getMap().getKey());
-			this.getMap().addPlayer(this);
-		}
-		
+	/**public void setPosition(int newMapID, int newCellID){
 		if(!this.followers.isEmpty())//On met a jour la carte des personnages qui nous suivent
 			for(Player player : this.followers.values())
 				if(player.isOnline())
 					SocketManager.GAME_SEND_FLAG_PACKET(player, this);
 				else
 					this.followers.remove(player.getId());
-	}
+	}*/
 	
 	public int getBankCost()
 	{
@@ -2215,7 +2193,7 @@ public class Player extends Creature {
 	public void warpToSavePos() {
 		try {
 			String[] infos = this.savePos.split(",");
-			teleport(Short.parseShort(infos[0]), Integer.parseInt(infos[1]));
+			setPosition(Short.parseShort(infos[0]), Integer.parseInt(infos[1]));
 		} catch(Exception e) {}
 	}
 	
@@ -2623,7 +2601,7 @@ public class Player extends Creature {
 			return;
 		}
 		this.kamas -= cost;
-		teleport(mapID,cellID);
+		setPosition(mapID, cellID);
 		SocketManager.GAME_SEND_STATS_PACKET(this);//On envoie la perte de kamas
 		SocketManager.GAME_SEND_WV_PACKET(this);//On ferme l'interface Zaap
 		this.setZaaping(false);
@@ -2684,7 +2662,7 @@ public class Player extends Creature {
 		price = 10;
 		this.kamas -= price;
 		SocketManager.GAME_SEND_STATS_PACKET(this);
-		this.teleport(Short.valueOf(packet.substring(2)), idcelula);
+		this.setPosition(Short.valueOf(packet.substring(2)), idcelula);
 		SocketManager.GAME_SEND_CLOSE_ZAAPI_PACKET(this);
 		}
 	}
@@ -2991,7 +2969,7 @@ public class Player extends Creature {
 			return;
 		}
 		
-		teleport(p.getMap().getId(), (p.getCell().getId()+cellPositiontoadd));
+		setPosition(p.getMap().getId(), (p.getCell().getId() + cellPositiontoadd));
 	}
 	
 	public void Divorce()
@@ -3021,7 +2999,7 @@ public class Player extends Creature {
 		this.setCanAggro(false);
 		this.setAway(true);
 		this.setSpeed(-40);
-		this.teleport((short) 8534, 297);
+		this.setPosition((short) 8534, 297);
 		//Le teleporter aux zone de mort la plus proche
 		/*for(Carte map : ) FIXME
 		{
@@ -3234,15 +3212,12 @@ public class Player extends Creature {
         refreshLife();
         regenRate = (sitted ? 1000 : 2000);
         SocketManager.GAME_SEND_ILS_PACKET(this, regenRate);
-        logger.debug("nouvea sit {}",sitted);
     }
 
     void refreshLife() {
-        logger.debug("La methode est appele");
         long time = (System.currentTimeMillis()-regenTime);
         regenTime = System.currentTimeMillis();
         if(fight != null){
-            logger.debug("Le joueur est en combat");
             return;
         }
         int diff = (int)time/regenRate;
@@ -3250,8 +3225,6 @@ public class Player extends Creature {
             send("ILF" + diff);
         }
         setPdv(pdv+diff);
-        logger.debug("{} hp ont ete rajoutes {}",diff,regenRate);
-
     }
 
     /**

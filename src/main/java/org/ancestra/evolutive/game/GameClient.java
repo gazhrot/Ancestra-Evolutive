@@ -155,8 +155,10 @@ public class GameClient implements Client {
 	public void kick() {
 		try {
     		if(this.getAccount() != null) {
-    			if(this.getPlayer() != null)
-    				this.getPlayer().save();
+    			if(this.getPlayer() != null) {
+                    this.getPlayer().save();
+                    this.getPlayer().getMap().removePlayer(this.getPlayer());
+                }
     			this.getAccount().disconnect();
     		}
     		this.getSession().close(true);

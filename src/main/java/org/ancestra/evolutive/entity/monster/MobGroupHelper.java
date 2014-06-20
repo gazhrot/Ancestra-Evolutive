@@ -38,7 +38,7 @@ public class MobGroupHelper extends Helper<MobGroup> {
 
             isFirst = false;
         }
-        getCreature().getCell().getId();
+
         toReturn.append(getCreature().getCell().getId()).append(";").append(getCreature().getOrientation()).append(";0;").append(getCreature().getId())
                 .append(";").append(id).append(";-3;").append(gfx).append(";").append(level).append(";").append(color);
 

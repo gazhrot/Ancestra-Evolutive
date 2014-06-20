@@ -84,12 +84,12 @@ public class Action {
 			break;
 			
 			case 0://T�l�portation
-				try
+                try
 				{
 					short newMapID = Short.parseShort(args.split(",",2)[0]);
 					int newCellID = Integer.parseInt(args.split(",",2)[1]);
-					
-					perso.teleport(newMapID,newCellID);	
+
+					perso.setPosition(newMapID, newCellID);
 				}catch(Exception e ){return;};
 			break;
 			
@@ -350,13 +350,13 @@ public class Action {
 					if(ObjetNeed == 0)
 					{
 						//T�l�portation sans objets
-						perso.teleport(newMapID,newCellID);
+						perso.setPosition(newMapID, newCellID);
 					}else if(ObjetNeed > 0)
 					{
 					if(MapNeed == 0)
 					{
 						//T�l�portation sans map
-						perso.teleport(newMapID,newCellID);
+						perso.setPosition(newMapID, newCellID);
 					}else if(MapNeed > 0)
 					{
 					if (perso.hasItemTemplate(ObjetNeed, 1) && perso.getMap().getId() == MapNeed)
@@ -364,7 +364,7 @@ public class Action {
 						//Le perso a l'item
 						//Le perso est sur la bonne map
 						//On t�l�porte, on supprime apr�s
-						perso.teleport(newMapID,newCellID);
+						perso.setPosition(newMapID, newCellID);
 						perso.removeByTemplateID(ObjetNeed, 1);
 						SocketManager.GAME_SEND_Ow_PACKET(perso);
 					}
@@ -413,7 +413,7 @@ public class Action {
 						perso.removeByTemplateID(obj.getTemplate().getId(),1);
 						House h = House.getHouseByPlayer(perso);
 						if(h == null) return;
-						perso.teleport((short)h.getToMapid(), h.getToCellid());
+						perso.setPosition((short) h.getToMapid(), h.getToCellid());
 					}
 				}
 			break;
@@ -663,6 +663,6 @@ public class Action {
 	}
 
     private void teleportToAstrub(Player player){
-        player.teleport(player.getClasse().getAstrubStartMap(),player.getClasse().getAstrubStartCell());
+        player.setPosition(player.getClasse().getAstrubStartMap(), player.getClasse().getAstrubStartCell());
     }
 }

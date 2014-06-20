@@ -199,27 +199,37 @@ public class Maps {
 		return mobPossibles;
 	}
     //endregion
-	
-	public void addPlayer(Player player) {
-		send("GM|+" + player.getHelper().getGmPacket());
-        entities.add(player);
-		player.getCell().addPlayer(player);
+
+    /**
+     * Ajoute et affiche le personnage sur la map
+     * @param entity
+     */
+	public void addPlayer(Entity entity) {
+        send(generateLoadingMessage());
+        entities.add(entity);
+        entity.send(mapDescriptionMessage());
 	}
 
-    public void addEntity(Entity entity){
-        send("GM|+" + entity.getHelper().getGmPacket());
-        entities.add(entity);
+    /**
+     * Retire et efface le personnage de la map
+     * @param entity
+     */
+    public void removePlayer(Entity entity){
+        send(unloadCharacterMessage(entity));
+        entities.remove(entity);
     }
 
-    public void removeEntity(Entity entity){
-
-    }
-	
+    /**
+     * Permet de recuperer la liste des joueurs sur la map n etant pas en combat
+     * @return liste des personnages n etant pas en combat sur la map
+     */
 	public ArrayList<Player> getPlayers() {
 		ArrayList<Player> players = new ArrayList<>();
-		for(Case cell : this.getCases().values()){
-            for(Player player : cell.getPlayers().values()){
-                players.add(player);
+		for(Entity entity : entities){
+            if(entity instanceof Player){
+                if(((Player)entity).getFight() == null){
+                    players.add((Player)entity);
+                }
             }
         }
 
@@ -414,8 +424,7 @@ public class Maps {
 			SocketManager.GAME_SEND_GDO_PACKET_TO_MAP(this,'-', cell,0,0);
 			SocketManager.GAME_SEND_Ow_PACKET(player);	
 		}
-		
-		this.getCases().get(cell).applyOnCellStopActions(player);
+        this.getCases().get(cell).applyOnCellStopActions(player);
 		
 		if(this.getPlaces().equalsIgnoreCase("|")) 
 			return;
@@ -491,10 +500,10 @@ public class Maps {
 	}
 	
 	public String getGMsPackets() {
-		StringBuilder packet = new StringBuilder();
-		for(Case cell: this.getCases().values())
-			for(Player player : cell.getPlayers().values())
-				packet.append("GM|+").append(player.getHelper().getGmPacket()).append('\u0000');
+		StringBuilder packet = new StringBuilder("GM");
+		for(Player player : getPlayers()){
+            packet.append("|+").append(player.getHelper().getGmPacket()).append('\u0000');
+        }
 		return packet.toString();
 	}
 	
@@ -563,6 +572,10 @@ public class Maps {
 		return toreturn.toString();
 	}
 
+    /**
+     * Envoie un message a tout les player sur la map n etant pas en combat
+     * @param str message a envoyer
+     */
     public void send(String str){
         for(Player player : this.getPlayers()){
             if(player.getFight() == null) {
@@ -594,7 +607,7 @@ public class Maps {
                 {
                     obj = Integer.parseInt(cellInfos[3]);
                 }
-            } catch(Exception e) {}
+            } catch(Exception ignored) {}
             if(num == -1)
                 continue;
 
@@ -608,7 +621,7 @@ public class Maps {
         for (int f = 0; f < dData.length(); f += 10)
         {
             String CellData = dData.substring(f, f+10);
-            List<Byte> CellInfo = new ArrayList<Byte>();
+            List<Byte> CellInfo = new ArrayList<>();
             for (int i = 0; i < CellData.length(); i++)
                 CellInfo.add((byte)CryptManager.getIntByHashedValue(CellData.charAt(i)));
             int Type = (CellInfo.get(2) & 56) >> 3;
@@ -646,4 +659,42 @@ public class Maps {
         }
         return mobs;
     }
+
+    //region Packets
+    /**
+     * permet de creer le message demandant l affichage de la fenetre "chargement"
+     * lors d un changement de map (le fait d etre affiche ou non depend de si cette carte a deja ete chargee
+     * par le client)
+     * @return message de chargement
+     */
+    private String generateLoadingMessage(){
+        return "GA;2;"+this.getId() +";";
+    }
+
+    /**
+     * Renvoie la description d une carte pour qu elle puisse etre chargee par le client
+     * @return description
+     */
+    private String mapDescriptionMessage(){
+        return "GDM|"+id+"|"+date+"|"+key;
+    }
+
+    /**
+     * Permet de decharger graphiquement l entitee correspondante par le client
+     * @param entity entite a faire disparaitre
+     * @return message supprimant le visuel de l entite
+     */
+    private String unloadCharacterMessage(Entity entity){
+        return "GM|-" + entity.getId();
+    }
+
+    /**
+     * Permet de charger graphiquement l entitee sur la map par le client
+     * @param entity entitee a charger
+     * @return message pour l afficher sur le client
+     */
+    private String loadCharacterMessage(Entity entity){
+        return "GM|+" + entity.getHelper().getGmPacket();
+    }
+    //endregion
 }

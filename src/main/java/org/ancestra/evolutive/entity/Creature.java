@@ -1,5 +1,6 @@
 package org.ancestra.evolutive.entity;
 
+import org.ancestra.evolutive.client.Player;
 import org.ancestra.evolutive.core.World;
 import org.ancestra.evolutive.map.Case;
 import org.ancestra.evolutive.map.Maps;
@@ -86,7 +87,7 @@ public class Creature extends Entity {
      * @param cell Identifiant de la nouvelle cellule
      */
     public void setPosition(Maps newMap,Case cell) {
-        if(onPositionChange(cell,this.cell)) {
+        if(onPositionChange(this.cell,cell)) {
             this.map = newMap;
             this.cell = cell;
         }
@@ -141,13 +142,7 @@ public class Creature extends Entity {
         this.orientation = orientation%8;
     }
 
-    /**
-     * Envoie un message a la creature
-     * @param message
-     */
-    public void send(String message) {
-        return;
-    }
+
 
     /**
      * Effectue le changement de map
@@ -157,8 +152,18 @@ public class Creature extends Entity {
      * false sinon
      */
     private boolean onPositionChange(Case oldCell, Case newCell) {
-        if(newCell == null) 
-        	return false;
+        if(newCell == null || newCell.getMap() == null) {
+            return false;
+        }
+        if(newCell.getMap() == oldCell.getMap()){
+            newCell.getMap().send("GM|~" + this.getHelper().getGmPacket());
+        }
+        else {
+            oldCell.getMap().removePlayer(this);
+            oldCell.removePlayer(this.getId());
+            newCell.getMap().addPlayer((Player)this);
+            newCell.addPlayer((Player)this);
+        }
         return true;
     }
 }

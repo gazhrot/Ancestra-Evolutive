@@ -71,10 +71,10 @@ public class ObjectAction {
 						short mapId = Short.parseShort(arg.split(",",2)[0]);
 						int cellId = Integer.parseInt(arg.split(",",2)[1]);
 						if(perso.getMap().getId() != 666)
-							perso.teleport(mapId, cellId);
+							perso.setPosition(mapId, cellId);
 						else
 							if(perso.getCell().getId() == 268)
-								perso.teleport(mapId, cellId);	
+								perso.setPosition(mapId, cellId);
 					break;
 					
 					case 1://Téléportation au point de sauvegarde.
@@ -327,7 +327,7 @@ public class ObjectAction {
 					case 15://TP au foyer.
 						for(House i: World.data.getHouses().values()) {
 							if(i.getOwner() == perso.getId()) {
-								perso.teleport((short) i.getToMapid(), i.getToCellid());
+								perso.setPosition((short) i.getToMapid(), i.getToCellid());
 								break;
 							}
 						}
@@ -452,14 +452,14 @@ public class ObjectAction {
 							}
 						}
 						if(mapId != 0)
-							perso.teleport(mapId, cellId);
+							perso.setPosition(mapId, cellId);
 					break;*/
 					
 					case 24://TP Village aligné.
 						mapId = (short) Integer.parseInt(arg.split(",")[0]);
 						cellId = Integer.parseInt(arg.split(",")[1]);
 						if(World.data.getMap(mapId).getSubArea().getAlignement() == perso.getAlign())
-							perso.teleport(mapId, cellId);			
+							perso.setPosition(mapId, cellId);
 					break;
 					
 					case 25://Spawn groupe.

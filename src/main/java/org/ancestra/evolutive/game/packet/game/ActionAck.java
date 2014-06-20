@@ -71,6 +71,7 @@ public class ActionAck implements PacketParser {
 									client.getPlayer().setAlive();
 							}
 						}
+
 						client.getPlayer().getMap().onPlayerArriveOnCell(client.getPlayer(),client.getPlayer().getCell().getId());
 						
 						for(GameAction action: client.getActions().values()) 
