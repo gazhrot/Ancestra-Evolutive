@@ -106,7 +106,9 @@ public class Creature extends Entity {
      * @param cell cellule finale de la creature
      */
     public void setCell(Case cell) {
-        this.cell = cell;
+        if(this.onPositionChange(this.cell,cell)){
+            this.cell = cell;
+        }
     }
 
     /**
@@ -156,7 +158,7 @@ public class Creature extends Entity {
             return false;
         }
         if(newCell.getMap() == oldCell.getMap()){
-            newCell.getMap().send("GM|~" + this.getHelper().getGmPacket());
+            //newCell.getMap().send("GM|~" + this.getHelper().getGmPacket());
         }
         else {
             oldCell.getMap().removePlayer(this);

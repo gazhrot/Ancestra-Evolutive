@@ -1250,7 +1250,6 @@ public class Player extends Creature {
 		
 		SocketManager.GAME_SEND_GAME_CREATE(client, this.getName());
 		SocketManager.GAME_SEND_STATS_PACKET(this);
-		SocketManager.GAME_SEND_MAPDATA(client, this.getMap().getId(), this.getMap().getDate(), this.getMap().getKey());
 		SocketManager.GAME_SEND_MAP_FIGHT_COUNT(client, this.getMap());
 		this.getMap().addPlayer(this);
 	}
