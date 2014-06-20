@@ -72,20 +72,23 @@ public class Creature extends Entity {
     }
 
     /**
-     * Change la map de la creature et l y ajoute
+     * Change la position de la creature et l y ajoute
      * @param newMapId Identifiant de la map de destination
+     * @param cellId Identifiant de la cellule de destination
      */
-    public void setMap(short newMapId) {
-        setMap(World.data.getMap(newMapId));
+    public void setPosition(int newMapId,int cellId) {
+        setPosition(World.data.getMap(newMapId),World.data.getMap(newMapId).getCases().get(cellId));
     }
 
     /**
-     * Change la map de la creature et l y ajoute
-     * @param newMap map de destination
+     * Change la position de la creature et l y ajoute
+     * @param newMap Identifiant de la map de destination
+     * @param cell Identifiant de la nouvelle cellule
      */
-    public void setMap(Maps newMap) {
-        if(onMapChange(map,newMap)) {
+    public void setPosition(Maps newMap,Case cell) {
+        if(onPositionChange(cell,this.cell)) {
             this.map = newMap;
+            this.cell = cell;
         }
     }
 
@@ -148,11 +151,13 @@ public class Creature extends Entity {
 
     /**
      * Effectue le changement de map
-     * @param newMap
+     * @param oldCell ancienne case
+     * @param newCell nouvelle case
      * @return retourne true si le changement a pu etre effectue
      * false sinon
      */
-    private boolean onMapChange(Maps oldMap, Maps newMap) {
+    private boolean onPositionChange(Case oldCell, Case newCell) {
+        if(newCell == null) return false;
         return true;
     }
 }

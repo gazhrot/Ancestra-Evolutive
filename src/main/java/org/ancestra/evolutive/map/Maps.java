@@ -205,21 +205,24 @@ public class Maps {
         entities.add(player);
 		player.getCell().addPlayer(player);
 	}
+
+    public void addEntity(Entity entity){
+        send("GM|+" + entity.getHelper().getGmPacket());
+        entities.add(entity);
+    }
+
+    public void removeEntity(Entity entity){
+
+    }
 	
 	public ArrayList<Player> getPlayers() {
 		ArrayList<Player> players = new ArrayList<>();
 		for(Case cell : this.getCases().values()){
             for(Player player : cell.getPlayers().values()){
                 players.add(player);
-                System.out.println("Methode 1 : " + player.getName());
             }
         }
-        for(Entity entity : entities){
-            if(entity instanceof Player){
-                if(((Player) entity).getFight() == null)
-                    System.out.println("Methode 2 : " + entity.getName());
-            }
-        }
+
 		return players;
 	}
 

@@ -7,7 +7,10 @@ import org.ancestra.evolutive.login.LoginServer;
 import org.ancestra.evolutive.tool.plugin.PluginLoader;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
+
 public class Main {
+    static {System.setProperty("logback.configurationFile", "logback.xml");}
 	private static Logger logger = (Logger) LoggerFactory.getLogger(Main.class);
 
 	static {
@@ -19,7 +22,8 @@ public class Main {
         });
 	}
 	
-	public static void main(String[] args) {		
+	public static void main(String[] args) {
+
 		//creation de la console
 		Console console = new Console();
 		Console.instance = console;

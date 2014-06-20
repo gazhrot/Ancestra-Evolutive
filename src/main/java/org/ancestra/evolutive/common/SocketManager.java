@@ -35,21 +35,15 @@ import java.util.Map.Entry;
 public class SocketManager {
 	
 	public static void send(Player p, String packet) {
-        p.getAccount().getGameClient().getSession().write(packet);
+        if(!packet.isEmpty())
+            p.getAccount().getGameClient().getSession().write(packet);
 	}
 	
 	public static void send(Client out, String packet) {
-		out.getSession().write(packet);
+        if(!packet.isEmpty())
+		    out.getSession().write(packet);
 	}
-	
 
-	public static void REALM_SEND_LOGIN_ERROR(Client _out)
-	{
-		String packet = "AlEf";
-		send(_out,packet);
-		if(Server.config.isDebug())
-			Log.addToSockLog("Conn: Send>>"+packet);
-	}
 
 	public static void MULTI_SEND_Af_PACKET(Client out,int position, int totalAbo, int totalNonAbo, String subscribe,
 			int queueID)
@@ -61,30 +55,6 @@ public class SocketManager {
 			Log.addToSockLog("Serv: Send>>"+packet.toString());
 	}
 
-
-	public static void REALM_SEND_Ad_Ac_AH_AlK_AQ_PACKETS(Client _out,
-			String pseudo, int level, String question)
-	{
-		StringBuilder packet = new StringBuilder();
-		packet.append("Ad").append(pseudo).append((char)0x00);
-		packet.append("Ac0").append((char)0x00);
-		//AH[ID];[State];[Completion];[CanLog]
-		packet.append("AH1;").append(World.data.get_state()).append(";110;1").append((char)0x00);
-		packet.append("AlK").append(level).append((char)0x00);
-		packet.append("AQ").append(question.replace(" ", "+"));
-		
-		send(_out,packet.toString());
-		if(Server.config.isDebug())
-			Log.addToSockLog("Conn: Send>>"+packet.toString());
-	}
-
-	public static void REALM_SEND_BANNED(Client _out)
-	{
-		String packet = "AlEb";
-		send(_out,packet);
-		if(Server.config.isDebug())
-			Log.addToSockLog("Conn: Send>>"+packet);
-	}
 
 	public static void REALM_SEND_POLICY_FILE(Client _out)
 	{
@@ -98,13 +68,6 @@ public class SocketManager {
 			Log.addToSockLog("Game: Send>>"+packet);
 	}
 	
-	public static void GAME_SEND_HELLOGAME_PACKET(Client out)
-	{
-		String packet = "HG";
-		send(out,packet);
-		if(Server.config.isDebug())
-			Log.addToSockLog("Game: Send>>"+packet);
-	}
 
 	public static void GAME_SEND_ATTRIBUTE_FAILED(Client out)
 	{

@@ -40,7 +40,6 @@ import java.util.*;
 import java.util.Map.Entry;
 
 public class Player extends Creature {
-    public static boolean regenWhenOffline = true;
 
 	private int sex;
 	private Classe classe;
@@ -195,7 +194,7 @@ public class Player extends Creature {
 			this.setGhosts();
 
         helper = new PlayerHelper(this);
-        regenRate = 2000;
+
 	}
 	
 	public Player(Player player,int id){
@@ -542,6 +541,7 @@ public class Player extends Creature {
 	}
 	
 	public int getPdv() {
+        refreshLife();
 		return pdv;
 	}
 
@@ -862,10 +862,6 @@ public class Player extends Creature {
 
 	public Map<Integer, Integer> getStores() {
 		return stores;
-	}
-
-	public boolean isSitted() {
-		return sitted;
 	}
 	
 	public void setMapAndCell(short curMap, int curCell) {
@@ -1237,7 +1233,7 @@ public class Player extends Creature {
 			SocketManager.GAME_SEND_MESSAGE(this, Server.config.getMotd(), color);
 		}
 
-		SocketManager.GAME_SEND_ILS_PACKET(this, 1000);
+		SocketManager.GAME_SEND_ILS_PACKET(this, 2000);
 	}
 		
 	public void sendGameCreate() {
@@ -1311,18 +1307,16 @@ public class Player extends Creature {
 		ASData.append("As").append(this.getXpToString(",")).append("|");
 		ASData.append(this.getKamas()).append("|").append(this.getCapital()).append("|").append(this.getSpellPoints()).append("|");
 		ASData.append(this.getAlign()).append("~").append(this.getAlign()).append(",").append(this.getaLvl()).append(",").append(this.getGrade()).append(",").append(this.getHonor()).append(",").append(this.getDeshonor()+",").append((this.isShowWings() ? "1" : "0")).append("|");
-		
-		int pdv = this.getPdv();
-		int pdvMax = this.getMaxPdv();
-		
-		if(this.getFight() != null) {
-			Fighter f = this.getFight().getFighterByPerso(this);
-			if(f != null) {
-				pdv = f.getPDV();
-				pdvMax = f.getPDVMAX();
-			}
-		}
-		
+
+
+        int pdv = getPdv(),pdvMax = getMaxPdv();
+        if(this.getFight() != null) {
+            Fighter f = this.getFight().getFighterByPerso(this);
+            if(f != null) {
+                pdv = f.getPDV();
+                pdvMax = f.getPDVMAX();
+            }
+        }
 		ASData.append(pdv).append(",").append(pdvMax).append("|");
 		ASData.append(this.getEnergy()).append(",10000|");
 		
@@ -1499,15 +1493,7 @@ public class Player extends Creature {
 		return pods;
 	}
 
-	public void setSitted(boolean sitted){
-		if(this.sitted == sitted){
-            return;
-        }
-        this.sitted = sitted;
-        refreshLife();
-        regenRate = (sitted ? 1000 : 2000);
-        SocketManager.GAME_SEND_ILS_PACKET(this, regenRate);
-	}
+
 	
 	public int getPdvPer() {
         return (100* this.getPdv())/ this.getMaxPdv();
@@ -1956,31 +1942,21 @@ public class Player extends Creature {
 		this.getAccount().getGameClient().removeAction(GA);
 	}
 	
-	public void teleport(int newMapID, int newCellID)
-	{
+	public void teleport(int newMapID, int newCellID){
 		GameClient PW = null;
 		if(this.getAccount().getGameClient() != null)
 		{
 			PW = this.getAccount().getGameClient();
 		}
-		if(World.data.getMap(newMapID) == null){
-			Log.addToLog("Game: INVALID MAP : "+newMapID);
-			return;
-		}
-		if(World.data.getMap(newMapID).getCases().get(newCellID) == null)
-		{
-			Log.addToLog("Game: INVALID CELL : "+newCellID+" ON MAP : "+newMapID);
-			return;
-		}
+
 		if(PW != null)
 		{
 			SocketManager.GAME_SEND_GA2_PACKET(PW, this.getId());
-			SocketManager.GAME_SEND_ERASE_ON_MAP_TO_MAP(this.getMap(), this.getId());
+			getMap().send("GM|-" + this.getId());
 		}
 		
 		this.getCell().removePlayer(this.getId());
-		this.setMap(World.data.getMap(newMapID));
-		this.setCell(this.getMap().getCases().get(newCellID));
+		this.setPosition(newMapID,newCellID);
 		
 
 		
@@ -3250,17 +3226,32 @@ public class Player extends Creature {
 			SocketManager.GAME_SEND_ALTER_GM_PACKET(this.getMap(), this);
 	}
 
-    void refreshLife() {
-        if(fight != null){
+    public void setSitted(boolean sitted){
+        if(this.sitted == sitted){
             return;
         }
+        this.sitted = sitted;
+        refreshLife();
+        regenRate = (sitted ? 1000 : 2000);
+        SocketManager.GAME_SEND_ILS_PACKET(this, regenRate);
+        logger.debug("nouvea sit {}",sitted);
+    }
+
+    void refreshLife() {
+        logger.debug("La methode est appele");
         long time = (System.currentTimeMillis()-regenTime);
+        regenTime = System.currentTimeMillis();
+        if(fight != null){
+            logger.debug("Le joueur est en combat");
+            return;
+        }
         int diff = (int)time/regenRate;
-        setPdv(getPdv()+diff);
-        if(diff>=10){
+        if(diff>=10 && this.pdv != this.maxPdv){
             send("ILF" + diff);
         }
-        regenTime = System.currentTimeMillis();
+        setPdv(pdv+diff);
+        logger.debug("{} hp ont ete rajoutes {}",diff,regenRate);
+
     }
 
     /**
