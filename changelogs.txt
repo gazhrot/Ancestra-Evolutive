@@ -1,0 +1,174 @@
+# Changelogs, sur les base d'AR 48
+
+Débuté par : John-R : https://github.com/Romain-P
+Continué par : Locos : https://github.com/F-Locos/
+
+Contribution :
+- Mars-Daylight.
+- Origin.
+
+Version 0.1
+
+- Suppression d'objets et variables inutiles
+- Ménage dans Ancestra.java: séparations en class diférrentes:
+  > Main.java, Server.java, Log.java
+- Champs input en console ajoutés (Console.java)
+- Revue de la sauvegarde (sous un CachedThreadPool)
+- Revue du chargement de l'émulateur + config.conf: refonte totale
+- Transformation des statics du World en class:
+  > Données stockées dans un objet (World)data
+- Création d'un système de création de commande optique (voir package tool.commands)
+- Ajout de paramètres pour les commandes (voir package tool.commands : Parameter)
+- Ajout de restrictions pour les commandes + some features !
+- Commandes configurables temporairement en config (à venir sous forme de scripts)
+  > Voir Server.initializeCommands() pour avoir un exemple de commande
+- Ajout d'un antiflooder de packets/threads sur le game/realm et parser.
+- Revue complète de la database:
+  > Supression du SQLManager.java
+  > Mise en place d'une jdcbDAO pour la relation mysql
+  > Chaque objet DAO créé (pour chaque objet à charger en database)
+- Lazy Load terminé
+  > L'émulateur se chargera désormais en 400 MS (0.4s)
+  > Vitesse constante, quelque soit votre nombre de données en database
+  
+Version 0.2
+
+- Triage de classes effectué
+- Création d'une class objet Waiter
+  > Remplace les méthodes Thread.sleep()
+- Remplacement de toutes les méthodes sleep()
+  > Seulement où le thread mis en pause était celui du joueur
+  > Remplacement par un Waiter (voir package tool.time.waiter)
+- Correction de doubles instances Personnage / Compte
+- Installation de Mina sur le serveur de Jeu et de Connexion
+  > 1 Thread pour la totalité des clients
+  > Géré par un cachedThreadPool (threads rajoutés si besoin)
+- Ajout de nouvelles libs
+- Ajout d'un cachedThreadPool pour l'IA
+- Déconnexion du compte si un joueur était déjà connecté dessus
+- Le compte se reload à chaque connexion
+- Correction d'un problème de concurrence niveau DAO
+  > Rajout d'un seul et même ReentrantLock pour chaque objet Dao
+- Correction de l'update du lastIp du compte
+- Correction d'un bug de blocage en combat (timer bugué)
+- Refonte des erreurs mySQL (s'affichent désormais en détails dans la console)
+- Création d'une database propre et complète à l'émulateur
+
+Version 0.3
+
+- Revue de l'IA: suppression méthodes statics
+  >IA plus rapide
+- Revue du passage de tour
+- Correction de combat: un monstre tué ne gère plus d'IA
+- Supression de retardements inutiles: IA plus rapide
+- Si le mob s'auto tue, il passe son tour correctement (plus de combat bloqué)
+- Le combat se lance désormais au premier clic sur le groupe
+- Téléportation cimetière ou dernièr point de sauvegarde à chaque mort ou abandon (plus de bugs)
+- Correction de la génération de nouveaux items (guids dupliqués & conflits de sauvegarde)
+- Flood du passage de tour désormais impossible (bug réglé)
+- Correction et actualisation de l'affichage des ailes lors de l'activation/désactivation
+- Correction d'une erreur Mina lors de la déconnexion (get & use d'une session nulle)
+- Revue de la méthode addXp. On envoit 1 seul fois le nouveau level (et non par étapes, pour éviter le flood)
+- La vie se regen au maximum lorsqu'on gagne 1 ou plusieurs niveaux
+- Revue des fins de combat avec end_fight_actions (personnage bloqués corrigés).
+- Fins de combats sans boutons restants (bloquer vision, groupe etc..)
+- Disparition des objets interactifs au lancement du combat
+- On peut désormais marcher sans être bloqué par les objets interactifs (de même en combat)
+- Il est désormais impossible de passer à travers les objets interactifs utilisables (zaaps)
+- Les combats se terminent directement quand on tue le dernier monstre (on ne doit plus effectuer d'autres actions pour debug)
+- Correction de la commande admin who.
+
+Version 0.4
+
+- Correction d'une erreur dans le path (qui générait une erreur et saturait l'executor de l'IA)
+- Correction de nullpointers à la déconnexion (GameClient)
+- Correction d'un index invalide dans les combats (lors du passage de tour)
+- Correction d'une requête éronnée (GuildMemberData).
+- Portée négative corrigée (exemple "Oeil de taupe -6po) -> portée négative, on ne pouvait plus lancer de sorts)
+- Les objets interactifs utilisables ne s'ouvrent que quand le personnage est à porté (Exemple: panel zaap)
+- Correction des doubles aggressions simultanées (problème de concurrence)
+- Correction des aggressions (plus de bugs de fin de combats)
+- Ajout du protecteur des neutres (chevalier) en aggression. Son level dépend du level de l'attaquant (50,80,110,140,170)
+- IA: les mobs ne voient plus le sram invisible, ils attaquent la dernière cell où le personnage invisible a lancé son dernier sort.
+- Revue de l'idle time (innactivité). Géré directement depuis Mina (sessionIdle).
+- Création d'une interface Client, extends à GameClient & RealmClient -> évite les doublons dans le SocketManager.
+- Correction du record de joueurs connectés.
+
+Version 0.5
+
+- Ajout total du mode marchand.
+- Revue de la faille cadeau.
+- Revue des failles échanges.
+- Revue des failles percepteurs.
+- Revue des failles/bugs du mode marchand.
+  > Faille kamas avec un signe négatif.
+  > Bug après un reboot qui supprime tout les modes marchands.
+  > Duplication d'item/kamas via l'achat d'objet.
+- Revue des failles/bugs sur les hotels de ventes.
+  > Reprise d'un objet déjà vendu : duplication d'item.
+- Revue des failles/bugs sur les dialogues.
+- Correction du charegement de la config.
+- Correction de la totalité des problèmes liés aux métiers.
+  > Ajout de la distance de canne à péche.
+  > Ajout des protecteurs de ressources.
+  > Ajout de la séparation du craft et du joueur n'empéchant plus l'arrêt ou la discussion. Il est maintenant possible d'arrêté un craft, de parler, ..
+  > Correction de la possibilité de bugué les ressources.
+  > ...
+- GameClient fragmenter en plusieurs morceaux pour chaque type de packet.
+- GameAction refait (convention & getter/setter).
+
+Version 0.6
+
+- Ajout des maps & cellules de départ selon la classe.
+- Renommage de l'ensemble des "parsage" de packet au niveau des variables, .. Il en reste quelque un. 
+- Changement du système de fonctionnement de packet.
+  > Passage en interface.
+  > Possibilité de création de plug-in.
+- Correction d'un problème de connection dû au plugin IDE/Console.
+- Correction des problèmes de NPC, Collector, .. dû au lazy load.
+- Rectification de certains code et de nombreux bugs.
+- Rectification du système de plug-in pour n'importe qu'elle nombre de lettre.
+- Correction d'un problème de démarrage, gestion des erreurs, ..
+- Ajout du système de plug-in générale. Un tutoriel sera crée pour les explications.
+- Rectification de certains bugs concernant les plug-ins ( plus aucun problème maintenant ).
+- Gestion de la totalité (?) des erreurs possible.
+- Correction :
+  > Des pop-ups groupe, défie, échange, disparition après annulation.
+  > Les mobs une fois fini d'attaquer quelque fois ils ne passent pas leurs tour.
+  > Impossible de se connecter au serveur.
+  > Impossible d'exclure un membre de la guilde si il est déconnecté.
+  > Impossible d'inviter un joueur dans une guilde
+  > Impossible de faire un échange également.
+  > Lorsque l'on demande un défie le packet réagi comme une agression.
+- Changement ( encore et encore.. ) du système de plug-in packet. Réuni sur les plug-ins générale. ( Cf TpWithGeopos ).
+- Ajout d'annotation @Deprecated pour évité toute utilisation de mauvaise fonction.
+- Correction de nombreux spellEffect (Thx Mars-Daylight).
+- Les plug-ins passent à présent sur tout les systèmes d'exploitation ( Linux & Windows sûr ).
+- Ajout du système d'événement ainsi que du listener. 
+- Correction des demandent d'information concernant un ami ( zone inconnu ).
+- Refonte de la syntaxe sur la class Account.java 
+- Séparation des class static dans Player.java ( Stalk, Stats, Group ).
+- Correction des bugs suivant :
+  > Elle n'exclue pas le joueur demandé. 
+  > Il nous déconnecte pas lorsque l'on passe en mode marchand et nous arrivons encore a bouger une seule fois ce qui fait bugs l'affichage du mode marchand sur l'écran des autres joueurs.
+  > Les points de déshonneur ne modifient pas les aîles correctement, elles devraient être trouées normalement.
+
+Version 0.7 : Ajout d'un site/forum communautaire pour Ancestra-Evolutive : http://ancestra-evolutive.org/
+
+- Revue de chaque Class de chaque package pour remettre dans les conventions internationnals.
+  --> Ce qu'il reste comme package :
+   > fight
+   > fight.spell
+   > fight.trap
+   > hdv
+   > house
+   > object
+- Suppresion de fonction inutile ainsi que certains argument.
+- Suppresion de pas mal de variable inutile ( voir GuildMember ).
+- Diverse correction de bug.
+
+
+
+
+
+  
