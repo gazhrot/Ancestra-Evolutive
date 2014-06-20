@@ -73,3 +73,8 @@ local.properties
 .texlipse
 .config
 config.conf
+gradle/
+build.gradle
+gradlew
+gradlew.bat
+settings.gradle
