@@ -23,8 +23,6 @@ public class UseEmote implements PacketParser {
 
         boolean activated = client.getPlayer().setEmoteActive(emote);
 		
-		client.logger.trace("Set Emote "+emote + " is sitted " + client.getPlayer().isSitted());
-		
 		SocketManager.GAME_SEND_eUK_PACKET_TO_MAP(client.getPlayer().getMap(), client.getPlayer().getId(), activated?emote:0);
 	}
 }

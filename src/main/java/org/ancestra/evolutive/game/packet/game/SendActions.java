@@ -372,7 +372,7 @@ public class SendActions implements PacketParser {
 				
 				SocketManager.GAME_SEND_GA_PACKET_TO_MAP(client.getPlayer().getMap(), ""+GA.getId(), 1, client.getPlayer().getId()+"", "a"+CryptManager.cellID_To_Code(client.getPlayer().getCell().getId())+path);
 				client.addAction(GA);
-				if(client.getPlayer().isSitted())client.getPlayer().setSitted(false);
+				client.getPlayer().setEmoteActive(0);
 				client.getPlayer().setAway(true);
 			}else
 			{

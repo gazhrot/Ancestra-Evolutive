@@ -1,7 +1,7 @@
 package org.ancestra.evolutive.enums;
 
 public enum EmulatorInfos {
-	DEVELOPER("John-r & Locos"),
+	DEVELOPER("John-r & Locos & Erfive"),
 	RELEASE(0.7),
 	CLIENT_RELEASE("1.29.1"),
 	SOFT_NAME("Ancestra Evolutive v"+RELEASE.value),
