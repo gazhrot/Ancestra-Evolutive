@@ -116,7 +116,6 @@ public class Case {
 		if(this.players == null) 
 			this.players = new TreeMap<>();
 		this.players.put(player.getId(), player);
-        this.map.addPlayer(player);
 	}
 	
 	public void removePlayer(int id) {
