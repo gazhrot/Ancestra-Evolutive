@@ -650,13 +650,14 @@ public class World {
 
 	public void removeGuild(int id) {
 		// Maison de guilde+SQL
-		House.removeHouseGuild(id);
+		Guild g = guilds.get(id);
+		House.removeHouseGuild(g);
 		// Enclo+SQL
 		MountPark.remove(id);
 		// Percepteur+SQL
 		Collector.removePercepteur(id);
 		// Guilde
-		Guild g = guilds.get(id);
+		
 		guilds.remove(id);
 		
 		database.getGuildMemberData().deleteAllByGuild(id);
@@ -878,12 +879,20 @@ public class World {
         }
 	}
 
+	/**
+	 * @return All the houses who have been loaded.
+	 * @deprecated Do not use this function, you must load the house before.
+	 */
+	@Deprecated
 	public Map<Integer, House> getHouses() {
 		return houses;
 	}
 
 	public House getHouse(int id) {
-		return houses.get(id);
+		House house = houses.get(id);
+		if(house == null)
+			house = World.database.getHouseData().load(id);
+		return house;
 	}
 
 	public void addPerco(Collector perco) {

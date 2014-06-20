@@ -325,12 +325,9 @@ public class ObjectAction {
 					break;
 					
 					case 15://TP au foyer.
-						for(House i: World.data.getHouses().values()) {
-							if(i.getOwner() == perso.getId()) {
-								perso.teleport((short) i.getToMapid(), i.getToCellid());
-								break;
-							}
-						}
+						House house = World.database.getHouseData().load(perso);
+						if(house != null)
+							perso.teleport(house.getToMapid(), house.getToCellid());
 					break;
 					
 					/*case 16://Pnj Follower.

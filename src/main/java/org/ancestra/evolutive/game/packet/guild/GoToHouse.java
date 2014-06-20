@@ -23,7 +23,7 @@ public class GoToHouse implements PacketParser {
 		if(client.getPlayer().getFight() != null || client.getPlayer().isAway())
 			return;
 		
-		House house = World.data.getHouses().get(Integer.parseInt(packet));
+		House house = World.data.getHouse(Integer.parseInt(packet));
 		
 		if(house == null) 
 			return;
