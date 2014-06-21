@@ -122,6 +122,7 @@ public class GameClient implements Client {
 		
 		String prefix = packet.substring(0, 2);	
 		PacketParser parser = World.data.getPacketJar().get(prefix);
+		
         if(parser != null)
 			parser.parse(this, packet);
 		else 

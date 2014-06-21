@@ -133,9 +133,9 @@ public class Trunk {
 	}
 	
 	public static Trunk getTrunkByPos(int mapid, int cellid) {
-		for(Entry<Integer, Trunk> trunk : World.data.getTrunks().entrySet())
-			if(trunk.getValue().getMapid() == mapid && trunk.getValue().getCellid() == cellid)
-				return trunk.getValue();
+		for(Trunk trunk : World.data.getTrunks().values())
+			if(trunk.getMapid() == mapid && trunk.getCellid() == cellid)
+				return trunk;
 		return null;
 	}
 		

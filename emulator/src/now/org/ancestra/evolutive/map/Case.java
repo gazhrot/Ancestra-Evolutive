@@ -154,8 +154,8 @@ public class Case {
 		short CcellID = -1;
 		
 		try	{
-			actionID = Integer.parseInt(GA.getArgs().split(";")[1]);
-			CcellID = Short.parseShort(GA.getArgs().split(";")[0]);
+			actionID = Integer.parseInt(GA.getArgs().split("\\;")[1]);
+			CcellID = Short.parseShort(GA.getArgs().split("\\;")[0]);
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
@@ -164,7 +164,7 @@ public class Case {
 			return;
 		
 		if(JobConstant.isJobAction(actionID)) {
-			perso.doJobAction(actionID,this.interactiveObject,GA,this);
+			perso.doJobAction(actionID, this.interactiveObject, GA, this);
 			return;
 		}
 		
@@ -189,6 +189,16 @@ public class Case {
 				perso.openZaapMenu();
 				perso.getAccount().getGameClient().removeAction(GA);
 			break;
+			case 153 :
+				Trunk bin = Trunk.getTrunkByPos(perso.getMap().getId(), CcellID);
+				perso.getAccount().getGameClient().getActions().remove(GA.getId());
+				if(bin == null) {
+					perso.sendText("La poubelle actuel est inutilisable, merci de contacter un administrateur.");
+					return;
+				}
+				perso.setCurTrunk(bin);
+				Trunk.open(perso, "-", true);
+				break;
 			case 157: //Zaapis
 				String ZaapiList= "";
 				String[] Zaapis;
@@ -340,7 +350,7 @@ public class Case {
 		int actionID = -1;
 		
 		try	{
-			actionID = Integer.parseInt(GA.getArgs().split(";")[1]);
+			actionID = Integer.parseInt(GA.getArgs().split("\\;")[1]);
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
@@ -349,7 +359,7 @@ public class Case {
 			return;
 		
 		if(JobConstant.isJobAction(actionID)) {
-			perso.finishJobAction(actionID,this.interactiveObject,GA,this);
+			perso.finishJobAction(actionID, this.interactiveObject, GA, this);
 			return;
 		}
 		
@@ -363,6 +373,7 @@ public class Case {
 			case 105://Code coffre
 			case 108://Modifier prix de vente
 			case 157://Zaapi
+			case 153://Poubelle
 			break;
 			case 102://Puiser
 				this.interactiveObject.setState(Constants.IOBJECT_STATE_EMPTY);
@@ -979,6 +990,8 @@ public class Case {
 			case 104://Ouvrir
 			case 105://Code
 				return (this.interactiveObject.getId() == 7350 || this.interactiveObject.getId() == 7351 || this.interactiveObject.getId() == 7353);
+			case 153 :
+				return this.interactiveObject.getId() == 7352;
 			//Action ID non trouv�
 			default:
 				Log.addToLog("MapActionID non existant dans Case.canDoAction: "+id);
