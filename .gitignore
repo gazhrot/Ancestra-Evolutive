@@ -73,17 +73,3 @@ local.properties
 .texlipse
 .config
 config.conf
-<<<<<<< HEAD
-settings.gradle
-logback.xml
-gradlew.bat
-gradlew
-build.gradle
-gradle/
-=======
-gradle/
-build.gradle
-gradlew
-gradlew.bat
-settings.gradle
->>>>>>> db4d6aabaae14094979330e7d710ebe24b820bb0
