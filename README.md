@@ -14,3 +14,5 @@ If you want to see my last commits: https://bitbucket.org/John-r/ancestra-evolut
 
 (The "before" folder contains Ancestra Remake (before Ancestra Evolutive))
 Thanks for your watching.
+
+You can follow this project on : http://ancestra-evolutive.org/
