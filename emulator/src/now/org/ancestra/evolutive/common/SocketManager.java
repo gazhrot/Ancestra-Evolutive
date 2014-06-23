@@ -1461,15 +1461,6 @@ public class SocketManager {
 			packet += s1;
 		send(out,packet);
 	}
-
-	public static void GAME_SEND_EXCHANGE_OK(Client out,boolean ok, int guid)
-	{
-		String packet = "EK"+(ok?"1":"0")+guid;
-		send(out,packet);
-		if(Server.config.isDebug())
-			Log.addToSockLog("Game: Send>>"+packet);
-	}
-	
 	public static void GAME_SEND_EXCHANGE_VALID(Client out, char c)
 	{
 		String packet = "EV"+c;

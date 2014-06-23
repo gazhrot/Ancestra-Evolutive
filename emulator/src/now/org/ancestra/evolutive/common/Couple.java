@@ -1,13 +1,11 @@
 package org.ancestra.evolutive.common;
 
-public class Couple<L,R>
-{
-    public L first;
-    public R second;
+public class Couple<First, Second> {
+    public First first;
+    public Second second;
 
-    public Couple(L s, R i)
-    {
-         this.first = s;
-         this.second = i;
+    public Couple(First first, Second second) {
+         this.first = first;
+         this.second = second;
     }
 }

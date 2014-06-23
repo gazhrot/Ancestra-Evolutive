@@ -283,7 +283,7 @@ public class Case {
 				{
 					SocketManager.GAME_SEND_Im_PACKET(perso, "1127");
 				} else {
-                    short mapID = perso.getClasse().getInkarnamStartMap();
+                    int mapID = perso.getClasse().getInkarnamStartMap();
                     int cellID = perso.getClasse().getInkarnamStartCell();
                     perso.setPosition(mapID, cellID);
                 }

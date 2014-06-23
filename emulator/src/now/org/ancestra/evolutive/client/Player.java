@@ -31,8 +31,8 @@ import org.ancestra.evolutive.map.Maps;
 import org.ancestra.evolutive.map.MountPark;
 import org.ancestra.evolutive.object.ObjectSet;
 import org.ancestra.evolutive.object.Object;
-import org.ancestra.evolutive.other.Exchange;
 import org.ancestra.evolutive.tool.time.waiter.Waiter;
+import org.ancestra.evolutive.util.exchange.PlayerExchange;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -68,7 +68,7 @@ public class Player extends Creature {
 	private Trunk curTrunk;
 	private House curHouse;
 	private JobAction curJobAction;
-	private Exchange curExchange;
+	private PlayerExchange curExchange;
 	
 	/** Alignement **/
 	private byte align = 0;
@@ -138,7 +138,7 @@ public class Player extends Creature {
 	
 	public Player(int UUID, String name, int sex, int classe, int color1, int color2, int color3,long kamas, int spellPoints,
 		int capital, int energy, int level, long experience, int size, int gfx, byte align, int account, Map<Integer,Integer> stats,
-		byte showFriendConnection, byte showWings, byte seeSeller, String canaux, short curMap, int curCell, String stuff, String store,
+		byte showFriendConnection, byte showWings, byte seeSeller, String canaux, int curMap, int curCell, String stuff, String store,
 		int pdvPer, String spells, String savePos, String jobs, int mountXp, int mount, int honor, int deshonor, int aLvl, String zaaps, byte title, int wife)
 	{
         super(UUID,name,curMap,curCell);
@@ -220,7 +220,8 @@ public class Player extends Creature {
         helper = new PlayerHelper(this);
     }
 	
-	public static Player create(String name, int sex, int classe, int color1, int color2, int color3, Account compte) {
+	public static Player create(String name, int sex, int classeId, int color1, int color2, int color3, Account compte) {
+		Classe classe = Classe.values()[classeId-1];
 		String zaaps = "";
 		if(Server.config.isAllZaaps()) 
 			for(Entry<Integer, Integer> i : Constants.ZAAPS.entrySet())
@@ -229,7 +230,7 @@ public class Player extends Creature {
 				World.database.getCharacterData().nextId(),
 				name,
 				sex,
-				classe,
+				classeId,
 				color1,
 				color2,
 				color3,
@@ -240,7 +241,7 @@ public class Player extends Creature {
 				Server.config.getStartLevel(),
 				World.data.getPersoXpMin(Server.config.getStartLevel()),
 				100,
-				Integer.parseInt(classe+""+sex),
+				Integer.parseInt(classe.getId()+""+sex),
 				(byte)0,
 				compte.getUUID(),
 				new TreeMap<Integer,Integer>(),
@@ -248,8 +249,8 @@ public class Player extends Creature {
 				(byte)0,
 				(byte)0,
 				"*#%!pi$:?",
-				Constants.getStartMap(classe),
-				Constants.getStartCell(classe),
+				classe.getInkarnamStartMap(),
+				classe.getInkarnamStartCell(),
 				"",
 				"",
 				100,
@@ -265,12 +266,12 @@ public class Player extends Creature {
 				(byte)0,
 				0
 				);
-		perso.spells = Constants.getStartSorts(classe);
+		perso.spells = Constants.getStartSorts(classeId);
 		
 		for(int a = 1; a <= perso.getLevel(); a++)
 			Constants.onLevelUpSpells(perso, a);
 		
-		perso.spellsPlace = Constants.getStartSortsPlaces(classe);
+		perso.spellsPlace = Constants.getStartSortsPlaces(classeId);
         if(!World.database.getCharacterData().create(perso))
 			return null;
 		
@@ -460,11 +461,11 @@ public class Player extends Creature {
 		this.curJobAction = curJobAction;
 	}
 
-	public Exchange getCurExchange() {
+	public PlayerExchange getCurExchange() {
 		return curExchange;
 	}
 
-	public void setCurExchange(Exchange curExchange) {
+	public void setCurExchange(PlayerExchange curExchange) {
 		this.curExchange = curExchange;
 	}
 
@@ -864,7 +865,7 @@ public class Player extends Creature {
 		return stores;
 	}
 	
-	public void setMapAndCell(short curMap, int curCell) {
+	public void setMapAndCell(int curMap, int curCell) {
 		this.curMap = World.data.getMap(curMap);
 		if(this.curMap == null && World.data.getMap(Server.config.getStartMap()) != null)	{
 			this.curMap = World.data.getMap(Server.config.getStartMap());
@@ -1384,21 +1385,22 @@ public class Player extends Creature {
 	}
 	
 	private Stats getStuffStats() {
-		Stats stats = new Stats(false,null);
-		ArrayList<Integer> itemSetApplied = new ArrayList<Integer>();
+		Stats stats = new Stats(false, null);
+		ArrayList<Integer> itemSetApplied = new ArrayList<>();
 		
-		for(Entry<Integer, Object> entry : this.objects.entrySet()) {
-			if(entry.getValue().getPosition() != Constants.ITEM_POS_NO_EQUIPED) {
-				stats = Stats.cumulStat(stats,entry.getValue().getStats());
-				int panID = entry.getValue().getTemplate().getSet();
+		for(Object object : this.objects.values()) {
+			if(object.getPosition() != Constants.ITEM_POS_NO_EQUIPED && !(object.getPosition() >= 35 && object.getPosition() <= 48)) {
+				stats = Stats.cumulStat(stats, object.getStats());
+				int set = object.getTemplate().getSet();
 				//Si panoplie, et si l'effet de pano n'a pas encore �t� ajout�
-				if(panID > 0 && !itemSetApplied.contains(panID)) {
-					itemSetApplied.add(panID);
-					ObjectSet IS = World.data.getItemSet(panID);
-					//Si la pano existe
-					if(IS != null)
-						stats = Stats.cumulStat(stats, IS.getBonusStatByItemNumb(this.getNumbEquipedItemOfPanoplie(panID)));
+				
+				if(set > 0 && !itemSetApplied.contains(set)) {
+					itemSetApplied.add(set);
+					ObjectSet objectSet = World.data.getItemSet(set);
 					
+					//Si la pano existe
+					if(objectSet != null)
+						stats = Stats.cumulStat(stats, objectSet.getBonusStatByItemNumb(this.getNumbEquipedItemOfPanoplie(set)));
 				}
 			}
 		}

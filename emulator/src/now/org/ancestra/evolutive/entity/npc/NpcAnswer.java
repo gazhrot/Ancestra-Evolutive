@@ -5,10 +5,10 @@ import org.ancestra.evolutive.other.Action;
 
 import java.util.ArrayList;
 
-public class NpcAnswer
-{
+public class NpcAnswer {
+	
 	private int id;
-	private ArrayList<Action> actions = new ArrayList<Action>();
+	private ArrayList<Action> actions = new ArrayList<>();
 	
 	public NpcAnswer(int id) {
 		this.id = id;
@@ -24,10 +24,6 @@ public class NpcAnswer
 
 	public ArrayList<Action> getActions() {
 		return actions;
-	}
-
-	public void setActions(ArrayList<Action> actions) {
-		this.actions = actions;
 	}
 
 	public void addAction(Action action1) {

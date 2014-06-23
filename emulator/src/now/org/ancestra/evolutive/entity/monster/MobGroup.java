@@ -2,14 +2,14 @@ package org.ancestra.evolutive.entity.monster;
 
 import org.ancestra.evolutive.core.Server;
 import org.ancestra.evolutive.core.World;
-import org.ancestra.evolutive.entity.Alignement;
 import org.ancestra.evolutive.entity.Creature;
+import org.ancestra.evolutive.enums.Alignement;
 import org.ancestra.evolutive.map.Case;
 import org.ancestra.evolutive.map.Maps;
 
 import java.util.*;
 
-import static org.ancestra.evolutive.entity.Alignement.NEUTRE;
+import static org.ancestra.evolutive.enums.Alignement.NEUTRE;
 
 public class MobGroup extends Creature {
 	private static final Random random = new Random();

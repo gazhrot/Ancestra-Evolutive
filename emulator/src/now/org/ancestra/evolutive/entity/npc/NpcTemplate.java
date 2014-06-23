@@ -5,6 +5,7 @@ import org.ancestra.evolutive.object.ObjectTemplate;
 import java.util.ArrayList;
 
 public class NpcTemplate {
+	
 	private int id;
 	private int bonus;
 	private int gfx;

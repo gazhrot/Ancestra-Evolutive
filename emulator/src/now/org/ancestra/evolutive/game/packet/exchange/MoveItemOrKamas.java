@@ -377,7 +377,7 @@ public class MoveItemOrKamas implements PacketParser {
 					try	{
 						int guid = Integer.parseInt(infos[0]);
 						int qua  = Integer.parseInt(infos[1]);
-						int quaInExch = client.getPlayer().getCurExchange().getQuaItem(guid, client.getPlayer().getId());
+						int quaInExch = client.getPlayer().getCurExchange().getObjectQuantity(client.getPlayer(), guid);
 						
 						if(!client.getPlayer().hasItemGuid(guid))
 							return;
@@ -391,7 +391,7 @@ public class MoveItemOrKamas implements PacketParser {
 						if(qua <= 0)
 							return;
 						
-						client.getPlayer().getCurExchange().addItem(guid, qua, client.getPlayer().getId());
+						client.getPlayer().getCurExchange().addObject(guid, qua, client.getPlayer().getId());
 					} catch(NumberFormatException e) {}
 				}else {
 					try	{
@@ -408,10 +408,10 @@ public class MoveItemOrKamas implements PacketParser {
 						
 						if(obj == null)
 							return;
-						if(qua > client.getPlayer().getCurExchange().getQuaItem(guid, client.getPlayer().getId()))
+						if(qua > client.getPlayer().getCurExchange().getObjectQuantity(client.getPlayer(), guid))
 							return;
 						
-						client.getPlayer().getCurExchange().removeItem(guid,qua, client.getPlayer().getId());
+						client.getPlayer().getCurExchange().removeObject(guid, qua, client.getPlayer().getId());
 					} catch(NumberFormatException e) {}
 				}
 			break;
@@ -422,7 +422,8 @@ public class MoveItemOrKamas implements PacketParser {
 						numb = client.getPlayer().getKamas();
                     else if(numb <= 0)
                         return;
-					client.getPlayer().getCurExchange().setKamas(client.getPlayer().getId(), numb);
+					
+					client.getPlayer().getCurExchange().editKamas(client.getPlayer().getId(), numb);
 				} catch(NumberFormatException e) {}
 			break;
 		}

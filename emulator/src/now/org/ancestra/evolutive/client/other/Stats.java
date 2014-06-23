@@ -6,22 +6,20 @@ import org.ancestra.evolutive.enums.Classe;
 
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.TreeMap;
+import java.util.HashMap;
 
 public class Stats {
 	
-	private Map<Integer, Integer> effects = new TreeMap<>();
+	private Map<Integer, Integer> effects = new HashMap<>();
 	
-	public Stats() {
-		this.effects = new TreeMap<Integer, Integer>();
-	}
+	public Stats() {}
 	
 	public Stats(Map<Integer, Integer> stats) {
 		this.effects = stats;
 	}
 	
 	public Stats(boolean addBases, Player player) {
-		this.effects = new TreeMap<Integer,Integer>();
+		this.effects = new HashMap<>();
 		
 		if(!addBases)
 			return;
@@ -206,7 +204,7 @@ public class Stats {
 	}
 
 	public static Stats cumulStat(Stats s1, Stats s2) {
-		TreeMap<Integer, Integer> effects = new TreeMap<>();
+		Map<Integer, Integer> effects = new HashMap<>();
 		
 		for(int a = 0; a <= Constants.MAX_EFFECTS_ID; a++) {
 			if((s1.effects.get(a) == null  || s1.effects.get(a) == 0) && (s2.effects.get(a) == null || s2.effects.get(a) == 0))
