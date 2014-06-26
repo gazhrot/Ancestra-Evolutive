@@ -19,11 +19,8 @@ import org.ancestra.evolutive.object.Object;
 import org.ancestra.evolutive.other.Action;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.TreeMap;
 
 public class Maps {
 	
@@ -38,9 +35,10 @@ public class Maps {
     private byte y = 0;
 	private byte maxGroup = 3;
 	private byte maxSize;
-	private int nextObject = -1;
+	private int nextFreeId = -1;
 	private SubArea subArea;
-	private MountPark mountPark;	
+	private MountPark mountPark;
+    Timer timer = new Timer();
 
     private ArrayList<Entity> entities = new ArrayList<>();
 	private Map<Integer, Npc> npcs = new TreeMap<>();
@@ -85,6 +83,9 @@ public class Maps {
 			return;
 
 		refreshSpawns();
+
+        timer.scheduleAtFixedRate(new moveMobs(),50000,50000);
+
 	}
 	
 	public Maps(int id, String date, byte width, byte height, String key, String places) {
@@ -97,6 +98,18 @@ public class Maps {
 		this.cases = new TreeMap<>();
         logger = (Logger) LoggerFactory.getLogger("maps." + id);
 	}
+
+    class moveMobs extends TimerTask{
+
+
+        @Override
+        public void run() {
+            for(MobGroup mob : mobGroups.values()){
+
+                mob.setCell(cases.get(getRandomFreeCell()));
+            }
+        }
+    }
 
     //region Getters and Setters
     public String getDate() {
@@ -152,7 +165,7 @@ public class Maps {
 	}
 
 	public int getNextObject() {
-		return nextObject;
+		return nextFreeId;
 	}
 
 	public SubArea getSubArea() {
@@ -244,7 +257,7 @@ public class Maps {
 
         Npc npc = new Npc(template, this.getNextObject(),this, cases.get(cell), (byte) dir);
         this.getNpcs().put(this.getNextObject(), npc);
-        this.nextObject--;
+        this.nextFreeId--;
         return npc;
     }
 
@@ -289,10 +302,9 @@ public class Maps {
 			
 			this.getMobGroups().put(this.getNextObject(), group);
 			
-			if(log)
-				SocketManager.GAME_SEND_MAP_MOBS_GM_PACKET(this, group);
+            SocketManager.GAME_SEND_MAP_MOBS_GM_PACKET(this, group);
 			
-			this.nextObject--;
+			this.nextFreeId--;
 		}
 	}
 	
@@ -304,7 +316,7 @@ public class Maps {
 		
 		this.getMobGroups().put(this.getNextObject(), group);
 		SocketManager.GAME_SEND_MAP_MOBS_GM_PACKET(this, group);
-		this.nextObject--;
+		this.nextFreeId--;
 		
 		if(timer)
 			group.startTimer();
@@ -318,7 +330,7 @@ public class Maps {
 		
 		this.getMobGroups().put(this.getNextObject(), group);
 		SocketManager.GAME_SEND_MAP_MOBS_GM_PACKET(this, group);
-		this.nextObject--;
+		this.nextFreeId--;
 	}
 	
 	public void addStaticGroup(int cell, String data) {
@@ -328,7 +340,7 @@ public class Maps {
 			return;
 		
 		this.getMobGroups().put(this.getNextObject(), group);
-		this.nextObject--;
+		this.nextFreeId--;
 		this.getFixMobGroups().put(-1000 + this.getNextObject(), group);
 		SocketManager.GAME_SEND_MAP_MOBS_GM_PACKET(this, group);
 	}
@@ -381,9 +393,10 @@ public class Maps {
 			
 			if(!ok)
 				continue;
-			
-			if(!entry.getValue().getPlayers().isEmpty())
-				continue;
+
+            if(entry != null)
+                if(!entry.getValue().getPlayers().isEmpty())
+				    continue;
 
 			cases.add(entry.getValue().getId());
 		}
@@ -434,7 +447,7 @@ public class Maps {
 		
 		for(MobGroup group : this.getMobGroups().values()) {
 			if(Pathfinding.getDistanceBetween(this, cell,group.getCell().getId()) <= group.getAggroDistance()) {
-				if((group.getAlignement() == Alignement.NEUTRE || ((player.getAlign() == 1 || player.getAlign() == 2) && (Alignement.getAlignement(player.getAlign()) != group.getAlignement()))) && ConditionParser.validConditions(player, group.getCondition())) {
+				if((group.getAlignement() == Alignement.NEUTRE || ((player.getAlign() == Alignement.BONTARIEN || player.getAlign() == Alignement.BRAKMARIEN) && (player.getAlign() != group.getAlignement()))) && ConditionParser.validConditions(player, group.getCondition())) {
 					Log.addToLog(" > Le joueur " + player.getName() + " rentre en combat contre un groupe de monstre (" + group.getId() + ") !");
 					startFigthVersusMonstres(player,group);
 					return;
@@ -571,6 +584,23 @@ public class Maps {
 		}
 		return toreturn.toString();
 	}
+
+    /**
+     * Renvoie les cellules libres les plus proches
+     * @param cell cellucle centrale
+     * @param maxDistance nombre de cellules maximum voulues
+     * @return cellule libre
+     */
+    public Case getRandomNearFreeCell(Case cell,int maxDistance){
+        for(int i=0; i <= maxDistance;i++){
+            Case cell1 = cases.get(cell.getId()+i);
+            Case cell2 = cases.get(cell.getId()-i);
+            if(cell1.isFree()) return cell1;
+            if(cell2.isFree()) return cell2;
+        }
+        return null;
+    }
+
 
     /**
      * Envoie un message a tout les player sur la map n etant pas en combat

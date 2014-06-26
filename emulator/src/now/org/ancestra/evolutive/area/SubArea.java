@@ -1,6 +1,7 @@
 package org.ancestra.evolutive.area;
 
 import org.ancestra.evolutive.core.World;
+import org.ancestra.evolutive.enums.Alignement;
 import org.ancestra.evolutive.map.Maps;
 
 import java.util.ArrayList;
@@ -9,7 +10,7 @@ public class SubArea {
 	
 	private int id;
 	private String name;
-	private int alignement;
+	private Alignement alignement;
 	private Area area;
 	private ArrayList<Maps> maps = new ArrayList<>();
 	
@@ -17,7 +18,7 @@ public class SubArea {
 		this.id = id;
 		this.name = name;
 		this.area = World.data.getArea(area);
-		this.alignement = alignement;
+		this.alignement = Alignement.getAlignement(alignement);
 	}
 
 	public int getId() {
@@ -36,11 +37,11 @@ public class SubArea {
 		this.name = name;
 	}
 
-	public int getAlignement() {
+	public Alignement getAlignement() {
 		return alignement;
 	}
 
-	public void setAlignement(int alignement) {
+	public void setAlignement(Alignement alignement) {
 		this.alignement = alignement;
 	}
 

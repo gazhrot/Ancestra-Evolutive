@@ -6,6 +6,7 @@ import org.ancestra.evolutive.common.SocketManager;
 import org.ancestra.evolutive.game.GameAction;
 import org.ancestra.evolutive.game.GameClient;
 import org.ancestra.evolutive.map.Case;
+import org.ancestra.evolutive.map.InteractiveObject;
 import org.ancestra.evolutive.tool.plugin.packet.Packet;
 import org.ancestra.evolutive.tool.plugin.packet.PacketParser;
 
@@ -49,7 +50,7 @@ public class ActionAck implements PacketParser {
 				if(isOk) {//Hors Combat
 					if(client.getPlayer().getFight() == null) {
                         client.getPlayer().setEmoteActive(0);
-						client.getPlayer().getCell().removePlayer(client.getPlayer().getId());
+						client.getPlayer().getCell().removeCreature(client.getPlayer());
 						SocketManager.GAME_SEND_BN(client);
 						String path = GA.getArgs();
 						//On prend la case cibl�e
@@ -61,14 +62,11 @@ public class ActionAck implements PacketParser {
 						client.getPlayer().setOrientation(CryptManager.getIntByHashedValue(path.charAt(path.length()-3)));
 						if(!client.getPlayer().isGhosts()) client.getPlayer().setAway(false);
 						
-						if(targetCell.getObject() != null) {
-							//Si c'est une "borne" comme Emotes, ou Cr�ation guilde
-							if(targetCell.getInteractiveObject().getId() == 1324) {
-								Constants.applyPlotIOAction(client.getPlayer(),client.getPlayer().getMap().getId(),targetCell.getId());
-							}else if(targetCell.getInteractiveObject().getId() == 542) {
-								if(client.getPlayer().isGhosts()) 
-									client.getPlayer().setAlive();
-							}
+						
+						InteractiveObject IO = targetCell.getInteractiveObject();
+						if(IO != null) {							
+							IO.getActionIO(client.getPlayer(), targetCell);
+							IO.getSignIO(client.getPlayer(), targetCell.getId());
 						}
 
 						client.getPlayer().getMap().onPlayerArriveOnCell(client.getPlayer(),client.getPlayer().getCell().getId());
@@ -92,7 +90,7 @@ public class ActionAck implements PacketParser {
 						return;
 					
 					String path = GA.getArgs();
-					client.getPlayer().getCell().removePlayer(client.getPlayer().getId());
+					client.getPlayer().getCell().removeCreature(client.getPlayer());
 					client.getPlayer().setCell(client.getPlayer().getMap().getCases().get(newCellID));
 					client.getPlayer().setOrientation(CryptManager.getIntByHashedValue(path.charAt(path.length()-3)));
 					SocketManager.GAME_SEND_BN(client);
@@ -114,7 +112,7 @@ public class ActionAck implements PacketParser {
                         return;
 
                     String path = GA.getArgs();
-                    client.getPlayer().getCell().removePlayer(client.getPlayer().getId());
+                    client.getPlayer().getCell().removeCreature(client.getPlayer());
                     client.getPlayer().setCell(client.getPlayer().getMap().getCases().get(newCellID));
                     client.getPlayer().setOrientation(CryptManager.getIntByHashedValue(path.charAt(path.length()-3)));
                     SocketManager.GAME_SEND_BN(client);

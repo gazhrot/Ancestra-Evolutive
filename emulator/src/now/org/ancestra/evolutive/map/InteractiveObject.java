@@ -22,8 +22,7 @@ public class InteractiveObject {
 	private boolean walkable;
 	private Timer respawnTimer;
 
-	public InteractiveObject(int id, final Maps map, final Case cell)
-	{
+	public InteractiveObject(int id, final Maps map, final Case cell) {
 		this.id = id;
 		this.map = map;
 		this.cell = cell;
@@ -105,21 +104,17 @@ public class InteractiveObject {
 		this.walkable = b;
 	}
 		
-	public static void getActionIO(Player player, Case cell, int id)
-	{
-		switch(id)
-		{			
-			/*case 542://Statue Phoenix.
-				if(player.is_ghost())
-					player.set_Alive();
-			break;*/
+	public void getActionIO(Player player, Case cell) {
+		switch(this.getId()) {			
+			case 542://Statue Phoenix.
+				if(player.isGhosts())
+					player.setAlive();
+			break;
 			
 			case 684://Portillon donjon squelette.
-				if(!player.hasItemTemplate(1570, 1))
-				{
-					SocketManager.GAME_SEND_MESSAGE(player, "Vous ne possedez pas la clef nï¿½cessaire.", "009900");
-				}else
-				{
+				if(!player.hasItemTemplate(1570, 1)) {
+					player.sendText("Vous ne possèdez pas la clef necéssaire.");
+				} else {
 					player.removeByTemplateID(1570, 1);
 					SocketManager.GAME_SEND_Im_PACKET(player, "022;" + 1 + "~" + 1570);
 					player.setPosition((short) 2110, 118);
@@ -127,7 +122,22 @@ public class InteractiveObject {
 			break;
 			
 			case 1330://Pierre de kwak
-				player.getMap().startFightVersusProtectors(player, new MobGroup(player.getMap().getNextObject(),player.getMap(), cell, getKwakere(player.getMap().getId())+","+40+","+40));
+				int kwakere = 269;
+				switch(player.getMap().getId()) {
+				case 2072: 
+					kwakere = 270; 
+					break;
+				case 2071: 
+					kwakere = 269; 
+					break;
+				case 2067: 
+					kwakere = 272; 
+					break;
+				case 2068: 
+					kwakere = 271; 
+					break;
+				}	
+				player.getMap().startFightVersusProtectors(player, new MobGroup(player.getMap().getNextObject(),player.getMap(), cell, kwakere+","+40+","+40));
 			break;
 			
 			case 1679:
@@ -179,22 +189,26 @@ public class InteractiveObject {
 			
 			case 7546://Foire au troll
 			case 7547:
-				SocketManager.send(player, "GDF|"+cell.getId()+";3");
+				player.send("GDF|"+cell.getId()+";3");
 			break;
 			
 			case 1324:// Plot Rouge des ï¿½motes
-				switch(player.getMap().getId())
-				{
+				switch(player.getMap().getId()) {
 					case 2196:
 						if(player.isAway())
 							return;
-						if(player.getGuild() != null || player.getGuildMember() != null && player.hasItemTemplate(1575, 1)) {
-							player.removeByTemplateID(1575, 1);
+						
+						if(player.getGuild() != null || player.getGuildMember() != null) {
 							SocketManager.GAME_SEND_gC_PACKET(player, "Ea");
-							SocketManager.GAME_SEND_Im_PACKET(player, "14");	
 							return;
 						}
-						SocketManager.GAME_SEND_gn_PACKET(player);
+						if(player.hasItemTemplate(1575, 1)) {
+							player.removeByTemplateID(1575, 1);
+							SocketManager.GAME_SEND_gn_PACKET(player);
+							return;
+						}
+						SocketManager.GAME_SEND_Im_PACKET(player, "14");
+						
 					break;
 					/*case 2037://Emote Faire signe
 						player.addStaticEmote(2);
@@ -222,12 +236,12 @@ public class InteractiveObject {
 			
 			case 1694://Village brigandin tire ï¿½olienne
 				SocketManager.GAME_SEND_GA_PACKET(player.getAccount().getGameClient(), "", "2", player.getId()+"", "4");
-				player.setPosition((short) 6848, 390);
+				player.setPosition(6848, 390);
 			break;
 			
 			case 1695://Village brigandin tire ï¿½olienne
 				SocketManager.GAME_SEND_GA_PACKET(player.getAccount().getGameClient(), "", "2", player.getId()+"", "3");
-				player.setPosition((short) 6844, 268);
+				player.setPosition(6844, 268);
 			break;
 			
 			/*case 7045: TODO : :D
@@ -330,150 +344,141 @@ public class InteractiveObject {
 		}
 	}
 	
-	public static void getSignIO(Player player, int cell, int id)
-	{
-		switch(player.getMap().getId())
-		{
+	public void getSignIO(Player player, int cell) {
+		switch(player.getMap().getId())	{
 			case 7460:
-				if(id == 1988 && cell == 234)
-					SocketManager.send(player, "dCK71_0706251229");
-				if(id == 1986 && cell == 161)
-					SocketManager.send(player, "dCK65_0706251123");
-				if(id == 1985 && cell == 119)
-					SocketManager.send(player, "dCK96_0706251201");
-				if(id == 1986 && cell == 120)
-					SocketManager.send(player, "dCK61_0802081743");
-				if(id == 1985 && cell == 149)
-					SocketManager.send(player, "dCK63_0706251124");
-				if(id == 1986 && cell == 150)
-					SocketManager.send(player, "dCK67_0706251223");
-				if(id == 1986 && cell == 179)
-					SocketManager.send(player, "dCK68_0706251126");
-				if(id == 1985 && cell == 180)
-					SocketManager.send(player, "dCK69_0706251058");
-				if(id == 1986 && cell == 269)
-					SocketManager.send(player, "dCK94_0706251138");
-				if(id == 1985 && cell == 270)
-					SocketManager.send(player, "dCK70_0706251122");
-				if(id == 1986 && cell == 299)
-					SocketManager.send(player, "dCK93_0706251135");
-				if(id == 1986 && cell == 300)
-					SocketManager.send(player, "dCK100_0706251214");
-				if(id == 1985 && cell == 329)
-					SocketManager.send(player, "dCK98_0706251211");
+				if(this.id == 1988 && cell == 234)
+					this.send(player, "dCK71_0706251229");
+				if(this.id == 1986 && cell == 161)
+					this.send(player, "dCK65_0706251123");
+				if(this.id == 1985 && cell == 119)
+					this.send(player, "dCK96_0706251201");
+				if(this.id == 1986 && cell == 120)
+					this.send(player, "dCK61_0802081743");
+				if(this.id == 1985 && cell == 149)
+					this.send(player, "dCK63_0706251124");
+				if(this.id == 1986 && cell == 150)
+					this.send(player, "dCK67_0706251223");
+				if(this.id == 1986 && cell == 179)
+					this.send(player, "dCK68_0706251126");
+				if(this.id == 1985 && cell == 180)
+					this.send(player, "dCK69_0706251058");
+				if(this.id == 1986 && cell == 269)
+					this.send(player, "dCK94_0706251138");
+				if(this.id == 1985 && cell == 270)
+					this.send(player, "dCK70_0706251122");
+				if(this.id == 1986 && cell == 299)
+					this.send(player, "dCK93_0706251135");
+				if(this.id == 1986 && cell == 300)
+					this.send(player, "dCK100_0706251214");
+				if(this.id == 1985 && cell == 329)
+					this.send(player, "dCK98_0706251211");
 			break;
 			
 			case 7411:
-				if(id == 1531 && cell == 230)
-					SocketManager.send(player, "dCK139_0612131303");
+				if(this.id == 1531 && cell == 230)
+					this.send(player, "dCK139_0612131303");
 			break;
 			
 			case 7543:
-				if(id == 1528 && cell == 262)
-					SocketManager.send(player, "dCK75_0603101710");
-				if(id == 1533 && cell == 169)
-					SocketManager.send(player, "dCK74_0603101709");
-				if(id == 1528 && cell == 169)
-					SocketManager.send(player, "dCK73_0706211414");
+				if(this.id == 1528 && cell == 262)
+					this.send(player, "dCK75_0603101710");
+				if(this.id == 1533 && cell == 169)
+					this.send(player, "dCK74_0603101709");
+				if(this.id == 1528 && cell == 169)
+					this.send(player, "dCK73_0706211414");
 			break;
 			
 			case 7314:
-				if(id == 1531 && cell == 93)
-					SocketManager.send(player, "dCK78_0706221019");
-				if(id == 1532 && cell == 256)
-					SocketManager.send(player, "dCK76_0603091219");
-				if(id == 1533 && cell == 415)
-					SocketManager.send(player, "dCK77_0603091218");
+				if(this.id == 1531 && cell == 93)
+					this.send(player, "dCK78_0706221019");
+				if(this.id == 1532 && cell == 256)
+					this.send(player, "dCK76_0603091219");
+				if(this.id == 1533 && cell == 415)
+					this.send(player, "dCK77_0603091218");
 			break;
 			
 			case 7417:
-				if(id == 1532 && cell == 264)
-					SocketManager.send(player, "dCK79_0603101711");
-				if(id == 1528 && cell == 211)
-					SocketManager.send(player, "dCK80_0510251009");
-				if(id == 1532 && cell == 212)
-					SocketManager.send(player, "dCK77_0603091218");
-				if(id == 1529 && cell == 212)
-					SocketManager.send(player, "dCK81_0510251010");
+				if(this.id == 1532 && cell == 264)
+					this.send(player, "dCK79_0603101711");
+				if(this.id == 1528 && cell == 211)
+					this.send(player, "dCK80_0510251009");
+				if(this.id == 1532 && cell == 212)
+					this.send(player, "dCK77_0603091218");
+				if(this.id == 1529 && cell == 212)
+					this.send(player, "dCK81_0510251010");
 			break;
 			
 			case 2698:
-				if(id == 1531 && cell == 93)
-					SocketManager.send(player, "dCK51_0706211150");
-				if(id == 1528 && cell == 109)
-					SocketManager.send(player, "dCK41_0706221516");
+				if(this.id == 1531 && cell == 93)
+					this.send(player, "dCK51_0706211150");
+				if(this.id == 1528 && cell == 109)
+					this.send(player, "dCK41_0706221516");
 			break;
 			
 			case 2814:
-				if(id == 1533 && cell == 415)
-					SocketManager.send(player, "dCK43_0706201719");
-				if(id == 1532 && cell == 326)
-					SocketManager.send(player, "dCK50_0706211149");
-				if(id == 1529 && cell == 325)
-					SocketManager.send(player, "dCK41_0706221516");
+				if(this.id == 1533 && cell == 415)
+					this.send(player, "dCK43_0706201719");
+				if(this.id == 1532 && cell == 326)
+					this.send(player, "dCK50_0706211149");
+				if(this.id == 1529 && cell == 325)
+					this.send(player, "dCK41_0706221516");
 			break;
 			
 			case 3087:
-				if(id == 1529 && cell == 89)
-					SocketManager.send(player, "dCK41_0706221516");
+				if(this.id == 1529 && cell == 89)
+					this.send(player, "dCK41_0706221516");
 			break;
 			
 			case 3018:
-				if(id == 1530 && cell == 354)
-					SocketManager.send(player, "dCK52_0706211152");
-				if(id == 1532 && cell == 256)
-					SocketManager.send(player, "dCK50_0706211149");
-				if(id == 1528 && cell == 255)
-					SocketManager.send(player, "dCK41_0706221516");
+				if(this.id == 1530 && cell == 354)
+					this.send(player, "dCK52_0706211152");
+				if(this.id == 1532 && cell == 256)
+					this.send(player, "dCK50_0706211149");
+				if(this.id == 1528 && cell == 255)
+					this.send(player, "dCK41_0706221516");
 			break;
 			
 			case 3433:
-				if(id == 1533 && cell == 282)
-					SocketManager.send(player, "dCK53_0706211407");
-				if(id == 1531 && cell == 179)
-					SocketManager.send(player, "dCK50_0706211149");
-				if(id == 1529 && cell == 178)
-					SocketManager.send(player, "dCK41_0706221516");
+				if(this.id == 1533 && cell == 282)
+					this.send(player, "dCK53_0706211407");
+				if(this.id == 1531 && cell == 179)
+					this.send(player, "dCK50_0706211149");
+				if(this.id == 1529 && cell == 178)
+					this.send(player, "dCK41_0706221516");
 			break;
 			
 			case 4493:
-				if(id == 1533 && cell == 415)
-					SocketManager.send(player, "dCK43_0706201719");
-				if(id == 1532 && cell == 326)
-					SocketManager.send(player, "dCK50_0706211149");
-				if(id == 1529 && cell == 325)
-					SocketManager.send(player, "dCK41_0706221516");
+				if(this.id == 1533 && cell == 415)
+					this.send(player, "dCK43_0706201719");
+				if(this.id == 1532 && cell == 326)
+					this.send(player, "dCK50_0706211149");
+				if(this.id == 1529 && cell == 325)
+					this.send(player, "dCK41_0706221516");
 			break;
 			
 			case 4876:
-				if(id == 1532 && cell == 316)
-					SocketManager.send(player, "dCK54_0706211408");
-				if(id == 1531 && cell == 283)
-					SocketManager.send(player, "dCK51_0706211150");
-				if(id == 1530 && cell == 282)
-					SocketManager.send(player, "dCK52_0706211152");
+				if(this.id == 1532 && cell == 316)
+					this.send(player, "dCK54_0706211408");
+				if(this.id == 1531 && cell == 283)
+					this.send(player, "dCK51_0706211150");
+				if(this.id == 1530 && cell == 282)
+					this.send(player, "dCK52_0706211152");
 			break;			
 		}
 	}
-		
-	private static int getKwakere(int i)
-	{
-		switch(i)
-		{
-			case 2072: return 270;
-			case 2071: return 269;
-			case 2067: return 272;
-			case 2068: return 271;
-		}
-		return 269;
-	}
-	
+			
 	public InteractiveObjectTemplate getTemplate() {
 		return template;
 	}
 
 	public void setTemplate(InteractiveObjectTemplate template) {
 		this.template = template;
+	}
+	
+	private void send(Player player, String packet) {
+		player.send(packet);
+		player.setAway(true);
 	}
 
 	public static class InteractiveObjectTemplate {
@@ -484,8 +489,7 @@ public class InteractiveObject {
 		private int unk;
 		private boolean walkable;
 		
-		public InteractiveObjectTemplate(int id, int respawnTime, int duration, int unk, boolean walkable)
-		{
+		public InteractiveObjectTemplate(int id, int respawnTime, int duration, int unk, boolean walkable) {
 			this.id = id;
 			this.respawnTime = respawnTime;
 			this.duration = duration;

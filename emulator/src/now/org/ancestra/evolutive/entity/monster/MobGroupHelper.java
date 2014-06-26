@@ -4,9 +4,6 @@ import org.ancestra.evolutive.entity.Helper;
 
 import java.util.Map;
 
-/**
- * Created by Guillaume on 14/06/2014.
- */
 public class MobGroupHelper extends Helper<MobGroup> {
     public MobGroupHelper(MobGroup creature) {
         super(creature);

@@ -5,6 +5,7 @@ import org.ancestra.evolutive.common.SocketManager;
 import org.ancestra.evolutive.core.World;
 import org.ancestra.evolutive.game.GameClient;
 import org.ancestra.evolutive.object.Object;
+import org.ancestra.evolutive.object.ObjectPosition;
 import org.ancestra.evolutive.tool.plugin.packet.Packet;
 import org.ancestra.evolutive.tool.plugin.packet.PacketParser;
 
@@ -31,23 +32,23 @@ public class Drop implements PacketParser {
 			SocketManager.GAME_SEND_Im_PACKET(client.getPlayer(), "1145");
 			return;
 		}
-		if(obj.getPosition() != Constants.ITEM_POS_NO_EQUIPED) {
-			obj.setPosition(Constants.ITEM_POS_NO_EQUIPED);
+		if(obj.getPosition() != ObjectPosition.NO_EQUIPED) {
+			obj.setPosition(ObjectPosition.NO_EQUIPED);
 			SocketManager.GAME_SEND_OBJET_MOVE_PACKET(client.getPlayer(),obj);
-			if(obj.getPosition() == Constants.ITEM_POS_ARME || obj.getPosition() == Constants.ITEM_POS_COIFFE ||
-				obj.getPosition() == Constants.ITEM_POS_FAMILIER || obj.getPosition() == Constants.ITEM_POS_CAPE ||
-				obj.getPosition() == Constants.ITEM_POS_BOUCLIER || obj.getPosition() == Constants.ITEM_POS_NO_EQUIPED)
+			if(obj.getPosition() == ObjectPosition.ARME || obj.getPosition() == ObjectPosition.COIFFE ||
+				obj.getPosition() == ObjectPosition.FAMILIER || obj.getPosition() == ObjectPosition.CAPE ||
+				obj.getPosition() == ObjectPosition.BOUCLIER || obj.getPosition() == ObjectPosition.NO_EQUIPED)
 				SocketManager.GAME_SEND_ON_EQUIP_ITEM(client.getPlayer().getMap(), client.getPlayer());
 		}
 		if(qua >= obj.getQuantity()) {
 			client.getPlayer().removeItem(guid);
 			client.getPlayer().getMap().getCases().get(client.getPlayer().getCell().getId()+cellPosition).setObject(obj);
-			obj.setPosition(Constants.ITEM_POS_NO_EQUIPED);
+			obj.setPosition(ObjectPosition.NO_EQUIPED);
 			SocketManager.GAME_SEND_REMOVE_ITEM_PACKET(client.getPlayer(), guid);
 		}else {
 			obj.setQuantity(obj.getQuantity() - qua);
 			Object obj2 = Object.getClone(obj, qua);
-			obj2.setPosition(Constants.ITEM_POS_NO_EQUIPED);
+			obj2.setPosition(ObjectPosition.NO_EQUIPED);
 			client.getPlayer().getMap().getCases().get(client.getPlayer().getCell().getId()+cellPosition).setObject(obj2);
 			SocketManager.GAME_SEND_OBJECT_QUANTITY_PACKET(client.getPlayer(), obj);
 		}

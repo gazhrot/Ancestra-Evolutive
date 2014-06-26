@@ -65,7 +65,7 @@ public class GameClient implements Client {
 	}
 
 	public void setPlayer(Player player) {
-		if(this.player == null){
+		if(this.player == null) {
             this.player = player;
             logger = (Logger)LoggerFactory.getLogger("[player]" + player.getName());
         }

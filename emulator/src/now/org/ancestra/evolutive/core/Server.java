@@ -86,7 +86,6 @@ public class Server {
 	private int saveTime;
 	private long floodTime;
 	private int loadDelay;
-	private int reloadMobDelay;
 	private int playerLimitOnServer;
 
 	//rates
@@ -151,7 +150,6 @@ public class Server {
 			this.saveTime = configFile.getInt("server.saveTime");
 			this.floodTime = configFile.getInt("server.floodTime");
 			this.loadDelay = configFile.getInt("server.liveActionDelay");
-			this.reloadMobDelay = configFile.getInt("server.reloadMobDelay");
 			this.playerLimitOnServer = configFile.getInt("server.playerLimit");
 			this.motd = configFile.getString("server.welcomMessage.content");
 			this.motdColor = configFile.getString("server.welcomMessage.color");
@@ -486,7 +484,7 @@ public class Server {
 		String i = "org.ancestra.evolutive.game.packet.";
 		String[] packages = {"account", "basic", "channel", "dialog", "enemy", "environement", 
 							 "exchange", "fight", "friend", "game", "group", "guild", "house", 
-							 "house.kode", "mount", "object", "spell", "waypoint"};
+							 "house.kode", "mount", "object", "panel", "spell", "waypoint"};
 
 		for (String packge : packages) {
 			for (Class<?> clas : getClasses(i + packge)) {
@@ -670,10 +668,6 @@ public class Server {
 
 	public int getLoadDelay() {
 		return loadDelay;
-	}
-
-	public int getReloadMobDelay() {
-		return reloadMobDelay;
 	}
 
 	public int getPlayerLimitOnServer() {

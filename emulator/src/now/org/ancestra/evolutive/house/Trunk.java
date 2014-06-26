@@ -16,6 +16,8 @@ import org.ancestra.evolutive.house.House;
 import org.ancestra.evolutive.house.Trunk;
 
 import org.ancestra.evolutive.object.Object;
+import org.ancestra.evolutive.object.ObjectPosition;
+import org.ancestra.evolutive.object.ObjectType;
 
 public class Trunk {
 	
@@ -226,7 +228,7 @@ public class Trunk {
 		String str = "";
 		
 		//Si c'est un item équipé ...
-		if(object.getPosition() != Constants.ITEM_POS_NO_EQUIPED)
+		if(object.getPosition() != ObjectPosition.NO_EQUIPED)
 			return;
 		
 		Object TrunkObj = this.getSimilarTrunkItem(object);
@@ -364,7 +366,7 @@ public class Trunk {
 	
 	private Object getSimilarTrunkItem(Object object) {
 		for(Object value : this.getObjects().values()) {
-			if(value.getTemplate().getType() == 85)
+			if(value.getTemplate().getType() == ObjectType.PIERRE_AME_PLEINE)
 				continue;
 			if(value.getTemplate().getId() == object.getTemplate().getId() && value.getStats().isSameStats(object.getStats()))
 				return value;

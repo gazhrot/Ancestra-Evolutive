@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.TreeMap;
 
-public class MobGrade {
+public class MobGrade{
 	
 	private int id;
 	private MobTemplate template;
@@ -251,4 +251,5 @@ public class MobGrade {
 		this.stats.put(Constants.STATS_ADD_SAGE, sages);
 		this.stats.put(Constants.STATS_ADD_CHAN, chanc);	
 	}
+
 }

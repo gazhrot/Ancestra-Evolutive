@@ -14,7 +14,9 @@ public class CollectorHelper extends Helper<Collector> {
     public String getGmPacket() {
         StringBuilder sock = new StringBuilder();
 
-        if(getCreature().getState() == Creature.STATE.IN_FIGHT)return "";
+        if(getCreature().getState() == Creature.State.IN_FIGHT)
+        	return "";
+        
         sock.append(getCreature().getCell().getId()).append(";");
         sock.append(getCreature().getOrientation()).append(";");
         sock.append("0").append(";");

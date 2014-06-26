@@ -6,6 +6,7 @@ import org.ancestra.evolutive.fight.Fighter;
 import org.ancestra.evolutive.fight.trap.Piege;
 import org.ancestra.evolutive.map.Case;
 import org.ancestra.evolutive.map.Maps;
+import org.ancestra.evolutive.object.ObjectType;
 
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicReference;
@@ -262,7 +263,7 @@ public class Pathfinding {
 		return false;
 	}
 
-	public static ArrayList<Fighter> getCiblesByZoneByWeapon(Fight fight,int type,Case cell,int castCellID)
+	public static ArrayList<Fighter> getCiblesByZoneByWeapon(Fight fight, ObjectType type, Case cell, int castCellID)
 	{
 		ArrayList<Fighter> cibles = new ArrayList<Fighter>();
 		char c = getDirBetweenTwoCase(castCellID,cell.getId(),fight.getMap(),true);
@@ -273,10 +274,9 @@ public class Pathfinding {
 			return cibles;
 		}
 		
-		switch(type)
-		{
+		switch(type) {
 			//Cases devant celle ou l'on vise
-			case Constants.ITEM_TYPE_MARTEAU:
+			case MARTEAU:
 				Fighter f = getFighter2CellBefore(castCellID,c,fight.getMap());
 				if(f != null)
 					cibles.add(f);
@@ -290,7 +290,7 @@ public class Pathfinding {
 				if(i != null)
 					cibles.add(i);
 			break;
-			case Constants.ITEM_TYPE_BATON:
+			case BATON:
 				Fighter j = get1StFighterOnCellFromDirection(fight.getMap(),castCellID,(char)(c-1));
 				if(j != null)
 					cibles.add(j);//Ajoute case a gauche
@@ -302,14 +302,14 @@ public class Pathfinding {
 				if(l != null)
 					cibles.add(l);//Ajoute case cible
 			break;
-			case Constants.ITEM_TYPE_PIOCHE:
-			case Constants.ITEM_TYPE_EPEE:
-			case Constants.ITEM_TYPE_FAUX:
-			case Constants.ITEM_TYPE_DAGUES:
-			case Constants.ITEM_TYPE_BAGUETTE:
-			case Constants.ITEM_TYPE_PELLE:
-			case Constants.ITEM_TYPE_ARC:
-			case Constants.ITEM_TYPE_HACHE:
+			case PIOCHE:
+			case EPEE:
+			case FAUX:
+			case DAGUES:
+			case BAGUETTE:
+			case PELLE:
+			case ARC:
+			case HACHE:
 				Fighter m = cell.getFirstFighter();
 				if(m != null)
 					cibles.add(m);
@@ -858,4 +858,33 @@ public class Pathfinding {
 			id = 0;
 		return id;
 	}
+
+    public static String getShortestStringPathBetween(Maps map, int start, int dest, int distMax)
+    {
+        if (start == dest) return null;
+        ArrayList<Case> path = getShortestPathBetween(map, start, dest, distMax);
+        if (path == null) return null;
+        String pathstr = "";
+        int curCaseID = start;
+        char curDir = '\000';
+        for (Case c : path)
+        {
+            char d = getDirBetweenTwoCase(curCaseID, c.getId(), map, true);
+            if (d == 0) return null;
+            if (curDir != d)
+            {
+                if (path.indexOf(c) != 0)
+                    pathstr = pathstr + CryptManager.cellID_To_Code(curCaseID);
+                pathstr = pathstr + d;
+                curDir = d;
+            }
+            curCaseID = c.getId();
+        }
+        if (curCaseID != start)
+        {
+            pathstr = pathstr + CryptManager.cellID_To_Code(curCaseID);
+        }
+        if (pathstr == "") return null;
+        return "a" + CryptManager.cellID_To_Code(start) + pathstr;
+    }
 }

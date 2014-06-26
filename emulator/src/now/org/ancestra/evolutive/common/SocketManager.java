@@ -25,6 +25,7 @@ import org.ancestra.evolutive.map.Case;
 import org.ancestra.evolutive.map.InteractiveObject;
 import org.ancestra.evolutive.map.Maps;
 import org.ancestra.evolutive.map.MountPark;
+import org.ancestra.evolutive.object.ObjectPosition;
 import org.ancestra.evolutive.object.ObjectSet;
 import org.ancestra.evolutive.object.Object;
 import org.ancestra.evolutive.object.ObjectTemplate;
@@ -552,10 +553,9 @@ public class SocketManager {
 			Log.addToSockLog("Game: Map: Send>>"+packet);
 	}
 	
-	public static void GAME_SEND_MAP_GMS_PACKETS(Maps map, Player _perso)
-	{
-		String packet = map.getGMsPackets();
-		send(_perso, packet);
+	public static void GAME_SEND_MAP_GMS_PACKETS(Maps map, Player player) {
+		String packet = (player.getFight() == null ? map.getGMsPackets() : map.getFightersGMsPackets());
+		send(player, packet);
 		
 		if(Server.config.isDebug())
 			Log.addToSockLog("Game: Send>>"+packet);
@@ -1372,8 +1372,8 @@ public class SocketManager {
 	public static void GAME_SEND_OBJET_MOVE_PACKET(Player out,Object obj)
 	{
 		String packet = "OM"+obj.getId()+"|";
-		if(obj.getPosition() != Constants.ITEM_POS_NO_EQUIPED)
-			packet += obj.getPosition();
+		if(obj.getPosition() != ObjectPosition.NO_EQUIPED)
+			packet += obj.getPosition().getValue();
 		
 		send(out,packet);
 		if(Server.config.isDebug())

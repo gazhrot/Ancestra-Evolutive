@@ -526,10 +526,18 @@ public class Account {
 	public void disconnect() {
 		this.logged = false;
 		World.database.getAccountData().update(this);
-		
 		resetAllChars(true);
-		if(this.gameClient != null && this.gameClient.getSession() != null 
-				&& this.gameClient.getSession().isClosing())
+
+		if(this.curPlayer != null) {
+			if(this.curPlayer.getFight() != null) {
+				if(this.curPlayer.getFight().playerDisconnect(this.curPlayer, false)) {
+					this.curPlayer.save();
+					return;
+				}
+			}
+		}
+		
+		if(this.gameClient != null && this.gameClient.getSession() != null && this.gameClient.getSession().isClosing())
 			this.gameClient.getSession().close(true);
 		
 		this.curPlayer = null;
@@ -543,14 +551,20 @@ public class Account {
 				player.getCurExchange().cancel();
 			if(player.getGroup() != null)
 				player.getGroup().leave(player);
-			if(player.getFight() != null) {
-				player.getFight().leftFight(player, null);
-			} else {
-				player.getCell().removePlayer(player.getId());
-				if(player.getMap() != null && player.isOnline())
-					SocketManager.GAME_SEND_ERASE_ON_MAP_TO_MAP(player.getMap(), player.getId());
-			}
 			
+			if(player.getFight() != null) {//FIXME: Me prévenir si c'est toujours là (date : 23/06/2014) Locos.
+				player.setOnline(false);
+				if(player.getFight().playerDisconnect(player, false)) {
+					player.save();
+					continue;
+				}
+			}
+				
+			player.getCell().removeCreature(player);
+
+			if(player.getMap() != null && player.isOnline())
+				SocketManager.GAME_SEND_ERASE_ON_MAP_TO_MAP(player.getMap(), player.getId());
+		
 			player.setOnline(false);
 			if(save)
 				player.save();

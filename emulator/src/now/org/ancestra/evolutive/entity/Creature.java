@@ -6,13 +6,13 @@ import org.ancestra.evolutive.map.Case;
 import org.ancestra.evolutive.map.Maps;
 
 public class Creature extends Entity {
-    public enum STATE {
+    public enum State {
         IN_FIGHT
     }
 
-    private Maps map;
-    private Case cell;
-    private STATE state;
+    protected Maps map;
+    protected Case cell;
+    private State state;
     private int orientation;
 
 
@@ -115,7 +115,7 @@ public class Creature extends Entity {
      * Retourne l etat courant
      * @return etat courant
      */
-    public STATE getState() {
+    public State getState() {
         return this.state;
     }
 
@@ -123,7 +123,7 @@ public class Creature extends Entity {
      * Change l etat de la creature
      * @param state nouvel etat
      */
-    public void setState(STATE state) {
+    public void setState(State state) {
         this.state = state;
     }
 
@@ -147,25 +147,42 @@ public class Creature extends Entity {
 
 
     /**
-     * Effectue le changement de map
+     * Effectue le changement de position
      * @param oldCell ancienne case
      * @param newCell nouvelle case
      * @return retourne true si le changement a pu etre effectue
      * false sinon
      */
-    private boolean onPositionChange(Case oldCell, Case newCell) {
+    protected boolean onPositionChange(Case oldCell, Case newCell) {
         if(newCell == null || newCell.getMap() == null) {
             return false;
         }
         if(newCell.getMap() == oldCell.getMap()){
-            //newCell.getMap().send("GM|~" + this.getHelper().getGmPacket());
+            return onMoveCell(oldCell,newCell);
         }
         else {
             oldCell.getMap().removePlayer(this);
-            oldCell.removePlayer(this.getId());
+            oldCell.removeCreature(this);
             newCell.getMap().addPlayer((Player)this);
-            newCell.addPlayer((Player)this);
+            newCell.addCreature((Player) this);
+            return onMapChange(oldCell, newCell);
         }
+    }
+
+    /**
+     * Lorsque le mouvement se situe uniquement sur une map
+     * @return true ou false si l'action a echoue
+     */
+    protected boolean onMoveCell(Case oldCell, Case newCell){
         return true;
     }
+
+    /**
+     * Lorsque le mouvement se implique un changement de map
+     * @return true ou false si l'action a echoue
+     */
+    protected boolean onMapChange(Case oldCell, Case newCell) {
+        return true;
+    }
+
 }

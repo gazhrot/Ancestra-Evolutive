@@ -13,6 +13,7 @@ import org.ancestra.evolutive.guild.Guild;
 import org.ancestra.evolutive.guild.GuildMember;
 import org.ancestra.evolutive.map.Maps;
 import org.ancestra.evolutive.object.Object;
+import org.ancestra.evolutive.object.ObjectPosition;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -174,9 +175,9 @@ public class Formulas {
 		
 		if(statC<0)statC=0;
 
-        if(caster.getPersonnage() != null && isCaC && caster.getPersonnage().getObjectByPos(1) != null) {
+        if(caster.getPersonnage() != null && isCaC && caster.getPersonnage().getObjectByPos(ObjectPosition.ARME) != null) {
 
-			int ArmeType = caster.getPersonnage().getObjectByPos(1).getTemplate().getType();
+			int ArmeType = caster.getPersonnage().getObjectByPos(ObjectPosition.ARME).getTemplate().getType().getValue();
 
             if((caster.getSpellValueBool(392) == true) && ArmeType == 2)//ARC
 			{

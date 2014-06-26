@@ -16,15 +16,13 @@ public class ObjectAction {
 	private String cond;
 	private boolean send = true;
 	
-	public ObjectAction(String type, String args, String cond)
-	{
+	public ObjectAction(String type, String args, String cond) {
 		this.type = type;
 		this.args = args;
 		this.cond = cond;
 	}
 
-	public void apply(Player player, Player target, int objet, int cellid)
-	{
+	public void apply(Player player, Player target, int objet, int cellid) {
 		if(player == null)
 			return;
 		if(!player.isOnline())

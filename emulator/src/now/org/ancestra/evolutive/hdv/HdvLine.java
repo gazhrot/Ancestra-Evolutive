@@ -3,6 +3,8 @@ package org.ancestra.evolutive.hdv;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import org.ancestra.evolutive.object.ObjectType;
+
 public class HdvLine {
 	
 	private int id;
@@ -78,7 +80,7 @@ public class HdvLine {
 	}
 	
 	public boolean haveSameStats(HdvEntry entry) {
-		return this.getStats().equalsIgnoreCase(entry.getObject().parseStatsString()) && entry.getObject().getTemplate().getType() != 85;
+		return this.getStats().equalsIgnoreCase(entry.getObject().parseStatsString()) && entry.getObject().getTemplate().getType() != ObjectType.PIERRE_AME_PLEINE;
 		//Récupère les stats de l'objet et compare avec ceux de la ligne
 	}
 	

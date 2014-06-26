@@ -8,6 +8,7 @@ import org.ancestra.evolutive.common.SocketManager;
 import org.ancestra.evolutive.core.Log;
 import org.ancestra.evolutive.core.World;
 import org.ancestra.evolutive.entity.collector.Collector;
+import org.ancestra.evolutive.enums.Alignement;
 import org.ancestra.evolutive.fight.Fight;
 import org.ancestra.evolutive.fight.Fighter;
 import org.ancestra.evolutive.fight.spell.SpellStats;
@@ -15,6 +16,7 @@ import org.ancestra.evolutive.game.GameAction;
 import org.ancestra.evolutive.game.GameClient;
 import org.ancestra.evolutive.house.House;
 import org.ancestra.evolutive.map.Case;
+import org.ancestra.evolutive.map.InteractiveObject;
 import org.ancestra.evolutive.tool.plugin.packet.Packet;
 import org.ancestra.evolutive.tool.plugin.packet.PacketParser;
 
@@ -167,7 +169,7 @@ public class SendActions implements PacketParser {
 				client.getPlayer().toggleWings('+');
 				SocketManager.GAME_SEND_GA_PACKET_TO_MAP(client.getPlayer().getMap(),"", 906, client.getPlayer().getId()+"", id+"");
 				
-				if(target.getAlign() == 0) {
+				if(target.getAlign() == Alignement.NEUTRE) {
 					client.getPlayer().setDeshonor(client.getPlayer().getDeshonor()+1);
 					SocketManager.GAME_SEND_Im_PACKET(client.getPlayer(), "084;1");
 					client.getPlayer().getMap().newFight(client.getPlayer(), target, Constants.FIGHT_TYPE_AGRESSION, true);
@@ -327,9 +329,8 @@ public class SendActions implements PacketParser {
 					return;
 				}
 				
-				AtomicReference<String> pathRef = new AtomicReference<String>(path);
+				AtomicReference<String> pathRef = new AtomicReference<>(path);
 				int result = Pathfinding.isValidPath(client.getPlayer().getMap(), client.getPlayer().getCell().getId(), pathRef, null);
-				
 				Case targetCell = client.getPlayer().getMap().getCases().get(CryptManager.cellCode_To_ID(path.substring(path.length()-2)));
 				
 				//Si d�placement inutile
@@ -337,14 +338,10 @@ public class SendActions implements PacketParser {
 				{
 					if(targetCell != null)
 					{
-						if(targetCell.getObject() != null)
-						{
-							if(targetCell.getInteractiveObject().getId() == 1324) {
-								Constants.applyPlotIOAction(client.getPlayer(),client.getPlayer().getMap().getId(),targetCell.getId());
-							}else if(targetCell.getInteractiveObject().getId() == 542) {
-								if(client.getPlayer().isGhosts()) 
-									client.getPlayer().setAlive();
-							}
+						InteractiveObject IO = targetCell.getInteractiveObject();
+						if(IO != null) {							
+							IO.getActionIO(client.getPlayer(), targetCell);
+							IO.getSignIO(client.getPlayer(), targetCell.getId());
 							SocketManager.GAME_SEND_GA_PACKET(client, "", "0", "", "");					
 							client.removeAction(GA);
 							return;
@@ -352,7 +349,6 @@ public class SendActions implements PacketParser {
 					}
 					SocketManager.GAME_SEND_GA_PACKET(client, "", "0", "", "");
 					client.removeAction(GA);
-
 					return;
 				}
 				

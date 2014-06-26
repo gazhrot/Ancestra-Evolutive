@@ -7,6 +7,8 @@ import org.ancestra.evolutive.common.Formulas;
 import org.ancestra.evolutive.common.SocketManager;
 import org.ancestra.evolutive.core.Log;
 import org.ancestra.evolutive.core.World;
+import org.ancestra.evolutive.entity.Creature;
+import org.ancestra.evolutive.enums.Alignement;
 import org.ancestra.evolutive.fight.Fighter;
 import org.ancestra.evolutive.game.GameAction;
 import org.ancestra.evolutive.house.House;
@@ -17,6 +19,7 @@ import org.ancestra.evolutive.other.Action;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
@@ -31,7 +34,7 @@ public class Case {
 	private final InteractiveObject interactiveObject;
 	private Object object;
 	private ArrayList<Action> onCellStop;
-	private Map<Integer, Player> players;
+	private ArrayList<Creature> creatures;
 	private Map<Integer, Fighter> fighters;
 	
 	public Case(Maps map, int id, boolean walkable, boolean LoS, int interactiveObject){
@@ -107,23 +110,28 @@ public class Case {
 	}
 	
 	public Map<Integer, Player> getPlayers() {
-		if(this.players == null) 
-			return new TreeMap<>();
-		return this.players;
+        Map<Integer,Player> mapPlayer = new HashMap<>();
+        if(creatures == null) return mapPlayer;
+		for(Creature creature : creatures){
+            if(creature instanceof Player){
+                mapPlayer.put(creature.getId(),(Player)creature);
+            }
+        }
+        return mapPlayer;
 	}
 	
-	public void addPlayer(Player player) {
-		if(this.players == null) 
-			this.players = new TreeMap<>();
-		this.players.put(player.getId(), player);
+	public void addCreature(Creature creature) {
+		if(this.creatures == null)
+			this.creatures = new ArrayList<>();
+		this.creatures.add(creature);
 	}
 	
-	public void removePlayer(int id) {
-		if(this.players == null)
+	public void removeCreature(Creature creature) {
+		if(this.creatures == null || this.creatures.contains(creature))
 			return;
-		this.players.remove(id);
-		if(this.players.isEmpty()) 
-			this.players = null;
+		this.creatures.remove(id);
+		if(this.creatures.isEmpty())
+			this.creatures = null;
 	}
 	
 	public Map<Integer, Fighter> getFighters() {
@@ -137,7 +145,14 @@ public class Case {
 			this.fighters = new TreeMap<>();
 		this.fighters.put(fighter.getGUID(), fighter);
 	}
-	
+
+    public boolean isFree(){
+        if(isWalkable(true) && creatures == null)
+            return true;
+
+        return false;
+    }
+
 	public void removeFighter(Fighter fighter) {
 		this.fighters.remove(fighter.getGUID());
 	}
@@ -205,19 +220,19 @@ public class Case {
 				int count = 0;
 				int price = 20;
 				
-				if (perso.getMap().getSubArea().getArea().getId() == 7 && (perso.getAlign() == 1 || perso.getAlign() == 0 || perso.getAlign() == 3))//Ange, Neutre ou S�rianne
+				if (perso.getMap().getSubArea().getArea().getId() == 7 && (perso.getAlign() == Alignement.BONTARIEN || perso.getAlign() == Alignement.NEUTRE || perso.getAlign() == Alignement.MERCENAIRE))//Ange, Neutre ou S�rianne
 				{
-					Zaapis = Constants.ZAAPI.get(Constants.ALIGNEMENT_BONTARIEN).split(",");
-					if (perso.getAlign() == 1) price = 10;
+					Zaapis = Constants.ZAAPI.get(Alignement.BONTARIEN).split(",");
+					if (perso.getAlign() == Alignement.BONTARIEN) price = 10;
 				}
-				else if (perso.getMap().getSubArea().getArea().getId() == 11 && (perso.getAlign() == 2 || perso.getAlign() == 0 || perso.getAlign() == 3))//D�mons, Neutre ou S�rianne
+				else if (perso.getMap().getSubArea().getArea().getId() == 11 && (perso.getAlign() == Alignement.BRAKMARIEN || perso.getAlign() == Alignement.NEUTRE || perso.getAlign() == Alignement.MERCENAIRE))//D�mons, Neutre ou S�rianne
 				{
-					Zaapis = Constants.ZAAPI.get(Constants.ALIGNEMENT_BRAKMARIEN).split(",");
-					if (perso.getAlign() == 2) price = 10;
+					Zaapis = Constants.ZAAPI.get(Alignement.BRAKMARIEN).split(",");
+					if (perso.getAlign() == Alignement.BRAKMARIEN) price = 10;
 				}
 				else
 				{
-					Zaapis = Constants.ZAAPI.get(Constants.ALIGNEMENT_NEUTRE).split(",");
+					Zaapis = Constants.ZAAPI.get(Alignement.NEUTRE).split(",");
 				}
 				
 				if(Zaapis.length > 0)

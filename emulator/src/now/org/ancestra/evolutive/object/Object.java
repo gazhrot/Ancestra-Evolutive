@@ -17,7 +17,7 @@ public class Object {
 	
 	private int id;
 	private int quantity = 1;
-	private int position = Constants.ITEM_POS_NO_EQUIPED;
+	private ObjectPosition position = ObjectPosition.NO_EQUIPED;
 	private ObjectTemplate template;
 	private Stats stats = new Stats();
 	private ArrayList<SpellEffect> effects = new ArrayList<>();
@@ -27,12 +27,12 @@ public class Object {
 		this.id = id;
 		this.template = World.data.getObjectTemplate(template);
 		this.quantity = quantity;
-		this.position = position;
+		this.position = ObjectPosition.getPositionById(position);
 		this.stats = new Stats();
 		this.parseStringToStats(strStats);
 	}
 	
-	public Object(int id, int template, int quantity, int position,	Stats stats, ArrayList<SpellEffect> effects) {
+	public Object(int id, int template, int quantity, ObjectPosition position, Stats stats, ArrayList<SpellEffect> effects) {
 		this.id = id;
 		this.template = World.data.getObjectTemplate(template);
 		this.quantity = quantity;
@@ -42,7 +42,7 @@ public class Object {
 	}	
 	
 	public static Object getClone(Object object, int quantity) {
-		return new Object(World.data.getNewObjectGuid(), object.getTemplate().getId(), quantity, Constants.ITEM_POS_NO_EQUIPED, object.getStats(), object.getEffects());
+		return new Object(World.data.getNewObjectGuid(), object.getTemplate().getId(), quantity, ObjectPosition.NO_EQUIPED, object.getStats(), object.getEffects());
 	}
 	
 	public int getId() {
@@ -61,11 +61,11 @@ public class Object {
 		this.quantity = quantity;
 	}
 
-	public int getPosition() {
+	public ObjectPosition getPosition() {
 		return position;
 	}
 
-	public void setPosition(int position) {
+	public void setPosition(ObjectPosition position) {
 		this.position = position;
 	}
 
@@ -493,7 +493,7 @@ public class Object {
 	
 	public String parseItem() {
 		StringBuilder str = new StringBuilder();
-		String posi = this.getPosition() == Constants.ITEM_POS_NO_EQUIPED ? "" : Integer.toHexString(this.getPosition());
+		String posi = this.getPosition() == ObjectPosition.NO_EQUIPED ? "" : Integer.toHexString(this.getPosition().getValue());
 		str.append(Integer.toHexString(this.getId())).append("~").append(Integer.toHexString(this.getTemplate().getId())).append("~").append(Integer.toHexString(this.getQuantity())).append("~").append(posi).append("~").append(this.parseStatsString()).append(";");
 		return str.toString();
 	}
@@ -549,7 +549,7 @@ public class Object {
 	}
 	
 	public String parseStatsString() {
-		if(getTemplate().getType() == 83)	//Si c'est une pierre d'âme vide
+		if(getTemplate().getType() == ObjectType.PIERRE_AME)	//Si c'est une pierre d'âme vide
 			return getTemplate().getStrStats();
 		
 		StringBuilder stats = new StringBuilder();

@@ -9,6 +9,7 @@ import org.ancestra.evolutive.common.SocketManager;
 import org.ancestra.evolutive.core.*;
 import org.ancestra.evolutive.entity.Creature;
 import org.ancestra.evolutive.entity.Mount;
+import org.ancestra.evolutive.enums.Alignement;
 import org.ancestra.evolutive.enums.Classe;
 import org.ancestra.evolutive.event.player.PlayerJoinEvent;
 import org.ancestra.evolutive.fight.Fight;
@@ -29,8 +30,10 @@ import org.ancestra.evolutive.map.Case;
 import org.ancestra.evolutive.map.InteractiveObject;
 import org.ancestra.evolutive.map.Maps;
 import org.ancestra.evolutive.map.MountPark;
+import org.ancestra.evolutive.object.ObjectPosition;
 import org.ancestra.evolutive.object.ObjectSet;
 import org.ancestra.evolutive.object.Object;
+import org.ancestra.evolutive.object.ObjectType;
 import org.ancestra.evolutive.tool.time.waiter.Waiter;
 import org.ancestra.evolutive.util.exchange.PlayerExchange;
 
@@ -71,7 +74,7 @@ public class Player extends Creature {
 	private PlayerExchange curExchange;
 	
 	/** Alignement **/
-	private byte align = 0;
+	private Alignement align = Alignement.NEUTRE;
 	private int deshonor = 0;
 	private int honor = 0;
 	private boolean showWings = false;
@@ -155,11 +158,11 @@ public class Player extends Creature {
 		this.experience = experience;
 		this.size = size;
 		this.gfx = gfx;
-		this.align = align;
+		this.align = Alignement.getAlignement(align);
 		this.account = World.data.getCompte(account);
 		this.stats = new Stats(stats, true, this);
 		this.showFriendConnection = showFriendConnection==1;
-		this.showWings = (this.getAlign() != 0 ? showWings==1 : false);
+		this.showWings = (this.getAlign() != Alignement.NEUTRE ? showWings==1 : false);
 		/** FIXME: SeeSeller **/
 		this.canaux = canaux;
 		this.setMapAndCell(curMap, curCell);
@@ -197,8 +200,8 @@ public class Player extends Creature {
 
 	}
 	
-	public Player(Player player,int id){
-        super(id,player.getName(),player.getMap(),player.getCell());
+	public Player(Player player,int id) {
+        super(id, player.getName(), player.getMap(), player.getCell());
 		this.sex = player.getSex();
 		this.classe = player.getClasse();
 		this.color1 = player.getColor1();
@@ -226,7 +229,8 @@ public class Player extends Creature {
 		if(Server.config.isAllZaaps()) 
 			for(Entry<Integer, Integer> i : Constants.ZAAPS.entrySet())
 				zaaps += (zaaps.length() != 0 ? "," : "") + i.getKey();
-        Player perso = new Player(
+
+        Player player = new Player(
 				World.database.getCharacterData().nextId(),
 				name,
 				sex,
@@ -241,13 +245,13 @@ public class Player extends Creature {
 				Server.config.getStartLevel(),
 				World.data.getPersoXpMin(Server.config.getStartLevel()),
 				100,
-				Integer.parseInt(classe.getId()+""+sex),
-				(byte)0,
+				Integer.parseInt(classeId+""+sex),
+				(byte) 0,
 				compte.getUUID(),
-				new TreeMap<Integer,Integer>(),
-				(byte)1,
-				(byte)0,
-				(byte)0,
+				new TreeMap<Integer, Integer>(),
+				(byte) 1,
+				(byte) 0,
+				(byte) 0,
 				"*#%!pi$:?",
 				classe.getInkarnamStartMap(),
 				classe.getInkarnamStartCell(),
@@ -266,20 +270,24 @@ public class Player extends Creature {
 				(byte)0,
 				0
 				);
-		perso.spells = Constants.getStartSorts(classeId);
+		player.spells = Constants.getStartSorts(classeId);
 		
-		for(int a = 1; a <= perso.getLevel(); a++)
-			Constants.onLevelUpSpells(perso, a);
+		for(int a = 1; a <= player.getLevel(); a++)
+			Constants.onLevelUpSpells(player, a);
 		
-		perso.spellsPlace = Constants.getStartSortsPlaces(classeId);
-        if(!World.database.getCharacterData().create(perso))
+		player.spellsPlace = Constants.getStartSortsPlaces(classeId);
+		
+        if(!World.database.getCharacterData().create(player))
 			return null;
+        
+        player.send("TB");
+		World.data.addPlayer(player);
 		
-		World.data.addPlayer(perso);
-		return perso;
+		return player;
 	}
 
-	public int getSex() {
+    //region Getters and Setters
+    public int getSex() {
 		return sex;
 	}
 	
@@ -469,11 +477,11 @@ public class Player extends Creature {
 		this.curExchange = curExchange;
 	}
 
-	public byte getAlign() {
+	public Alignement getAlign() {
 		return align;
 	}
 
-	public void setAlign(byte align) {
+	public void setAlign(Alignement align) {
 		this.align = align;
 	}
 
@@ -956,6 +964,7 @@ public class Player extends Creature {
 			}
 		}
 	}
+    //endregion
 		
 	public String parseSpellsToDb()
 	{
@@ -1183,7 +1192,7 @@ public class Player extends Creature {
 			SocketManager.GAME_SEND_JS_PACKET(this, list);
 			SocketManager.GAME_SEND_JX_PACKET(this, list);
 			SocketManager.GAME_SEND_JO_PACKET(this, list);
-			Object obj = getObjectByPos(Constants.ITEM_POS_ARME);
+			Object obj = getObjectByPos(ObjectPosition.ARME);
 			
 			if(obj != null)
 				for(JobStat sm : list)
@@ -1191,7 +1200,7 @@ public class Player extends Creature {
 						SocketManager.GAME_SEND_OT_PACKET(this.getAccount().getGameClient(),sm.getTemplate().getId());
 		}
 		//Fin m�tier
-		SocketManager.GAME_SEND_ALIGNEMENT(out, this.align);
+		SocketManager.GAME_SEND_ALIGNEMENT(out, this.align.getValue());
 		SocketManager.GAME_SEND_ADD_CANAL(out, this.canaux + "^" + (this.getAccount().getGmLvl() > 0 ? "@�" : ""));
 		
 		Date actDate = new Date();
@@ -1242,7 +1251,7 @@ public class Player extends Creature {
 			return;
 		
 		GameClient client = this.getAccount().getGameClient();
-		
+				
 		if(this.seeSeller == true && World.data.getSeller(this.getMap()) != null && World.data.getSeller(this.getMap()).contains(this.getId())) {
 			World.data.removeSeller(this.getId(), this.getMap().getId());
 			SocketManager.GAME_SEND_ERASE_ON_MAP_TO_MAP(this.getMap(), this.getId());
@@ -1251,6 +1260,19 @@ public class Player extends Creature {
 		
 		SocketManager.GAME_SEND_GAME_CREATE(client, this.getName());
 		SocketManager.GAME_SEND_STATS_PACKET(this);
+
+		if(this.getFight() != null) {		
+			if(this.getFight().getFighterByPerso(this) == null) 
+				return;	
+			if(this.getFight().getFighterByPerso(this).getTurnRemaining() == -1)
+				return;
+			
+			SocketManager.GAME_SEND_MAPDATA(client, curMap.getId(), curMap.getDate(), curMap.getKey());			
+			
+			if(this.getFight().playerReconnect(this))
+				return;	
+		}
+		
 		SocketManager.GAME_SEND_MAP_FIGHT_COUNT(client, this.getMap());
 		this.getMap().addPlayer(this);
 	}
@@ -1281,20 +1303,20 @@ public class Player extends Creature {
 	
     public	String getGMStuffString() {
 		StringBuilder str = new StringBuilder();
-		if(getObjectByPos(Constants.ITEM_POS_ARME) != null)
-		 	str.append(Integer.toHexString(getObjectByPos(Constants.ITEM_POS_ARME).getTemplate().getId()));	
+		if(getObjectByPos(ObjectPosition.ARME) != null)
+		 	str.append(Integer.toHexString(getObjectByPos(ObjectPosition.ARME).getTemplate().getId()));	
 		str.append(",");
-		if(getObjectByPos(Constants.ITEM_POS_COIFFE) != null)
-			str.append(Integer.toHexString(getObjectByPos(Constants.ITEM_POS_COIFFE).getTemplate().getId()));	
+		if(getObjectByPos(ObjectPosition.COIFFE) != null)
+			str.append(Integer.toHexString(getObjectByPos(ObjectPosition.COIFFE).getTemplate().getId()));	
 		str.append(",");
-		if(getObjectByPos(Constants.ITEM_POS_CAPE) != null)
-			str.append(Integer.toHexString(getObjectByPos(Constants.ITEM_POS_CAPE).getTemplate().getId()));	
+		if(getObjectByPos(ObjectPosition.CAPE) != null)
+			str.append(Integer.toHexString(getObjectByPos(ObjectPosition.CAPE).getTemplate().getId()));	
 		str.append(",");
-		if(getObjectByPos(Constants.ITEM_POS_FAMILIER) != null)
-			str.append(Integer.toHexString(getObjectByPos(Constants.ITEM_POS_FAMILIER).getTemplate().getId()));	
+		if(getObjectByPos(ObjectPosition.FAMILIER) != null)
+			str.append(Integer.toHexString(getObjectByPos(ObjectPosition.FAMILIER).getTemplate().getId()));	
 		str.append(",");
-		if(getObjectByPos(Constants.ITEM_POS_BOUCLIER) != null)
-			str.append(Integer.toHexString(getObjectByPos(Constants.ITEM_POS_BOUCLIER).getTemplate().getId()));	
+		if(getObjectByPos(ObjectPosition.BOUCLIER) != null)
+			str.append(Integer.toHexString(getObjectByPos(ObjectPosition.BOUCLIER).getTemplate().getId()));	
 		return str.toString();
 	}
 
@@ -1369,7 +1391,7 @@ public class Player extends Creature {
 	}
 	
 	public int getGrade() {
-		if(this.getAlign() == Constants.ALIGNEMENT_NEUTRE)
+		if(this.getAlign() == Alignement.NEUTRE)
 			return 0;
 		if(this.getHonor() >= 17500)
 			return 10;
@@ -1389,7 +1411,7 @@ public class Player extends Creature {
 		ArrayList<Integer> itemSetApplied = new ArrayList<>();
 		
 		for(Object object : this.objects.values()) {
-			if(object.getPosition() != Constants.ITEM_POS_NO_EQUIPED && !(object.getPosition() >= 35 && object.getPosition() <= 48)) {
+			if(object.getPosition() != ObjectPosition.NO_EQUIPED && !(object.getPosition().getValue() >= 35 && object.getPosition().getValue() <= 48)) {
 				stats = Stats.cumulStat(stats, object.getStats());
 				int set = object.getTemplate().getSet();
 				//Si panoplie, et si l'effet de pano n'a pas encore �t� ajout�
@@ -1596,7 +1618,7 @@ public class Player extends Creature {
 		for(Entry<Integer,Object> entry : this.objects.entrySet()) {
 			Object obj = entry.getValue();
 			if(obj.getTemplate().getId() == newObj.getTemplate().getId() && obj.getStats().isSameStats(newObj.getStats())
-					&& stackIfSimilar && newObj.getTemplate().getType() != 85 && obj.getPosition() == Constants.ITEM_POS_NO_EQUIPED) {
+					&& stackIfSimilar && newObj.getTemplate().getType() != ObjectType.PIERRE_AME_PLEINE && obj.getPosition() == ObjectPosition.NO_EQUIPED) {
 				obj.setQuantity(obj.getQuantity()+newObj.getQuantity());//On ajoute QUA item a la quantit� de l'objet existant
 				World.database.getItemData().update(obj);
 				if(this.isOnline)
@@ -1745,9 +1767,10 @@ public class Player extends Creature {
 		this.objects.remove(guid);
 		World.data.removeObject(guid);
 	}
-	public Object getObjectByPos(int pos)
+	public Object getObjectByPos(ObjectPosition pos)
 	{
-		if(pos == Constants.ITEM_POS_NO_EQUIPED)return null;
+		if(pos == ObjectPosition.NO_EQUIPED)
+			return null;
 		
 		for(Entry<Integer,Object> entry : this.objects.entrySet())
 		{
@@ -1823,7 +1846,7 @@ public class Player extends Creature {
 			if(obj.getTemplate().getId() == exObj.getTemplate().getId()
 				&& obj.getStats().isSameStats(exObj.getStats())
 				&& obj.getId() != exObj.getId()
-				&& obj.getPosition() == Constants.ITEM_POS_NO_EQUIPED)
+				&& obj.getPosition() == ObjectPosition.NO_EQUIPED)
 			return obj;
 		}
 		return null;
@@ -1866,7 +1889,7 @@ public class Player extends Creature {
 			//Packet JO (Job Option)
 			SocketManager.GAME_SEND_JO_PACKET(this,list);
 			
-			Object obj = getObjectByPos(Constants.ITEM_POS_ARME);
+			Object obj = getObjectByPos(ObjectPosition.ARME);
 			if(obj != null)
 				if(sm.getTemplate().isValidTool(obj.getTemplate().getId()))
 					SocketManager.GAME_SEND_OT_PACKET(this.getAccount().getGameClient(),m.getId());
@@ -1882,7 +1905,7 @@ public class Player extends Creature {
 	public boolean hasEquiped(int id)
 	{
 		for(Entry<Integer,Object> entry : this.objects.entrySet())
-			if(entry.getValue().getTemplate().getId() == id && entry.getValue().getPosition() != Constants.ITEM_POS_NO_EQUIPED)
+			if(entry.getValue().getTemplate().getId() == id && entry.getValue().getPosition() != ObjectPosition.NO_EQUIPED)
 				return true;
 		return false;
 	}
@@ -1909,7 +1932,7 @@ public class Player extends Creature {
 	{
 		int nb = 0;
 		for(Entry<Integer, Object> i : this.objects.entrySet()) {
-			if(i.getValue().getPosition() == Constants.ITEM_POS_NO_EQUIPED)
+			if(i.getValue().getPosition() == ObjectPosition.NO_EQUIPED)
 				continue;
 			if(i.getValue().getTemplate().getSet() == panID)
 				nb++;
@@ -2008,7 +2031,7 @@ public class Player extends Creature {
 			return;
 		}
 		//Si c'est un item �quip� ...
-		if(PersoObj.getPosition() != Constants.ITEM_POS_NO_EQUIPED)return;
+		if(PersoObj.getPosition() != ObjectPosition.NO_EQUIPED)return;
 		
 		Object BankObj = getSimilarBankItem(PersoObj);
 		int newQua = PersoObj.getQuantity() - qua;
@@ -2077,7 +2100,7 @@ public class Player extends Creature {
 	{
 		for(Object value : this.getAccount().getBank().values())
 		{
-			if(value.getTemplate().getType() == 85)
+			if(value.getTemplate().getType() == ObjectType.PIERRE_AME_PLEINE)
 				continue;
 			if(value.getTemplate().getId() == obj.getTemplate().getId() && value.getStats().isSameStats(obj.getStats()))
 				return value;
@@ -2399,10 +2422,10 @@ public class Player extends Creature {
 	public void toogleOnMount()
 	{
 		this.setOnMount(!this.isOnMount());
-		Object obj = getObjectByPos(Constants.ITEM_POS_FAMILIER);
+		Object obj = getObjectByPos(ObjectPosition.FAMILIER);
 		
 		if(this.isOnMount() && obj != null)	{
-			obj.setPosition(Constants.ITEM_POS_NO_EQUIPED);
+			obj.setPosition(ObjectPosition.NO_EQUIPED);
 			SocketManager.GAME_SEND_OBJET_MOVE_PACKET(this, obj);
 		}
 
@@ -2463,7 +2486,7 @@ public class Player extends Creature {
 	{
 		this.setHonor(0);
 		this.setDeshonor(0);
-		this.setAlign(a);
+		this.setAlign(Alignement.getAlignement(a));
 		this.setaLvl(1);
 		//envoies des packets
 		//Im022;10~42 ?
@@ -2474,7 +2497,7 @@ public class Player extends Creature {
 
 	public void toggleWings(char c)
 	{
-		if(this.getAlign() == Constants.ALIGNEMENT_NEUTRE)
+		if(this.getAlign() == Alignement.NEUTRE)
 			return;
 		
 		int hloose = this.getHonor() * 5 / 100;//FIXME: perte de X% honneur
@@ -2659,7 +2682,7 @@ public class Player extends Creature {
 		if (map.getSubArea().getArea().getId() == 7 || map.getSubArea().getArea().getId() == 11)
 		{
 		int price = 20;
-		if (this.getAlign() == 1 || this.getAlign() == 2)
+		if (this.getAlign() == Alignement.BONTARIEN || this.getAlign() == Alignement.BRAKMARIEN)
 		price = 10;
 		this.kamas -= price;
 		SocketManager.GAME_SEND_STATS_PACKET(this);
@@ -2672,7 +2695,7 @@ public class Player extends Creature {
 	{
 		for(Object obj : this.objects.values())
 		{
-			if(obj.getPosition() != Constants.ITEM_POS_NO_EQUIPED)continue;
+			if(obj.getPosition() != ObjectPosition.NO_EQUIPED)continue;
 			if(obj.getTemplate().getId() != i)continue;
 			if(obj.getQuantity() >= q)return true;
 		}
@@ -2721,180 +2744,180 @@ public class Player extends Creature {
 		boolean isFirstFA = true;
 		for(Object obj : this.objects.values())
 		{
-			if(obj.getPosition() == Constants.ITEM_POS_NO_EQUIPED)continue;
-			if(obj.getPosition() == Constants.ITEM_POS_AMULETTE)
+			if(obj.getPosition() == ObjectPosition.NO_EQUIPED)continue;
+			if(obj.getPosition() == ObjectPosition.AMULETTE)
 			{
 				if(isFirstAM)
 				{
 					isFirstAM = false;
 				}else
 				{
-					obj.setPosition(Constants.ITEM_POS_NO_EQUIPED);
+					obj.setPosition(ObjectPosition.NO_EQUIPED);
 				}
 				continue;
 			}
-			else if(obj.getPosition() == Constants.ITEM_POS_ANNEAU1)
+			else if(obj.getPosition() == ObjectPosition.ANNEAU1)
 			{
 				if(isFirstAN)
 				{
 					isFirstAN = false;
 				}else
 				{
-					obj.setPosition(Constants.ITEM_POS_NO_EQUIPED);
+					obj.setPosition(ObjectPosition.NO_EQUIPED);
 				}
 				continue;
 			}
-			else if(obj.getPosition() == Constants.ITEM_POS_ANNEAU2)
+			else if(obj.getPosition() == ObjectPosition.ANNEAU2)
 			{
 				if(isFirstANb)
 				{
 					isFirstANb = false;
 				}else
 				{
-					obj.setPosition(Constants.ITEM_POS_NO_EQUIPED);
+					obj.setPosition(ObjectPosition.NO_EQUIPED);
 				}
 				continue;
 			}
-			else if(obj.getPosition() == Constants.ITEM_POS_ARME)
+			else if(obj.getPosition() == ObjectPosition.ARME)
 			{
 				if(isFirstAR)
 				{
 					isFirstAR = false;
 				}else
 				{
-					obj.setPosition(Constants.ITEM_POS_NO_EQUIPED);
+					obj.setPosition(ObjectPosition.NO_EQUIPED);
 				}
 				continue;
 			}
-			else if(obj.getPosition() == Constants.ITEM_POS_BOTTES)
+			else if(obj.getPosition() == ObjectPosition.BOTTES)
 			{
 				if(isFirstBO)
 				{
 					isFirstBO = false;
 				}else
 				{
-					obj.setPosition(Constants.ITEM_POS_NO_EQUIPED);
+					obj.setPosition(ObjectPosition.NO_EQUIPED);
 				}
 				continue;
 			}
-			else if(obj.getPosition() == Constants.ITEM_POS_BOUCLIER)
+			else if(obj.getPosition() == ObjectPosition.BOUCLIER)
 			{
 				if(isFirstBOb)
 				{
 					isFirstBOb = false;
 				}else
 				{
-					obj.setPosition(Constants.ITEM_POS_NO_EQUIPED);
+					obj.setPosition(ObjectPosition.NO_EQUIPED);
 				}
 				continue;
 			}
-			else if(obj.getPosition() == Constants.ITEM_POS_CAPE)
+			else if(obj.getPosition() == ObjectPosition.CAPE)
 			{
 				if(isFirstCA)
 				{
 					isFirstCA = false;
 				}else
 				{
-					obj.setPosition(Constants.ITEM_POS_NO_EQUIPED);
+					obj.setPosition(ObjectPosition.NO_EQUIPED);
 				}
 				continue;
 			}
-			else if(obj.getPosition() == Constants.ITEM_POS_CEINTURE)
+			else if(obj.getPosition() == ObjectPosition.CEINTURE)
 			{
 				if(isFirstCE)
 				{
 					isFirstCE = false;
 				}else
 				{
-					obj.setPosition(Constants.ITEM_POS_NO_EQUIPED);
+					obj.setPosition(ObjectPosition.NO_EQUIPED);
 				}
 				continue;
 			}
-			else if(obj.getPosition() == Constants.ITEM_POS_COIFFE)
+			else if(obj.getPosition() == ObjectPosition.COIFFE)
 			{
 				if(isFirstCO)
 				{
 					isFirstCO = false;
 				}else
 				{
-					obj.setPosition(Constants.ITEM_POS_NO_EQUIPED);
+					obj.setPosition(ObjectPosition.NO_EQUIPED);
 				}
 				continue;
 			}
-			else if(obj.getPosition() == Constants.ITEM_POS_DOFUS1)
+			else if(obj.getPosition() == ObjectPosition.DOFUS1)
 			{
 				if(isFirstDa)
 				{
 					isFirstDa = false;
 				}else
 				{
-					obj.setPosition(Constants.ITEM_POS_NO_EQUIPED);
+					obj.setPosition(ObjectPosition.NO_EQUIPED);
 				}
 				continue;
 			}
-			else if(obj.getPosition() == Constants.ITEM_POS_DOFUS2)
+			else if(obj.getPosition() == ObjectPosition.DOFUS2)
 			{
 				if(isFirstDb)
 				{
 					isFirstDb = false;
 				}else
 				{
-					obj.setPosition(Constants.ITEM_POS_NO_EQUIPED);
+					obj.setPosition(ObjectPosition.NO_EQUIPED);
 				}
 				continue;
 			}
-			else if(obj.getPosition() == Constants.ITEM_POS_DOFUS3)
+			else if(obj.getPosition() == ObjectPosition.DOFUS3)
 			{
 				if(isFirstDc)
 				{
 					isFirstDc = false;
 				}else
 				{
-					obj.setPosition(Constants.ITEM_POS_NO_EQUIPED);
+					obj.setPosition(ObjectPosition.NO_EQUIPED);
 				}
 				continue;
 			}
-			else if(obj.getPosition() == Constants.ITEM_POS_DOFUS4)
+			else if(obj.getPosition() == ObjectPosition.DOFUS4)
 			{
 				if(isFirstDd)
 				{
 					isFirstDd = false;
 				}else
 				{
-					obj.setPosition(Constants.ITEM_POS_NO_EQUIPED);
+					obj.setPosition(ObjectPosition.NO_EQUIPED);
 				}
 				continue;
 			}
-			else if(obj.getPosition() == Constants.ITEM_POS_DOFUS5)
+			else if(obj.getPosition() == ObjectPosition.DOFUS5)
 			{
 				if(isFirstDe)
 				{
 					isFirstDe = false;
 				}else
 				{
-					obj.setPosition(Constants.ITEM_POS_NO_EQUIPED);
+					obj.setPosition(ObjectPosition.NO_EQUIPED);
 				}
 				continue;
 			}
-			else if(obj.getPosition() == Constants.ITEM_POS_DOFUS6)
+			else if(obj.getPosition() == ObjectPosition.DOFUS6)
 			{
 				if(isFirstDf)
 				{
 					isFirstDf = false;
 				}else
 				{
-					obj.setPosition(Constants.ITEM_POS_NO_EQUIPED);
+					obj.setPosition(ObjectPosition.NO_EQUIPED);
 				}
 				continue;
 			}
-			else if(obj.getPosition() == Constants.ITEM_POS_FAMILIER)
+			else if(obj.getPosition() == ObjectPosition.FAMILIER)
 			{
 				if(isFirstFA)
 				{
 					isFirstFA = false;
 				}else
 				{
-					obj.setPosition(Constants.ITEM_POS_NO_EQUIPED);
+					obj.setPosition(ObjectPosition.NO_EQUIPED);
 				}
 				continue;
 			}
@@ -3119,7 +3142,7 @@ public class Player extends Creature {
 		for(Entry<Integer, Integer> value : this.getStores().entrySet())
 		{
 			Object obj2 = World.data.getObject(value.getKey());
-			if(obj2.getTemplate().getType() == 85)
+			if(obj2.getTemplate().getType() == ObjectType.PIERRE_AME_PLEINE)
 				continue;
 			if(obj2.getTemplate().getId() == obj.getTemplate().getId() && obj2.getStats().isSameStats(obj.getStats()))
 				return obj2;
@@ -3234,5 +3257,16 @@ public class Player extends Creature {
      */
     public void send(String message) {
         this.account.send(message);
+    }
+
+    @Override
+    public boolean onMapChange(Case oldCell ,Case newCell){
+        if(!this.followers.isEmpty())//On met a jour la carte des personnages qui nous suivent
+            for(Player player : this.followers.values())
+                if(player.isOnline())
+                    SocketManager.GAME_SEND_FLAG_PACKET(player, this);
+                else
+                    this.followers.remove(player.getId());
+        return true;
     }
 }

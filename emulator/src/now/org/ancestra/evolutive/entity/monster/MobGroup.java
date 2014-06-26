@@ -1,5 +1,6 @@
 package org.ancestra.evolutive.entity.monster;
 
+import org.ancestra.evolutive.common.Pathfinding;
 import org.ancestra.evolutive.core.Server;
 import org.ancestra.evolutive.core.World;
 import org.ancestra.evolutive.entity.Creature;
@@ -114,6 +115,23 @@ public class MobGroup extends Creature {
 		}, Server.config.getArenaTimer());
 	}
 
+    @Override
+    protected boolean onMoveCell(Case oldCell,Case newCell) {
+        if(isFix) return true;
+        for(MobGrade mob : mobs.values()){
+            Case cell = getMap().getRandomNearFreeCell(newCell,59);
+            if(cell != null) {
+                mob.setCell(cell);
+                String pathStr = Pathfinding.getShortestStringPathBetween(oldCell.getMap(), oldCell.getId(), newCell.getId(), 0);
+                if (pathStr != null) {
+                    newCell.getMap().send("GA0;1;" + this.getId() +";"+ pathStr);
+                }//TODO a mettre dans la classe MobGrade
+            }
+        }
+
+        return true;
+    }
+
 
     private MobGroup(int id,Maps map,Case cell,String condition,Alignement alignement,boolean timer,boolean fix){
         super(id,"Group id " + id + " on map "+ map.getId(), map,cell,random.nextInt(7));
@@ -135,7 +153,7 @@ public class MobGroup extends Creature {
     private ArrayList<MobGrade> getPossibleMob(Alignement alignement,ArrayList<MobGrade> mobs){
         ArrayList<MobGrade> cleanMobs = new ArrayList<>();
         for(MobGrade mob : mobs){
-            if(mob.getTemplate().getAlign() == alignement.value){
+            if(mob.getTemplate().getAlign() == alignement.getValue()){
                 cleanMobs.add(mob);
             }
         }

@@ -23,7 +23,6 @@ import org.ancestra.evolutive.guild.Guild;
 import org.ancestra.evolutive.map.Case;
 import org.ancestra.evolutive.map.Maps;
 import org.ancestra.evolutive.object.Object;
-import org.ancestra.evolutive.object.ObjectPosition;
 import org.ancestra.evolutive.object.ObjectTemplate;
 import org.ancestra.evolutive.object.ObjectType;
 import org.ancestra.evolutive.object.SoulStone;
@@ -962,7 +961,7 @@ public class Fight {
 			}
 			if(type == Constants.FIGHT_TYPE_AGRESSION)
 			{
-				if(perso.getAlign() == Alignement.NEUTRE)
+				if(perso.getAlign() == Constants.ALIGNEMENT_NEUTRE)
 				{
 					SocketManager.GAME_SEND_GA903_ERROR_PACKET(perso.getAccount().getGameClient(),'f',guid);
 					return;
@@ -1026,7 +1025,7 @@ public class Fight {
 			}
 			if(type == Constants.FIGHT_TYPE_AGRESSION)
 			{
-				if(perso.getAlign() == Alignement.NEUTRE)
+				if(perso.getAlign() == Constants.ALIGNEMENT_NEUTRE)
 				{
 					SocketManager.GAME_SEND_GA903_ERROR_PACKET(perso.getAccount().getGameClient(),'f',guid);
 					return;
@@ -1741,7 +1740,7 @@ public class Fight {
 		        	if(F.get_lvl() > maxLvl)	//Trouve le monstre au plus haut lvl du groupe (pour la puissance de la pierre)
 		        		maxLvl = F.get_lvl();
 		        }
-		        pierrePleine = new SoulStone(World.data.getNewObjectGuid(), 1, 7010, -1, pierreStats);	//Cr?e la pierre d'?me
+		        pierrePleine = new SoulStone(World.data.getNewObjectGuid(),1,7010,Constants.ITEM_POS_NO_EQUIPED,pierreStats);	//Cr?e la pierre d'?me
 		        
 		        for(Fighter F : TEAM1)	//R?cup?re les captureur
 		        {
@@ -1757,12 +1756,12 @@ public class Fight {
 	    				try
 	    				{
 			        		Fighter f = _captureur.get(Formulas.getRandomValue(0, _captureur.size()-1));	//R?cup?re un captureur au hasard dans la liste
-			        		if(!(f.getPersonnage().getObjectByPos(ObjectPosition.ARME).getTemplate().getType() == ObjectType.PIERRE_AME))
+			        		if(!(f.getPersonnage().getObjectByPos(Constants.ITEM_POS_ARME).getTemplate().getType() == ObjectType.PIERRE_AME))
 		    				{
 			    				_captureur.remove(f);
 		    					continue;
 		    				}
-			    			Couple<Integer,Integer> pierreJoueur = Formulas.decompPierreAme(f.getPersonnage().getObjectByPos(ObjectPosition.ARME));//R?cup?re les stats de la pierre ?quipp?
+			    			Couple<Integer,Integer> pierreJoueur = Formulas.decompPierreAme(f.getPersonnage().getObjectByPos(Constants.ITEM_POS_ARME));//R?cup?re les stats de la pierre ?quipp?
 			    			
 			    			if(pierreJoueur.second < maxLvl)	//Si la pierre est trop faible
 			    			{
@@ -1775,7 +1774,7 @@ public class Fight {
 			    			if(Formulas.getRandomValue(1, 100) <= captChance)	//Si le joueur obtiens la capture
 			    			{
 			    				//Retire la pierre vide au personnage et lui envoie ce changement
-			    				int pierreVide = f.getPersonnage().getObjectByPos(ObjectPosition.ARME).getId();
+			    				int pierreVide = f.getPersonnage().getObjectByPos(Constants.ITEM_POS_ARME).getId();
 			    				f.getPersonnage().deleteItem(pierreVide);
 			    				SocketManager.GAME_SEND_REMOVE_ITEM_PACKET(f.getPersonnage(), pierreVide);
 			    				
@@ -1869,7 +1868,7 @@ public class Fight {
         		int winD = 0;
         		if(type == Constants.FIGHT_TYPE_AGRESSION)
         		{
-	        		if(_init1.getPersonnage().getAlign() != Alignement.NEUTRE && _init0.getPersonnage().getAlign() != Alignement.NEUTRE)
+	        		if(_init1.getPersonnage().getAlign() != 0 && _init0.getPersonnage().getAlign() != 0)
 	    			{
 	        			if(_init1.getPersonnage().getAccount().getCurIp().compareTo(_init0.getPersonnage().getAccount().getCurIp()) != 0 || Server.config.isMulePvp())
 	        			{
@@ -1883,11 +1882,11 @@ public class Fight {
         		P.addHonor(winH);
         		P.setDeshonor(P.getDeshonor()+winD);
         		Packet.append("2;").append(i.getGUID()).append(";").append(i.getPacketsName()).append(";").append(i.get_lvl()).append(";").append((i.isDead() ?  "1" : "0" )).append(";");
-        		Packet.append((P.getAlign()!=Alignement.NEUTRE?World.data.getExpLevel(P.getGrade()).pvp:0)).append(";");
+        		Packet.append((P.getAlign()!=Constants.ALIGNEMENT_NEUTRE?World.data.getExpLevel(P.getGrade()).pvp:0)).append(";");
         		Packet.append(P.getHonor()).append(";");
         		int maxHonor = World.data.getExpLevel(P.getGrade()+1).pvp;
         		if(maxHonor == -1)maxHonor = World.data.getExpLevel(P.getGrade()).pvp;
-        		Packet.append((P.getAlign()!=Alignement.NEUTRE?maxHonor:0)).append(";");
+        		Packet.append((P.getAlign()!=Constants.ALIGNEMENT_NEUTRE?maxHonor:0)).append(";");
         		Packet.append(winH).append(";");
         		Packet.append(P.getGrade()).append(";");
         		Packet.append(P.getDeshonor()).append(";");
@@ -1943,7 +1942,7 @@ public class Fight {
         		// Si c'est un neutre, on ne gagne pas de points
         		int winH = 0;
         		int winD = 0;
-        		if(_init1.getPersonnage().getAlign() != Alignement.NEUTRE && _init0.getPersonnage().getAlign() != Alignement.NEUTRE)
+        		if(_init1.getPersonnage().getAlign() != 0 && _init0.getPersonnage().getAlign() != 0)
     			{
         			if(_init1.getPersonnage().getAccount().getCurIp().compareTo(_init0.getPersonnage().getAccount().getCurIp()) != 0 || Server.config.isMulePvp())
             		{
@@ -1957,11 +1956,11 @@ public class Fight {
         		if(P.getDeshonor()-winD<0) winD = 0;
         		P.setDeshonor(P.getDeshonor()-winD);
         		Packet.append("0;").append(i.getGUID()).append(";").append(i.getPacketsName()).append(";").append(i.get_lvl()).append(";").append((i.isDead() ?  "1" : "0" )).append(";");
-        		Packet.append((P.getAlign()!=Alignement.NEUTRE?World.data.getExpLevel(P.getGrade()).pvp:0)).append(";");
+        		Packet.append((P.getAlign()!=Constants.ALIGNEMENT_NEUTRE?World.data.getExpLevel(P.getGrade()).pvp:0)).append(";");
         		Packet.append(P.getHonor()).append(";");
         		int maxHonor = World.data.getExpLevel(P.getGrade()+1).pvp;
         		if(maxHonor == -1)maxHonor = World.data.getExpLevel(P.getGrade()).pvp;
-        		Packet.append((P.getAlign()!=Alignement.NEUTRE?maxHonor:0)).append(";");
+        		Packet.append((P.getAlign()!=Constants.ALIGNEMENT_NEUTRE?maxHonor:0)).append(";");
         		Packet.append(winH).append(";");
         		Packet.append(P.getGrade()).append(";");
         		Packet.append(P.getDeshonor()).append(";");
@@ -2373,7 +2372,7 @@ public class Fight {
 
         logger.debug("Tentative de cac");
 
-		if(perso.getObjectByPos(ObjectPosition.ARME) == null)//S'il n'a pas de CaC
+		if(perso.getObjectByPos(Constants.ITEM_POS_ARME) == null)//S'il n'a pas de CaC
 		{
 			if(get_curFighterPA() < 4)//S'il n'a pas assez de PA
 				return;
@@ -2414,7 +2413,7 @@ public class Fight {
 			verifIfTeamAllDead();
 		}else
 		{
-			Object arme = perso.getObjectByPos(ObjectPosition.ARME);
+			Object arme = perso.getObjectByPos(Constants.ITEM_POS_ARME);
 			
 			//Pierre d'?mes = EC
 			if(arme.getTemplate().getType() == ObjectType.PIERRE_AME)
@@ -3360,14 +3359,25 @@ public class Fight {
      * Envoie un message a tout les joueurs du combat
      * @param message
      */
-    public void send(String message) {
-        for(Fighter fighter : team0.values()) {
+<<<<<<< HEAD
+    public void send(String message){
+        for(Fighter fighter : team0.values()){
             if(fighter.getType() == Fighter.FighterType.PLAYER){
                 fighter.getPersonnage().send(message);
             }
         }
-        for(Fighter fighter : team1.values()) {
+        for(Fighter fighter : team1.values()){
             if(fighter.getType() == Fighter.FighterType.PLAYER){
+=======
+    public void send(String message) {
+        for(Fighter fighter : team0.values()) {
+            if(fighter.getType() == Fighter.Type.PLAYER) {
+                fighter.getPersonnage().send(message);
+            }
+        }
+        for(Fighter fighter : team1.values()) {
+            if(fighter.getType() == Fighter.Type.PLAYER) {
+>>>>>>> 1d53b7f50d190f5ae631934162e3bb82cc27409c
                 fighter.getPersonnage().send(message);
             }
         }

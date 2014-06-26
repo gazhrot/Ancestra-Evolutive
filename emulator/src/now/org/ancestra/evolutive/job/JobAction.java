@@ -14,6 +14,7 @@ import org.ancestra.evolutive.game.GameAction;
 import org.ancestra.evolutive.map.Case;
 import org.ancestra.evolutive.map.InteractiveObject;
 import org.ancestra.evolutive.object.Object;
+import org.ancestra.evolutive.object.ObjectPosition;
 import org.ancestra.evolutive.object.ObjectTemplate;
 
 import java.util.ArrayList;
@@ -100,13 +101,13 @@ public class JobAction {
 	{
 		this.SM = SM;
 		this.player = P;
-		if(P.getObjectByPos(Constants.ITEM_POS_ARME) != null && SM.getTemplate().getId() == 36)
+		if(P.getObjectByPos(ObjectPosition.ARME) != null && SM.getTemplate().getId() == 36)
 		{
-			if(World.data.getMetier(36).isValidTool(P.getObjectByPos(Constants.ITEM_POS_ARME).getTemplate().getId()))
+			if(World.data.getMetier(36).isValidTool(P.getObjectByPos(ObjectPosition.ARME).getTemplate().getId()))
 			{
 				int dist = Pathfinding.getDistanceBetween(P.getMap(), P.getCell().getId(), cell.getId());
 				int distItem = 0;
-				switch(P.getObjectByPos(Constants.ITEM_POS_ARME).getTemplate().getId())
+				switch(P.getObjectByPos(ObjectPosition.ARME).getTemplate().getId())
 				{
 					case 8541://1 to 1
 					case 6661:
@@ -325,7 +326,7 @@ public class JobAction {
 			for(Entry<Integer, Object> entry : this.player.getItems().entrySet())
 			{
 				Object obj = entry.getValue();
-				if(obj.getTemplate().getId() == newObj.getTemplate().getId() && obj.getStats().isSameStats(newObj.getStats()) && obj.getPosition() == Constants.ITEM_POS_NO_EQUIPED)//Si meme Template et Memes Stats et Objet non �quip�
+				if(obj.getTemplate().getId() == newObj.getTemplate().getId() && obj.getStats().isSameStats(newObj.getStats()) && obj.getPosition() == ObjectPosition.NO_EQUIPED)//Si meme Template et Memes Stats et Objet non �quip�
 				{
 					obj.setQuantity(obj.getQuantity()+newObj.getQuantity());//On ajoute QUA item a la quantit� de l'objet existant
 					SocketManager.GAME_SEND_OBJECT_QUANTITY_PACKET(this.player,obj);
@@ -901,7 +902,7 @@ public class JobAction {
 					lvlQuaStatsRune = ing.getTemplate().getLevel();
 					break;
 				default :
-					int type = ing.getTemplate().getType();
+					int type = ing.getTemplate().getType().getValue();
 					if ((type >= 1 && type <= 11) || (type >= 16 && type <= 22) || type == 81 || type == 102 || type == 114
 					|| ing.getTemplate().getPaCost() > 0) {
 						objectFm = ing;

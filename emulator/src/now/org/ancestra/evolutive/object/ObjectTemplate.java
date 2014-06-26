@@ -13,7 +13,7 @@ public class ObjectTemplate {
 	
 	private int id;
 	private String name;
-	private	int type;
+	private	ObjectType type;
 	private int level;
 	private String strStats;
 	private int pod;
@@ -31,7 +31,7 @@ public class ObjectTemplate {
 		this.id = id;
 		this.strStats = strStats;
 		this.name = name;
-		this.type = type;
+		this.type = ObjectType.getTypeById(type);
 		this.level = level;
 		this.pod = pod;
 		this.price = price;
@@ -74,11 +74,11 @@ public class ObjectTemplate {
 		this.name = name;
 	}
 
-	public int getType() {
+	public ObjectType getType() {
 		return type;
 	}
 
-	public void setType(int type) {
+	public void setType(ObjectType type) {
 		this.type = type;
 	}
 
@@ -212,7 +212,7 @@ public class ObjectTemplate {
 	}
 
 	public Object createNewItem(int qua, boolean useMax) {		
-		Object object = new Object(World.database.getItemData().nextId(), this.getId(), qua, Constants.ITEM_POS_NO_EQUIPED, this.generateNewStatsFromTemplate(this.getStrStats(), useMax), this.getEffectTemplate(this.getStrStats()));
+		Object object = new Object(World.database.getItemData().nextId(), this.getId(), qua, ObjectPosition.NO_EQUIPED, this.generateNewStatsFromTemplate(this.getStrStats(), useMax), this.getEffectTemplate(this.getStrStats()));
 		return object;
 	}
 

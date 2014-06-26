@@ -1,15 +1,15 @@
-package org.ancestra.evolutive.game.packet.game;
+package org.ancestra.evolutive.game.packet.panel;
 
 import org.ancestra.evolutive.game.GameClient;
 import org.ancestra.evolutive.tool.plugin.packet.Packet;
 import org.ancestra.evolutive.tool.plugin.packet.PacketParser;
 
-@Packet("GC")
-public class Create implements PacketParser {
+@Packet("dV")
+public class Leave implements PacketParser {
 
 	@Override
 	public void parse(GameClient client, String packet) {
-		if(client.getPlayer() != null)
-			client.getPlayer().sendGameCreate();
+		client.getPlayer().setAway(false);
+		client.getPlayer().send("dV");
 	}
 }

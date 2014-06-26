@@ -104,14 +104,6 @@ public class GameServer {
 		scheduler.scheduleWithFixedDelay(new Runnable() {
 			@Override
 			public void run() {
-				World.data.RefreshAllMob();
-				Log.addToLog("La recharge des mobs est finie");
-			}
-		}, Server.config.getReloadMobDelay(), Server.config.getReloadMobDelay(), TimeUnit.MILLISECONDS);
-		
-		scheduler.scheduleWithFixedDelay(new Runnable() {
-			@Override
-			public void run() {
 				for(Player player: World.data.getOnlinePersos()) {
                     if(player.getLastPacketTime() + 600000 < System.currentTimeMillis()) {
                         if(player != null && player.getAccount().getGameClient() != null && player.isOnline()) {

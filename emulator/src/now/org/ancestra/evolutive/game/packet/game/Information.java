@@ -13,11 +13,11 @@ public class Information implements PacketParser {
 	@Override
 	public void parse(GameClient client, String packet) {
 		if(client.getPlayer().getFight() != null) {
-			//Only percepteur
-			SocketManager.GAME_SEND_MAP_GMS_PACKETS(client.getPlayer().getMap(), client.getPlayer());
+			SocketManager.GAME_SEND_MAP_GMS_PACKETS(client.getPlayer().getFight().getMap(), client.getPlayer());
 			SocketManager.GAME_SEND_GDK_PACKET(client);
 			return;
 		}
+		
 		//Enclos
 		SocketManager.GAME_SEND_Rp_PACKET(client.getPlayer(), client.getPlayer().getMap().getMountPark());
 		//Maisons

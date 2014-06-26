@@ -9,10 +9,18 @@ public enum Alignement {
     /**
      * Valeur correspondante pour le client
      */
-    public final int value;
+    private final int value;
 
-    private Alignement(int value){
+    private Alignement(int value) {
         this.value = value;
+    }
+    
+    /**
+     * Permet de recuperer la valeur (int)
+     * @return l'id de l'alignement correspondant.
+     */    
+    public int getValue() {
+    	return value;
     }
 
     /**
@@ -20,8 +28,8 @@ public enum Alignement {
      * @param id  nombre correspondant pour le jeu
      * @return aligenement correspondant
      */
-    public static Alignement getAlignement(int id){
-        switch (id){
+    public static Alignement getAlignement(int id) {
+        switch (id) {
             case 1 :
                 return BONTARIEN;
             case 2 :

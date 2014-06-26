@@ -18,7 +18,7 @@ public class SendTicket implements PacketParser {
 		int guid = Integer.parseInt(packet.substring(2));
 		client.setAccount(Server.config.getGameServer().getWaitingCompte(guid));
 		
-		if(client.getAccount() != null && client.getAccount().getCurPlayer() == null) {
+		if(client.getAccount() != null) {
 			String ip = Constants.getIp(client.getSession().getRemoteAddress().toString());
 			client.getAccount().setLoginClient(null);
 			client.getAccount().setGameClient(client);

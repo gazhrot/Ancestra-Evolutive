@@ -10,6 +10,7 @@ import org.ancestra.evolutive.core.Console;
 import org.ancestra.evolutive.core.Log;
 import org.ancestra.evolutive.core.World;
 import org.ancestra.evolutive.database.AbstractDAO;
+import org.ancestra.evolutive.enums.Alignement;
 import org.ancestra.evolutive.object.ObjectTemplate;
 import org.ancestra.evolutive.object.Object;
 import org.slf4j.LoggerFactory;
@@ -51,11 +52,11 @@ public class OtherData extends AbstractDAO<Object>{
 			Result result = getData("SELECT * FROM zaapi");
 			
 			while (result.resultSet.next()) {
-				if (result.resultSet.getInt("align") == Constants.ALIGNEMENT_BONTARIEN) {
+				if (result.resultSet.getInt("align") == Alignement.BONTARIEN.getValue()) {
 					bonta += result.resultSet.getString("mapid");
 					if (!result.resultSet.isLast())
 						bonta += ",";
-				} else if (result.resultSet.getInt("align") == Constants.ALIGNEMENT_BRAKMARIEN) {
+				} else if (result.resultSet.getInt("align") == Alignement.BRAKMARIEN.getValue()) {
 					brakmar += result.resultSet.getString("mapid");
 					if (!result.resultSet.isLast())
 						brakmar += ",";
@@ -65,9 +66,9 @@ public class OtherData extends AbstractDAO<Object>{
 						neutre += ",";
 				}
 			}
-			Constants.ZAAPI.put(Constants.ALIGNEMENT_BONTARIEN, bonta);
-			Constants.ZAAPI.put(Constants.ALIGNEMENT_BRAKMARIEN, brakmar);
-			Constants.ZAAPI.put(Constants.ALIGNEMENT_NEUTRE, neutre);
+			Constants.ZAAPI.put(Alignement.BONTARIEN, bonta);
+			Constants.ZAAPI.put(Alignement.BRAKMARIEN, brakmar);
+			Constants.ZAAPI.put(Alignement.NEUTRE, neutre);
 			close(result);
 		} catch (Exception e) {
 			Console.instance.writeln("SQL ERROR(OtherData): "+e.getMessage());

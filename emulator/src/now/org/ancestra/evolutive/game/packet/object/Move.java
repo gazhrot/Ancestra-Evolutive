@@ -7,6 +7,8 @@ import org.ancestra.evolutive.core.World;
 import org.ancestra.evolutive.game.GameClient;
 import org.ancestra.evolutive.job.JobStat;
 import org.ancestra.evolutive.object.Object;
+import org.ancestra.evolutive.object.ObjectPosition;
+import org.ancestra.evolutive.object.ObjectType;
 import org.ancestra.evolutive.tool.plugin.packet.Packet;
 import org.ancestra.evolutive.tool.plugin.packet.PacketParser;
 
@@ -21,7 +23,7 @@ public class Move implements PacketParser {
 		try	{
 			int qua;
 			int guid = Integer.parseInt(infos[0]);
-			int pos = Integer.parseInt(infos[1]);
+			ObjectPosition pos = ObjectPosition.getPositionById(Integer.parseInt(infos[1]));
 			try {
 				qua = Integer.parseInt(infos[2]);
 			} catch(Exception e)	{
@@ -39,7 +41,7 @@ public class Move implements PacketParser {
 					return;
 				}
 			}
-			if(!Constants.isValidPlaceForItem(obj.getTemplate(),pos) && pos != Constants.ITEM_POS_NO_EQUIPED)
+			if(!Constants.isValidPlaceForItem(obj.getTemplate(),pos) && pos != ObjectPosition.NO_EQUIPED)
 			{
 				return;
 			}
@@ -54,7 +56,7 @@ public class Move implements PacketParser {
 				return;
 			}
 			//On ne peut �quiper 2 items de panoplies identiques, ou 2 Dofus identiques
-			if(pos != Constants.ITEM_POS_NO_EQUIPED && (obj.getTemplate().getSet() != -1 || obj.getTemplate().getType() == Constants.ITEM_TYPE_DOFUS )&& client.getPlayer().hasEquiped(obj.getTemplate().getId()))
+			if(pos != ObjectPosition.NO_EQUIPED && (obj.getTemplate().getSet() != -1 || obj.getTemplate().getType() == ObjectType.DOFUS) && client.getPlayer().hasEquiped(obj.getTemplate().getId()))
 				return;
 			
 			Object exObj = client.getPlayer().getObjectByPos(pos);//Object a l'ancienne position
@@ -68,10 +70,10 @@ public class Move implements PacketParser {
 					client.getPlayer().removeItem(exObj.getId());
 					SocketManager.GAME_SEND_REMOVE_ITEM_PACKET(client.getPlayer(), exObj.getId());
 				}else {//On ne le poss�de pas
-					exObj.setPosition(Constants.ITEM_POS_NO_EQUIPED);
+					exObj.setPosition(ObjectPosition.NO_EQUIPED);
 					SocketManager.GAME_SEND_OBJET_MOVE_PACKET(client.getPlayer(),exObj);
 				}
-				if(client.getPlayer().getObjectByPos(Constants.ITEM_POS_ARME) == null)
+				if(client.getPlayer().getObjectByPos(ObjectPosition.ARME) == null)
 					SocketManager.GAME_SEND_OT_PACKET(client, -1);
 				
 				//Si objet de panoplie
@@ -121,24 +123,24 @@ public class Move implements PacketParser {
 			if(client.getPlayer().getGroup() != null)
 				SocketManager.GAME_SEND_PM_MOD_PACKET_TO_GROUP(client.getPlayer().getGroup(),client.getPlayer());
 			SocketManager.GAME_SEND_STATS_PACKET(client.getPlayer());
-			if( pos == Constants.ITEM_POS_ARME 		||
-				pos == Constants.ITEM_POS_COIFFE 	||
-				pos == Constants.ITEM_POS_FAMILIER 	||
-				pos == Constants.ITEM_POS_CAPE		||
-				pos == Constants.ITEM_POS_BOUCLIER	||
-				pos == Constants.ITEM_POS_NO_EQUIPED)
+			if( pos == ObjectPosition.ARME 		||
+				pos == ObjectPosition.COIFFE 	||
+				pos == ObjectPosition.FAMILIER 	||
+				pos == ObjectPosition.CAPE		||
+				pos == ObjectPosition.BOUCLIER	||
+				pos == ObjectPosition.NO_EQUIPED)
 				SocketManager.GAME_SEND_ON_EQUIP_ITEM(client.getPlayer().getMap(), client.getPlayer());
 		
 			//Si familier
-			if(pos == Constants.ITEM_POS_FAMILIER && client.getPlayer().isOnMount())
+			if(pos == ObjectPosition.FAMILIER && client.getPlayer().isOnMount())
 				client.getPlayer().toogleOnMount();
 			//Verif pour les outils de m�tier
-			if(pos == Constants.ITEM_POS_NO_EQUIPED && client.getPlayer().getObjectByPos(Constants.ITEM_POS_ARME) == null)
+			if(pos == ObjectPosition.NO_EQUIPED && client.getPlayer().getObjectByPos(ObjectPosition.ARME) == null)
 				SocketManager.GAME_SEND_OT_PACKET(client, -1);
 			
-			if(pos == Constants.ITEM_POS_ARME && client.getPlayer().getObjectByPos(Constants.ITEM_POS_ARME) != null)
+			if(pos == ObjectPosition.ARME && client.getPlayer().getObjectByPos(ObjectPosition.ARME) != null)
 				for(Entry<Integer, JobStat> e : client.getPlayer().getMetiers().entrySet())
-					if(e.getValue().getTemplate().isValidTool(client.getPlayer().getObjectByPos(Constants.ITEM_POS_ARME).getTemplate().getId()))
+					if(e.getValue().getTemplate().isValidTool(client.getPlayer().getObjectByPos(ObjectPosition.ARME).getTemplate().getId()))
 						SocketManager.GAME_SEND_OT_PACKET(client,e.getValue().getTemplate().getId());
 
 			//Si objet de panoplie

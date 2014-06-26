@@ -122,7 +122,7 @@ public class Hdv {
 	
 	public void addEntry(HdvEntry entry) {
 		entry.setHdv(this.getId());
-		int categ = entry.getObject().getTemplate().getType();
+		int categ = entry.getObject().getTemplate().getType().getValue();
 		int template = entry.getObject().getTemplate().getId();
 		this.getCategorys().get(categ).addEntry(entry);
 		this.getPath().put(entry.getLine(), new Couple<Integer, Integer>(categ, template));
@@ -191,7 +191,7 @@ public class Hdv {
 	}
 	
 	public String parseToEHl(int template) {
-		int type = World.data.getObjectTemplate(template).getType();
+		int type = World.data.getObjectTemplate(template).getType().getValue();
 		return this.getCategorys().get(type).getTemplate(template).parseToEHl();
 	}	
 }

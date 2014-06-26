@@ -31,7 +31,7 @@ public class ObjectData extends AbstractDAO<Object>{
 			statement.setInt(1, obj.getId());
 			statement.setInt(2, obj.getTemplate().getId());
 			statement.setInt(3, obj.getQuantity());
-			statement.setInt(4, obj.getPosition());
+			statement.setInt(4, obj.getPosition().getValue());
 			statement.setString(5, obj.parseStatsString());
 
 			execute(statement);
@@ -59,7 +59,7 @@ public class ObjectData extends AbstractDAO<Object>{
 			statement.setInt(1, obj.getId());
 			statement.setInt(2, obj.getTemplate().getId());
 			statement.setInt(3, obj.getQuantity());
-			statement.setInt(4, obj.getPosition());
+			statement.setInt(4, obj.getPosition().getValue());
 			statement.setString(5, obj.parseStatsString());
 
 			execute(statement);

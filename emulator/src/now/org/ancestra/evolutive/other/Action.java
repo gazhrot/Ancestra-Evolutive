@@ -11,6 +11,7 @@ import org.ancestra.evolutive.core.Server;
 import org.ancestra.evolutive.core.World;
 import org.ancestra.evolutive.entity.monster.MobGroup;
 import org.ancestra.evolutive.entity.npc.NpcQuestion;
+import org.ancestra.evolutive.enums.Alignement;
 import org.ancestra.evolutive.fight.spell.Animation;
 import org.ancestra.evolutive.game.GameClient;
 import org.ancestra.evolutive.house.House;
@@ -297,7 +298,7 @@ public class Action {
 					byte newAlign = Byte.parseByte(args.split(",",2)[0]);
 					boolean replace = Integer.parseInt(args.split(",",2)[1]) == 1;
 					//Si le perso n'est pas neutre, et qu'on doit pas remplacer, on passe
-					if(perso.getAlign() != Constants.ALIGNEMENT_NEUTRE && !replace)return;
+					if(perso.getAlign() != Alignement.NEUTRE && !replace)return;
 					perso.modifAlignement(newAlign);
 				}catch(Exception e){Log.addToLog(e.getMessage());};
 			break;
@@ -385,7 +386,7 @@ public class Action {
 			case 16://Ajout d'honneur HonorValue
 				try
 				{
-					if(perso.getAlign() != 0)
+					if(perso.getAlign() != Alignement.NEUTRE)
 					{
 						int AddHonor = Integer.parseInt(args);
 						int ActualHonor = perso.getHonor();
@@ -526,7 +527,7 @@ public class Action {
 					if(P == null || P == perso)continue;
 					if(P.getAccount().getCurIp().compareTo(perso.getAccount().getCurIp()) == 0)continue;
 					//SI pas s�riane ni neutre et si alignement oppos�
-					if(P.getAlign() == perso.getAlign() || P.getAlign() == 0 || P.getAlign() == 3)continue;
+					if(P.getAlign() == perso.getAlign() || P.getAlign() == Alignement.NEUTRE || P.getAlign() == Alignement.MERCENAIRE)continue;
 					
 					if(P.getLevel()>perso.getLevel())diff = P.getLevel() - perso.getLevel();
 					if(perso.getLevel()>P.getLevel())diff = perso.getLevel() - P.getLevel();

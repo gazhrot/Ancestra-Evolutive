@@ -2,36 +2,39 @@ package org.ancestra.evolutive.common;
 
 import org.ancestra.evolutive.client.Player;
 import org.ancestra.evolutive.client.other.Stats;
-import org.ancestra.evolutive.core.Log;
 import org.ancestra.evolutive.core.Server;
 import org.ancestra.evolutive.core.World;
+import org.ancestra.evolutive.enums.Alignement;
 import org.ancestra.evolutive.enums.EmulatorInfos;
 import org.ancestra.evolutive.fight.Fighter;
 import org.ancestra.evolutive.fight.spell.SpellStats;
+import org.ancestra.evolutive.object.ObjectPosition;
 import org.ancestra.evolutive.object.ObjectTemplate;
 
 import java.util.Map;
 import java.util.TreeMap;
 
-public class Constants
-{
+public class Constants {
 	//DEBUG
 	public static int DEBUG_MAP_LIMIT 	=	20000;
 	public static final boolean IGNORE_VERSION 		= false;
 	//ZAAPI <alignID,{mapID,mapID,...,mapID}>
-	public static Map<Integer, String> ZAAPI = new TreeMap<Integer, String>();
+	public static Map<Alignement, String> ZAAPI = new TreeMap<>();
 	//ZAAP <mapID,cellID>
-	public static Map<Integer, Integer> ZAAPS = new TreeMap<Integer, Integer>();
+	public static Map<Integer, Integer> ZAAPS = new TreeMap<>();
 	//BANIP
 	public static String BAN_IP = "";
 	
-	public static boolean IPcompareToBanIP(String ip)
-	{
+	public static boolean IPcompareToBanIP(String ip) {
 		String[] split = BAN_IP.split(",");
 		for(String ipsplit : split)
 			if(ip.compareTo(ipsplit) == 0) 
 				return true;		
 		return false;
+	}
+	
+	public static String getIp(String remoteAddress) {
+		return remoteAddress.substring(1).split("\\:")[0];
 	}
 	
 	public static String serverInfos() {
@@ -107,149 +110,7 @@ public class Constants
 	public static final int FIGHT_STATE_PLACE		= 2;
 	public static final int FIGHT_STATE_ACTIVE 		= 3;
 	public static final int FIGHT_STATE_FINISHED	= 4;
-	
-	//Items
-		//Positions
-		public static final int ITEM_POS_NO_EQUIPED 	= -1;
-		public static final int ITEM_POS_AMULETTE		= 0;
-		public static final int ITEM_POS_ARME			= 1;
-		public static final int ITEM_POS_ANNEAU1		= 2;
-		public static final int ITEM_POS_CEINTURE		= 3;
-		public static final int ITEM_POS_ANNEAU2		= 4;
-		public static final int ITEM_POS_BOTTES			= 5;
-		public static final int ITEM_POS_COIFFE		 	= 6;
-		public static final int ITEM_POS_CAPE			= 7;
-		public static final int ITEM_POS_FAMILIER		= 8;
-		public static final int ITEM_POS_DOFUS1			= 9;
-		public static final int ITEM_POS_DOFUS2			= 10;
-		public static final int ITEM_POS_DOFUS3			= 11;
-		public static final int ITEM_POS_DOFUS4			= 12;
-		public static final int ITEM_POS_DOFUS5			= 13;
-		public static final int ITEM_POS_DOFUS6			= 14;
-		public static final int ITEM_POS_BOUCLIER		= 15;
-		
-		//Types
-		public static final int ITEM_TYPE_AMULETTE			= 1;
-		public static final int ITEM_TYPE_ARC				= 2;
-		public static final int ITEM_TYPE_BAGUETTE			= 3;
-		public static final int ITEM_TYPE_BATON				= 4;
-		public static final int ITEM_TYPE_DAGUES			= 5;
-		public static final int ITEM_TYPE_EPEE				= 6;
-		public static final int ITEM_TYPE_MARTEAU			= 7;
-		public static final int ITEM_TYPE_PELLE				= 8;
-		public static final int ITEM_TYPE_ANNEAU			= 9;
-		public static final int ITEM_TYPE_CEINTURE			= 10;
-		public static final int ITEM_TYPE_BOTTES			= 11;
-		public static final int ITEM_TYPE_POTION			= 12;
-		public static final int ITEM_TYPE_PARCHO_EXP		= 13;
-		public static final int ITEM_TYPE_DONS				= 14;
-		public static final int ITEM_TYPE_RESSOURCE			= 15;
-		public static final int ITEM_TYPE_COIFFE			= 16;
-		public static final int ITEM_TYPE_CAPE				= 17;
-		public static final int ITEM_TYPE_FAMILIER			= 18;
-		public static final int ITEM_TYPE_HACHE				= 19;
-		public static final int ITEM_TYPE_OUTIL				= 20;
-		public static final int ITEM_TYPE_PIOCHE			= 21;
-		public static final int ITEM_TYPE_FAUX				= 22;
-		public static final int ITEM_TYPE_DOFUS				= 23;
-		public static final int ITEM_TYPE_QUETES			= 24;
-		public static final int ITEM_TYPE_DOCUMENT			= 25;
-		public static final int ITEM_TYPE_FM_POTION			= 26;
-		public static final int ITEM_TYPE_TRANSFORM			= 27;
-		public static final int ITEM_TYPE_BOOST_FOOD		= 28;
-		public static final int ITEM_TYPE_BENEDICTION		= 29;
-		public static final int ITEM_TYPE_MALEDICTION		= 30;
-		public static final int ITEM_TYPE_RP_BUFF			= 31;
-		public static final int ITEM_TYPE_PERSO_SUIVEUR		= 32;
-		public static final int ITEM_TYPE_PAIN				= 33;
-		public static final int ITEM_TYPE_CEREALE			= 34;
-		public static final int ITEM_TYPE_FLEUR				= 35;
-		public static final int ITEM_TYPE_PLANTE			= 36;
-		public static final int ITEM_TYPE_BIERE				= 37;
-		public static final int ITEM_TYPE_BOIS				= 38;
-		public static final int ITEM_TYPE_MINERAIS			= 39;
-		public static final int ITEM_TYPE_ALLIAGE			= 40;
-		public static final int ITEM_TYPE_POISSON			= 41;
-		public static final int ITEM_TYPE_BONBON			= 42;
-		public static final int ITEM_TYPE_POTION_OUBLIE		= 43;
-		public static final int ITEM_TYPE_POTION_METIER		= 44;
-		public static final int ITEM_TYPE_POTION_SORT		= 45;
-		public static final int ITEM_TYPE_FRUIT				= 46;
-		public static final int ITEM_TYPE_OS				= 47;
-		public static final int ITEM_TYPE_POUDRE			= 48;
-		public static final int ITEM_TYPE_COMESTI_POISSON	= 49;
-		public static final int ITEM_TYPE_PIERRE_PRECIEUSE	= 50;
-		public static final int ITEM_TYPE_PIERRE_BRUTE		=51;
-		public static final int ITEM_TYPE_FARINE			=52;
-		public static final int ITEM_TYPE_PLUME				=53;
-		public static final int ITEM_TYPE_POIL				=54;
-		public static final int ITEM_TYPE_ETOFFE			=55;
-		public static final int ITEM_TYPE_CUIR				=56;
-		public static final int ITEM_TYPE_LAINE				=57;
-		public static final int ITEM_TYPE_GRAINE			=58;
-		public static final int ITEM_TYPE_PEAU				=59;
-		public static final int ITEM_TYPE_HUILE				=60;
-		public static final int ITEM_TYPE_PELUCHE			=61;
-		public static final int ITEM_TYPE_POISSON_VIDE		=62;
-		public static final int ITEM_TYPE_VIANDE			=63;
-		public static final int ITEM_TYPE_VIANDE_CONSERVEE	=64;
-		public static final int ITEM_TYPE_QUEUE				=65;
-		public static final int ITEM_TYPE_METARIA			=66;
-		public static final int ITEM_TYPE_LEGUME			=68;
-		public static final int ITEM_TYPE_VIANDE_COMESTIBLE	=69;
-		public static final int ITEM_TYPE_TEINTURE			=70;
-		public static final int ITEM_TYPE_EQUIP_ALCHIMIE	=71;
-		public static final int ITEM_TYPE_OEUF_FAMILIER		=72;
-		public static final int ITEM_TYPE_MAITRISE			=73;
-		public static final int ITEM_TYPE_FEE_ARTIFICE		=74;
-		public static final int ITEM_TYPE_PARCHEMIN_SORT	=75;
-		public static final int ITEM_TYPE_PARCHEMIN_CARAC	=76;
-		public static final int ITEM_TYPE_CERTIFICAT_CHANIL	=77;
-		public static final int ITEM_TYPE_RUNE_FORGEMAGIE	=78;
-		public static final int ITEM_TYPE_BOISSON			=79;
-		public static final int ITEM_TYPE_OBJET_MISSION		=80;
-		public static final int ITEM_TYPE_SAC_DOS			=81;
-		public static final int ITEM_TYPE_BOUCLIER			=82;
-		public static final int ITEM_TYPE_PIERRE_AME		=83;
-		public static final int ITEM_TYPE_CLEFS				=84;
-		public static final int ITEM_TYPE_PIERRE_AME_PLEINE	=85;
-		public static final int ITEM_TYPE_POPO_OUBLI_PERCEP	=86;
-		public static final int ITEM_TYPE_PARCHO_RECHERCHE	=87;
-		public static final int ITEM_TYPE_PIERRE_MAGIQUE	=88;
-		public static final int ITEM_TYPE_CADEAUX			=89;
-		public static final int ITEM_TYPE_FANTOME_FAMILIER	=90;
-		public static final int ITEM_TYPE_DRAGODINDE		=91;
-		public static final int ITEM_TYPE_BOUFTOU			=92;
-		public static final int ITEM_TYPE_OBJET_ELEVAGE		=93;
-		public static final int ITEM_TYPE_OBJET_UTILISABLE	=94;
-		public static final int ITEM_TYPE_PLANCHE			=95;
-		public static final int ITEM_TYPE_ECORCE			=96;
-		public static final int ITEM_TYPE_CERTIF_MONTURE	=97;
-		public static final int ITEM_TYPE_RACINE			=98;
-		public static final int ITEM_TYPE_FILET_CAPTURE		=99;
-		public static final int ITEM_TYPE_SAC_RESSOURCE		=100;
-		public static final int ITEM_TYPE_ARBALETE			=102;
-		public static final int ITEM_TYPE_PATTE				=103;
-		public static final int ITEM_TYPE_AILE				=104;
-		public static final int ITEM_TYPE_OEUF				=105;
-		public static final int ITEM_TYPE_OREILLE			=106;
-		public static final int ITEM_TYPE_CARAPACE			=107;
-		public static final int ITEM_TYPE_BOURGEON			=108;
-		public static final int ITEM_TYPE_OEIL				=109;
-		public static final int ITEM_TYPE_GELEE				=110;
-		public static final int ITEM_TYPE_COQUILLE			=111;
-		public static final int ITEM_TYPE_PRISME			=112;
-		public static final int ITEM_TYPE_OBJET_VIVANT		=113;
-		public static final int ITEM_TYPE_ARME_MAGIQUE		=114;
-		public static final int ITEM_TYPE_FRAGM_AME_SHUSHU	=115;
-		public static final int ITEM_TYPE_POTION_FAMILIER	=116;
-		
-	//Alignement
-	public static final int ALIGNEMENT_NEUTRE		=	-1;
-	public static final int ALIGNEMENT_BONTARIEN	=	1;
-	public static final int ALIGNEMENT_BRAKMARIEN	=	2;
-	public static final int ALIGNEMENT_MERCENAIRE	=	3;
-	
+
 	//Elements 
 	public static final int ELEMENT_NULL		=	-1;
 	public static final int ELEMENT_NEUTRE		= 	0;
@@ -1041,94 +902,98 @@ public class Constants
 		return 5;
 	}
 
-	public static boolean isValidPlaceForItem(ObjectTemplate template, int place){
-		switch(template.getType())
-		{
-			case ITEM_TYPE_AMULETTE:
-				if(place == ITEM_POS_AMULETTE)return true;
-			break;
+	public static boolean isValidPlaceForItem(ObjectTemplate template, ObjectPosition place) {
+		switch(template.getType()) {
+			case AMULETTE:
+				if(place == ObjectPosition.AMULETTE)
+					return true;
+				break;
 			
-			case ITEM_TYPE_ARC:
-			case ITEM_TYPE_BAGUETTE:
-			case ITEM_TYPE_BATON:
-			case ITEM_TYPE_DAGUES:
-			case ITEM_TYPE_EPEE:
-			case ITEM_TYPE_MARTEAU:
-			case ITEM_TYPE_PELLE:
-			case ITEM_TYPE_HACHE:
-			case ITEM_TYPE_OUTIL:
-			case ITEM_TYPE_PIOCHE:
-			case ITEM_TYPE_FAUX:
-			case ITEM_TYPE_PIERRE_AME:
-				if(place == ITEM_POS_ARME)return true;
-			break;
+			case ARC:
+			case BAGUETTE:
+			case BATON:
+			case DAGUES:
+			case EPEE:
+			case MARTEAU:
+			case PELLE:
+			case HACHE:
+			case OUTIL:
+			case PIOCHE:
+			case FAUX:
+			case PIERRE_AME:
+				if(place == ObjectPosition.ARME)
+					return true;
+				break;
 			
-			case ITEM_TYPE_ANNEAU:
-				if(place == ITEM_POS_ANNEAU1 || place == ITEM_POS_ANNEAU2)return true;
-			break;
+			case ANNEAU:
+				if(place == ObjectPosition.ANNEAU1 || place == ObjectPosition.ANNEAU2)
+					return true;
+				break;
 			
-			case ITEM_TYPE_CEINTURE:
-				if(place == ITEM_POS_CEINTURE)return true;
-			break;
+			case CEINTURE:
+				if(place == ObjectPosition.CEINTURE)
+					return true;
+				break;
 			
-			case ITEM_TYPE_BOTTES:
-				if(place == ITEM_POS_BOTTES)return true;
-			break;
+			case BOTTES:
+				if(place == ObjectPosition.BOTTES)
+					return true;
+				break;
 			
-			case ITEM_TYPE_COIFFE:
-				if(place == ITEM_POS_COIFFE)return true;
-			break;
+			case COIFFE:
+				if(place == ObjectPosition.COIFFE)
+					return true;
+				break;
 			
-			case ITEM_TYPE_CAPE:
-			case ITEM_TYPE_SAC_DOS:
-				if(place == ITEM_POS_CAPE)return true;
-			break;
+			case CAPE:
+			case SAC_DOS:
+				if(place == ObjectPosition.CAPE)
+					return true;
+				break;
 			
-			case ITEM_TYPE_FAMILIER:
-				if(place == ITEM_POS_FAMILIER)return true;
-			break;
+			case FAMILIER:
+				if(place == ObjectPosition.FAMILIER)
+					return true;
+				break;
 			
-			case ITEM_TYPE_DOFUS:
-				if(place == ITEM_POS_DOFUS1 
-				|| place == ITEM_POS_DOFUS2
-				|| place == ITEM_POS_DOFUS3
-				|| place == ITEM_POS_DOFUS4
-				|| place == ITEM_POS_DOFUS5
-				|| place == ITEM_POS_DOFUS6
-				)return true;
-			break;
+			case DOFUS:
+				if(place == ObjectPosition.DOFUS1 || place == ObjectPosition.DOFUS2
+				|| place == ObjectPosition.DOFUS3 || place == ObjectPosition.DOFUS4
+				|| place == ObjectPosition.DOFUS5 || place == ObjectPosition.DOFUS6)
+					return true;
+				break;
 			
-			case ITEM_TYPE_BOUCLIER:
-				if(place == ITEM_POS_BOUCLIER)return true;
-			break;
+			case BOUCLIER:
+				if(place == ObjectPosition.BOUCLIER)
+					return true;
+				break;
 			
 			//Barre d'objets TODO : Normalement le client bloque les items interdits
-			case ITEM_TYPE_POTION:
-			case ITEM_TYPE_PARCHO_EXP:
-			case ITEM_TYPE_BOOST_FOOD:
-			case ITEM_TYPE_PAIN:
-			case ITEM_TYPE_BIERE:
-			case ITEM_TYPE_POISSON:
-			case ITEM_TYPE_BONBON:
-			case ITEM_TYPE_COMESTI_POISSON:
-			case ITEM_TYPE_VIANDE:
-			case ITEM_TYPE_VIANDE_CONSERVEE:
-			case ITEM_TYPE_VIANDE_COMESTIBLE:
-			case ITEM_TYPE_TEINTURE:
-			case ITEM_TYPE_MAITRISE:
-			case ITEM_TYPE_BOISSON:
-			case ITEM_TYPE_PIERRE_AME_PLEINE:
-			case ITEM_TYPE_PARCHO_RECHERCHE:
-			case ITEM_TYPE_CADEAUX:
-			case ITEM_TYPE_OBJET_ELEVAGE:
-			case ITEM_TYPE_OBJET_UTILISABLE:
-			case ITEM_TYPE_PRISME:
-			case ITEM_TYPE_FEE_ARTIFICE:
-			case ITEM_TYPE_DONS:
-				if(place >= 35 && place <= 48)return true;
-			break;
-				
-			
+			case POTION:
+			case PARCHO_EXP:
+			case BOOST_FOOD:
+			case PAIN:
+			case BIERE:
+			case POISSON:
+			case BONBON:
+			case COMESTI_POISSON:
+			case VIANDE:
+			case VIANDE_CONSERVEE:
+			case VIANDE_COMESTIBLE:
+			case TEINTURE:
+			case MAITRISE:
+			case BOISSON:
+			case PIERRE_AME_PLEINE:
+			case PARCHO_RECHERCHE:
+			case CADEAUX:
+			case OBJET_ELEVAGE:
+			case OBJET_UTILISABLE:
+			case PRISME:
+			case FEE_ARTIFICE:
+			case DONS:
+				if(place.getValue() >= 35 && place.getValue() <= 48)
+					return true;
+				break;			
 		}
 		return false;
 	}
@@ -2047,6 +1912,7 @@ public class Constants
 		}
 		return stats;
 	}
+	
 	public static ObjectTemplate getParchoTemplateByMountColor(int color)
 	{
 		switch(color)
@@ -2196,33 +2062,12 @@ public class Constants
 		}
 		return null;
 	}
+	
+	
 	public static int getMountColorByParchoTemplate(int tID)
 	{
 		for(int a = 1;a<100;a++)if(getParchoTemplateByMountColor(a)!=null)if(getParchoTemplateByMountColor(a).getId() == tID)return a; 
 		return -1;
-	}
-	
-	public static void applyPlotIOAction(Player perso,int mID, int cID)
-	{
-		//G?re les differentes actions des "bornes" (IO des ?motes)
-		switch(mID)
-		{
-		case 2196://Cr?ation de guilde
-			if(perso.isAway())return;
-			if(perso.getGuild() != null || perso.getGuildMember() != null)
-			{
-				SocketManager.GAME_SEND_gC_PACKET(perso, "Ea");
-				return;
-			}
-			if(!perso.hasItemTemplate(1575,1))//Guildalogemme
-			{
-				SocketManager.GAME_SEND_Im_PACKET(perso, "14");
-			}
-			SocketManager.GAME_SEND_gn_PACKET(perso);
-		break;
-		default:
-			Log.addToLog("PlotIOAction non gere pour la map "+mID+" cell="+cID);
-		}
 	}
 	
 	public static int getNearCellidUnused(Player _perso)
@@ -2272,9 +2117,7 @@ public class Constants
 		return -1;
 	}
 	
-	public static String getIp(String remoteAddress) {
-		return remoteAddress.substring(1).split(":")[0];
-	}
+	
 	
 	public static int getProtectorLevelByAttacker(Fighter fighter) {
 		int level = fighter.get_lvl();

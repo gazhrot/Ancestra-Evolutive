@@ -2,7 +2,6 @@ package org.ancestra.evolutive.object;
 
 import java.util.ArrayList;
 
-import org.ancestra.evolutive.common.Constants;
 import org.ancestra.evolutive.common.Couple;
 
 import org.ancestra.evolutive.object.Object;
@@ -12,7 +11,7 @@ public class SoulStone extends Object {
 	private ArrayList<Couple<Integer, Integer>> monsters;
 	
 	public SoulStone (int id, int qua, int template, int pos, String strStats) {
-		super(id, template, 1, Constants.ITEM_POS_NO_EQUIPED, "");
+		super(id, template, 1, -1, "");
 		
 		this.monsters = new ArrayList<Couple<Integer, Integer>>();//Couple<MonstreID,Level>
 		this.parseStringToStats(strStats);

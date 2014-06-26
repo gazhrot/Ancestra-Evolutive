@@ -31,6 +31,7 @@ import org.ancestra.evolutive.map.MountPark;
 import org.ancestra.evolutive.object.ObjectSet;
 import org.ancestra.evolutive.object.Object;
 import org.ancestra.evolutive.object.ObjectTemplate;
+import org.ancestra.evolutive.object.ObjectType;
 import org.ancestra.evolutive.object.SoulStone;
 import org.ancestra.evolutive.other.ExpLevel;
 import org.ancestra.evolutive.tool.command.Command;
@@ -472,19 +473,6 @@ public class World {
 		});
 	}
 
-	public void RefreshAllMob() {
-		SocketManager.GAME_SEND_MESSAGE_TO_ALL(
-				"Recharge des Mobs en cours, des latences peuvent survenir.",
-				Server.config.getMotdColor());
-		for (Maps map : maps.values()) {
-			map.refreshSpawns();
-		}
-		SocketManager
-				.GAME_SEND_MESSAGE_TO_ALL(
-						"Recharge des Mobs finie. La prochaine recharge aura lieu dans 5heures.",
-						Server.config.getMotdColor());
-	}
-
 	public ExpLevel getExpLevel(int lvl) {
 		ExpLevel level = expLevels.get(lvl);
 		if(level == null)
@@ -710,7 +698,7 @@ public class World {
 			Main.closeServers();
 		}
 
-		if (getObjectTemplate(template).getType() == 85)
+		if (getObjectTemplate(template).getType() == ObjectType.PIERRE_AME_PLEINE)
 			return new SoulStone(id, qua, template, pos, strStats);
 		else
 			return new Object(id, template, qua, pos, strStats);
