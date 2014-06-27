@@ -157,10 +157,9 @@ public class Creature extends Entity {
         if(newCell == null || newCell.getMap() == null) {
             return false;
         }
-        if(newCell.getMap() == oldCell.getMap()){
+        if(newCell.getMap() == oldCell.getMap()) {
             return onMoveCell(oldCell,newCell);
-        }
-        else {
+        } else {
             oldCell.getMap().removePlayer(this);
             oldCell.removeCreature(this);
             newCell.getMap().addPlayer((Player)this);

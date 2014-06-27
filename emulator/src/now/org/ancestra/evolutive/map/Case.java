@@ -206,7 +206,6 @@ public class Case {
 			break;
 			case 153 :
 				Trunk bin = Trunk.getTrunkByPos(perso.getMap().getId(), CcellID);
-				perso.getAccount().getGameClient().getActions().remove(GA.getId());
 				if(bin == null) {
 					perso.sendText("La poubelle actuel est inutilisable, merci de contacter un administrateur.");
 					return;
@@ -359,6 +358,8 @@ public class Case {
 				logger.info("Case.startAction non definie pour l'actionID = "+actionID);
 			break;
 		}
+		if(perso.getAccount().getGameClient().getActions().containsKey(GA.getId()))
+			perso.getAccount().getGameClient().getActions().remove(GA.getId());
 	}
 	
 	public void finishAction(Player perso, GameAction GA){
