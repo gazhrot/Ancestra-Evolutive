@@ -522,7 +522,7 @@ public class Maps {
 	
 	public String getFightersGMsPackets() {
 		StringBuilder packet = new StringBuilder();
-		for(Entry<Integer,Case> cell : this.getCases().entrySet())
+		for(Entry<Integer, Case> cell : this.getCases().entrySet())
 			for(Entry<Integer, Fighter> f : cell.getValue().getFighters().entrySet())
 				packet.append(f.getValue().getGmPacket('+')).append('\u0000');
 		return packet.toString();

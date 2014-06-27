@@ -77,7 +77,8 @@ public class Fighter extends Creature {
 
 	public Fighter(Fight f, MobGrade mob)
 	{
-		super(mob.getId(),Integer.toString(mob.getTemplate().getId()),mob.getCell().getMap(),mob.getCell());
+		super(mob.getId(), Integer.toString(mob.getTemplate().getId()), f.getMap(), 	mob.getCell());
+	
 		_fight = f;
 		type = FighterType.CREATURE;
 		_mob = mob;
@@ -89,7 +90,7 @@ public class Fighter extends Creature {
 	
 	public Fighter(Fight f, Player perso)
 	{
-		super(perso.getId(),perso.getName(),perso.getMap(),perso.getCell());
+		super(perso.getId(),perso.getName(),f.getMap(),perso.getCell());
 		_fight = f;
 		if(perso.isClone()){
 			type = FighterType.CLONE;

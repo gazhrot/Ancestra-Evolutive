@@ -13,6 +13,9 @@ public class Information implements PacketParser {
 	@Override
 	public void parse(GameClient client, String packet) {
 		if(client.getPlayer().getFight() != null) {
+			System.out.println(client.getAccount().getGameClient());
+			System.out.println(client.getAccount().getGameClient().getSession());
+			
 			SocketManager.GAME_SEND_MAP_GMS_PACKETS(client.getPlayer().getFight().getMap(), client.getPlayer());
 			SocketManager.GAME_SEND_GDK_PACKET(client);
 			return;

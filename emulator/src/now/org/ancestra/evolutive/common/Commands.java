@@ -12,7 +12,6 @@ import org.ancestra.evolutive.entity.npc.NpcQuestion;
 import org.ancestra.evolutive.entity.npc.NpcTemplate;
 import org.ancestra.evolutive.enums.Alignement;
 import org.ancestra.evolutive.enums.EmulatorInfos;
-import org.ancestra.evolutive.fight.Fighter;
 import org.ancestra.evolutive.game.GameClient;
 import org.ancestra.evolutive.job.JobStat;
 import org.ancestra.evolutive.map.Maps;
@@ -25,7 +24,6 @@ import org.ancestra.evolutive.other.Action;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
 import java.util.Map.Entry;
 
 public class Commands {
@@ -1556,16 +1554,7 @@ public class Commands {
 		if (command.equalsIgnoreCase("SEND"))
 		{
 			
-			ArrayList<Fighter> all = new ArrayList<>();
-			all.addAll(_perso.getFight().getTeam0());
-			all.addAll(_perso.getFight().getTeam1());
-			
-			for(Fighter f1: all) {
-				
-				_perso.send(f1.getGmPacket('+'));
-				if(f1.isHide())
-					_perso.send("GA;150;" + f1.getGUID() + ";" + f1.getGUID() + ",4");
-			}
+			SocketManager.GAME_SEND_STATS_PACKET(_perso);
 			infos = msg.split(" ",2);
 			SocketManager.send(_perso, infos[1]);
 			return;

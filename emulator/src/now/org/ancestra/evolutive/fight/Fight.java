@@ -210,6 +210,7 @@ public class Fight {
 		for(Entry<Integer, MobGrade> entry : group.getMobs().entrySet())
 		{
 			entry.getValue().setId(entry.getKey());
+			System.out.println(this+" = "+entry.getValue());
 			Fighter mob = new Fighter(Fight.this,entry.getValue());
 			team1.put(entry.getKey(), mob);
 		}
@@ -295,6 +296,7 @@ public class Fight {
 		for( java.util.Map.Entry<Integer, MobGrade> entry : group.getMobs().entrySet())
 		{
 			entry.getValue().setId(entry.getKey());
+			System.out.println(this+" = "+entry.getValue());
 			Fighter mob = new Fighter(this,entry.getValue());
 			team1.put(entry.getKey(), mob);
 		}
@@ -453,6 +455,10 @@ public class Fight {
 	
 	public Maps getMap() {
 		return map;
+	}
+	
+	public Maps getMapOld() {
+		return oldMap;
 	}
 
 	public List<Piege> get_traps() {

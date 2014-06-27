@@ -1328,7 +1328,7 @@ public class Player extends Creature {
 		StringBuilder ASData = new StringBuilder();
 		ASData.append("As").append(this.getXpToString(",")).append("|");
 		ASData.append(this.getKamas()).append("|").append(this.getCapital()).append("|").append(this.getSpellPoints()).append("|");
-		ASData.append(this.getAlign()).append("~").append(this.getAlign()).append(",").append(this.getaLvl()).append(",").append(this.getGrade()).append(",").append(this.getHonor()).append(",").append(this.getDeshonor()+",").append((this.isShowWings() ? "1" : "0")).append("|");
+		ASData.append(this.getAlign().getValue()).append("~").append(this.getAlign().getValue()).append(",").append(this.getaLvl()).append(",").append(this.getGrade()).append(",").append(this.getHonor()).append(",").append(this.getDeshonor()+",").append((this.isShowWings() ? "1" : "0")).append("|");
 
 
         int pdv = getPdv(),pdvMax = getMaxPdv();
