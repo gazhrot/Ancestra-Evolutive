@@ -4,6 +4,7 @@ import org.ancestra.evolutive.area.Area;
 import org.ancestra.evolutive.area.Continent;
 import org.ancestra.evolutive.area.SubArea;
 import org.ancestra.evolutive.client.Account;
+import org.ancestra.evolutive.client.Admin;
 import org.ancestra.evolutive.client.Player;
 import org.ancestra.evolutive.common.Constants;
 import org.ancestra.evolutive.common.Couple;
@@ -87,6 +88,7 @@ public class World {
 	private Map<Integer, House> houses = new HashMap<>();
 	private Map<Integer, Collection<Integer>> sellers = new HashMap<>();
 	private Map<String, Command<Player>> playerCommands = new HashMap<>();
+	private Map<String, Command<Admin>> adminCommands = new HashMap<>();
 	private Map<String, Command<Console>> consoleCommands = new HashMap<>();
 	private ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 	
@@ -375,103 +377,99 @@ public class World {
 	}
 
 	public void saveData(final int saverID) {
-		worker.execute(new Runnable() {
-			@Override
-			public void run() {
-				GameClient _out = null;
-				Player saver = saverID != -1 ? getPlayer(saverID) : null;
-				if (saver != null)
-					_out = saver.getAccount().getGameClient();
+        GameClient _out = null;
+        Player saver = saverID != -1 ? getPlayer(saverID) : null;
+        if (saver != null)
+            _out = saver.getAccount().getGameClient();
 
-				set_state((short) 2);
+        set_state((short) 2);
 
-				try {
-					Log.addToLog("Lancement de la sauvegarde du Monde...");
-					SocketManager.GAME_SEND_Im_PACKET_TO_ALL("1164");
-					Server.config.setSaving(true);
+        try {
+            Log.addToLog("Lancement de la sauvegarde du Monde...");
+            SocketManager.GAME_SEND_Im_PACKET_TO_ALL("1164");
+            Server.config.setSaving(true);
 
-					Log.addToLog("Sauvegarde des personnages...");
-					for (Player perso : players.values()) {
-						if (!perso.isOnline())
-							continue;
-						database.getCharacterData().update(perso);
-						database.getCharacterData().updateItems(perso);		
-					}
+            Log.addToLog("Sauvegarde des personnages...");
+            for (Player perso : players.values()) {
+                if (!perso.isOnline())
+                    continue;
+                database.getCharacterData().update(perso);
+                database.getCharacterData().updateItems(perso);
+            }
 
-					Log.addToLog("Sauvegarde des guildes...");
-					for (Guild guilde : guilds.values()) {
-						database.getGuildData().update(guilde);
-					}
+            Log.addToLog("Sauvegarde des guildes...");
+            for (Guild guilde : guilds.values()) {
+                database.getGuildData().update(guilde);
+            }
 
-					Log.addToLog("Sauvegarde des percepteurs...");
-					for (Collector perco : collectors.values()) {
-						if (perco.get_inFight() > 0)
-							continue;
-						database.getCollectorData().update(perco);
-					}
+            Log.addToLog("Sauvegarde des percepteurs...");
+            for (Collector perco : collectors.values()) {
+                if (perco.get_inFight() > 0)
+                    continue;
+            database.getCollectorData().update(perco);
+            }
 
-					Log.addToLog("Sauvegarde des maisons...");
-					for (House house : houses.values()) {
-						if (house.getOwner() > 0) {
-							database.getHouseData().update(house);
-						}
-					}
+            Log.addToLog("Sauvegarde des maisons...");
+            for (House house : houses.values()) {
+                if (house.getOwner() > 0) {
+                    database.getHouseData().update(house);
+                }
+            }
 
-					Log.addToLog("Sauvegarde des coffres...");
-					for (Trunk t : trunks.values()) {
-						if (t.getOwner() > 0) {
-							database.getTrunkData().update(t);
-						}
-					}
+            Log.addToLog("Sauvegarde des coffres...");
+            for (Trunk t : trunks.values()) {
+                if (t.getOwner() > 0) {
+                    database.getTrunkData().update(t);
+                }
+            }
 
-					Log.addToLog("Sauvegarde des enclos...");
-					for (MountPark mp : mountParks.values()) {
-						if (mp.getOwner() > 0 || mp.getOwner() == -1) {
-							database.getMountparkData().update(mp);
-						}
-					}
+            Log.addToLog("Sauvegarde des enclos...");
+            for (MountPark mp : mountParks.values()) {
+                if (mp.getOwner() > 0 || mp.getOwner() == -1) {
+                    database.getMountparkData().update(mp);
+                }
+            }
 
-					Log.addToLog("Sauvegarde des hdvs...");
-					for (Hdv curHdv : hdvs.values()) {
-						database.getHdvData().updateHdvItems(curHdv.getId());
-					}
+            Log.addToLog("Sauvegarde des hdvs...");
+            for (Hdv curHdv : hdvs.values()) {
+                database.getHdvData().updateHdvItems(curHdv.getId());
+            }
 
-					Log.addToLog("Sauvegarde effectuee !");
+            Log.addToLog("Sauvegarde effectuee !");
 
-					set_state((short) 1);
-					// TODO : Rafraichir
+            set_state((short) 1);
+            // TODO : Rafraichir
 
-				} catch (ConcurrentModificationException e) {
-					if (saveTries < 10) {
-						Log.addToLog("Nouvelle tentative de sauvegarde");
-						if (saver != null && _out != null)
-							SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(
-									_out,
-									"Erreur. Nouvelle tentative de sauvegarde");
-						saveTries++;
-						saveData(saver.getId());
-					} else {
-						set_state((short) 1);
-						// TODO : Rafraichir
-						String mess = "Echec de la sauvegarde apres "
-								+ saveTries + " tentatives";
-						if (saver != null && _out != null)
-							SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(
-									_out, mess);
-						Log.addToLog(mess);
-					}
-				} catch (Exception e) {
-					Log.addToLog("Erreur lors de la sauvegarde : "
-							+ e.getMessage());
-					e.printStackTrace();
-				} finally {
-					Server.config.setSaving(false);
-					saveTries = 1;
-					SocketManager.GAME_SEND_Im_PACKET_TO_ALL("1165");
-				}
-			}
-		});
-	}
+        } catch (ConcurrentModificationException e) {
+            if (saveTries < 10) {
+                Log.addToLog("Nouvelle tentative de sauvegarde");
+                if (saver != null && _out != null)
+                    SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(
+                            _out,
+                            "Erreur. Nouvelle tentative de sauvegarde");
+                saveTries++;
+                saveData(saver.getId());
+            } else {
+                set_state((short) 1);
+                // TODO : Rafraichir
+                String mess = "Echec de la sauvegarde apres "
+                        + saveTries + " tentatives";
+                if (saver != null && _out != null)
+                    SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(
+                            _out, mess);
+                Log.addToLog(mess);
+            }
+        } catch (Exception e) {
+            Log.addToLog("Erreur lors de la sauvegarde : "
+                    + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            Server.config.setSaving(false);
+            saveTries = 1;
+            SocketManager.GAME_SEND_Im_PACKET_TO_ALL("1165");
+        }
+    }
+
 
 	public ExpLevel getExpLevel(int lvl) {
 		ExpLevel level = expLevels.get(lvl);
@@ -987,6 +985,10 @@ public class World {
 
 	public Map<String, Command<Player>> getPlayerCommands() {
 		return playerCommands;
+	}
+	
+	public Map<String, Command<Admin>> getAdminCommands() {
+		return adminCommands;
 	}
 
 	public Map<String, Command<Console>> getConsoleCommands() {

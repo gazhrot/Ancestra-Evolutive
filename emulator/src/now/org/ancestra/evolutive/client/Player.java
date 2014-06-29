@@ -1200,7 +1200,7 @@ public class Player extends Creature {
 						SocketManager.GAME_SEND_OT_PACKET(this.getAccount().getGameClient(),sm.getTemplate().getId());
 		}
 		//Fin m�tier
-		SocketManager.GAME_SEND_ALIGNEMENT(out, this.align.getValue());
+		SocketManager.GAME_SEND_ALIGNEMENT(out, this.align.getId());
 		SocketManager.GAME_SEND_ADD_CANAL(out, this.canaux + "^" + (this.getAccount().getGmLvl() > 0 ? "@�" : ""));
 		
 		Date actDate = new Date();
@@ -1328,7 +1328,7 @@ public class Player extends Creature {
 		StringBuilder ASData = new StringBuilder();
 		ASData.append("As").append(this.getXpToString(",")).append("|");
 		ASData.append(this.getKamas()).append("|").append(this.getCapital()).append("|").append(this.getSpellPoints()).append("|");
-		ASData.append(this.getAlign().getValue()).append("~").append(this.getAlign().getValue()).append(",").append(this.getaLvl()).append(",").append(this.getGrade()).append(",").append(this.getHonor()).append(",").append(this.getDeshonor()+",").append((this.isShowWings() ? "1" : "0")).append("|");
+		ASData.append(this.getAlign().getId()).append("~").append(this.getAlign().getId()).append(",").append(this.getaLvl()).append(",").append(this.getGrade()).append(",").append(this.getHonor()).append(",").append(this.getDeshonor()+",").append((this.isShowWings() ? "1" : "0")).append("|");
 
 
         int pdv = getPdv(),pdvMax = getMaxPdv();

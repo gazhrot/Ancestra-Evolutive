@@ -98,10 +98,6 @@ public class Database {
         return true;
 	}
 	
-	public void close() {
-
-	}
-	
 	public AccountData getAccountData() {
 		return accountData;
 	}

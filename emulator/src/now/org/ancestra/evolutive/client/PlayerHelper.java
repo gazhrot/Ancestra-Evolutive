@@ -18,7 +18,7 @@ public class PlayerHelper extends Helper<Player> {
         str.append(getCreature().getId()).append(";").append(getCreature().getName()).append(";").append(getCreature().getClasse().getId());
         str.append((getCreature().getTitle()>0?(","+getCreature().getTitle()+";"):(";")));
         str.append(getCreature().getGfx()).append("^").append(getCreature().getSize()).append(";");//gfxID^size
-        str.append(getCreature().getSex()).append(";").append(getCreature().getAlign().getValue()).append(",");//1,0,0,4055064
+        str.append(getCreature().getSex()).append(";").append(getCreature().getAlign().getId()).append(",");//1,0,0,4055064
         str.append("0").append(",");//FIXME(think)
         str.append((getCreature().isShowWings() ? getCreature().getGrade() : "0")).append(",");
         str.append(getCreature().getLevel() + getCreature().getId());

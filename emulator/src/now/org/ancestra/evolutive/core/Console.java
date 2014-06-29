@@ -1,5 +1,6 @@
 package org.ancestra.evolutive.core;
 
+import org.ancestra.evolutive.client.Admin;
 import org.ancestra.evolutive.client.Player;
 import org.ancestra.evolutive.tool.command.CommandParser;
 
@@ -64,6 +65,8 @@ public class Console extends Thread {
 	public void print(String string, Object object) {
 		if(object instanceof Player)
 			((Player) object).sendText(string);
+		else if(object instanceof Admin)
+			((Admin) object).sendText(string);
 		else if (object instanceof Console)
 			write(string);
 	}

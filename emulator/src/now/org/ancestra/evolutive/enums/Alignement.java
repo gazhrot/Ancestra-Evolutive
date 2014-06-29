@@ -1,7 +1,7 @@
 package org.ancestra.evolutive.enums;
 
 public enum Alignement {
-    NEUTRE(-1),
+    NEUTRE(0),
     BONTARIEN(1),
     BRAKMARIEN(2),
     MERCENAIRE(3);
@@ -9,18 +9,18 @@ public enum Alignement {
     /**
      * Valeur correspondante pour le client
      */
-    private final int value;
+    private final int id;
 
-    private Alignement(int value) {
-        this.value = value;
+    private Alignement(int id) {
+        this.id = id;
     }
     
     /**
      * Permet de recuperer la valeur (int)
      * @return l'id de l'alignement correspondant.
      */    
-    public int getValue() {
-    	return value;
+    public int getId() {
+    	return id;
     }
 
     /**

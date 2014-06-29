@@ -73,12 +73,22 @@ public class Main {
 					Server.config.getGameServer().close();
 					World.data.saveData(-1);
 					World.database.getAccountData().updateState(false);
-					World.database.close();
 					for(PluginLoader pl: World.data.getOtherPlugins().values())
 						pl.disable();
 					Console.instance.writeln(" <> Redemmarage <>");
 				}
 			}
 		});
+
+        Console.instance.writeln(" <> Fermeture du jeu <>");
+        Server.config.setRunning(false);
+        if(Server.config.getRealmServer() != null)Server.config.getRealmServer().close();
+        if(Server.config.getGameServer() != null)Server.config.getGameServer().close();
+        World.data.saveData(-1);
+        World.database.getAccountData().updateState(false);
+        for(PluginLoader pl: World.data.getOtherPlugins().values())
+            pl.disable();
+        Console.instance.writeln(" <> Redemmarage <>");
+
 	}
 }

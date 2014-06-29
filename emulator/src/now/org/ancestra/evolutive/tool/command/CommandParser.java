@@ -1,5 +1,6 @@
 package org.ancestra.evolutive.tool.command;
 
+import org.ancestra.evolutive.client.Admin;
 import org.ancestra.evolutive.client.Player;
 import org.ancestra.evolutive.core.Console;
 import org.ancestra.evolutive.core.World;
@@ -15,16 +16,14 @@ public class CommandParser {
 		String[] parameters = null;
 
 		try {
-			 String[] split = line.contains(" ") 
-					 ? line.split(" ") 
-					 : new String[] { line };
+			 String[] split = line.contains(" ") ? line.split(" ") 
+				: new String[] { line };
 
-			 name = split[0];
+			 name = split[0].toUpperCase();
 
 			 if(split.length > 1) {
-				 line = line.substring(name.length()+1);
-				 parameters = line.contains(" ") 
-						 ? line.split(" ")
+				 line = line.substring(name.length() + 1);
+				 parameters = line.contains(" ") ? line.split(" ")
 						 : new String[] { line };
 			 }
 		} catch(Exception e) {
@@ -46,30 +45,56 @@ public class CommandParser {
 				Console.instance.print("Commande non reconnue.", t);
 				return; 
 			}
-
-			if(parameters != null) {
+			
+			
+			if(parameters != null && !command.getParameters().isEmpty()) {
 				Deque<String> params = new LinkedList<>();
+				
 				for(String param: parameters)
-					params.addLast(param);
+					params.addLast(param.toUpperCase());
 
-				Parameter<Player> lastParameter = null;
-
-				while(!params.isEmpty()) {
-                    String param = params.pop();
-					Parameter<Player> temporary = command.getParameters().get(param);
-					if(temporary == null) {
-						if(lastParameter != null) {
-                            params.addFirst(param);
-							lastParameter.action((Player)t, (String[])params.toArray());
-                        } else
-							command.execute((Player)t, (String[])params.toArray());
-					} else
-						lastParameter = temporary;
+				for(String param : params) {
+					Parameter<Player> parameter = command.getParameters().get(param);
+					if(parameter != null) {
+						params.remove(param);
+						parameter.execute((Player) t, (String[]) params.toArray());
+					}
 				}
-			} else 
-				command.execute((Player)t, parameters);
-		} 
-		else if (t instanceof Console) {
+			} else {
+				command.execute((Player) t, parameters);
+			}
+		} else if(t instanceof Admin) {			
+			Command<Admin> command = World.data.getAdminCommands().get(name);
+			System.out.println(name);
+			if(command == null) {
+				Console.instance.print("Commande non reconnue.", t);
+				return; 
+			}	
+			
+			if(((Admin) t).getGmLvl() < command.getGmLvl()) {
+				if(((Admin) t).getGmLvl() <= 1) 
+					return;
+				Console.instance.print("Vous ne disposez pas du rang de modération neccésaire.", t);
+				return;
+			}
+			
+			if(parameters != null && !command.getParameters().isEmpty()) {
+				Deque<String> params = new LinkedList<>();
+				
+				for(String param: parameters)
+					params.addLast(param.toUpperCase());
+
+				for(String param : params) {
+					Parameter<Admin> parameter = command.getParameters().get(param);
+					if(parameter != null) {
+						params.remove(param);
+						parameter.execute((Admin) t, (String[]) params.toArray());
+					}
+				}
+			} else {
+				command.execute((Admin) t, parameters);
+			}
+		} else if (t instanceof Console) {
 			Command<Console> command = World.data.getConsoleCommands().get(name);
 
 			if(command == null) {
@@ -77,25 +102,21 @@ public class CommandParser {
 				return; 
 			}
 
-			if(parameters != null && command.isSpecificParams()) {
+			if(parameters != null && !command.getParameters().isEmpty()) {
 				Deque<String> params = new LinkedList<>();
+				
 				for(String param: parameters)
-					params.addLast(param);
+					params.addLast(param.toUpperCase());
 
-				Parameter<Console> lastParameter = null;
-
-				while(params.isEmpty()) {
-					Parameter<Console> temporary = command.getParameters().get(params.pop());
-					if(temporary == null) {
-						if(lastParameter != null)
-							lastParameter.action((Console)t, (String[])params.toArray());
-						else
-							command.execute((Console)t, (String[])params.toArray());
-					} else
-						lastParameter = temporary;
+				for(String param : params) {
+					Parameter<Console> parameter = command.getParameters().get(param);
+					if(parameter != null) {
+						params.remove(param);
+						parameter.execute((Console) t, (String[]) params.toArray());
+					}
 				}
 			} else {
-				command.execute((Console)t, parameters);
+				command.execute((Console) t, parameters);
 			}
 		}
 	}

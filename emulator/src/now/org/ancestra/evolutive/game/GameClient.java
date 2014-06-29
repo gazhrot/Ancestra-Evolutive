@@ -2,9 +2,9 @@ package org.ancestra.evolutive.game;
 
 import ch.qos.logback.classic.Logger;
 import org.ancestra.evolutive.client.Account;
+import org.ancestra.evolutive.client.Admin;
 import org.ancestra.evolutive.client.Client;
 import org.ancestra.evolutive.client.Player;
-import org.ancestra.evolutive.common.Commands;
 import org.ancestra.evolutive.common.Constants;
 import org.ancestra.evolutive.common.SocketManager;
 import org.ancestra.evolutive.core.World;
@@ -23,7 +23,7 @@ public class GameClient implements Client {
 	private final IoSession session;
 	private Account account;
 	private Player player;
-	private Commands command;
+	private Admin command;
     private String lastPacketSent = "";
 
     public Logger logger = (Logger)LoggerFactory.getLogger(Client.class);
@@ -71,11 +71,11 @@ public class GameClient implements Client {
         }
 	}
 	
-	public Commands getCommand() {
+	public Admin getCommand() {
 		return command;
 	}
 	
-	public void setCommand(Commands command) {
+	public void setCommand(Admin command) {
 		this.command = command;
 	}
 	

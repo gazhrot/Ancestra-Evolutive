@@ -5,15 +5,15 @@ import org.ancestra.evolutive.core.Console;
 import org.ancestra.evolutive.core.Log;
 import org.ancestra.evolutive.core.Server;
 import org.nfunk.jep.JEP;
-import org.nfunk.jep.Node;
 import org.nfunk.jep.ParseException;
 
-public class ConditionParser
-{
-	public static boolean validConditions(Player perso,String req)
-	{
-		if(req == null || req.equals(""))return true;
-		if(req.contains("BI"))return false;
+public class ConditionParser {
+	
+	public static boolean validConditions(Player perso, String req) {
+		if(req == null)
+			return true;
+		if(req.contains("BI") || req.equals(""))
+			return false;
 		
 		JEP jep = new JEP();
 		
@@ -24,8 +24,7 @@ public class ConditionParser
 		if(req.contains("PN"))
 			req = canPN(req, perso);
 	 	//TODO : G�rer PJ Pj
-		try
-		{
+		try {
 				//Stats stuff compris
 				jep.addVariable("CI", perso.getTotalStats().getEffect(Constants.STATS_ADD_INTE));
 			 	jep.addVariable("CV", perso.getTotalStats().getEffect(Constants.STATS_ADD_VITA));
@@ -41,7 +40,7 @@ public class ConditionParser
 			 	jep.addVariable("Cw", perso.getStats().getEffect(Constants.STATS_ADD_SAGE));
 			 	jep.addVariable("Cc", perso.getStats().getEffect(Constants.STATS_ADD_CHAN));
 			 	//Autre
-			 	jep.addVariable("Ps", perso.getAlign());
+			 	jep.addVariable("Ps", perso.getAlign().getId());
 			 	jep.addVariable("Pa", perso.getaLvl());
 			 	jep.addVariable("PP", perso.getGrade());
 			 	jep.addVariable("PL", perso.getLevel());
@@ -52,17 +51,17 @@ public class ConditionParser
 			 	jep.addVariable("PX", perso.getAccount().getGmLvl());
 			 	jep.addVariable("PW", perso.getMaxPod());
 			 	jep.addVariable("PB", perso.getMap().getSubArea().getId());
-			 	jep.addVariable("PR", (perso.getWife()>0?1:0));
+			 	jep.addVariable("PR", (perso.getWife() > 0 ? 1 : 0));
 			 	jep.addVariable("SI", perso.getMap().getId());
 			 	//Les pierres d'ames sont lancables uniquement par le lanceur.
 			 	jep.addVariable("MiS",perso.getId());
 
-
-			 	Node node = jep.parse(req);
-			 	Object result = jep.evaluate(node);
-			 	boolean ok = false;
-			 	if(result != null)ok = Boolean.valueOf(result.toString());
-			 	return ok;
+			 	Object result = jep.evaluate(jep.parse(req));
+			 	
+			 	if(result == null)
+			 		return false;
+			 	
+			 	return (result.toString().equals("1.0") ? true : false);
 		} catch (ParseException e) {
             Console.instance.println("An error occurred: " + e.getMessage());
         }

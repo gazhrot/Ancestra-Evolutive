@@ -30,21 +30,20 @@ public class MobGroup extends Creature {
      * @param possibles mob possibles
      * @param map map initiale
      * @param cell cell actuelle
-     * @param maxSize
+     * @param maxSize taille maximale
      */
 	public MobGroup(int id,Alignement alignement, ArrayList<MobGrade> possibles, Maps map, Case cell, int maxSize) {
 		this(id,map,cell,"", alignement,false,false);
         int groupSize = (maxSize == -1)?defaultMaxGroup:random.nextInt(maxSize)+1;
         possibles = getPossibleMob(alignement,possibles);
-        if(possibles.size() == 0){
-            this.aggroDistance = 0;
-            return;
+		if(!possibles.isEmpty()){
+            for(int a = 0; a < groupSize; a++) {
+                MobGrade Mob = possibles.get(random.nextInt(possibles.size())).getCopy();
+                this.mobs.put(-(mobs.size()), Mob);
+            }
         }
-		for(int a = 0; a < groupSize; a++) {
-            MobGrade Mob = possibles.get(random.nextInt(possibles.size())).getCopy();
-			this.mobs.put(-(mobs.size()), Mob);
-		}
         this.aggroDistance = generateAggroDistance(possibles);
+        logger.info("Creation d'un groupe de monstre de taille {}:{}",mobs.size(),groupSize);
 	}
 
     public MobGroup(int id,Maps map,Case cell,String group,boolean fix){
@@ -119,14 +118,13 @@ public class MobGroup extends Creature {
     protected boolean onMoveCell(Case oldCell,Case newCell) {
         if(isFix) return true;
         for(MobGrade mob : mobs.values()){
-            Case cell = getMap().getRandomNearFreeCell(newCell,59);
             if(cell != null) {
-                mob.setCell(cell);
-                String pathStr = Pathfinding.getShortestStringPathBetween(oldCell.getMap(), oldCell.getId(), newCell.getId(), 0);
-                if (pathStr != null) {
-                    newCell.getMap().send("GA0;1;" + this.getId() +";"+ pathStr);
-                }//TODO a mettre dans la classe MobGrade
+                mob.setCell(newCell);
             }
+        }
+        String pathStr = Pathfinding.getShortestStringPathBetween(oldCell.getMap(), oldCell.getId(), newCell.getId(), 0);
+        if (pathStr != null) {
+            newCell.getMap().send("GA0;1;" + this.getId() +";"+ pathStr);
         }
 
         return true;
@@ -153,7 +151,7 @@ public class MobGroup extends Creature {
     private ArrayList<MobGrade> getPossibleMob(Alignement alignement,ArrayList<MobGrade> mobs){
         ArrayList<MobGrade> cleanMobs = new ArrayList<>();
         for(MobGrade mob : mobs){
-            if(mob.getTemplate().getAlign() == alignement.getValue()){
+            if(mob.getTemplate().getAlign() == alignement.getId()){
                 cleanMobs.add(mob);
             }
         }

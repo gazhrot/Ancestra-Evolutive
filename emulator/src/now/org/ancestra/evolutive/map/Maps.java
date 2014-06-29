@@ -106,7 +106,7 @@ public class Maps {
         public void run() {
             for(MobGroup mob : mobGroups.values()){
 
-                mob.setCell(cases.get(getRandomFreeCell()));
+                mob.setCell(getRandomNearFreeCell(mob.getCell(),5,20));
             }
         }
     }
@@ -588,13 +588,24 @@ public class Maps {
     /**
      * Renvoie les cellules libres les plus proches
      * @param cell cellucle centrale
-     * @param maxDistance nombre de cellules maximum voulues
+     * @param maxDistance portee maximale
      * @return cellule libre
      */
     public Case getRandomNearFreeCell(Case cell,int maxDistance){
+        return getRandomNearFreeCell(cell,0,maxDistance);
+    }
+
+    /**
+     * Renvoie les cellules libres les plus proches
+     * @param cell cellucle centrale
+     * @param minDistance portee minimale
+     * @param maxDistance portee maximale
+     * @return cellule libre
+     */
+    public Case getRandomNearFreeCell(Case cell,int minDistance,int maxDistance){
         for(int i=0; i <= maxDistance;i++){
-            Case cell1 = cases.get(cell.getId()+i);
-            Case cell2 = cases.get(cell.getId()-i);
+            Case cell1 = cases.get(cell.getId()+minDistance+i);
+            Case cell2 = cases.get(cell.getId()-minDistance-i);
             if(cell1.isFree()) return cell1;
             if(cell2.isFree()) return cell2;
         }

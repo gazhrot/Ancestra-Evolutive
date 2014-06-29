@@ -147,7 +147,7 @@ public class Case {
 	}
 
     public boolean isFree(){
-        if(isWalkable(true) && creatures == null)
+        if(isWalkable(true) && creatures == null && interactiveObject == null)
             return true;
 
         return false;

@@ -52,11 +52,11 @@ public class OtherData extends AbstractDAO<Object>{
 			Result result = getData("SELECT * FROM zaapi");
 			
 			while (result.resultSet.next()) {
-				if (result.resultSet.getInt("align") == Alignement.BONTARIEN.getValue()) {
+				if (result.resultSet.getInt("align") == Alignement.BONTARIEN.getId()) {
 					bonta += result.resultSet.getString("mapid");
 					if (!result.resultSet.isLast())
 						bonta += ",";
-				} else if (result.resultSet.getInt("align") == Alignement.BRAKMARIEN.getValue()) {
+				} else if (result.resultSet.getInt("align") == Alignement.BRAKMARIEN.getId()) {
 					brakmar += result.resultSet.getString("mapid");
 					if (!result.resultSet.isLast())
 						brakmar += ",";

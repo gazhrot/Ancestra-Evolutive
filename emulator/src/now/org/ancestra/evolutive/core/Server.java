@@ -2,6 +2,8 @@ package org.ancestra.evolutive.core;
 
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
+
+import org.ancestra.evolutive.client.Admin;
 import org.ancestra.evolutive.client.Player;
 import org.ancestra.evolutive.common.Constants;
 import org.ancestra.evolutive.common.CryptManager;
@@ -11,7 +13,7 @@ import org.ancestra.evolutive.event.player.PlayerJoinEvent;
 import org.ancestra.evolutive.game.GameServer;
 import org.ancestra.evolutive.login.LoginServer;
 import org.ancestra.evolutive.tool.command.Command;
-import org.ancestra.evolutive.tool.command.CommandAccess;
+import org.ancestra.evolutive.tool.command.Parameter;
 import org.ancestra.evolutive.tool.plugin.PluginLoader;
 import org.ancestra.evolutive.tool.plugin.packet.Packet;
 import org.ancestra.evolutive.tool.plugin.packet.PacketParser;
@@ -20,6 +22,7 @@ import org.ancestra.evolutive.tool.time.restricter.TimeRestricter;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.lang.annotation.Annotation;
@@ -213,12 +216,12 @@ public class Server {
 			public void call(Event event) {
 				if(event instanceof PlayerJoinEvent) {
 					PlayerJoinEvent event1 = (PlayerJoinEvent) event;
-					System.out.println("- Le joueur " + event1.getPlayer().getName() + " vient de se connectï¿½ !");
+					System.out.println("- Le joueur " + event1.getPlayer().getName() + " vient de se connecte !");
 				}
 			}			
 		});
 		
-		//totalitï¿½ des commandes
+		//totalite des commandes
 		Map<String, Command<Player>> playerCommands = new HashMap<>();
 		Map<String, Command<Console>> consoleCommands = new HashMap<>();
 		
@@ -226,34 +229,26 @@ public class Server {
 		 * Commandes des joueurs
 		 */
 		
-		//teleportation zone de dï¿½part
+		//teleportation zone de depart
 		if(configFile.getBoolean("commands.players.teleport.savePos.active")) {
-			String name = configFile.getString("commands.players.teleport.savePos.name");
+			String name = configFile.getString("commands.players.teleport.savePos.name").toUpperCase();
 			
-			//crï¿½ation de la commande
-			Command<Player> command = new Command<Player>(name) {
+			//creation de la commande
+			Command<Player> command = new Command<Player>(name, "Téléporte votre joueur à votre dernière position sauvegarder.") {
 				
 				@Override
 				public void action(Player player, String[] args) {
+					if(player.getFight() != null) {
+						player.sendText("Action impossible en combat");
+						return;
+					}
 					player.warpToSavePos();
 				}
 				
 			};
+		
 			
-			//ajout de condition
-			command.addAccess(new CommandAccess<Player>() {
-				@Override
-				public boolean authorizes(Player player) {
-					return player.getFight() == null;
-				}
-				
-				@Override
-				public String getRequiertsMessage() {
-					return "Action impossible en combat";
-				}
-			});
-			
-			//ajout message de succï¿½s
+			//ajout message de succes
 			command.addSuccessMessage("Vous avez bien ete teleporte a votre derniere position sauvegardee");
 			//ajout aux commmandes
 			playerCommands.put(name, command);
@@ -261,10 +256,10 @@ public class Server {
 		
 		//sauvegarde du personnage
 		if(configFile.getBoolean("commands.players.save.playerSave.active")) {
-			String name = configFile.getString("commands.players.save.playerSave.name");
+			String name = configFile.getString("commands.players.save.playerSave.name").toUpperCase();
 			
-			//crï¿½ation de la commande
-			Command<Player> command = new Command<Player>(name) {
+			//creation de la commande
+			Command<Player> command = new Command<Player>(name, "Sauvegarde votre joueur actuel.") {
 				
 				@Override
 				public void action(Player player, String[] args) {
@@ -279,18 +274,18 @@ public class Server {
 			command.attachRestricter(restricter).activeErrorMessage(); //indique le temps restant avant relance
 			
 			
-			//ajout message de succï¿½s
-			command.addSuccessMessage("Votre personnage a ï¿½tï¿½ sauvegardï¿½ avec succï¿½s.");
+			//ajout message de succes
+			command.addSuccessMessage("Votre personnage a ete sauvegarde avec succes.");
 			//ajout aux commmandes
 			playerCommands.put(name, command);
 		}
 		
 		//informations du serveur
 		if(configFile.getBoolean("commands.players.informations.serverInfos.active")) {
-			String name = configFile.getString("commands.players.informations.serverInfos.name");
+			String name = configFile.getString("commands.players.informations.serverInfos.name").toUpperCase();
 			
-			//crï¿½ation de la commande
-			Command<Player> command = new Command<Player>(name) {
+			//creation de la commande
+			Command<Player> command = new Command<Player>(name, "Affiche les informations du server.") {
 				
 				@Override
 				public void action(Player player, String[] args) {
@@ -307,8 +302,8 @@ public class Server {
 		if(configFile.getBoolean("commands.players.list.commandList.active")) {
 			String name = configFile.getString("commands.players.list.commandList.name");
 			
-			//crï¿½ation de la commande
-			Command<Player> command = new Command<Player>(name) {
+			//creation de la commande
+			Command<Player> command = new Command<Player>(name, null) {
 				
 				@Override
 				public void action(Player player, String[] args) {
@@ -329,10 +324,10 @@ public class Server {
 		 */
 		//informations du serveur
 		if(configFile.getBoolean("commands.console.server.uptime.active")) {
-			String name = configFile.getString("commands.console.server.uptime.name");
+			String name = configFile.getString("commands.console.server.uptime.name").toUpperCase();
 			
-			//crï¿½ation de la commande
-			Command<Console> command = new Command<Console>(name) {
+			//creation de la commande
+			Command<Console> command = new Command<Console>(name, "Affiche les informations du server.") {
 				
 				@Override
 				public void action(Console console, String[] args) {
@@ -346,10 +341,10 @@ public class Server {
 		}
 		
 		if(configFile.getBoolean("commands.console.server.reboot.active")) {
-			String name = configFile.getString("commands.console.server.reboot.name");
+			String name = configFile.getString("commands.console.server.reboot.name").toUpperCase();
 			
-			//crï¿½ation de la commande
-			Command<Console> command = new Command<Console>(name) {
+			//creation de la commande
+			Command<Console> command = new Command<Console>(name, "Sauvegarde puis ferme le server.") {
 				
 				@Override
 				public void action(Console console, String[] args) {
@@ -367,10 +362,10 @@ public class Server {
 		}
 		
 		if(configFile.getBoolean("commands.console.server.save.active")) {
-			String name = configFile.getString("commands.console.server.save.name");
+			String name = configFile.getString("commands.console.server.save.name").toUpperCase();
 			
-			//crï¿½ation de la commande
-			Command<Console> command = new Command<Console>(name) {
+			//creation de la commande
+			Command<Console> command = new Command<Console>(name, "Sauvegarde le server.") {
 				
 				@Override
 				public void action(Console console, String[] args) {
@@ -384,10 +379,15 @@ public class Server {
 			consoleCommands.put(name, command);
 		}
 
-		
-		//crï¿½ation de la commande
-		Command<Console> command = new Command<Console>("SHOWPLUGIN") {
-			
+		//creation de la commande
+		Command<Console> command = new Command<Console>("PLUGIN", null) {
+			@Override
+			public void action(Console t, String[] args) {
+				Console.instance.println("Paramètre non indiqué : ADD, SHOW");
+			}
+		};		
+		command.addParameter(new Parameter<Console>("SHOW", "Affiche les différents plug-ins actuellement actif.") {
+
 			@Override
 			public void action(Console t, String[] args) {
 				if(World.data.getOtherPlugins().isEmpty()) {
@@ -401,39 +401,67 @@ public class Server {
 					Console.instance.writeln("--> " + plugin.getKey());					
 			}
 			
-		};
-		
-		//ajout aux commmandes
-		consoleCommands.put("SHOWPLUGIN", command);
-		
-		//crï¿½ation de la commande
-		command = new Command<Console>("ADDPLUGIN") {
+		});
+
+		command.addParameter(new Parameter<Console>("ADD", "Permet d'ajouté un plug-in au server.") {
 
 			@Override
 			public void action(Console console, String[] args) {
 				if(args == null) {
-					Console.instance.writeln("Aucun argument dï¿½fini.");
+					Console.instance.writeln("Aucun argument défini. Merci d'indiquer le nom du fichier compilé.d");
 					return;
-				}		
-	
-			}
-			
-		};
+				}	
+				
+				final String name = args[0].replace(".jar", "");
+				
+				FilenameFilter filter = new FilenameFilter() {
+					@Override
+					public boolean accept(File arg0, String arg1) {
+						return arg1.equals(name + ".jar");
+					}	
+				};
+				
+				File[] files = new File("./plugins/").listFiles(filter);
+				
+				if(files != null) {		
+					for(File file : files) {
+						if(file != null) {
+							try {
+							World.data.getOtherPlugins()
+								.put(file.getName(), new PluginLoader(file));
+							} catch(Exception e) {
+								Console.instance.writeln("Erreur lors de l'execution du fichier en question.");
+							}
+						}
+					}
+				} else {
+					Console.instance.writeln("Le fichier " + name +".jar n'existe pas !");
+				}	
+			}	
+		});
 				
 		//ajout aux commmandes
-		consoleCommands.put("ADDPLUGIN", command);
-		
+		consoleCommands.put("PLUGIN", command);
 		
 		//Commande fixe HELP
-		command = new Command<Console>("HELP") {
+		command = new Command<Console>("HELP", null) {
 			
 			@Override
 			public void action(Console console, String[] args) {
-				StringBuilder commands = new StringBuilder("Liste des commandes disponibles: \n");
-				for(Command<Console> command: World.data.getConsoleCommands().values())
-					commands.append(command.getName()).append(", ");
-				Console.instance.writeln(commands.toString().substring(0,
-						commands.toString().length()-2));
+				StringBuilder commands = new StringBuilder("Liste des commandes disponibles : \n");
+				for(Command<Console> command: World.data.getConsoleCommands().values()) {
+					if(command == null || (command.getDescription() == null && command.getParameters().isEmpty()))
+						continue;
+					if(!command.getParameters().isEmpty()) {
+						for(Entry<String, Parameter<Console>> parameter : command.getParameters().entrySet()) {
+							commands.append("-> ").append(command.getName()).append(" ").append(parameter.getKey()).append((parameter.getValue().getDescription() != null ? " - " + parameter.getValue().getDescription() : "")).append("\n");
+						}
+					} else {
+						commands.append("-> ").append(command.getName()).append((command.getDescription() != null ? " - " + command.getDescription() : "")).append("\n");
+					}
+				}
+					
+				Console.instance.writeln(commands.toString().substring(0, commands.toString().length() - 2));
 			}
 			
 		};
@@ -441,8 +469,9 @@ public class Server {
 		//ajout aux commmandes
 		consoleCommands.put("HELP", command);
 		
-		//ajout des commandes dans les donnï¿½es du serveur
+		//ajout des commandes dans les donnees du serveur
 		World.data.getPlayerCommands().putAll(playerCommands);
+		World.data.getAdminCommands().putAll(Admin.initialize());
 		World.data.getConsoleCommands().putAll(consoleCommands);
 	}
 		
@@ -462,7 +491,7 @@ public class Server {
 				return file.getName().endsWith(".jar");
 			}
 		};
-
+		
 		File[] files = new File("./plugins/").listFiles(filter);
 		
 		if(files != null) {		
