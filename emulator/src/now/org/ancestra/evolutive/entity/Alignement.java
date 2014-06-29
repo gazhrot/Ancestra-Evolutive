@@ -5,7 +5,7 @@ public enum Alignement {
     BONTARIEN(1),
     BRAKMARIEN(2),
     MERCENAIRE(3);
-
+    
     /**
      * Valeur correspondante pour le client
      */
