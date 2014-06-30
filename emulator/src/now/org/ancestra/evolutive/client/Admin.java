@@ -35,6 +35,10 @@ public class Admin {
 	private boolean _TimerStart = false;
 	private Timer _timer;
 	
+	/*
+	 * String msg = StringUtils.join(args, " ");
+	 */
+	
 	public Admin(Player player) {
 		this.account = player.getAccount();
 		this.player = player;
@@ -47,10 +51,11 @@ public class Admin {
 	public static Map<String, Command<Admin>> initialize() {
 		Map<String, Command<Admin>> commands = new HashMap<>();
 		
-		Command<Admin> command = new Command<Admin>("INFOS", "", 1) {
+		Command<Admin> command = new Command<Admin>("INFOS", "", null, 1) {
 
 			@Override
 			public void action(Admin t, String[] args) {
+			
 				long uptime = System.currentTimeMillis() - Server.config.getGameServer().getStartTime();
 				int jour = (int) (uptime/(1000*3600*24));
 				uptime %= (1000*3600*24);
@@ -70,6 +75,28 @@ public class Admin {
 		};
 		
 		commands.put("INFOS", command);
+		
+		command = new Command<Admin>("WHO", "", null, 1) {
+
+			@Override
+			public void action(Admin t, String[] args) {
+				StringBuilder msg = new StringBuilder("Liste des joueurs en ligne :\n");	
+				for(GameClient client: Server.config.getGameServer().getClients().values()) {
+					Player player = client.getPlayer();
+					
+					if(player == null)
+						continue;
+					
+					msg.append(player.getName()).append(" (").append(player.getId()).append(") - ").append(player.getClasse().toString());
+					msg.append(player.getSex() == 0 ? " - M - " : " - F - ").append("Lvl ").append(player.getLevel()).append(" - ");
+					msg.append(player.getMap().getId() + "," + player.getCell().getId()).append(player.getFight() == null ? "" : " - En combat");
+					msg.append("\n");
+				}
+				t.sendText(msg.toString());
+			}
+		};
+		
+		commands.put("WHO", command);
 		
 		return commands;
 	}
@@ -140,64 +167,7 @@ public class Admin {
 		}else
 		if(command.equalsIgnoreCase("WHO"))
 		{
-			String mess = 	"==========\n"
-				+			"Liste des joueurs en ligne:";
-			SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(this.account.getGameClient(), mess);
-			for(GameClient client: Server.config.getGameServer().getClients().values()) {
-				Player P = client.getPlayer();
-				if(P == null)continue;
-				mess = P.getName()+"("+P.getId()+") ";
-				
-				switch(P.getClasse().getId())
-				{
-					case Constants.CLASS_FECA:
-						mess += "Fec";
-					break;
-					case Constants.CLASS_OSAMODAS:
-						mess += "Osa";
-					break;
-					case Constants.CLASS_ENUTROF:
-						mess += "Enu";
-					break;
-					case Constants.CLASS_SRAM:
-						mess += "Sra";
-					break;
-					case Constants.CLASS_XELOR:
-						mess += "Xel";
-					break;
-					case Constants.CLASS_ECAFLIP:
-						mess += "Eca";
-					break;
-					case Constants.CLASS_ENIRIPSA:
-						mess += "Eni";
-					break;
-					case Constants.CLASS_IOP:
-						mess += "Iop";
-					break;
-					case Constants.CLASS_CRA:
-						mess += "Cra";
-					break;
-					case Constants.CLASS_SADIDA:
-						mess += "Sad";
-					break;
-					case Constants.CLASS_SACRIEUR:
-						mess += "Sac";
-					break;
-					case Constants.CLASS_PANDAWA:
-						mess += "Pan";
-					break;
-					default:
-						mess += "Unk";
-				}
-				mess += " ";
-				mess += (P.getSex()==0?"M":"F")+" ";
-				mess += P.getLevel()+" ";
-				mess += P.getMap().getId()+"("+P.getMap().getX()+"/"+P.getMap().getY()+") ";
-				mess += P.getFight()==null?"":"Combat ";
-				SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(this.account.getGameClient(), mess);
-			}
-			mess = 	"==========\n";
-			SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(this.account.getGameClient(), mess);
+			
 			return;
 		}else
 		if(command.equalsIgnoreCase("SHOWFIGHTPOS"))

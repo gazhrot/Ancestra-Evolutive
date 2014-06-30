@@ -234,7 +234,7 @@ public class Server {
 			String name = configFile.getString("commands.players.teleport.savePos.name").toUpperCase();
 			
 			//creation de la commande
-			Command<Player> command = new Command<Player>(name, "Téléporte votre joueur à votre dernière position sauvegarder.") {
+			Command<Player> command = new Command<Player>(name, "Téléporte votre joueur à votre dernière position sauvegarder.", null) {
 				
 				@Override
 				public void action(Player player, String[] args) {
@@ -259,7 +259,7 @@ public class Server {
 			String name = configFile.getString("commands.players.save.playerSave.name").toUpperCase();
 			
 			//creation de la commande
-			Command<Player> command = new Command<Player>(name, "Sauvegarde votre joueur actuel.") {
+			Command<Player> command = new Command<Player>(name, "Sauvegarde votre joueur actuel.", null) {
 				
 				@Override
 				public void action(Player player, String[] args) {
@@ -285,7 +285,7 @@ public class Server {
 			String name = configFile.getString("commands.players.informations.serverInfos.name").toUpperCase();
 			
 			//creation de la commande
-			Command<Player> command = new Command<Player>(name, "Affiche les informations du server.") {
+			Command<Player> command = new Command<Player>(name, "Affiche les informations du server.", null) {
 				
 				@Override
 				public void action(Player player, String[] args) {
@@ -303,7 +303,7 @@ public class Server {
 			String name = configFile.getString("commands.players.list.commandList.name");
 			
 			//creation de la commande
-			Command<Player> command = new Command<Player>(name, null) {
+			Command<Player> command = new Command<Player>(name, null, null) {
 				
 				@Override
 				public void action(Player player, String[] args) {
@@ -327,7 +327,7 @@ public class Server {
 			String name = configFile.getString("commands.console.server.uptime.name").toUpperCase();
 			
 			//creation de la commande
-			Command<Console> command = new Command<Console>(name, "Affiche les informations du server.") {
+			Command<Console> command = new Command<Console>(name, "Affiche les informations du server.", null) {
 				
 				@Override
 				public void action(Console console, String[] args) {
@@ -344,7 +344,7 @@ public class Server {
 			String name = configFile.getString("commands.console.server.reboot.name").toUpperCase();
 			
 			//creation de la commande
-			Command<Console> command = new Command<Console>(name, "Sauvegarde puis ferme le server.") {
+			Command<Console> command = new Command<Console>(name, "Sauvegarde puis ferme le server.", null) {
 				
 				@Override
 				public void action(Console console, String[] args) {
@@ -365,7 +365,7 @@ public class Server {
 			String name = configFile.getString("commands.console.server.save.name").toUpperCase();
 			
 			//creation de la commande
-			Command<Console> command = new Command<Console>(name, "Sauvegarde le server.") {
+			Command<Console> command = new Command<Console>(name, "Sauvegarde le server.", null) {
 				
 				@Override
 				public void action(Console console, String[] args) {
@@ -380,13 +380,13 @@ public class Server {
 		}
 
 		//creation de la commande
-		Command<Console> command = new Command<Console>("PLUGIN", null) {
+		Command<Console> command = new Command<Console>("PLUGIN", null, "ADD|SHOW") {
 			@Override
 			public void action(Console t, String[] args) {
 				Console.instance.println("Paramètre non indiqué : ADD, SHOW");
 			}
 		};		
-		command.addParameter(new Parameter<Console>("SHOW", "Affiche les différents plug-ins actuellement actif.") {
+		command.addParameter(new Parameter<Console>("SHOW", "Affiche les différents plug-ins actuellement actif.", null) {
 
 			@Override
 			public void action(Console t, String[] args) {
@@ -403,7 +403,7 @@ public class Server {
 			
 		});
 
-		command.addParameter(new Parameter<Console>("ADD", "Permet d'ajouté un plug-in au server.") {
+		command.addParameter(new Parameter<Console>("ADD", "Permet d'ajouté un plug-in au server.", null) {
 
 			@Override
 			public void action(Console console, String[] args) {
@@ -444,7 +444,7 @@ public class Server {
 		consoleCommands.put("PLUGIN", command);
 		
 		//Commande fixe HELP
-		command = new Command<Console>("HELP", null) {
+		command = new Command<Console>("HELP", null, null) {
 			
 			@Override
 			public void action(Console console, String[] args) {

@@ -10,6 +10,7 @@ public abstract class Command<T> {
 	
 	private final String name;
 	private final String description;
+	private final String arguments;
 	private int gmLvl = 0;
     private Map<String, Parameter<T>> parameters = new HashMap<>();
     private StringBuilder successMessages = new StringBuilder();
@@ -22,9 +23,10 @@ public abstract class Command<T> {
 	 * @param name : name of the command.
 	 * @param description : the description of the command.
 	 */
-	public Command(String name, String description) {
+	public Command(String name, String description, String arguments) {
 		this.name = name.toUpperCase();
 		this.description = description;
+		this.arguments = arguments;
 	}
 	
 	/**
@@ -33,8 +35,8 @@ public abstract class Command<T> {
 	 * @param description : the description of the command.
 	 * @param gmLvl : level admin of the player requiert.
 	 */
-	public Command(String name, String description, int gmLvl) {
-		this(name, description);
+	public Command(String name, String description, String arguments, int gmLvl) {
+		this(name, description, arguments);
 		this.gmLvl = gmLvl;
 	}
 	
@@ -46,6 +48,13 @@ public abstract class Command<T> {
 		return description;
 	}
 	
+	/**
+	 * @return the arguments
+	 */
+	public String getArguments() {
+		return arguments;
+	}
+
 	public Map<String, Parameter<T>> getParameters() {
 		return parameters;
 	}
