@@ -721,7 +721,7 @@ public class Commands {
 			{
 				align = Byte.parseByte(infos[1]);
 			}catch(Exception e){};
-			if(align < Alignement.NEUTRE.getValue() || align > Alignement.MERCENAIRE.getValue())
+			if(align < Alignement.NEUTRE.getId() || align > Alignement.MERCENAIRE.getId())
 			{
 				String str = "Valeur invalide";
 				SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(_out,str);
