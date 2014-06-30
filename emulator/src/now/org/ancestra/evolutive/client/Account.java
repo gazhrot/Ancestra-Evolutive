@@ -495,12 +495,8 @@ public class Account {
 	}
 
 	
-	public boolean createPerso(String name, int sexe, int classe, int color1, int color2, int color3) {
-		Player player = Player.create(name, sexe, classe, color1, color2, color3, this);
-		if(player == null)
-			return false;
-		World.data.addPlayer(player);
-		return true;
+	public boolean createPlayer(String name, int sexe, int classe, int color1, int color2, int color3) {
+		return Player.create(name, sexe, classe, color1, color2, color3, this) != null;
 	}
 
     /**

@@ -101,63 +101,83 @@ public class Database {
 	public AccountData getAccountData() {
 		return accountData;
 	}
+	
 	public AnimationData getAnimationData() {
 		return animationData;
 	}
+	
 	public AreaData getAreaData() {
 		return areaData;
 	}
+	
 	public AreaSubData getAreaSubData() {
 		return areaSubData;
 	}
+	
 	public CharacterData getCharacterData() {
 		return characterData;
 	}
+	
 	public CollectorData getCollectorData() {
 		return collectorData;
 	}
+	
 	public HouseData getHouseData() {
 		return houseData;
 	}
+	
 	public ObjectData getItemData() {
 		return itemData;
 	}
+	
 	public ObjectSetData getObjectSetData() {
 		return objectSetData;
 	}
+	
 	public ObjectTemplateData getItemTemplateData() {
 		return itemTemplateData;
 	}
+	
 	public JobData getJobData() {
 		return jobData;
 	}
+	
 	public MapData getMapData() {
 		return mapData;
 	}
+	
 	public MonsterData getMonsterData() {
 		return monsterData;
 	}
+	
 	public MountData getMountData() {
 		return mountData;
 	}
+	
 	public MountparkData getMountparkData() {
 		return mountparkData;
 	}
+	
 	public NpcAnswerData getNpcAnswerData() {
 		return npcAnswerData;
 	}
+	
 	public NpcData getNpcData() {
 		return npcData;
 	}
+	
 	public NpcQuestionData getNpcQuestionData() {
 		return npcQuestionData;
 	}
+	
 	public NpcTemplateData getNpcTemplateData() {
 		return npcTemplateData;
 	}
+	
 	public ScriptedCellData getScriptedCellData() {
 		return scriptedCellData;
 	}
+	
 	public SpellData getSpellData() {
 		return spellData;
 	}

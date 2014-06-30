@@ -61,7 +61,7 @@ public class AddCharacter implements PacketParser {
 			SocketManager.GAME_SEND_NAME_ALREADY_EXIST(client);
 		else if(client.getAccount().getPlayers().size() >= Server.config.getMaxPlayersPerAccount())
 			SocketManager.GAME_SEND_CREATE_PERSO_FULL(client);
-		else if(client.getAccount().createPerso(infos[0], Integer.parseInt(infos[2]), Integer.parseInt(infos[1]),
+		else if(client.getAccount().createPlayer(infos[0], Integer.parseInt(infos[2]), Integer.parseInt(infos[1]),
 				Integer.parseInt(infos[3]), Integer.parseInt(infos[4]),	Integer.parseInt(infos[5]))) {
 			SocketManager.GAME_SEND_CREATE_OK(client);
             client.send(client.getAccount().getAccountHelper().getPlayersList());

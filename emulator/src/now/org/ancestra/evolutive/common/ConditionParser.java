@@ -12,7 +12,7 @@ public class ConditionParser {
 	public static boolean validConditions(Player perso, String req) {
 		if(req == null)
 			return true;
-		if(req.equals(""))
+		if(req.isEmpty())
 			return true;
 		if(req.contains("BI") )
 			return false;

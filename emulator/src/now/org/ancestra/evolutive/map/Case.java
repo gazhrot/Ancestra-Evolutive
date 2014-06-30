@@ -358,8 +358,6 @@ public class Case {
 				logger.info("Case.startAction non definie pour l'actionID = "+actionID);
 			break;
 		}
-		if(perso.getAccount().getGameClient().getActions().containsKey(GA.getId()))
-			perso.getAccount().getGameClient().getActions().remove(GA.getId());
 	}
 	
 	public void finishAction(Player perso, GameAction GA){
@@ -413,9 +411,10 @@ public class Case {
 	}
 	
 	public boolean canDoAction(int id){
-        if(this.interactiveObject == null) return false;
-		switch(id)
-		{
+        if(this.interactiveObject == null) 
+        	return false;
+        
+		switch(id) {
 			//Moudre et egrenner - Paysan
 			case 122:
 			case 47:

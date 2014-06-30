@@ -74,7 +74,7 @@ public class Player extends Creature {
 	private PlayerExchange curExchange;
 	
 	/** Alignement **/
-	private Alignement align = Alignement.NEUTRE;
+	private Alignement align;
 	private int deshonor = 0;
 	private int honor = 0;
 	private boolean showWings = false;
@@ -1940,18 +1940,24 @@ public class Player extends Creature {
 		return nb;
 	}
 
-	public void startActionOnCell(GameAction GA)
-	{ 
+	public void startActionOnCell(GameAction GA) { 
 		int cellID = -1;
 		int action = -1;
+		
 		try	{
-			cellID = Integer.parseInt(GA.getArgs().split(";")[0]);
-			action = Integer.parseInt(GA.getArgs().split(";")[1]);
+			cellID = Integer.parseInt(GA.getArgs().split("\\;")[0]);
+			action = Integer.parseInt(GA.getArgs().split("\\;")[1]);
 		} catch(Exception e) {}
-		if(cellID == -1 || action == -1)return;
-		//Si case invalide
-		if(!this.getMap().getCases().get(cellID).canDoAction(action))return;
-		this.getMap().getCases().get(cellID).startAction(this,GA);
+		
+		if(cellID == -1 || action == -1)
+			return;
+		if(!this.getMap().getCases().get(cellID).canDoAction(action))
+			return;
+		
+		this.getMap().getCases().get(cellID).startAction(this, GA);
+		
+		if(this.getAccount().getGameClient().getActions().containsKey(GA.getId()))
+			this.getAccount().getGameClient().getActions().remove(GA.getId());
 	}
 
 	public void finishActionOnCell(GameAction GA)

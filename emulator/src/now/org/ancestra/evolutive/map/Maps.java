@@ -23,6 +23,24 @@ import java.util.*;
 import java.util.Map.Entry;
 
 public class Maps {
+    private static Timer timer = new Timer();
+
+    static class moveMobs extends TimerTask{
+        private static int i = 0;
+        @Override
+        public void run() {
+            for(Maps map : World.data.getMaps().values()) {
+                ArrayList<MobGroup> mobs = new ArrayList<>(map.getMobGroups().values());
+                MobGroup mob = mobs.get(i%mobs.size());
+                mob.setPosition(map,map.getRandomNearFreeCell(mob.getCell(),5,25));
+                i++;
+                i = i%50;
+            }
+        }
+    }
+    static {
+        timer.scheduleAtFixedRate(new moveMobs(), 50000, 50000);
+    }
 	
 	private final int id;
 	private final String date;
@@ -38,7 +56,7 @@ public class Maps {
 	private int nextFreeId = -1;
 	private SubArea subArea;
 	private MountPark mountPark;
-    Timer timer = new Timer();
+
 
     private ArrayList<Entity> entities = new ArrayList<>();
 	private Map<Integer, Npc> npcs = new TreeMap<>();
@@ -83,9 +101,6 @@ public class Maps {
 			return;
 
 		refreshSpawns();
-
-        timer.scheduleAtFixedRate(new moveMobs(),50000,50000);
-
 	}
 	
 	public Maps(int id, String date, byte width, byte height, String key, String places) {
@@ -99,17 +114,7 @@ public class Maps {
         logger = (Logger) LoggerFactory.getLogger("maps." + id);
 	}
 
-    class moveMobs extends TimerTask{
 
-
-        @Override
-        public void run() {
-            for(MobGroup mob : mobGroups.values()){
-
-                mob.setCell(getRandomNearFreeCell(mob.getCell(),5,20));
-            }
-        }
-    }
 
     //region Getters and Setters
     public String getDate() {

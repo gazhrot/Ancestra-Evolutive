@@ -202,6 +202,10 @@ public class World {
 		return map;
 	}
 
+    public Map<Integer, Maps> getMaps(){
+        return maps;
+    }
+
 	public void addMap(Maps map) {
 		if (!maps.containsKey(map.getId()))
 			maps.put(map.getId(), map);

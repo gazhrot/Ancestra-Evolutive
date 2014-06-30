@@ -63,23 +63,6 @@ public class Main {
 	}
 
 	public static void closeServers() {
-		World.data.getWorker().execute(new Runnable() {
-			@Override
-			public void run() {
-				if(Server.config.isRunning()) {
-					Console.instance.writeln(" <> Fermeture du jeu <>");
-					Server.config.setRunning(false);
-					Server.config.getRealmServer().close();
-					Server.config.getGameServer().close();
-					World.data.saveData(-1);
-					World.database.getAccountData().updateState(false);
-					for(PluginLoader pl: World.data.getOtherPlugins().values())
-						pl.disable();
-					Console.instance.writeln(" <> Redemmarage <>");
-				}
-			}
-		});
-
         Console.instance.writeln(" <> Fermeture du jeu <>");
         Server.config.setRunning(false);
         if(Server.config.getRealmServer() != null)Server.config.getRealmServer().close();
