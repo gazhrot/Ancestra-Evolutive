@@ -19,8 +19,9 @@ import org.ancestra.evolutive.map.MountPark;
 import org.ancestra.evolutive.object.ObjectSet;
 import org.ancestra.evolutive.object.Object;
 import org.ancestra.evolutive.object.ObjectTemplate;
-import org.ancestra.evolutive.other.Action;
 import org.ancestra.evolutive.tool.command.Command;
+import org.ancestra.evolutive.tool.command.Parameter;
+import org.apache.commons.lang.StringUtils;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -44,6 +45,14 @@ public class Admin {
 		this.player = player;
 	}
 	
+	public Account getAccount() {
+		return account;
+	}
+	
+	public Player getPlayer() {
+		return player;
+	}
+	
 	public int getGmLvl() {
 		return account.getGmLvl();
 	}
@@ -51,22 +60,14 @@ public class Admin {
 	public static Map<String, Command<Admin>> initialize() {
 		Map<String, Command<Admin>> commands = new HashMap<>();
 		
-		Command<Admin> command = new Command<Admin>("INFOS", "", null, 1) {
+		/** GM LEVEL N°1 **/
+		
+		Command<Admin> command = new Command<Admin>("INFOS", "Affiche les informations concernant le server.", null, 1) {
 
 			@Override
 			public void action(Admin t, String[] args) {
-			
-				long uptime = System.currentTimeMillis() - Server.config.getGameServer().getStartTime();
-				int jour = (int) (uptime/(1000*3600*24));
-				uptime %= (1000*3600*24);
-				int hour = (int) (uptime/(1000*3600));
-				uptime %= (1000*3600);
-				int min = (int) (uptime/(1000*60));
-				uptime %= (1000*60);
-				int sec = (int) (uptime/(1000));
-				
 				String msg =	"===========\n"+EmulatorInfos.SOFT_NAME.toString()
-					+			"\nUptime: "+jour+"j "+hour+"h "+min+"m "+sec+"s\n"
+					+			"\nUptime: "+ EmulatorInfos.uptime() +"\n"
 					+			"Joueurs en lignes: "+Server.config.getGameServer().getPlayerNumber()+"\n"
 					+			"Record de connexion: "+Server.config.getGameServer().getMaxPlayer()+"\n"
 					+			"===========";
@@ -76,7 +77,7 @@ public class Admin {
 		
 		commands.put("INFOS", command);
 		
-		command = new Command<Admin>("WHO", "", null, 1) {
+		command = new Command<Admin>("WHO", "Affiche tout les joueurs en ligne.", null, 1) {
 
 			@Override
 			public void action(Admin t, String[] args) {
@@ -97,6 +98,372 @@ public class Admin {
 		};
 		
 		commands.put("WHO", command);
+		
+		command = new Command<Admin>("REFRESHMOBS", "Raffraichis les monstres sur la carte où vous êtes.", null, 1) {
+
+			@Override
+			public void action(Admin t, String[] args) {
+				t.getPlayer().getMap().refreshSpawns();
+				t.sendText("Les monstres ont été rechargé avec succès !");
+			}
+		};
+		
+		commands.put("REFRESHMOBS", command);
+		
+		command = new Command<Admin>("MAPINFOS", "Affiche les pnjs et monstres présent sur la carte où vous êtes.", null, 1) {
+
+			@Override
+			public void action(Admin t, String[] args) {
+				t.sendText("Liste des pnjs de la carte :\n");
+				Maps map = t.getPlayer().getMap();
+				
+				for(Entry<Integer, Npc> entry : map.getNpcs().entrySet())
+					t.sendText("Id: " + entry.getKey() + " | T:" + entry.getValue().getTemplate().getId() + " | Cell : " + entry.getValue().getCell().getId() + " | Question : " + entry.getValue().getTemplate().getInitQuestion() + "\n");
+
+				t.sendText("Liste des groupes de monstres :\n");
+				
+				for(Entry<Integer, MobGroup> entry : map.getMobGroups().entrySet())
+					t.sendText("Id: " + entry.getKey() + " | Cell : " + entry.getValue().getCell().getId() + " | " + entry.getValue().getAlignement() + " | Taille : " + entry.getValue().getMobs().size());
+			}
+		};
+		
+		commands.put("MAPINFOS", command);
+		
+		command = new Command<Admin>("GUILD", null, "CREATE", 1) {
+
+			@Override
+			public void action(Admin t, String[] args) {
+				
+			}
+		};
+		
+		command.addParameter(new Parameter<Admin>("CREATE", "Ouvre le panneaux de création de guilde.", "PLAYER*") {
+
+			@Override
+			public void action(Admin t, String[] args) {
+				Player player = t.getPlayer();
+
+				if(args.length > 0)
+					player = World.data.getPlayerByName(args[0]);
+				
+				if(player == null) {
+					t.sendText("Le joueur en question n'existe pas.");
+					return;
+				}
+				
+				if(!player.isOnline()) {
+					t.sendText("Le joueur en question n'est pas en ligne.");
+					return;
+				}
+				
+				if(player.getGuild() != null || player.getGuildMember() != null) {
+					t.sendText("Le joueur en question appartient déjà à une guilde.");
+					return;
+				}
+				
+				SocketManager.GAME_SEND_gn_PACKET(player);
+				t.sendText("Vous venez d'ouvrir le panneau de création de guilde au joueur " + player.getName() + " !");
+			}
+		
+		});
+		
+		commands.put("GUILD", command);
+		
+		command = new Command<Admin>("TP", "Permet la téléportation d'un joueur à une carte et une cellule indiqué.", "MAP,CELL,PLAYER*", 1) {
+
+			@Override
+			public void action(Admin t, String[] args) {
+				int map = -1;
+				int cell = -1;
+				
+				try {
+					map = Integer.parseInt(args[0]);
+					cell = Integer.parseInt(args[1]);
+				} catch(Exception e) {}
+				
+				if(map == -1 || cell == -1 || World.data.getMap(map) == null) {
+					t.sendText("Les paramètres indiqués sont invalides !");
+					return;
+				}
+				
+				if(World.data.getMap(map).getCases().get(cell) == null)	{
+					t.sendText("Les paramètres indiqués sont invalides !");
+					return;
+				}
+				
+				Player player = t.getPlayer();
+				
+				if(args.length > 2) {
+					player = World.data.getPlayerByName(args[2]);
+					if(player == null  || player.getFight() != null) {
+						t.sendText("Le joueur en question n'existe pas ou est actuellement en combat.");
+						return;
+					}
+				}
+				player.setPosition(map, cell);
+				t.sendText("Le joueur " +player.getName() + " a été téléporter avec succès !");			
+			}
+		};
+		
+		commands.put("TP", command);
+		
+		command = new Command<Admin>("ANNOUNCE", "Permet d'afficher une annonce à tout les joueurs du server.", "MESSAGE", 1) {
+
+			@Override
+			public void action(Admin t, String[] args) {
+				String msg = StringUtils.join(args, " ");
+				
+				if(msg.isEmpty() || msg.equals(" "))
+					return;
+				
+				String prefix = "["+t.getPlayer().getName()+"] : ";
+				SocketManager.GAME_SEND_MESSAGE_TO_ALL(prefix + msg, Server.config.getMotdColor());
+			}
+		};
+		
+		commands.put("ANNOUNCE", command);
+		
+		command = new Command<Admin>("GONAME", "Permet la téléportation d'un joueur à un autre.", "TARGET,ToPLAYER*", 1) {
+
+			@Override
+			public void action(Admin t, String[] args) {
+				Player target = World.data.getPlayerByName(args[0]);
+				
+				if(target == null) {
+					t.sendText("Le joueur " + args[0] + " n'existe pas.");
+					return;
+				}
+				if(target.getFight() != null) {
+					t.sendText("Le joueur " + target.getName() + " est en combat.");
+					return;
+				}
+				
+				Player player = t.getPlayer();
+				if(args.length > 1) {
+					player = World.data.getPlayerByName(args[1]);
+					if(player == null) {
+						t.sendText("Le joueur " + args[1] + " n'existe pas.");
+						return;
+					}
+				}
+				
+				if(player.isOnline()) {
+					target.setPosition(player.getMap().getId(), player.getCell().getId());
+					t.sendText("Le joueur " + target.getName() + " a été téléporter avec succès.");
+				} else {
+					t.sendText("Le joueur " + player.getName() + " n'est pas en ligne.");
+				}
+			}
+		};
+		
+		commands.put("GONAME", command);
+		
+		command = new Command<Admin>("TOOGLEAGGRO", "Active ou désactive la possibilité d'aggresion du joueur venu des autres joueurs.", "PLAYER*", 1) {
+
+			@Override
+			public void action(Admin t, String[] args) {
+				Player player = t.getPlayer();
+				
+				if(args.length > 0) {
+					player = World.data.getPlayerByName(args[0]);
+					if(player == null) {
+						t.sendText("Le joueur " + args[1] + " n'existe pas.");
+						return;
+					}
+				}
+				
+				if(player == null) {
+					t.sendText("Le joueur " + args[1] + " n'existe pas.");
+					return;
+				}
+				
+				player.setCanAggro(!player.isCanAggro());
+	
+				if(!player.isOnline()) {
+					t.sendText("Le joueur " + player.getName() + " n'est pas en ligne.");
+				} else {
+					t.sendText("Le joueur " + player.getName() + (player.isCanAggro() ? "ne peut être aggresser." : " peut être aggresser."));
+				}
+			}
+		};
+		
+		commands.put("TOOGLEAGGRO", command);
+		
+		/** GM LEVEL N°2 **/
+		
+		command = new Command<Admin>("FIGHTPOS", null, "SHOW|ADD|DEL|DELALL", 2) {
+
+			@Override
+			public void action(Admin t, String[] args) {
+				t.sendText("Paramètre non indiqué : SHOW, ADD, DEL, DELALL");
+			}
+		};
+		
+		command.addParameter(new Parameter<Admin>("SHOW", "Affiche la totalité des positions de combat de la carte.", null) {
+
+			@Override
+			public void action(Admin t, String[] args) {
+				StringBuilder msg = new StringBuilder("Liste des cellules de combat :\n");
+				String places = t.getPlayer().getMap().getPlaces();
+				
+				if(places.indexOf('|') == -1 || places.length() < 2) {
+					t.sendText("Les places n'ont pas été définie.");
+					return;
+				}
+				
+				String team0 = "", team1 = "";
+				
+				try {
+					team0 = places.split("\\|")[0];
+				} catch(Exception e) {}
+				try {
+					team1 = places.split("\\|")[1];
+				} catch(Exception e) {}
+				
+				msg.append("Team 0 :\n");
+				for(int i = 0; i <= team0.length() - 2; i += 2)
+					msg.append(CryptManager.cellCode_To_ID(team0.substring(i, i + 2))).append(" , ");
+				
+				msg.append("\nTeam 1 :\n");
+				for(int i = 0; i <= team1.length() - 2; i += 2)
+					msg.append(CryptManager.cellCode_To_ID(team1.substring(i, i + 2))).append(" , ");
+				
+				t.sendText(msg.toString());
+			}
+		});
+		
+		command.addParameter(new Parameter<Admin>("ADD", "Ajoute une cellule de combat sur la case où vous êtes ou une case indiqué.", "TEAM") {
+
+			@Override
+			public void action(Admin t, String[] args) {
+				int team = -1;
+				int cell = -1;
+				try {
+					team = Integer.parseInt(args[0]);
+					cell = Integer.parseInt(args[1]);
+				} catch(Exception e) {}
+				
+				if(team < 0 || team > 1) {
+					t.sendText("La valeur de l'équipe (0 ou 1) est inccorecte.");
+					return;
+				}
+				
+				if(cell < 0 || t.getPlayer().getMap().getCases().get(cell) == null)
+					cell = t.getPlayer().getCell().getId();
+				if(!t.getPlayer().getMap().getCases().get(cell).isWalkable(true))
+					cell = t.getPlayer().getCell().getId();
+				
+				boolean already = false;
+				String team0 = "",team1 = "", places = t.getPlayer().getMap().getPlaces();
+				
+				try	{
+					team0 = places.split("\\|")[0];
+				} catch(Exception e) {}
+				try	{
+					team1 = places.split("\\|")[1];
+				} catch(Exception e) {}
+				
+				for(int a = 0; a <= team0.length() - 2; a += 2)
+					if(cell == CryptManager.cellCode_To_ID(team0.substring(a, a + 2)))
+						already = true;
+				for(int a = 0; a <= team1.length() - 2; a += 2)
+					if(cell == CryptManager.cellCode_To_ID(team1.substring(a, a + 2)))
+						already = true;
+				if(already) {
+					t.sendText("La case comporte déjà une cellule de combat.");
+					return;
+				}
+				
+				if(team == 0)
+					team0 += CryptManager.cellID_To_Code(cell);
+				else if(team == 1)
+					team1 += CryptManager.cellID_To_Code(cell);
+								
+				t.getPlayer().getMap().setPlaces(team0 + "|" + team1);
+				
+				if(!World.database.getMapData().update(t.getPlayer().getMap()))
+					return;
+				
+				t.sendText("Une cellule de combat a été ajouter sur la case " + cell + ".");	
+			}
+			
+		});
+
+		command.addParameter(new Parameter<Admin>("DEL", "Supprime une cellule de combat sur la case où vous êtes ou une case indiqué.", "TEAM") {
+
+			@Override
+			public void action(Admin t, String[] args) {
+				int cell = -1;
+				
+				try	{
+					cell = Integer.parseInt(args[1]);
+				} catch(Exception e) {}
+				
+				if(cell < 0 || t.getPlayer().getMap().getCases().get(cell) == null)
+					cell = t.getPlayer().getCell().getId();
+		
+				String[] places = t.getPlayer().getMap().getPlaces().split("\\|");
+				String newPlaces = "", team0 = "", team1 = "";
+				
+				try	{
+					team0 = places[0];
+				} catch(Exception e) {}
+				try	{
+					team1 = places[1];
+				} catch(Exception e) {}
+				
+				for(int a = 0; a <= team0.length() - 2; a += 2)	{
+					String c = places[0].substring(a, a + 2);
+					if(cell == CryptManager.cellCode_To_ID(c))
+						continue;
+					newPlaces += c;
+				}
+				
+				newPlaces += "|";
+				
+				for(int a = 0; a <= team1.length() - 2; a += 2) {
+					String c = places[1].substring(a,a+2);
+					if(cell == CryptManager.cellCode_To_ID(c))
+						continue;
+					newPlaces += c;
+				}
+				
+				t.getPlayer().getMap().setPlaces(newPlaces);
+				
+				if(!World.database.getMapData().update(t.getPlayer().getMap()))
+					return;
+
+				t.sendText("Une cellule de combat a été supprimer sur la case " + cell + ".");	
+			}
+			
+		});
+		
+		command.addParameter(new Parameter<Admin>("DELALL", "Supprime toute les cellules de combat sur la carte où vous êtes.", null) {
+
+			@Override
+			public void action(Admin t, String[] args) {
+				t.getPlayer().getMap().setPlaces("|");
+				
+				if(!World.database.getMapData().update(t.getPlayer().getMap()))
+					return;
+
+				t.sendText("Toute les cellules de combat ont été supprimer avec succès.");	
+			}
+
+		});
+		
+		commands.put("FIGHTPOS", command);
+		
+		command = new Command<Admin>("aaaaaaaaaaaaaaa", "", null, 1) {
+
+			@Override
+			public void action(Admin t, String[] args) {
+				
+			}
+		};
+		
+		commands.put("aaaaaaaaaaaaaaaaa", command);
+	
 		
 		return commands;
 	}
@@ -126,55 +493,18 @@ public class Admin {
 	    return new Timer(60000, action);//60000
 	}
 	
-	public void commandGmOne(String command, String[] infos, String msg)
+	/*public void commandGmOne(String command, String[] infos, String msg)
 	{
 		if(this.account.getGmLvl() < 1)
 		{
 			this.account.getGameClient().closeSocket();
 			return;
 		}
-		if(command.equalsIgnoreCase("INFOS"))
-		{
-			
-		}else
-		if(command.equalsIgnoreCase("REFRESHMOBS"))
-		{
-			this.player.getMap().refreshSpawns();
-			String mess = "Mob Spawn refreshed!";
-			SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(this.account.getGameClient(), mess);
-			return;
-		}if(command.equalsIgnoreCase("MAPINFO"))
-		{
-			String mess = 	"==========\n"
-						+	"Liste des Npcs de la carte:";
-			SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(this.account.getGameClient(), mess);
-			Maps map = this.player.getMap();
-			for(Entry<Integer, Npc> entry : map.getNpcs().entrySet())
-			{
-				mess = entry.getKey()+" "+entry.getValue().getTemplate().getId()+" "+entry.getValue().getCell().getId()+" "+entry.getValue().getTemplate().getInitQuestion();
-				SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(this.account.getGameClient(), mess);
-			}
-			mess = "Liste des groupes de monstres:";
-			SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(this.account.getGameClient(), mess);
-			for(Entry<Integer, MobGroup> entry : map.getMobGroups().entrySet())
-			{
-				mess = entry.getKey()+" "+entry.getValue().getCell().getId()+" "+entry.getValue().getAlignement()+" "+entry.getValue().getMobs().size();
-				SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(this.account.getGameClient(), mess);
-			}
-			mess = "==========";
-			SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(this.account.getGameClient(), mess);
-			return;
-		}else
-		if(command.equalsIgnoreCase("WHO"))
-		{
-			
-			return;
-		}else
 		if(command.equalsIgnoreCase("SHOWFIGHTPOS"))
 		{
 			String mess = "Liste des StartCell [teamID][cellID]:";
 			SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(this.account.getGameClient(), mess);
-			String places = this.player.getMap().getPlaces();
+			String places = t.getPlayer().getMap().getPlaces();
 			if(places.indexOf('|') == -1 || places.length() <2)
 			{
 				mess = "Les places n'ont pas ete definies";
@@ -206,293 +536,7 @@ public class Admin {
 			}
 			SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(this.account.getGameClient(), mess);
 			return;
-		}else
-		if(command.equalsIgnoreCase("CREATEGUILD"))
-		{
-			Player perso = this.player;
-			if(infos.length >1)
-			{
-				perso = World.data.getPlayerByName(infos[1]);
-			}
-			if(perso == null)
-			{
-				String mess = "Le personnage n'existe pas.";
-				SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(this.account.getGameClient(),mess);
-				return;
-			}
-			
-			if(!perso.isOnline())
-			{
-				String mess = "Le personnage "+perso.getName()+" n'etait pas connecte";
-				SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(this.account.getGameClient(),mess);
-				return;
-			}
-			if(perso.getGuild() != null || perso.getGuildMember() != null)
-			{
-				String mess = "Le personnage "+perso.getName()+" a deja une guilde";
-				SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(this.account.getGameClient(),mess);
-				return;
-			}
-			SocketManager.GAME_SEND_gn_PACKET(perso);
-			String mess = perso.getName()+": Panneau de creation de guilde ouvert";
-			SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(this.account.getGameClient(),mess);
-			return;
-		}else
-		if(command.equalsIgnoreCase("TOOGLEAGGRO"))
-		{
-			Player perso = this.player;
-			
-			String name = null;
-			try
-			{
-				name = infos[1];
-			}catch(Exception e){};
-			
-			perso = World.data.getPlayerByName(name);
-			
-			if(perso == null)
-			{
-				String mess = "Le personnage n'existe pas.";
-				SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(this.account.getGameClient(),mess);
-				return;
-			}
-			
-			perso.setCanAggro(!perso.isCanAggro());
-			String mess = perso.getName();
-			if(perso.isCanAggro()) mess += " peut maintenant etre aggresser";
-			else mess += " ne peut plus etre agresser";
-			SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(this.account.getGameClient(),mess);
-			
-			if(!perso.isOnline())
-			{
-				mess = "(Le personnage "+perso.getName()+" n'etait pas connecte)";
-				SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(this.account.getGameClient(),mess);
-			}
-		}else
-		if(command.equalsIgnoreCase("ANNOUNCE"))
-		{
-			infos = msg.split(" ",2);
-			SocketManager.GAME_SEND_MESSAGE_TO_ALL(infos[1], Server.config.getMotdColor());
-			return;
-		}else
-		if(command.equalsIgnoreCase("DEMORPH"))
-		{
-			Player target = this.player;
-			if(infos.length > 1)//Si un nom de perso est spï¿½cifiï¿½
-			{
-				target = World.data.getPlayerByName(infos[1]);
-				if(target == null)
-				{
-					String str = "Le personnage n'a pas ete trouve";
-					SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(this.account.getGameClient(),str);
-					return;
-				}
-			}
-			int morphID = target.getClasse().getId()*10 + target.getSex();
-			target.setGfx(morphID);
-			SocketManager.GAME_SEND_ERASE_ON_MAP_TO_MAP(target.getMap(), target.getId());
-			SocketManager.GAME_SEND_ADD_PLAYER_TO_MAP(target.getMap(), target);
-			String str = "Le joueur a ete transforme";
-			SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(this.account.getGameClient(),str);
-		}
-		else
-		if(command.equalsIgnoreCase("GONAME") || command.equalsIgnoreCase("JOIN"))
-		{
-			Player P = World.data.getPlayerByName(infos[1]);
-			if(P == null)
-			{
-				String str = "Le personnage n'existe pas";
-				SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(this.account.getGameClient(),str);
-				return;
-			}
-			int mapID = P.getMap().getId();
-			int cellID = P.getCell().getId();
-			
-			Player target = this.player;
-			if(infos.length > 2)//Si un nom de perso est spï¿½cifiï¿½
-			{
-				target = World.data.getPlayerByName(infos[2]);
-				if(target == null)
-				{
-					String str = "Le personnage n'a pas ete trouve";
-					SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(this.account.getGameClient(),str);
-					return;
-				}
-				if(target.getFight() != null)
-				{
-					String str = "La cible est en combat";
-					SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(this.account.getGameClient(),str);
-					return;
-				}
-			}
-			target.setPosition(mapID, cellID);
-			String str = "Le joueur a ete teleporte";
-			SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(this.account.getGameClient(),str);
-		}else
-		if(command.equalsIgnoreCase("NAMEGO"))
-		{
-			Player target = World.data.getPlayerByName(infos[1]);
-			if(target == null)
-			{
-				String str = "Le personnage n'existe pas";
-				SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(this.account.getGameClient(),str);
-				return;
-			}
-			if(target.getFight() != null)
-			{
-				String str = "La cible est en combat";
-				SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(this.account.getGameClient(),str);
-				return;
-			}
-			Player P = this.player;
-			if(infos.length > 2)//Si un nom de perso est spï¿½cifiï¿½
-			{
-				P = World.data.getPlayerByName(infos[2]);
-				if(P == null)
-				{
-					String str = "Le personnage n'a pas ete trouve";
-					SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(this.account.getGameClient(),str);
-					return;
-				}
-			}
-			if(P.isOnline())
-			{
-				int mapID = P.getMap().getId();
-				int cellID = P.getCell().getId();
-				target.setPosition(mapID, cellID);
-				String str = "Le joueur a ete teleporte";
-				SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(this.account.getGameClient(),str);
-			}else
-			{
-				String str = "Le joueur n'est pas en ligne";
-				SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(this.account.getGameClient(),str);
-			}
-		}else
-		if(command.equalsIgnoreCase("NAMEANNOUNCE"))
-		{
-			infos = msg.split(" ",2);
-			String prefix = "["+this.player.getName()+"]";
-			SocketManager.GAME_SEND_MESSAGE_TO_ALL(prefix+infos[1], Server.config.getMotdColor());
-			return;
-		}else
-		if(command.equalsIgnoreCase("TELEPORT"))
-		{
-			short mapID = -1;
-			int cellID = -1;
-			try
-			{
-				mapID = Short.parseShort(infos[1]);
-				cellID = Integer.parseInt(infos[2]);
-			}catch(Exception e){};
-			if(mapID == -1 || cellID == -1 || World.data.getMap(mapID) == null)
-			{
-				String str = "MapID ou cellID invalide";
-				SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(this.account.getGameClient(),str);
-				return;
-			}
-			if(World.data.getMap(mapID).getCases().get(cellID) == null)
-			{
-				String str = "MapID ou cellID invalide";
-				SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(this.account.getGameClient(),str);
-				return;
-			}
-			Player target = this.player;
-			if(infos.length > 3)//Si un nom de perso est spï¿½cifiï¿½
-			{
-				target = World.data.getPlayerByName(infos[3]);
-				if(target == null  || target.getFight() != null)
-				{
-					String str = "Le personnage n'a pas ete trouve ou est en combat";
-					SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(this.account.getGameClient(),str);
-					return;
-				}
-			}
-			target.setPosition(mapID, cellID);
-			String str = "Le joueur a ete teleporte";
-			SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(this.account.getGameClient(),str);
-		}else
-		if(command.equalsIgnoreCase("GOMAP"))
-		{
-			int mapX = 0;
-			int mapY = 0;
-			int cellID = 0;
-			int cont = 0;
-			try
-			{
-				mapX = Integer.parseInt(infos[1]);
-				mapY = Integer.parseInt(infos[2]);
-				cellID = Integer.parseInt(infos[3]);
-				cont = Integer.parseInt(infos[4]);
-				
-			}catch(Exception e){};
-			Maps map = World.database.getMapData().loadMapByPos(mapX, mapY, cont);
-			if(map == null)
-			{
-				String str = "Position ou continent invalide";
-				SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(this.account.getGameClient(),str);
-				return;
-			}
-			if(map.getCases().get(cellID) == null)
-			{
-				String str = "CellID invalide";
-				SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(this.account.getGameClient(),str);
-				return;
-			}
-			Player target = this.player;
-			if(infos.length > 5)//Si un nom de perso est spï¿½cifiï¿½
-			{
-				target = World.data.getPlayerByName(infos[5]);
-				if(target == null || target.getFight() != null)
-				{
-					String str = "Le personnage n'a pas ete trouve ou est en combat";
-					SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(this.account.getGameClient(),str);
-					return;
-				}
-				if(target.getFight() != null)
-				{
-					String str = "La cible est en combat";
-					SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(this.account.getGameClient(),str);
-					return;
-				}
-			}
-			target.setPosition(map.getId(), cellID);
-			String str = "Le joueur a ete teleporte";
-			SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(this.account.getGameClient(),str);
-		}else
-		if(command.equalsIgnoreCase("DOACTION"))
-		{
-			//DOACTION NAME TYPE ARGS COND
-			if(infos.length < 4)
-			{
-				String mess = "Nombre d'argument de la commande incorect !";
-				SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(this.account.getGameClient(),mess);
-				return;
-			}
-			int type = -100;
-			String args = "",cond = "";
-			Player perso = this.player;
-			try
-			{
-				perso = World.data.getPlayerByName(infos[1]);
-				if(perso == null)perso = this.player;
-				type = Integer.parseInt(infos[2]);
-				args = infos[3];
-				if(infos.length >4)
-				cond = infos[4];
-			}catch(Exception e)
-			{
-				String mess = "Arguments de la commande incorect !";
-				SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(this.account.getGameClient(),mess);
-				return;
-			}
-			(new Action(type,args,cond)).apply(perso, null, -1, -1);
-			String mess = "Action effectuee !";
-			SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(this.account.getGameClient(),mess);
-		}else
-		{
-			String mess = "Commande non reconnue";
-			SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(this.account.getGameClient(),mess);
-		}
+		}		
 	}
 	
 	public void commandGmTwo(String command, String[] infos, String msg)
@@ -505,7 +549,7 @@ public class Admin {
 		
 		if(command.equalsIgnoreCase("MUTE"))
 		{
-			Player perso = this.player;
+			Player perso = t.getPlayer();
 			String name = null;
 			try
 			{
@@ -546,7 +590,7 @@ public class Admin {
 		}else
 		if(command.equalsIgnoreCase("UNMUTE"))
 		{
-			Player perso = this.player;
+			Player perso = t.getPlayer();
 			
 			String name = null;
 			try
@@ -574,7 +618,7 @@ public class Admin {
 		}else
 		if(command.equalsIgnoreCase("KICK"))
 		{
-			Player perso = this.player;
+			Player perso = t.getPlayer();
 			String name = null;
 			try
 			{
@@ -612,7 +656,7 @@ public class Admin {
 				SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(this.account.getGameClient(),str);
 				return;
 			}
-			Player target = this.player;
+			Player target = t.getPlayer();
 			if(infos.length > 2)//Si un nom de perso est spï¿½cifiï¿½
 			{
 				target = World.data.getPlayerByName(infos[2]);
@@ -641,7 +685,7 @@ public class Admin {
 				SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(this.account.getGameClient(),str);
 				return;
 			}
-			Player target = this.player;
+			Player target = t.getPlayer();
 			if(infos.length > 2)//Si un nom de perso est spï¿½cifiï¿½
 			{
 				target = World.data.getPlayerByName(infos[2]);
@@ -671,7 +715,7 @@ public class Admin {
 				SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(this.account.getGameClient(),str);
 				return;
 			}
-			Player target = this.player;
+			Player target = t.getPlayer();
 			if(infos.length > 2)//Si un nom de perso est spï¿½cifiï¿½
 			{
 				target = World.data.getPlayerByName(infos[2]);
@@ -714,7 +758,7 @@ public class Admin {
 			{
 				honor = Integer.parseInt(infos[1]);
 			}catch(Exception e){};
-			Player target = this.player;
+			Player target = t.getPlayer();
 			if(infos.length > 2)//Si un nom de perso est spï¿½cifiï¿½
 			{
 				target = World.data.getPlayerByName(infos[2]);
@@ -751,7 +795,7 @@ public class Admin {
 				SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(this.account.getGameClient(),str);
 				return;
 			}
-				Player target = this.player;
+				Player target = t.getPlayer();
 			if(infos.length > 3)//Si un nom de perso est spï¿½cifiï¿½
 			{
 				target = World.data.getPlayerByName(infos[3]);
@@ -788,7 +832,7 @@ public class Admin {
 				SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(this.account.getGameClient(),str);
 				return;
 			}
-			Player target = this.player;
+			Player target = t.getPlayer();
 			if(infos.length > 2)//Si un nom de perso est spï¿½cifiï¿½
 			{
 				target = World.data.getPlayerByName(infos[2]);
@@ -818,7 +862,7 @@ public class Admin {
 				SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(this.account.getGameClient(),str);
 				return;
 			}
-			Player target = this.player;
+			Player target = t.getPlayer();
 			if(infos.length > 2)//Si un nom de perso est spï¿½cifiï¿½
 			{
 				target = World.data.getPlayerByName(infos[2]);
@@ -847,7 +891,7 @@ public class Admin {
 				SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(this.account.getGameClient(),str);
 				return;
 			}
-			Player target = this.player;
+			Player target = t.getPlayer();
 			if(infos.length > 2)//Si un nom de perso est spï¿½cifiï¿½
 			{
 				target = World.data.getPlayerByName(infos[2]);
@@ -877,7 +921,7 @@ public class Admin {
 				SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(this.account.getGameClient(),str);
 				return;
 			}
-			Player target = this.player;
+			Player target = t.getPlayer();
 			if(infos.length > 2)//Si un nom de perso est spï¿½cifiï¿½
 			{
 				target = World.data.getPlayerByName(infos[2]);
@@ -900,7 +944,7 @@ public class Admin {
 			{
 				id = Integer.parseInt(infos[1]);
 			}catch(Exception e){};
-			Npc npc = this.player.getMap().getNpcs().get(id);
+			Npc npc = t.getPlayer().getMap().getNpcs().get(id);
 			if(id == 0 || npc == null)
 			{
 				String str = "Npc GUID invalide";
@@ -909,20 +953,20 @@ public class Admin {
 			}
 			int exC = npc.getCell().getId();
 			//on l'efface de la map
-			SocketManager.GAME_SEND_ERASE_ON_MAP_TO_MAP(this.player.getMap(), id);
+			SocketManager.GAME_SEND_ERASE_ON_MAP_TO_MAP(t.getPlayer().getMap(), id);
 			//on change sa position/orientation
-			npc.setCell(this.player.getCell());
-			npc.setOrientation((byte)this.player.getOrientation());
+			npc.setCell(t.getPlayer().getCell());
+			npc.setOrientation((byte)t.getPlayer().getOrientation());
 			//on envoie la modif
-			SocketManager.GAME_SEND_ADD_NPC_TO_MAP(this.player.getMap(),npc);
+			SocketManager.GAME_SEND_ADD_NPC_TO_MAP(t.getPlayer().getMap(),npc);
 			String str = "Le PNJ a ete deplace";
-			if(this.player.getOrientation() == 0
-			|| this.player.getOrientation() == 2
-			|| this.player.getOrientation() == 4
-			|| this.player.getOrientation() == 6)
+			if(t.getPlayer().getOrientation() == 0
+			|| t.getPlayer().getOrientation() == 2
+			|| t.getPlayer().getOrientation() == 4
+			|| t.getPlayer().getOrientation() == 6)
 				str += " mais est devenu invisible (orientation diagonale invalide).";
-			if(World.database.getNpcData().delete(this.player.getMap().getId(),exC)
-			&& World.database.getNpcData().create(this.player.getMap().getId(),npc.getTemplate().getId(),this.player.getCell().getId(),this.player.getOrientation()))
+			if(World.database.getNpcData().delete(t.getPlayer().getMap().getId(),exC)
+			&& World.database.getNpcData().create(t.getPlayer().getMap().getId(),npc.getTemplate().getId(),t.getPlayer().getCell().getId(),t.getPlayer().getOrientation()))
 				SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(this.account.getGameClient(),str);
 			else
 				SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(this.account.getGameClient(),"Erreur au moment de sauvegarder la position");
@@ -948,7 +992,7 @@ public class Admin {
 			for(ObjectTemplate t : IS.getItemTemplates())
 			{
 				Object obj = t.createNewItem(1,useMax);
-				if(this.player.addObject(obj, true))//Si le joueur n'avait pas d'item similaire
+				if(t.getPlayer().addObject(obj, true))//Si le joueur n'avait pas d'item similaire
 					World.data.addObject(obj,true);
 			}
 			String str = "Creation de la panoplie "+tID+" reussie";
@@ -963,13 +1007,13 @@ public class Admin {
 				count = Integer.parseInt(infos[1]);
 				if(count < 1)	count = 1;
 				if(count > World.data.getExpLevelSize())	count = World.data.getExpLevelSize();
-				Player perso = this.player;
+				Player perso = t.getPlayer();
 				if(infos.length == 3)//Si le nom du perso est spï¿½cifiï¿½
 				{
 					String name = infos[2];
 					perso = World.data.getPlayerByName(name);
 					if(perso == null)
-						perso = this.player;
+						perso = t.getPlayer();
 				}
 				if(perso.getLevel() < count)
 				{
@@ -1000,13 +1044,13 @@ public class Admin {
 				count = Integer.parseInt(infos[1]);
 				if(count < 0)	count = 0;
 				if(count > 100)	count = 100;
-				Player perso = this.player;
+				Player perso = t.getPlayer();
 				if(infos.length == 3)//Si le nom du perso est spï¿½cifiï¿½
 				{
 					String name = infos[2];
 					perso = World.data.getPlayerByName(name);
 					if(perso == null)
-						perso = this.player;
+						perso = t.getPlayer();
 				}
 				int newPDV = perso.getMaxPdv() * count / 100;
 				perso.setPdv(newPDV);
@@ -1033,13 +1077,13 @@ public class Admin {
 			};
 			if(count == 0)return;
 			
-			Player perso = this.player;
+			Player perso = t.getPlayer();
 			if(infos.length == 3)//Si le nom du perso est spï¿½cifiï¿½
 			{
 				String name = infos[2];
 				perso = World.data.getPlayerByName(name);
 				if(perso == null)
-					perso = this.player;
+					perso = t.getPlayer();
 			}
 			long curKamas = perso.getKamas();
 			long newKamas = curKamas + count;
@@ -1094,12 +1138,12 @@ public class Admin {
 			}
 			if(qua <1)qua =1;
 			Object obj = t.createNewItem(qua,useMax);
-			if(this.player.addObject(obj, true))//Si le joueur n'avait pas d'item similaire
+			if(t.getPlayer().addObject(obj, true))//Si le joueur n'avait pas d'item similaire
 				World.data.addObject(obj,true);
 			String str = "Creation de l'item "+tID+" reussie";
 			if(useMax) str += " avec des stats maximums";
 			SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(this.account.getGameClient(),str);
-			SocketManager.GAME_SEND_Ow_PACKET(this.player);
+			SocketManager.GAME_SEND_Ow_PACKET(t.getPlayer());
 		}else 
 		if (command.equalsIgnoreCase("SPAWN"))
 		{			
@@ -1109,7 +1153,7 @@ public class Admin {
 				Mob = infos[1];
 			}catch(Exception e){};
             if(Mob == null) return;
-			this.player.getMap().spawnGroupOnCommand(this.player.getCell().getId(), Mob);
+			t.getPlayer().getMap().spawnGroupOnCommand(t.getPlayer().getCell().getId(), Mob);
 		}else
 		if (command.equalsIgnoreCase("TITLE"))
 		{
@@ -1152,51 +1196,9 @@ public class Admin {
 		}else
 		if(command.equalsIgnoreCase("SAVE") && !Server.config.isSaving())
 		{
-			World.data.saveData(this.player.getId());
+			World.data.saveData(t.getPlayer().getId());
 			String mess = "Sauvegarde lancee!";
 			SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(this.account.getGameClient(), mess);
-			return;
-		}else
-		if(command.equalsIgnoreCase("DELFIGHTPOS"))
-		{
-			int cell = -1;
-			try
-			{
-				cell = Integer.parseInt(infos[2]);
-			}catch(Exception e){};
-			if(cell < 0 || this.player.getMap().getCases().get(cell) == null)
-			{
-				cell = this.player.getCell().getId();
-			}
-			String places = this.player.getMap().getPlaces();
-			String[] p = places.split("\\|");
-			String newPlaces = "";
-			String team0 = "",team1 = "";
-			try
-			{
-				team0 = p[0];
-			}catch(Exception e){};
-			try
-			{
-				team1 = p[1];
-			}catch(Exception e){};
-			
-			for(int a = 0;a<=team0.length()-2;a+=2)
-			{
-				String c = p[0].substring(a,a+2);
-				if(cell == CryptManager.cellCode_To_ID(c))continue;
-				newPlaces += c;
-			}
-			newPlaces += "|";
-			for(int a = 0;a<=team1.length()-2;a+=2)
-			{
-				String c = p[1].substring(a,a+2);
-				if(cell == CryptManager.cellCode_To_ID(c))continue;
-				newPlaces += c;
-			}
-			this.player.getMap().setPlaces(newPlaces);
-			if(!World.database.getMapData().update(this.player.getMap()))return;
-			SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(this.account.getGameClient(),"Les places ont ete modifiees ("+newPlaces+")");
 			return;
 		}else
 		if(command.equalsIgnoreCase("BAN"))
@@ -1238,57 +1240,6 @@ public class Admin {
 			SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(this.account.getGameClient(), "Vous avez debanni "+P.getName());
 			return;
 		}else
-		if(command.equalsIgnoreCase("ADDFIGHTPOS"))
-		{
-			int team = -1;
-			int cell = -1;
-			try
-			{
-				team = Integer.parseInt(infos[1]);
-				cell = Integer.parseInt(infos[2]);
-			}catch(Exception e){};
-			if( team < 0 || team>1)
-			{
-				String str = "Team ou cellID incorects";
-				SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(this.account.getGameClient(),str);
-				return;
-			}
-			if(cell <0 || this.player.getMap().getCases().get(cell) == null || !this.player.getMap().getCases().get(cell).isWalkable(true))
-			{
-				cell = this.player.getCell().getId();
-			}
-			String places = this.player.getMap().getPlaces();
-			String[] p = places.split("\\|");
-			boolean already = false;
-			String team0 = "",team1 = "";
-			try
-			{
-				team0 = p[0];
-			}catch(Exception e){};
-			try
-			{
-				team1 = p[1];
-			}catch(Exception e){};
-			
-			//Si case dï¿½jï¿½ utilisï¿½e
-			Console.instance.println("0 => "+team0+"\n1 =>"+team1+"\nCell: "+CryptManager.cellID_To_Code(cell));
-			for(int a = 0; a <= team0.length()-2;a+=2)if(cell == CryptManager.cellCode_To_ID(team0.substring(a,a+2)))already = true;
-			for(int a = 0; a <= team1.length()-2;a+=2)if(cell == CryptManager.cellCode_To_ID(team1.substring(a,a+2)))already = true;
-			if(already)
-			{
-				SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(this.account.getGameClient(),"La case est deja dans la liste");
-				return;
-			}
-			if(team == 0)team0 += CryptManager.cellID_To_Code(cell);
-			else if(team == 1)team1 += CryptManager.cellID_To_Code(cell);
-			
-			String newPlaces = team0+"|"+team1;
-			
-			this.player.getMap().setPlaces(newPlaces);
-			if(!World.database.getMapData().update(this.player.getMap()))return;
-			SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(this.account.getGameClient(),"Les places ont ete modifiees ("+newPlaces+")");
-			return;
-		}else
 		if(command.equalsIgnoreCase("SETMAXGROUP"))
 		{
 			infos = msg.split(" ",4);
@@ -1304,8 +1255,8 @@ public class Admin {
 				return;
 			}
 			String mess = "Le nombre de groupe a ete fixe";
-			this.player.getMap().setMaxGroup(id);
-			boolean ok = World.database.getMapData().update(this.player.getMap());
+			t.getPlayer().getMap().setMaxGroup(id);
+			boolean ok = World.database.getMapData().update(t.getPlayer().getMap());
 			if(ok)mess += " et a ete sauvegarder a la BDD";
 			SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(this.account.getGameClient(),mess);
 		}else
@@ -1313,10 +1264,10 @@ public class Admin {
 		{
 			String groupData = infos[1];
 
-			this.player.getMap().addStaticGroup(this.player.getCell().getId(), groupData);
+			t.getPlayer().getMap().addStaticGroup(t.getPlayer().getCell().getId(), groupData);
 			String str = "Le grouppe a ete fixe";
 			//Sauvegarde DB de la modif
-			if(World.database.getMonsterData().saveNewFixGroup(this.player.getMap().getId(),this.player.getCell().getId(), groupData))
+			if(World.database.getMonsterData().saveNewFixGroup(t.getPlayer().getMap().getId(),t.getPlayer().getCell().getId(), groupData))
 				str += " et a ete sauvegarde dans la BDD";
 			SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(this.account.getGameClient(),str);
 			return;
@@ -1334,16 +1285,16 @@ public class Admin {
 				SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(this.account.getGameClient(),str);
 				return;
 			}
-			Npc npc = this.player.getMap().addNpc(id, this.player.getCell().getId(), this.player.getOrientation());
-			SocketManager.GAME_SEND_ADD_NPC_TO_MAP(this.player.getMap(), npc);
+			Npc npc = t.getPlayer().getMap().addNpc(id, t.getPlayer().getCell().getId(), t.getPlayer().getOrientation());
+			SocketManager.GAME_SEND_ADD_NPC_TO_MAP(t.getPlayer().getMap(), npc);
 			String str = "Le PNJ a ete ajoute";
-			if(this.player.getOrientation() == 0
-					|| this.player.getOrientation() == 2
-					|| this.player.getOrientation() == 4
-					|| this.player.getOrientation() == 6)
+			if(t.getPlayer().getOrientation() == 0
+					|| t.getPlayer().getOrientation() == 2
+					|| t.getPlayer().getOrientation() == 4
+					|| t.getPlayer().getOrientation() == 6)
 						str += " mais est invisible (orientation diagonale invalide).";
 			
-			if(World.database.getNpcData().create(this.player.getMap().getId(), id, this.player.getCell().getId(), this.player.getOrientation()))
+			if(World.database.getNpcData().create(t.getPlayer().getMap().getId(), id, t.getPlayer().getCell().getId(), t.getPlayer().getOrientation()))
 				SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(this.account.getGameClient(),str);
 			else
 				SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(this.account.getGameClient(),"Erreur au moment de sauvegarder la position");
@@ -1355,7 +1306,7 @@ public class Admin {
 			{
 				id = Integer.parseInt(infos[1]);
 			}catch(Exception e){};
-			Npc npc = this.player.getMap().getNpcs().get(id);
+			Npc npc = t.getPlayer().getMap().getNpcs().get(id);
 			if(id == 0 || npc == null)
 			{
 				String str = "Npc GUID invalide";
@@ -1364,14 +1315,14 @@ public class Admin {
 			}
 			int exC = npc.getCell().getId();
 			//on l'efface de la map
-			SocketManager.GAME_SEND_ERASE_ON_MAP_TO_MAP(this.player.getMap(), id);
-			if(this.player.getMap().getNpcs().containsKey(id))
-				this.player.getMap().getNpcs().remove(id);
-			if(this.player.getMap().getMobGroups().containsKey(id))
-				this.player.getMap().getMobGroups().remove(id);
+			SocketManager.GAME_SEND_ERASE_ON_MAP_TO_MAP(t.getPlayer().getMap(), id);
+			if(t.getPlayer().getMap().getNpcs().containsKey(id))
+				t.getPlayer().getMap().getNpcs().remove(id);
+			if(t.getPlayer().getMap().getMobGroups().containsKey(id))
+				t.getPlayer().getMap().getMobGroups().remove(id);
 			
 			String str = "Le PNJ a ete supprime";
-			if(World.database.getNpcData().delete(this.player.getMap().getId(),exC))
+			if(World.database.getNpcData().delete(t.getPlayer().getMap().getId(),exC))
 				SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(this.account.getGameClient(),str);
 			else
 				SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(this.account.getGameClient(),"Erreur au moment de sauvegarder la position");
@@ -1383,15 +1334,15 @@ public class Admin {
 			{
 				cellID = Integer.parseInt(infos[1]);
 			}catch(Exception e){};
-			if(cellID == -1 || this.player.getMap().getCases().get(cellID) == null)
+			if(cellID == -1 || t.getPlayer().getMap().getCases().get(cellID) == null)
 			{
 				String str = "CellID invalide";
 				SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(this.account.getGameClient(),str);
 				return;
 			}
 			
-			this.player.getMap().getCases().get(cellID).clearOnCellAction();
-			boolean success = World.database.getScriptedCellData().delete(this.player.getMap().getId(),cellID);
+			t.getPlayer().getMap().getCases().get(cellID).clearOnCellAction();
+			boolean success = World.database.getScriptedCellData().delete(t.getPlayer().getMap().getId(),cellID);
 			String str = "";
 			if(success)	str = "Le trigger a ete retire";
 			else 		str = "Le trigger n'a pas ete retire";
@@ -1414,8 +1365,8 @@ public class Admin {
 				return;
 			}
 			
-			this.player.getCell().addOnCellStopAction(actionID,args, cond);
-			boolean success = World.database.getScriptedCellData().update(this.player.getMap().getId(),this.player.getCell().getId(),actionID,1,args,cond);
+			t.getPlayer().getCell().addOnCellStopAction(actionID,args, cond);
+			boolean success = World.database.getScriptedCellData().update(t.getPlayer().getMap().getId(),t.getPlayer().getCell().getId(),actionID,1,args,cond);
 			String str = "";
 			if(success)	str = "Le trigger a ete ajoute";
 			else 		str = "Le trigger n'a pas ete ajoute";
@@ -1431,7 +1382,7 @@ public class Admin {
 				npcGUID = Integer.parseInt(infos[1]);
 				itmID = Integer.parseInt(infos[2]);
 			}catch(Exception e){};
-			NpcTemplate npc =  this.player.getMap().getNpcs().get(npcGUID).getTemplate();
+			NpcTemplate npc =  t.getPlayer().getMap().getNpcs().get(npcGUID).getTemplate();
 			if(npcGUID == 0 || itmID == -1 || npc == null)
 			{
 				String str = "NpcGUID ou itmID invalide";
@@ -1455,7 +1406,7 @@ public class Admin {
 				npcGUID = Integer.parseInt(infos[1]);
 				itmID = Integer.parseInt(infos[2]);
 			}catch(Exception e){};
-			NpcTemplate npc =  this.player.getMap().getNpcs().get(npcGUID).getTemplate();
+			NpcTemplate npc =  t.getPlayer().getMap().getNpcs().get(npcGUID).getTemplate();
 			ObjectTemplate item =  World.data.getObjectTemplate(itmID);
 			if(npcGUID == 0 || itmID == -1 || npc == null || item == null)
 			{
@@ -1483,14 +1434,14 @@ public class Admin {
 				if(price > 20000000)price = 20000000;
 				if(price <0)price = 0;
 			}catch(Exception e){};
-			if(size == -1 || owner == -2 || price == -1 || this.player.getMap().getMountPark() != null)
+			if(size == -1 || owner == -2 || price == -1 || t.getPlayer().getMap().getMountPark() != null)
 			{
 				String str = "Infos invalides ou map deja config.";
 				SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(this.account.getGameClient(),str);
 				return;
 			}
-			MountPark MP = new MountPark(owner, this.player.getMap(), this.player.getCell().getId(), size, "", -1, price);
-			this.player.getMap().setMountPark(MP);
+			MountPark MP = new MountPark(owner, t.getPlayer().getMap(), t.getPlayer().getCell().getId(), size, "", -1, price);
+			t.getPlayer().getMap().setMountPark(MP);
 			World.database.getMountparkData().update(MP);
 			String str = "L'enclos a ete config. avec succes";
 			SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(this.account.getGameClient(),str);
@@ -1498,9 +1449,9 @@ public class Admin {
 		if (command.equalsIgnoreCase("SEND"))
 		{
 			
-			SocketManager.GAME_SEND_STATS_PACKET(this.player);
+			SocketManager.GAME_SEND_STATS_PACKET(t.getPlayer());
 			infos = msg.split(" ",2);
-			SocketManager.send(this.player, infos[1]);
+			SocketManager.send(t.getPlayer(), infos[1]);
 			return;
 		}else
 		if (command.equalsIgnoreCase("SHUTDOWN"))
@@ -1563,7 +1514,7 @@ public class Admin {
 				SocketManager.GAME_SEND_CONSOLE_MESSAGE_PACKET(this.account.getGameClient(),str);
 				return;
 			}
-			Player target = this.player;
+			Player target = t.getPlayer();
 			if(infos.length > 2)//Si un nom de perso est spï¿½cifiï¿½
 			{
 				target = World.data.getPlayerByName(infos[2]);
@@ -1658,5 +1609,5 @@ public class Admin {
 		{
 			this.commandGmThree(command, infos, msg);
 		}
-	}
+	}*/
 }

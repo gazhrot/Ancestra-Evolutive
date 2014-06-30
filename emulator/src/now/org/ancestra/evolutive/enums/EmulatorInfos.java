@@ -1,5 +1,7 @@
 package org.ancestra.evolutive.enums;
 
+import org.ancestra.evolutive.core.Server;
+
 public enum EmulatorInfos {
 	DEVELOPER("John-r & Locos & Erfive"),
 	RELEASE(0.7),
@@ -16,6 +18,19 @@ public enum EmulatorInfos {
 	
 	private EmulatorInfos(double d) {
 		this.value = d;
+	}
+	
+	public static String uptime() {
+		long uptime = System.currentTimeMillis() - Server.config.getGameServer().getStartTime();
+		int jour = (int) (uptime/(1000*3600*24));
+		uptime %= (1000*3600*24);
+		int hour = (int) (uptime/(1000*3600));
+		uptime %= (1000*3600);
+		int min = (int) (uptime/(1000*60));
+		uptime %= (1000*60);
+		int sec = (int) (uptime/(1000));
+		
+		return jour+"j "+hour+"h "+min+"m "+sec+"s";
 	}
 
     @Override

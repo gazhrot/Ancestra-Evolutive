@@ -88,7 +88,11 @@ public class CommandParser {
 					Parameter<Admin> parameter = command.getParameters().get(param);
 					if(parameter != null) {
 						params.remove(param);
-						parameter.execute((Admin) t, (String[]) params.toArray());
+						String[] array = {};
+						try {
+							array = (String[]) params.toArray();
+						} catch(Exception e) {}
+						parameter.execute((Admin) t, array);
 					}
 				}
 			} else {
