@@ -43,7 +43,6 @@ public class MobGroup extends Creature {
             }
         }
         this.aggroDistance = generateAggroDistance(possibles);
-        logger.info("Creation d'un groupe de monstre de taille {}:{}",mobs.size(),groupSize);
 	}
 
     public MobGroup(int id,Maps map,Case cell,String group,boolean fix){
@@ -151,7 +150,7 @@ public class MobGroup extends Creature {
     private ArrayList<MobGrade> getPossibleMob(Alignement alignement,ArrayList<MobGrade> mobs){
         ArrayList<MobGrade> cleanMobs = new ArrayList<>();
         for(MobGrade mob : mobs){
-            if(mob.getTemplate().getAlign() == alignement.getId()){
+            if(mob.getTemplate().getAlignement() == alignement){
                 cleanMobs.add(mob);
             }
         }

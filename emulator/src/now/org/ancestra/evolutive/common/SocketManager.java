@@ -512,7 +512,7 @@ public class SocketManager {
 	public static void GAME_SEND_ADD_IN_TEAM_PACKET_TO_MAP(Maps map,int teamID,Fighter perso)
 	{
 		StringBuilder packet = new StringBuilder();
-		packet.append("Gt").append(teamID).append("|+").append(perso.getGUID()).append(";").append(perso.getPacketsName()).append(";").append(perso.get_lvl());
+		packet.append("Gt").append(teamID).append("|+").append(perso.getId()).append(";").append(perso.getPacketsName()).append(";").append(perso.get_lvl());
 		for(Player z : map.getPlayers()) send(z,packet.toString());
 		if(Server.config.isDebug())
 			Log.addToSockLog("Game: Map: Send>>"+packet.toString());
@@ -521,7 +521,7 @@ public class SocketManager {
 	public static void GAME_SEND_ADD_IN_TEAM_PACKET_TO_PLAYER(Player p, Maps map,int teamID,Fighter perso)
 	{
 		StringBuilder packet = new StringBuilder();
-		packet.append("Gt").append(teamID).append("|+").append(perso.getGUID()).append(";").append(perso.getPacketsName()).append(";").append(perso.get_lvl());
+		packet.append("Gt").append(teamID).append("|+").append(perso.getId()).append(";").append(perso.getPacketsName()).append(";").append(perso.get_lvl());
 		send(p,packet.toString());
 		if(Server.config.isDebug())
 			Log.addToSockLog("Game: Map: Send>>"+packet.toString());
@@ -530,7 +530,7 @@ public class SocketManager {
 	public static void GAME_SEND_REMOVE_IN_TEAM_PACKET_TO_MAP(Maps map,int teamID,Fighter perso)
 	{
 		StringBuilder packet = new StringBuilder();
-		packet.append("Gt").append(teamID).append("|-").append(perso.getGUID()).append(";").append(perso.getPacketsName()).append(";").append(perso.get_lvl());
+		packet.append("Gt").append(teamID).append("|-").append(perso.getId()).append(";").append(perso.getPacketsName()).append(";").append(perso.get_lvl());
 		for(Player z : map.getPlayers()) send(z,packet.toString());
 		if(Server.config.isDebug())
 			Log.addToSockLog("Game: Map: Send>>"+packet.toString());
@@ -721,7 +721,7 @@ public class SocketManager {
 		for(Fighter p : fight.getFighters(3))
 		{
 			if(p == null || p.get_fightCell(false) == null)continue;
-			packet.append(p.getGUID()).append(";").append(p.get_fightCell(false).getId()).append(";1|");
+			packet.append(p.getId()).append(";").append(p.get_fightCell(false).getId()).append(";1|");
 		}
 		for(Fighter perso:fight.getFighters(teams))
 		{
@@ -735,7 +735,7 @@ public class SocketManager {
 	public static void GAME_SEND_GIC_PACKET_TO_FIGHT(Fight fight,int teams,Fighter f)
 	{
 		StringBuilder packet = new StringBuilder();
-		packet.append("GIC|").append(f.getGUID()).append(";").append(f.get_fightCell(false).getId()).append(";1|");
+		packet.append("GIC|").append(f.getId()).append(";").append(f.get_fightCell(false).getId()).append(";1|");
 
 		for(Fighter perso:fight.getFighters(teams))
 		{
@@ -790,7 +790,7 @@ public class SocketManager {
 		packet.append("GTM");
 		for(Fighter f : fight.getFighters(3))
 		{
-			packet.append("|").append(f.getGUID()).append(";");
+			packet.append("|").append(f.getId()).append(";");
 			if(f.isDead())
 			{
 				packet.append("1");
@@ -1862,7 +1862,7 @@ public class SocketManager {
 			{
 				StringBuilder items = new StringBuilder();
 				//Pour chaque objet de la pano
-				for(ObjectTemplate OT : IS.getItemTemplates())
+				for(ObjectTemplate OT : IS.getObjectsTemplate())
 				{
 					//Si le joueur l'a �quip�
 					if(perso.hasEquiped(OT.getId()))

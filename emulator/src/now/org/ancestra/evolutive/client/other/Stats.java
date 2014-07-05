@@ -24,9 +24,9 @@ public class Stats {
 		if(!addBases)
 			return;
 		
-		this.effects.put(Constants.STATS_ADD_PA, player.getLevel()<100?6:7);
+		this.effects.put(Constants.STATS_ADD_PA, player.getLevel() < 100 ? 6 : 7);
 		this.effects.put(Constants.STATS_ADD_PM, 3);
-		this.effects.put(Constants.STATS_ADD_PROS, player.getClasse()== Classe.ENUTROF?120:100);
+		this.effects.put(Constants.STATS_ADD_PROS, player.getClasse()== Classe.ENUTROF ? 120 : 100);
 		this.effects.put(Constants.STATS_ADD_PODS, 1000);
 		this.effects.put(Constants.STATS_CREATURE, 1);
 		this.effects.put(Constants.STATS_ADD_INIT, 1);
@@ -38,9 +38,9 @@ public class Stats {
 		if(!addBases)
 			return;
 		
-		this.effects.put(Constants.STATS_ADD_PA, player.getLevel()<100?6:7);
+		this.effects.put(Constants.STATS_ADD_PA, player.getLevel() < 100 ? 6 : 7);
 		this.effects.put(Constants.STATS_ADD_PM, 3);
-		this.effects.put(Constants.STATS_ADD_PROS, player.getClasse()==Classe.ENUTROF?120:100);
+		this.effects.put(Constants.STATS_ADD_PROS, player.getClasse() == Classe.ENUTROF ? 120 : 100);
 		this.effects.put(Constants.STATS_ADD_PODS, 1000);
 		this.effects.put(Constants.STATS_CREATURE, 1);
 		this.effects.put(Constants.STATS_ADD_INIT, 1);

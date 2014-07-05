@@ -16,7 +16,7 @@ public enum Alignement {
     }
     
     /**
-     * Permet de recuperer la valeur (int)
+     * Permet de recuperer la valeur
      * @return l'id de l'alignement correspondant.
      */    
     public int getId() {

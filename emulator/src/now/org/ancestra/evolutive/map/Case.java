@@ -143,7 +143,7 @@ public class Case {
 	public void addFighter(Fighter fighter) {
 		if(this.fighters == null) 
 			this.fighters = new TreeMap<>();
-		this.fighters.put(fighter.getGUID(), fighter);
+		this.fighters.put(fighter.getId(), fighter);
 	}
 
     public boolean isFree(){
@@ -154,7 +154,7 @@ public class Case {
     }
 
 	public void removeFighter(Fighter fighter) {
-		this.fighters.remove(fighter.getGUID());
+		this.fighters.remove(fighter.getId());
 	}
 	
 	public Fighter getFirstFighter() {

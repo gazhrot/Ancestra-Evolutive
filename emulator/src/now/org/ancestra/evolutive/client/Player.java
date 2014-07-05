@@ -1274,7 +1274,7 @@ public class Player extends Creature {
 		}
 		
 		SocketManager.GAME_SEND_MAP_FIGHT_COUNT(client, this.getMap());
-		this.getMap().addPlayer(this);
+		this.getMap().addEntity(this);
 	}
 	
 	public String parseToOa() {
@@ -1536,7 +1536,7 @@ public class Player extends Creature {
 	}
 
 	public void refreshMapAfterFight() {
-		this.getMap().addPlayer(this);
+		this.getMap().addEntity(this);
         SocketManager.GAME_SEND_STATS_PACKET(this);
         SocketManager.GAME_SEND_ILS_PACKET(this, 2000);
         this.regenRate=2000;

@@ -65,16 +65,16 @@ public class Piege
 		
 		int team = _caster.getTeam()+1;
 		str.append("GDZ-").append(_cell.getId()).append(";").append(_size).append(";").append(_color);
-		SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(_fight, team, 999, _caster.getGUID()+"", str.toString());
+		SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(_fight, team, 999, _caster.getId()+"", str.toString());
 		str2.append("GDC"+_cell.getId());
-		SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(_fight, team, 999, _caster.getGUID()+"", str2.toString());
+		SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(_fight, team, 999, _caster.getId()+"", str2.toString());
 		if(get_isunHide())
 		{
 			int team2 = _teamUnHide+1;
 			str3.append("GDZ-").append(_cell.getId()).append(";").append(_size).append(";").append(_color);
-			SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(_fight, team2, 999, _caster.getGUID()+"", str3.toString());
+			SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(_fight, team2, 999, _caster.getId()+"", str3.toString());
 			str4.append("GDC").append(_cell.getId());
-			SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(_fight, team2, 999, _caster.getGUID()+"", str4.toString());
+			SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(_fight, team2, 999, _caster.getId()+"", str4.toString());
 		}
 	}
 	
@@ -85,9 +85,9 @@ public class Piege
 		
 		int team = f.getTeam()+1;
 		str.append("GDZ+").append(_cell.getId()).append(";").append(_size).append(";").append(_color);
-		SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(_fight, team, 999, _caster.getGUID()+"", str.toString());
+		SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(_fight, team, 999, _caster.getId()+"", str.toString());
 		str2.append("GDC").append(_cell.getId()).append(";Haaaaaaaaz3005;");
-		SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(_fight, team, 999, _caster.getGUID()+"", str2.toString());
+		SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(_fight, team, 999, _caster.getId()+"", str2.toString());
 	}
 	
 	public void onTraped(Fighter target)
@@ -97,8 +97,8 @@ public class Piege
 		//On efface le pieges
 		desappear();
 		//On d�clenche ses effets
-		String str = _spell+","+_cell.getId()+",0,1,1,"+_caster.getGUID();
-		SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(_fight, 7, 307, target.getGUID()+"", str);
+		String str = _spell+","+_cell.getId()+",0,1,1,"+_caster.getId();
+		SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(_fight, 7, 307, target.getId()+"", str);
 		
 		ArrayList<Case> cells = new ArrayList<Case>();
 		cells.add(_cell);

@@ -1,6 +1,5 @@
 package org.ancestra.evolutive.entity;
 
-import org.ancestra.evolutive.client.Player;
 import org.ancestra.evolutive.core.World;
 import org.ancestra.evolutive.map.Case;
 import org.ancestra.evolutive.map.Maps;
@@ -141,7 +140,14 @@ public class Creature extends Entity {
      * @param orientation
      */
     public void setOrientation(int orientation) {
-        this.orientation = orientation%8;
+        if(orientation>8){
+            this.orientation = 8;
+            return;
+        }
+        if(orientation < 1){
+            this.orientation = 1;
+            return;
+        }
     }
 
 
@@ -160,10 +166,10 @@ public class Creature extends Entity {
         if(newCell.getMap() == oldCell.getMap()) {
             return onMoveCell(oldCell,newCell);
         } else {
-            oldCell.getMap().removePlayer(this);
+            oldCell.getMap().removeEntity(this);
             oldCell.removeCreature(this);
-            newCell.getMap().addPlayer((Player)this);
-            newCell.addCreature((Player) this);
+            newCell.getMap().addEntity(this);
+            newCell.addCreature(this);
             return onMapChange(oldCell, newCell);
         }
     }

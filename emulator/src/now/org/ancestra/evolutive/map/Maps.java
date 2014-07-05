@@ -31,8 +31,12 @@ public class Maps {
         public void run() {
             for(Maps map : World.data.getMaps().values()) {
                 ArrayList<MobGroup> mobs = new ArrayList<>(map.getMobGroups().values());
+               
+                if(mobs.size() == 0)
+                	continue;
+                
                 MobGroup mob = mobs.get(i%mobs.size());
-                mob.setPosition(map,map.getRandomNearFreeCell(mob.getCell(),5,25));
+                mob.setPosition(map, map.getRandomNearFreeCell(mob.getCell(), 5, 25));
                 i++;
                 i = i%50;
             }
@@ -220,9 +224,9 @@ public class Maps {
 
     /**
      * Ajoute et affiche le personnage sur la map
-     * @param entity
+     * @param entity entitee a charger
      */
-	public void addPlayer(Entity entity) {
+	public void addEntity(Entity entity) {
         send(generateLoadingMessage());
         entities.add(entity);
         entity.send(mapDescriptionMessage());
@@ -230,9 +234,9 @@ public class Maps {
 
     /**
      * Retire et efface le personnage de la map
-     * @param entity
+     * @param entity entite a faire disparaitre
      */
-    public void removePlayer(Entity entity){
+    public void removeEntity(Entity entity){
         send(unloadCharacterMessage(entity));
         entities.remove(entity);
     }
@@ -527,10 +531,12 @@ public class Maps {
 	
 	public String getFightersGMsPackets() {
 		StringBuilder packet = new StringBuilder();
-		for(Entry<Integer, Case> cell : this.getCases().entrySet())
-			for(Entry<Integer, Fighter> f : cell.getValue().getFighters().entrySet())
-				packet.append(f.getValue().getGmPacket('+')).append('\u0000');
-		return packet.toString();
+		for(Entry<Integer, Case> cell : this.getCases().entrySet()) {
+            for (Entry<Integer, Fighter> f : cell.getValue().getFighters().entrySet()) {
+                packet.append(f.getValue().getGmPacket('+')).append('\u0000');
+            }
+        }
+            return packet.toString();
 	}
 	
 	public String getMobGroupGMsPackets() {

@@ -158,7 +158,7 @@ public class GameClient implements Client {
     		if(this.getAccount() != null) {
     			if(this.getPlayer() != null) {
                     this.getPlayer().save();
-                    this.getPlayer().getMap().removePlayer(this.getPlayer());
+                    this.getPlayer().getMap().removeEntity(this.getPlayer());
                 }
     			this.getAccount().disconnect();
     		}

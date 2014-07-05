@@ -245,7 +245,7 @@ public class SpellStats {
 				//Ne touches pas les alli�s
 				if(((TE & 1) == 1) && (F.getTeam() == perso.getTeam()))continue;
 				//Ne touche pas le lanceur
-				if((((TE>>1) & 1) == 1) && (F.getGUID() == perso.getGUID()))continue;
+				if((((TE>>1) & 1) == 1) && (F.getId() == perso.getId()))continue;
 				//Ne touche pas les ennemies
 				if((((TE>>2) & 1) == 1) && (F.getTeam() != perso.getTeam()))continue;
 				//Ne touche pas les combatants (seulement invocations)
@@ -253,7 +253,7 @@ public class SpellStats {
 				//Ne touche pas les invocations
 				if((((TE>>4) & 1) == 1) && (F.isInvocation()))continue;
 				//N'affecte que le lanceur
-				if((((TE>>5) & 1) == 1) && (F.getGUID() != perso.getGUID()))continue;
+				if((((TE>>5) & 1) == 1) && (F.getId() != perso.getId()))continue;
 				//Si pas encore eu de continue, on ajoute la case
 				finalCells.add(C);
 			}

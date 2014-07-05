@@ -68,7 +68,8 @@ public class Main {
         if(Server.config.getRealmServer() != null)Server.config.getRealmServer().close();
         if(Server.config.getGameServer() != null)Server.config.getGameServer().close();
         World.data.saveData(-1);
-        World.database.getAccountData().updateState(false);
+        if(World.database.getAccountData() != null)
+            World.database.getAccountData().updateState(false);
         for(PluginLoader pl: World.data.getOtherPlugins().values())
             pl.disable();
         Console.instance.writeln(" <> Redemmarage <>");

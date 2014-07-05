@@ -1,5 +1,6 @@
 package org.ancestra.evolutive.entity.monster;
 
+import org.ancestra.evolutive.enums.Alignement;
 import org.ancestra.evolutive.other.Drop;
 
 import java.util.ArrayList;
@@ -10,7 +11,7 @@ import java.util.TreeMap;
 public class MobTemplate {
 	private int id;
 	private int gfx;
-	private int align;
+	private Alignement align;
 	private String colors;
 	private int ia = 0;
 	private int minKamas;
@@ -23,7 +24,7 @@ public class MobTemplate {
 			String pdvs, String points, String initiatives, int minKamas, int maxKamas, String xps, int ia, boolean isCapturable) {
 		this.id = id;
 		this.gfx = gfx;
-		this.align = align;
+		this.align = Alignement.getAlignement(align);
 		this.colors = colors;
 		this.minKamas = minKamas;
 		this.maxKamas = maxKamas;
@@ -88,7 +89,7 @@ public class MobTemplate {
 		return gfx;
 	}
 
-	public int getAlign() {
+	public Alignement getAlignement() {
 		return align;
 	}
 

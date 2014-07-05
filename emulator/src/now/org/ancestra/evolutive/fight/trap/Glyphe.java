@@ -54,8 +54,8 @@ public class Glyphe
 	
 	public void onTraped(Fighter target)
 	{
-		String str = getSpell()+","+_cell.getId()+",0,1,1,"+_caster.getGUID();
-		SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(_fight, 7, 307, target.getGUID()+"", str);
+		String str = getSpell()+","+_cell.getId()+",0,1,1,"+_caster.getId();
+		SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(_fight, 7, 307, target.getId()+"", str);
 		_trapSpell.applySpellEffectToFight(_fight,_caster,target.get_fightCell(false),false);
 		_fight.verifIfTeamAllDead();
 	}

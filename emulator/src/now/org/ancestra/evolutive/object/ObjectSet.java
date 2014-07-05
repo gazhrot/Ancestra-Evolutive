@@ -46,7 +46,7 @@ public class ObjectSet {
 		return id;
 	}
 	
-	public ArrayList<ObjectTemplate> getItemTemplates() {
+	public ArrayList<ObjectTemplate> getObjectsTemplate() {
 		return templates;
 	}
 	

@@ -44,7 +44,7 @@ public class ObjectAction {
 		if(target != null)
 			perso = target;
 		if(World.data.getObject(objet) == null) {
-			SocketManager.GAME_SEND_MESSAGE(perso, "Error object null. Merci de prévenir un administrateur est d'indiquer le message.", Server.config.getMotdColor());
+			SocketManager.GAME_SEND_MESSAGE(perso, "Error object null. Merci de prï¿½venir un administrateur est d'indiquer le message.", Server.config.getMotdColor());
 			return;
 		}
 		
@@ -65,7 +65,7 @@ public class ObjectAction {
 						send = false;
 					break;
 						
-					case 0://Téléportation.
+					case 0://Tï¿½lï¿½portation.
 						short mapId = Short.parseShort(arg.split(",",2)[0]);
 						int cellId = Integer.parseInt(arg.split(",",2)[1]);
 						if(perso.getMap().getId() != 666)
@@ -75,7 +75,7 @@ public class ObjectAction {
 								perso.setPosition(mapId, cellId);
 					break;
 					
-					case 1://Téléportation au point de sauvegarde.
+					case 1://Tï¿½lï¿½portation au point de sauvegarde.
 						if(perso.getMap().getId() != 666)
 							perso.warpToSavePos();
 					break;
@@ -126,12 +126,12 @@ public class ObjectAction {
 									SocketManager.GAME_SEND_STATS_PACKET(perso);
 									SocketManager.GAME_SEND_Im_PACKET(perso, "07;"+val);
 								break;
-								case 605://Expérience.
+								case 605://Expï¿½rience.
 									perso.addXp(val);
 									SocketManager.GAME_SEND_STATS_PACKET(perso);
 									SocketManager.GAME_SEND_Im_PACKET(perso, "08;"+val);
 								break;
-								case 614://Expérience métier.
+								case 614://Expï¿½rience mï¿½tier.
 									JobStat job = perso.getMetierByID(Integer.parseInt(arg0.split(";")[1]));
 									if(job == null) {
 										isOk1 = false; 
@@ -159,7 +159,7 @@ public class ObjectAction {
 							int val = Integer.parseInt(arg0.split(";")[1]);
 							switch(statId)
 							{
-								case 1://Vitalité.
+								case 1://Vitalitï¿½.
 									 for(int i=0; i<val; i++)
 										 perso.boostStat(11, false);
 									break;
@@ -179,7 +179,7 @@ public class ObjectAction {
 									for(int i=0; i<val; i++)
 										perso.boostStat(13, false);
 									break;
-								case 6://Agilité.
+								case 6://Agilitï¿½.
 									for(int i=0; i<val; i++)
 										perso.boostStat(14, false);
 									break;
@@ -191,7 +191,7 @@ public class ObjectAction {
 						SocketManager.GAME_SEND_STATS_PACKET(perso);
 					break;
 					
-					case 5://Fée d'artifice.
+					case 5://Fï¿½e d'artifice.
 						int id0 = Integer.parseInt(arg);
 						Animation anim = World.data.getAnimation(id0);
 						if(perso.getFight() != null)
@@ -209,7 +209,7 @@ public class ObjectAction {
 						send = false;
 					break;
 					
-					case 7://Désapprendre un sort.
+					case 7://Dï¿½sapprendre un sort.
 						 id0 = Integer.parseInt(arg);
 					     int oldLevel = perso.getSortStatBySortIfHas(id0).getLevel();
 					     if(perso.getSortStatBySortIfHas(id0) == null)
@@ -219,12 +219,12 @@ public class ObjectAction {
 					     perso.unlearnSpell(id0, 1, oldLevel, true, true);
 					break;
 					
-					case 8://Désapprendre un sort à un percepteur.
+					case 8://Dï¿½sapprendre un sort ï¿½ un percepteur.
 						//TODO
 						isOk = false; send = false;
 					break;
 					
-					case 9://Oublié un métier.
+					case 9://Oubliï¿½ un mï¿½tier.
 						int job = Integer.parseInt(arg);
 					    if (job < 1) 
 					    	return;
@@ -250,7 +250,7 @@ public class ObjectAction {
 							MyPets.giveEpo(perso);*/
 					break;
 					
-					case 11://Changé de Sexe.
+					case 11://Changï¿½ de Sexe.
 						if(perso.getSex() == 0)
 							perso.setSex(1);
 						else
@@ -258,21 +258,21 @@ public class ObjectAction {
 						SocketManager.GAME_SEND_ALTER_GM_PACKET(perso.getMap(), perso);
 					break;
 					
-					case 12://Changé de nom.
+					case 12://Changï¿½ de nom.
 						//TODO
 						isOk = false; send = false;
 					break;
 					
-					case 13://Changé de couleurs. 
+					case 13://Changï¿½ de couleurs. 
 						//TODO
 						isOk = false; send = false;
 					break;
 					
-					case 14://Apprendre un métier.
+					case 14://Apprendre un mï¿½tier.
 						job = Integer.parseInt(arg);
 						if(World.data.getMetier(job) == null)
 							return;
-						if(perso.getMetierByID(job) != null)//Métier déjà appris
+						if(perso.getMetierByID(job) != null)//Mï¿½tier dï¿½jï¿½ appris
 						{
 							SocketManager.GAME_SEND_Im_PACKET(perso, "111");
 							return;
@@ -333,11 +333,11 @@ public class ObjectAction {
 						perso.setMascotte(1);
 					break;
 					
-					case 17://Bénédiction.
+					case 17://Bï¿½nï¿½diction.
 						perso.setBenediction(World.data.getObject(objet).getTemplate().getId());
 					break;
 						
-					case 18://Malédiction.
+					case 18://Malï¿½diction.
 						perso.setMalediction(World.data.getObject(objet).getTemplate().getId());
 					break;
 						
@@ -349,7 +349,7 @@ public class ObjectAction {
 						perso.setCandy(World.data.getObject(objet).getTemplate().getId());
 			  	    break;
 			  	    
-					case 21://Poser un objet d'élevage.
+					case 21://Poser un objet d'ï¿½levage.
 						Map map0 = perso.getMap();
 						id0 = World.data.getObject(objet).getTemplate().getId();
 			
@@ -386,15 +386,15 @@ public class ObjectAction {
 						int cellId1 = perso.getCell().getId();
 						SubArea subArea = map0.getSubArea();
 						Area area = subArea.getArea();
-						int alignement = perso.getAlign();
+						int alignement = perso.getAlignement();
 						if(cellId1 <= 0) 
 							return;
 						if(alignement == 0 || alignement == 3) {
-							SocketManager.GAME_SEND_MESSAGE(perso,"Vous ne possedez pas l'alignement nécessaire pour poser un prisme.", Main.messageColor);
+							SocketManager.GAME_SEND_MESSAGE(perso,"Vous ne possedez pas l'alignement nï¿½cessaire pour poser un prisme.", Main.messageColor);
 							return;
 						}
 						if(!perso.is_showWings()) {
-							SocketManager.GAME_SEND_MESSAGE(perso,"Vos ailes doivent être activé afin de poser un prisme.", Main.messageColor);
+							SocketManager.GAME_SEND_MESSAGE(perso,"Vos ailes doivent ï¿½tre activï¿½ afin de poser un prisme.", Main.messageColor);
 							return;
 						}
 						if(Config.containsPrismeMap(map0.getId())) {
@@ -402,7 +402,7 @@ public class ObjectAction {
 							return;
 						}
 						if(subArea.getAlignement() != 0 || !subArea.getConquistable()) {
-							SocketManager.GAME_SEND_MESSAGE(perso, "L'alignement de cette sous-zone est en conquète ou n'est pas neutre !", Main.messageColor);
+							SocketManager.GAME_SEND_MESSAGE(perso, "L'alignement de cette sous-zone est en conquï¿½te ou n'est pas neutre !", Main.messageColor);
 							return;
 						}
 						Prism Prisme = new Prism(World.data.getNextIDPrisme(), alignement, 1, map0.getId(), cellId1, perso.get_honor(), -1);
@@ -428,7 +428,7 @@ public class ObjectAction {
 						}
 						World.data.addPrisme(Prisme);
 						SqlManager.ADD_PRISME(Prisme);
-						perso.getMap().getSubArea().setAlignement(perso.getAlign());
+						perso.getMap().getSubArea().setAlignement(perso.getAlignement());
 						SqlManager.UPDATE_SUBAREA(perso.getMap().getSubArea());
 						SocketManager.GAME_SEND_PRISME_TO_MAP(map0, Prisme);
 					break;
@@ -438,7 +438,7 @@ public class ObjectAction {
 						mapId = 0; cellId = 0;
 						for(Prism i: World.data.AllPrisme())
 						{
-							if(i.getAlignement() != perso.getAlign())
+							if(i.getAlignement() != perso.getAlignement())
 								continue;
 							alea = (World.data.getMap(i.getMap()).getX() - perso.getMap().getX())*(World.data.getMap(i.getMap()).getX() - perso.getMap().getX()) + (World.data.getMap(i.getMap()).getY() - perso.getMap().getY())*(World.data.getMap(i.getMap()).getY() - perso.getMap().getY());
 							if(alea < dist) {
@@ -451,7 +451,7 @@ public class ObjectAction {
 							perso.setPosition(mapId, cellId);
 					break;*/
 					
-					case 24://TP Village aligné.
+					case 24://TP Village alignï¿½.
 						mapId = (short) Integer.parseInt(arg.split(",")[0]);
 						cellId = Integer.parseInt(arg.split(",")[1]);
 						if(World.data.getMap(mapId).getSubArea().getAlignement() == perso.getAlign())
@@ -498,7 +498,7 @@ public class ObjectAction {
 					
 					default:
 						if(Server.config.isDebug())
-							System.out.println("- Action id "+type+" non implanté dans le système !");
+							System.out.println("- Action id "+type+" non implantï¿½ dans le systï¿½me !");
 					break;
 				}
 				turn++;

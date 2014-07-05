@@ -51,7 +51,7 @@ public class LaunchedSpell {
 		{
 			if(S.target == null || target == null)
 				continue;
-			if(S.spellId == id && S.target.getGUID() == target.getGUID())
+			if(S.spellId == id && S.target.getId() == target.getId())
 				nb++;
 		}
 		return nb;
