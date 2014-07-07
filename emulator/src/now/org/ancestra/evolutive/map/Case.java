@@ -123,16 +123,18 @@ public class Case {
 	public void addCreature(Creature creature) {
 		if(this.creatures == null)
 			this.creatures = new ArrayList<>();
-		this.creatures.add(creature);
+		if(!this.creatures.contains(creature)){
+            this.creatures.add(creature);
+        }
 	}
 	
 	public void removeCreature(Creature creature) {
-		if(this.creatures == null || this.creatures.contains(creature))
+		if(this.creatures == null || !this.creatures.contains(creature))
 			return;
-		this.creatures.remove(id);
-		if(this.creatures.isEmpty())
-			this.creatures = null;
-	}
+        this.creatures.remove(creature);
+            if(this.creatures.isEmpty())
+                this.creatures = null;
+  	}
 	
 	public Map<Integer, Fighter> getFighters() {
 		if(this.fighters == null) 

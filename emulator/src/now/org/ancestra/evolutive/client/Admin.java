@@ -246,7 +246,7 @@ public class Admin {
 		
 		commands.put("ANNOUNCE", command);
 		
-		command = new Command<Admin>("GOTO", "Permet la tï¿½lï¿½portation d'un joueur ï¿½ un autre.", "TARGET,ToPLAYER*", 1) {
+		command = new Command<Admin>("GOTO", "Permet la teleportation d'un joueur ï¿½ un autre.", "TARGET,ToPLAYER*", 1) {
 
 			@Override
 			public void action(Admin t, String[] args) {

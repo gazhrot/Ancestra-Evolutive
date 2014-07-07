@@ -86,10 +86,11 @@ public class Creature extends Entity {
      * @param cell Identifiant de la nouvelle cellule
      */
     public void setPosition(Maps newMap,Case cell) {
-        if(onPositionChange(this.cell,cell)) {
-            this.map = newMap;
-            this.cell = cell;
-        }
+        Maps oldMap = this.map;
+        this.map = newMap;
+        Case oldCell = this.getCell();
+        this.cell = cell;
+        this.onPositionChange(oldCell,cell);
     }
 
     /**
@@ -105,9 +106,9 @@ public class Creature extends Entity {
      * @param cell cellule finale de la creature
      */
     public void setCell(Case cell) {
-        if(this.onPositionChange(this.cell,cell)){
-            this.cell = cell;
-        }
+        Case oldCell = this.cell;
+        this.cell = cell;
+        this.onPositionChange(oldCell,cell);
     }
 
     /**

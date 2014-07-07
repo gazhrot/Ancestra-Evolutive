@@ -23,8 +23,8 @@ import java.util.*;
 import java.util.Map.Entry;
 
 public class Maps {
+    //region Move mobs
     private static Timer timer = new Timer();
-
     static class moveMobs extends TimerTask{
         private static int i = 0;
         @Override
@@ -45,6 +45,7 @@ public class Maps {
     static {
         timer.scheduleAtFixedRate(new moveMobs(), 50000, 50000);
     }
+    //endregion
 	
 	private final int id;
 	private final String date;
@@ -54,7 +55,7 @@ public class Maps {
     private final Logger logger;
     private String places;
     private byte x;
-    private byte y = 0;
+    private byte y;
 	private byte maxGroup = 3;
 	private byte maxSize;
 	private int nextFreeId = -1;
@@ -62,7 +63,7 @@ public class Maps {
 	private MountPark mountPark;
 
 
-    private ArrayList<Entity> entities = new ArrayList<>();
+    private Map<Integer, Entity> entities = new HashMap<>();
 	private Map<Integer, Npc> npcs = new TreeMap<>();
 	private Map<Integer, Case> cases = new TreeMap<>();
 	private Map<Integer, Fight> fights = new TreeMap<>();
@@ -72,16 +73,11 @@ public class Maps {
 	private ArrayList<MobGrade> mobPossibles = new ArrayList<>();
 
 	public Maps(int id, String date, byte width, byte height, String key, String places, String mapData, String cells, String monsters, String pos, byte maxGroup, byte maxSize) {
-		this.id = id;
-		this.date = date;
-		this.width = width;
-		this.height = height;
-		this.key = key;
+		this(id,date,width,height,key,places);
 		this.places = places;
 		this.maxGroup = maxGroup;
 		this.maxSize = maxSize;
-        logger = (Logger) LoggerFactory.getLogger("maps." + id);
-		try	{
+        try	{
 			String[] infos = pos.split(",");
 			this.x = Byte.parseByte(infos[0]);
 			this.y = Byte.parseByte(infos[1]);
@@ -118,8 +114,6 @@ public class Maps {
         logger = (Logger) LoggerFactory.getLogger("maps." + id);
 	}
 
-
-
     //region Getters and Setters
     public String getDate() {
 		return date;
@@ -135,10 +129,6 @@ public class Maps {
 
 	public byte getY() {
 		return y;
-	}
-
-	public void setY(byte y) {
-		this.y = y;
 	}
 
 	public byte getWidth() {
@@ -227,19 +217,25 @@ public class Maps {
      * @param entity entitee a charger
      */
 	public void addEntity(Entity entity) {
-        send(generateLoadingMessage());
-        entities.add(entity);
+        entity.send(generateLoadingMessage());
+        send(loadCharacterMessage(entity));
+        if(!entities.containsValue(entity)){
+            entities.put(entity.getId(),entity);
+        }
         entity.send(mapDescriptionMessage());
-	}
+    }
 
     /**
      * Retire et efface le personnage de la map
      * @param entity entite a faire disparaitre
      */
     public void removeEntity(Entity entity){
-        send(unloadCharacterMessage(entity));
-        entities.remove(entity);
+        if(entities.containsValue(entity)){
+            entities.remove(entity);
+            send(unloadCharacterMessage(entity));
+        }
     }
+
 
     /**
      * Permet de recuperer la liste des joueurs sur la map n etant pas en combat
@@ -247,14 +243,11 @@ public class Maps {
      */
 	public ArrayList<Player> getPlayers() {
 		ArrayList<Player> players = new ArrayList<>();
-		for(Entity entity : entities){
-            if(entity instanceof Player){
-                if(((Player)entity).getFight() == null){
-                    players.add((Player)entity);
-                }
+		for(Entry<Integer,Entity> entry : entities.entrySet()){
+            if(entry.getKey()>0){
+                players.add((Player)entry.getValue());
             }
         }
-
 		return players;
 	}
 
@@ -524,8 +517,9 @@ public class Maps {
 	public String getGMsPackets() {
 		StringBuilder packet = new StringBuilder("GM");
 		for(Player player : getPlayers()){
-            packet.append("|+").append(player.getHelper().getGmPacket()).append('\u0000');
+            packet.append("|+").append(player.getHelper().getGmPacket());
         }
+        packet.append('\u0000');
 		return packet.toString();
 	}
 	
@@ -629,19 +623,9 @@ public class Maps {
      * @param str message a envoyer
      */
     public void send(String str){
-        for(Player player : this.getPlayers()){
-            if(player.getFight() == null) {
-                player.send(str);
-            }
+        for(Entity entity : this.entities.values()){
+            entity.send(str);
         }
-    }
-
-    @Override
-    public boolean equals(java.lang.Object object){
-        if(object instanceof Maps)
-            if(((Maps) object).getId() == this.getId())
-                return true;
-        return false;
     }
 
     private Map<Integer,Case> decompileCells(String cellsData){
@@ -713,6 +697,15 @@ public class Maps {
     }
 
     //region Packets
+
+    /**
+     * Retourne le packet GM avec l'ensemble des personnes sur la map
+     * @return packet gm
+     */
+    public String getGmMessage(){
+           return "";
+    }
+
     /**
      * permet de creer le message demandant l affichage de la fenetre "chargement"
      * lors d un changement de map (le fait d etre affiche ou non depend de si cette carte a deja ete chargee
