@@ -12,7 +12,7 @@ import java.sql.Connection;
 
 public class Database {
 	//connection
-	HikariDataSource dataSource;
+	private HikariDataSource dataSource;
     private static Logger logger = (Logger) LoggerFactory.getLogger(Database.class);
 	//data
 	private AccountData accountData;
@@ -96,6 +96,10 @@ public class Database {
         logger.info("Database connection established");
         this.initializeData();
         return true;
+	}
+	
+	public HikariDataSource getDataSource() {
+		return dataSource;
 	}
 	
 	public AccountData getAccountData() {
@@ -238,7 +242,7 @@ public class Database {
 		this.dropData = dropData;
 	}
 
-    private boolean testConnection(HikariDataSource dataSource){
+    private boolean testConnection(HikariDataSource dataSource) {
         try {
             Connection connection = dataSource.getConnection();
             connection.close();

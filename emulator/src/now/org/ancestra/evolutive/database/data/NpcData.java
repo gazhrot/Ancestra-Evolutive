@@ -6,6 +6,7 @@ import org.ancestra.evolutive.core.Console;
 import org.ancestra.evolutive.core.World;
 import org.ancestra.evolutive.database.AbstractDAO;
 import org.ancestra.evolutive.entity.npc.Npc;
+import org.ancestra.evolutive.entity.npc.NpcTemplate;
 import org.ancestra.evolutive.map.Maps;
 import org.slf4j.LoggerFactory;
 
@@ -60,18 +61,23 @@ public class NpcData extends AbstractDAO<Npc>{
 	}
 
 	@Override
-	public Npc load(int id) {
+	public Npc load(int mapId) {
 		Npc npc = null;
+        Maps map = World.data.getMap(mapId);
+        if(map == null)
+            return null;
 		try {
-			Result result = getData("SELECT * FROM npcs WHERE mapid = "+id);
+			Result result = getData("SELECT * FROM npcs WHERE mapid = "+mapId);
 			while(result.resultSet.next()) {
-				Maps map = World.data.getMap(result.resultSet.getShort("mapid"));
-				
-				if (map == null)
-					return null;
-				
-				npc = map.addNpc(result.resultSet.getInt("npcid"), result.resultSet.getInt("cellid"),
-						result.resultSet.getInt("orientation"));
+                int templateId = result.resultSet.getInt("npcid");
+                NpcTemplate template = World.data.getNpcTemplate(templateId);
+                if(template == null){
+                    logger.error("Impossible de creer le pnj avec le template {} car le template n existe pas",templateId);
+                    break;
+                }
+                npc = new Npc(template,map,
+                        map.getCases().get(result.resultSet.getInt("cellid")),
+                        (byte)result.resultSet.getInt("orientation"));
 			}
 			close(result);
 		} catch (Exception e) {

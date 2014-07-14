@@ -3,8 +3,8 @@ package org.ancestra.evolutive.tool.command;
 import org.ancestra.evolutive.client.Player;
 import org.ancestra.evolutive.tool.time.restricter.TimeRestricter;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 public abstract class Command<T> {
 	
@@ -12,8 +12,7 @@ public abstract class Command<T> {
 	private final String description;
 	private final String arguments;
 	private int gmLvl = 0;
-    private Map<String, Parameter<T>> parameters = new HashMap<>();
-    private StringBuilder successMessages = new StringBuilder();
+    private ConcurrentMap<String, Parameter<T>> parameters = new ConcurrentHashMap<>();
     private TimeRestricter restricter;
 
 	public abstract void action(T t, String[] args);
@@ -55,16 +54,12 @@ public abstract class Command<T> {
 		return arguments;
 	}
 
-	public Map<String, Parameter<T>> getParameters() {
+	public ConcurrentMap<String, Parameter<T>> getParameters() {
 		return parameters;
 	}
 	
 	public void addParameter(Parameter<T> parameter) {
 		this.parameters.put(parameter.getName(), parameter);
-	}
-	
-	public void addSuccessMessage(String message) {
-		this.successMessages.append(message).append("\n");
 	}
 	
 	public int getGmLvl() {

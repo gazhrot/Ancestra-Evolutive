@@ -5,10 +5,9 @@ import org.ancestra.evolutive.client.Player;
 import org.ancestra.evolutive.core.Console;
 import org.ancestra.evolutive.core.World;
 
-import java.util.Deque;
-import java.util.LinkedList;
-import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentLinkedDeque;
 
+@SuppressWarnings("unchecked")
 public class CommandParser {
 
 	public static void parse(String line, Object t) {
@@ -32,95 +31,63 @@ public class CommandParser {
 		}
 
 		if(t instanceof Player) {
-			Command<Player> command = null;
-			
-			for(Entry<String, Command<Player>> c: World.data.getPlayerCommands().entrySet()) {
-				if(c.getKey().equalsIgnoreCase(name) || c.getValue().getName().equalsIgnoreCase(name)) {
-					command = c.getValue();
-					break;
-				}
-			}
-			
-			if(command == null) {
-				Console.instance.print("Commande non reconnue.", t);
-				return; 
-			}
-			
-			
-			if(parameters != null && !command.getParameters().isEmpty()) {
-				Deque<String> params = new LinkedList<>();
-				
-				for(String param: parameters)
-					params.addLast(param.toUpperCase());
+            Command<Player> command = World.data.getPlayerCommands().get(name);
 
-				for(String param : params) {
-					Parameter<Player> parameter = command.getParameters().get(param);
-					if(parameter != null) {
-						params.remove(param);
-						parameter.execute((Player) t, (String[]) params.toArray());
-					}
-				}
-			} else {
-				command.execute((Player) t, parameters);
-			}
-		} else if(t instanceof Admin) {			
-			Command<Admin> command = World.data.getAdminCommands().get(name);
-			System.out.println(name);
-			if(command == null) {
-				Console.instance.print("Commande non reconnue.", t);
-				return; 
-			}	
-			
-			if(((Admin) t).getGmLvl() < command.getGmLvl()) {
-				if(((Admin) t).getGmLvl() <= 1) 
-					return;
-				Console.instance.print("Vous ne disposez pas du rang de modération neccésaire.", t);
+            CommandParser.launch((Player) t, command, parameters);
+		}
+        else if (t instanceof Console) {
+            Command<Console> command = World.data.getConsoleCommands().get(name);
+
+            CommandParser.launch((Console) t, command, parameters);
+        }
+        else if(t instanceof Admin) {
+            if(((Admin) t).getGmLvl() < 1)
+                return;
+
+            Command<Admin> command = World.data.getAdminCommands().get(name);
+
+			if(command != null && (((Admin) t).getGmLvl() < command.getGmLvl())) {
+				Console.instance.print("Vous ne disposez pas du rang de modÃ©ration neccesaire.", t);
 				return;
 			}
-			
-			if(parameters != null && !command.getParameters().isEmpty()) {
-				Deque<String> params = new LinkedList<>();
-				
-				for(String param: parameters)
-					params.addLast(param.toUpperCase());
 
-				for(String param : params) {
-					Parameter<Admin> parameter = command.getParameters().get(param);
-					if(parameter != null) {
-						params.remove(param);
-						String[] array = {};
-						try {
-							array = (String[]) params.toArray();
-						} catch(Exception e) {}
-						parameter.execute((Admin) t, array);
-					}
-				}
-			} else {
-				command.execute((Admin) t, parameters);
-			}
-		} else if (t instanceof Console) {
-			Command<Console> command = World.data.getConsoleCommands().get(name);
+			CommandParser.launch(t, command, parameters);
+		}
+	}
 
-			if(command == null) {
-				Console.instance.print("Commande non reconnue.", t);
-				return; 
-			}
+	private static <T> void launch(Object t, Command<T> command, String[] parameters) {
+        if(t == null)
+            return;
 
-			if(parameters != null && !command.getParameters().isEmpty()) {
-				Deque<String> params = new LinkedList<>();
-				
-				for(String param: parameters)
-					params.addLast(param.toUpperCase());
+        if(command == null) {
+            Console.instance.print("Commande non reconnue.", t);
+            return;
+        }
 
-				for(String param : params) {
-					Parameter<Console> parameter = command.getParameters().get(param);
-					if(parameter != null) {
-						params.remove(param);
-						parameter.execute((Console) t, (String[]) params.toArray());
-					}
-				}
-			} else {
-				command.execute((Console) t, parameters);
+        if(parameters != null && !command.getParameters().isEmpty()) {
+            CommandParser.execute(t, command, parameters);
+        } else {
+            command.execute((T) t, parameters);
+        }
+    }
+	
+	public static <T> void execute(Object t, Command<T> command, String[] parameters) {
+		ConcurrentLinkedDeque<String> params = new ConcurrentLinkedDeque<>();
+		
+		for(String param: parameters)
+			params.addLast(param.toUpperCase());
+		
+		for(String param : params) {
+			Parameter<T> parameter = command.getParameters().get(param);
+			if(parameter != null) {
+				params.remove(param);
+				String[] array = {};
+					
+				try {
+					array = params.toArray(array);
+				} catch(Exception e) {}
+
+				parameter.execute((T) t, array);
 			}
 		}
 	}

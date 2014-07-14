@@ -49,7 +49,12 @@ public class Case {
             this.interactiveObject = null;
         }
 	}
-	
+
+    public Case copy(){
+        return new Case(this.map,this.id,this.walkable,this.LoS,
+                this.interactiveObject==null?-1:this.interactiveObject.getId());
+    }
+
 	public int getId() {
 		return id;
 	}

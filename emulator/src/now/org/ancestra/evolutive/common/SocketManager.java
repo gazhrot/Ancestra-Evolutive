@@ -2107,14 +2107,6 @@ public class SocketManager {
 			Log.addToSockLog("Game: Send>>"+packet);
 	}
 	
-	public static void GAME_SEND_EMOTE_LIST(Player perso,String s, String s1)
-	{
-		String packet = "eL"+s+"|"+s1;
-		send(perso, packet);
-		if(Server.config.isDebug())
-			Log.addToSockLog("Game: Send>>" + packet);
-	}
-	
 	public static void GAME_SEND_NO_EMOTE(Player out)
 	{
 		String packet = "eUE";

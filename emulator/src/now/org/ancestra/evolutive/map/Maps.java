@@ -11,8 +11,8 @@ import org.ancestra.evolutive.entity.collector.Collector;
 import org.ancestra.evolutive.entity.monster.MobGrade;
 import org.ancestra.evolutive.entity.monster.MobGroup;
 import org.ancestra.evolutive.entity.npc.Npc;
-import org.ancestra.evolutive.entity.npc.NpcTemplate;
 import org.ancestra.evolutive.enums.Alignement;
+import org.ancestra.evolutive.enums.IdType;
 import org.ancestra.evolutive.fight.Fight;
 import org.ancestra.evolutive.fight.Fighter;
 import org.ancestra.evolutive.object.Object;
@@ -46,7 +46,10 @@ public class Maps {
         timer.scheduleAtFixedRate(new moveMobs(), 50000, 50000);
     }
     //endregion
-	
+
+    private final String loadingMapMessage;
+    private final String descriptionMapMessage;
+
 	private final int id;
 	private final String date;
     private final byte height;
@@ -63,6 +66,7 @@ public class Maps {
 	private MountPark mountPark;
 
 
+
     private Map<Integer, Entity> entities = new HashMap<>();
 	private Map<Integer, Npc> npcs = new TreeMap<>();
 	private Map<Integer, Case> cases = new TreeMap<>();
@@ -72,6 +76,21 @@ public class Maps {
 	private Map<Integer, ArrayList<Action>> endFightAction = new TreeMap<>();
 	private ArrayList<MobGrade> mobPossibles = new ArrayList<>();
 
+    /**
+     * Constructeur maximal utilise pour creer une map de deplacement
+     * @param id id de la map
+     * @param date date de la map (cherchee dans la bdd et utilisée pour decrypter celle-ci)
+     * @param width largeur de la map
+     * @param height hauteur de la map
+     * @param key clé de la map (cherchee dans la bdd et utilisée pour decrypter celle-ci)
+     * @param places String representatif des places
+     * @param mapData String representatif des cellules sur la map (info non cryptee) prevale sur cells
+     * @param cells String representatif des cellules sur la map (info cryptee)
+     * @param monsters String representatif des monstres sur la map
+     * @param pos String donnant la position de la map dans le monde  : x,y,id de la subArea
+     * @param maxGroup  nombre maximum de groupe de monstre sur la case
+     * @param maxSize taille maximum des groupes de monstre
+     */
 	public Maps(int id, String date, byte width, byte height, String key, String places, String mapData, String cells, String monsters, String pos, byte maxGroup, byte maxSize) {
 		this(id,date,width,height,key,places);
 		this.places = places;
@@ -85,7 +104,7 @@ public class Maps {
 			if(this.subArea != null)
 				this.subArea.addMap(this);
 		} catch(Exception e) {
-            logger.error(" > Erreur lors du chargement de la map, position invalide !");
+            logger.error("Erreur lors du chargement de la map, position invalide ! (erreur de bdd)");
 			System.exit(0);
 		}
 		
@@ -102,7 +121,31 @@ public class Maps {
 
 		refreshSpawns();
 	}
-	
+
+    /**
+     * Constructeur utilise pour la copie d une map pour creer une map de fight
+     * @param id id de la map
+     * @param date date de la map (cherchee dans la bdd et utilisée pour decrypter celle-ci)
+     * @param width largeur de la map
+     * @param height hauteur de la map
+     * @param key clé de la map (cherchee dans la bdd et utilisée pour decrypter celle-ci)
+     * @param places String representatif des places
+     * @param cases Map des cases
+     */
+    public Maps(int id, String date, byte width, byte height, String key, String places,Map<Integer,Case> cases) {
+        this(id,date,width,height,key,places);
+        this.cases = cases;
+    }
+
+    /**
+     * Creer une nouvelle map avec le minimum d'information requise
+     * @param id id de la map
+     * @param date date de la map (cherchee dans la bdd et utilisée pour decrypter celle-ci)
+     * @param width largeur de la map
+     * @param height hauteur de la map
+     * @param key clé de la map (cherchee dans la bdd et utilisée pour decrypter celle-ci)
+     * @param places String representatif des places
+     */
 	public Maps(int id, String date, byte width, byte height, String key, String places) {
 		this.id = id;
 		this.date = date;
@@ -111,8 +154,24 @@ public class Maps {
 		this.key = key;
 		this.places = places;
 		this.cases = new TreeMap<>();
+        this.loadingMapMessage =  "GA;2;"+this.getId() +";";
+        this.descriptionMapMessage = "GDM|"+id+"|"+date+"|"+key;
+
         logger = (Logger) LoggerFactory.getLogger("maps." + id);
+        logger.trace("Une nouvelle map vient d etre formee son packet GDM est {}",this.descriptionMapMessage);
 	}
+
+    /**
+     * Retourne une copie de la map initiale vide (pas d entitee dessus)
+     * @return copie de la map
+     */
+    public Maps copy() {
+        Map<Integer,Case> cases = new TreeMap<>();
+        for(Entry<Integer,Case> entry : this.getCases().entrySet())
+            cases.put(entry.getKey(),entry.getValue().copy());
+        Maps map = new Maps(this.getId(), this.getDate(), this.getWidth(), this.getHeight(), this.getKey(), this.getPlaces(),cases);
+        return map;
+    }
 
     //region Getters and Setters
     public String getDate() {
@@ -187,10 +246,6 @@ public class Maps {
 		return cases;
 	}
 
-	public void setCases(Map<Integer, Case> cases) {
-		this.cases = cases;
-	}
-
 	public Map<Integer, Fight> getFights() {
 		return fights;
 	}
@@ -219,8 +274,8 @@ public class Maps {
 	public void addEntity(Entity entity) {
         entity.send(generateLoadingMessage());
         send(loadCharacterMessage(entity));
-        if(!entities.containsValue(entity)){
-            entities.put(entity.getId(),entity);
+        if(!entities.containsKey(entity.getId())){
+            entities.put(entity.getId(), entity);
         }
         entity.send(mapDescriptionMessage());
     }
@@ -230,12 +285,11 @@ public class Maps {
      * @param entity entite a faire disparaitre
      */
     public void removeEntity(Entity entity){
-        if(entities.containsValue(entity)){
-            entities.remove(entity);
+        if(entities.containsKey(entity.getId())){
+            entities.remove(entity.getId());
             send(unloadCharacterMessage(entity));
         }
     }
-
 
     /**
      * Permet de recuperer la liste des joueurs sur la map n etant pas en combat
@@ -251,16 +305,43 @@ public class Maps {
 		return players;
 	}
 
-    public Npc addNpc(int id,int cell, int dir) {
-        NpcTemplate template = World.data.getNpcTemplate(id);
+    /**
+     * Retourne une liste des pnj sur la map
+     * @return liste des pnj sur la map
+     */
+    private ArrayList<Npc> getNpc(){
+        return get(Npc.class,IdType.PNJ);
+    }
 
-        if(template == null || this.getCases().get(cell) == null)
-            return null;
+    /**
+     * Retourne la liste des entitees du type voulu sur la map
+     * @param expectedClasse classe attendue
+     * @param idType type d id de l entitee
+     * @param <T> classe attendue
+     * @return une liste de l ensemble des entitee du type attendu
+     */
+    public <T> ArrayList<T> get(Class<T> expectedClasse,IdType idType){
+        ArrayList<T> list = new ArrayList<>();
+        for(Entry<Integer,Entity> entry : entities.entrySet()){
+            if(entry.getKey()>=idType.MINIMAL_ID && entry.getKey()<=idType.MAXIMAL_ID){
+                list.add((T)entry.getValue());
+            }
+        }
+        return list;
+    }
 
-        Npc npc = new Npc(template, this.getNextObject(),this, cases.get(cell), (byte) dir);
-        this.getNpcs().put(this.getNextObject(), npc);
-        this.nextFreeId--;
-        return npc;
+    /**
+     * Retourne un id du type voulu libre
+     * @return id du type libre
+     * 0 si aucun id n est libre
+     */
+    public int getNextFreeId(IdType type){
+        int startIndex = type.MAXIMAL_ID-this.id*1000;
+        for(int i = startIndex ; i > startIndex-1000 && i >= type.MINIMAL_ID ;i--){
+            if(!entities.containsKey(i))
+                return i;
+        }
+        return 0;
     }
 
 	public void applyEndFightAction(int type, Player player) {
@@ -282,32 +363,24 @@ public class Maps {
 	public void delEndFightAction(int type1, int type2) {
 		if(this.getEndFightAction().get(type1) == null)
 			return;
-		
-		ArrayList<Action> copy = new ArrayList<>();
-		copy.addAll(this.getEndFightAction().get(type1));
-		
-		for(Action A : copy)if(A.getId() == type2)
+
+		for(Action A : this.getEndFightAction().get(type1))if(A.getId() == type2)
 			this.getEndFightAction().get(type1).remove(A);
 	}
 
+    public void spawnGroup(Alignement alignement,int cell){
+        spawnGroup(alignement,this.getMaxGroup()-get(MobGroup.class,IdType.MONSTER_GROUP).size(),cell);
+    }
 
-	
-	public void spawnGroup(Alignement align, int nbr, boolean log, int cell) {
-		if((nbr < 1) || (this.getMobGroups().size() - this.getFixMobGroups().size() >= this.getMaxGroup()))
-			return;
-		
-		for(int a = 1; a <= nbr; a++) {
-			MobGroup group  = new MobGroup(this.getNextObject(), align, this.getMobPossibles(), this, cases.get(cell), this.getMaxSize());
-			
-			if(group.getMobs().isEmpty())
-				continue;
-			
-			this.getMobGroups().put(this.getNextObject(), group);
-			
-            SocketManager.GAME_SEND_MAP_MOBS_GM_PACKET(this, group);
-			
-			this.nextFreeId--;
-		}
+	public void spawnGroup(Alignement alignement,int quantity, int cell) {
+		for(int i = 0; i < quantity; i++) {
+            int nextId = getNextFreeId(IdType.MONSTER_GROUP);
+            MobGroup mobGroup = new MobGroup(nextId, alignement, this.getMobPossibles(), this, cases.get(cell), this.getMaxSize());
+            if (!mobGroup.getMobs().isEmpty()) {
+                addEntity(mobGroup);
+                mobGroups.put(mobGroup.getId(), mobGroup);
+            }
+        }
 	}
 	
 	public void spawnNewGroup(boolean timer, Case cell, String data, String condition) {
@@ -421,9 +494,9 @@ public class Maps {
 		for(MobGroup mg : this.getFixMobGroups().values())
 			SocketManager.GAME_SEND_MAP_MOBS_GM_PACKET(this, mg);
 
-		this.spawnGroup(Alignement.NEUTRE, this.getMaxGroup(), true, -1);
-		this.spawnGroup(Alignement.BONTARIEN, 1, true, -1);
-		this.spawnGroup(Alignement.BRAKMARIEN, 1, true, -1);
+        this.spawnGroup(Alignement.BRAKMARIEN,1,-1);
+        this.spawnGroup(Alignement.BONTARIEN,1,-1);
+        this.spawnGroup(Alignement.NEUTRE,-1);
 	}
 	
 	public void onPlayerArriveOnCell(Player player, int cell) {
@@ -483,18 +556,6 @@ public class Maps {
 		SocketManager.GAME_SEND_MAP_FIGHT_COUNT_TO_MAP(this);
 	}
 
-	public Maps getMapCopy() {
-		Map<Integer,Case> cases = new TreeMap<>();
-		Maps map = new Maps(this.getId(), this.getDate(), this.getWidth(), this.getHeight(), this.getKey(), this.getPlaces());
-		
-		for(Entry<Integer,Case> entry : this.getCases().entrySet())
-			cases.put(entry.getKey(), new Case(map, entry.getValue().getId(),	entry.getValue().isWalkable(false),	entry.getValue().isLoS(),
-					(entry.getValue().getInteractiveObject()==null?-1:entry.getValue().getInteractiveObject().getId())));
-		
-		map.setCases(cases);
-		return map;
-	}
-
 	public InteractiveObject getMountParkDoor() {
 		for(Case cell: this.getCases().values()) 
 			if(cell.getInteractiveObject() != null)
@@ -537,40 +598,26 @@ public class Maps {
 		if(this.getMobGroups().isEmpty())
 			return "";
 		
-		StringBuilder packet = new StringBuilder().append("GM|+");
-		boolean isFirst = true;
-		
+		StringBuilder packet = new StringBuilder().append("GM");
+
 		for(MobGroup entry : this.getMobGroups().values()) {
 			String GM = entry.getHelper().getGmPacket();
-			if(GM.equals(""))
+			if(GM.isEmpty())
 				continue;
-			if(!isFirst)
-				packet.append("|+");
-			
-			packet.append(GM);
-			isFirst = false;
+			packet.append("|+").append(GM);
 		}
 		return packet.toString();
 	}
 	
 	public String getNpcsGMsPackets() {
-		if(this.getNpcs().isEmpty())
-			return "";
-		
-		StringBuilder packet = new StringBuilder().append("GM|+");
-		boolean isFirst = true;
-		
-		for(Npc entry : this.getNpcs().values()) {
-			String GM = entry.getHelper().getGmPacket();
-			if(GM.equals(""))
-				continue;
-			if(!isFirst)
-				packet.append("|+");
-			
-			packet.append(GM);
-			isFirst = false;
-		}
-		return packet.toString();
+		StringBuilder str = new StringBuilder("GM");
+        for(Npc npc : get(Npc.class,IdType.PNJ)){
+            str.append("|+").append(npc.getHelper().getGmPacket());
+        }
+        if(str.toString().equals("GM"))
+            return "";
+        str.append((char)0x00);
+        return str.toString();
 	}
 	
 	public String getObjectsGDsPackets() {
@@ -609,14 +656,13 @@ public class Maps {
      */
     public Case getRandomNearFreeCell(Case cell,int minDistance,int maxDistance){
         for(int i=0; i <= maxDistance;i++){
-            Case cell1 = cases.get(cell.getId()+minDistance+i);
+            Case cell1 = cases.get(cell.getId() + minDistance + i);
             Case cell2 = cases.get(cell.getId()-minDistance-i);
             if(cell1.isFree()) return cell1;
             if(cell2.isFree()) return cell2;
         }
         return null;
     }
-
 
     /**
      * Envoie un message a tout les player sur la map n etant pas en combat
@@ -628,6 +674,7 @@ public class Maps {
         }
     }
 
+    //region Initailisation
     private Map<Integer,Case> decompileCells(String cellsData){
         Map<Integer,Case> cells = new TreeMap<>();
         String[] data = cellsData.split("\\|");
@@ -658,8 +705,8 @@ public class Maps {
         {
             String CellData = dData.substring(f, f+10);
             List<Byte> CellInfo = new ArrayList<>();
-            for (int i = 0; i < CellData.length(); i++)
-                CellInfo.add((byte)CryptManager.getIntByHashedValue(CellData.charAt(i)));
+            for (char i : CellData.toCharArray())
+                CellInfo.add((byte)CryptManager.getIntByHashedValue(i));
             int Type = (CellInfo.get(2) & 56) >> 3;
             boolean IsSightBlocker = (CellInfo.get(0) & 1) != 0;
             int layerObject2 = ((CellInfo.get(0) & 2) << 12) + ((CellInfo.get(7) & 1) << 12) + (CellInfo.get(8) << 6) + CellInfo.get(9);
@@ -695,15 +742,22 @@ public class Maps {
         }
         return mobs;
     }
+    //endregion
 
     //region Packets
-
     /**
      * Retourne le packet GM avec l'ensemble des personnes sur la map
      * @return packet gm
      */
     public String getGmMessage(){
-           return "";
+        StringBuilder str = new StringBuilder("GM");
+        for(Entity entity : entities.values()){
+            String gm = entity.getHelper().getGmPacket();
+            if(!gm.isEmpty()) {
+                str.append("|+").append(gm);
+            }
+        }
+        return str.toString();
     }
 
     /**
@@ -713,7 +767,7 @@ public class Maps {
      * @return message de chargement
      */
     private String generateLoadingMessage(){
-        return "GA;2;"+this.getId() +";";
+        return this.loadingMapMessage;
     }
 
     /**
@@ -721,7 +775,7 @@ public class Maps {
      * @return description
      */
     private String mapDescriptionMessage(){
-        return "GDM|"+id+"|"+date+"|"+key;
+        return this.descriptionMapMessage;
     }
 
     /**

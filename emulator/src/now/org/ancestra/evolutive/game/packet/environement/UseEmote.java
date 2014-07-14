@@ -18,11 +18,11 @@ public class UseEmote implements PacketParser {
 		
 		if(emote == -1 || client.getPlayer() == null)
 			return;
-		if(client.getPlayer().getFight() != null)
+		if(client.getPlayer().getFight() != null || !client.getPlayer().getEmote().getAll().contains(emote))
 			return;
 
         boolean activated = client.getPlayer().setEmoteActive(emote);
 		
-		SocketManager.GAME_SEND_eUK_PACKET_TO_MAP(client.getPlayer().getMap(), client.getPlayer().getId(), activated?emote:0);
+		SocketManager.GAME_SEND_eUK_PACKET_TO_MAP(client.getPlayer().getMap(), client.getPlayer().getId(), activated ? emote : 0);
 	}
 }

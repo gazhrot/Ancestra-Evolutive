@@ -7,23 +7,23 @@ import org.slf4j.LoggerFactory;
 import java.sql.*;
 
 
-public abstract class AbstractDAO<T> implements DAO<T>{
+public abstract class AbstractDAO<T> implements DAO<T> {
 
     protected class Result{
         public final Connection connection;
         public final ResultSet resultSet;
-        protected Result(Connection connection,ResultSet resultSet){
+        protected Result(Connection connection,ResultSet resultSet) {
             this.connection = connection;
             this.resultSet = resultSet;
         }
     }
 	
-	protected static HikariDataSource dataSource;
+	protected HikariDataSource dataSource;
     protected Logger logger = (Logger)LoggerFactory.getLogger("test");
     protected final Object locker = new Object();
 
-	public AbstractDAO(HikariDataSource _dataSource) {
-         dataSource = _dataSource;
+	public AbstractDAO(HikariDataSource dataSource) {
+         this.dataSource = dataSource;
 	}
 	
 	protected void execute(String query) {
@@ -98,7 +98,8 @@ public abstract class AbstractDAO<T> implements DAO<T>{
     }
 	
 	protected void close(PreparedStatement statement) {
-        if (statement == null) return;
+        if (statement == null) 
+        	return;
 		try {
 			statement.clearParameters();
 	        statement.close();
@@ -108,17 +109,19 @@ public abstract class AbstractDAO<T> implements DAO<T>{
 	}
 
     protected void close(Connection connection){
-        if(connection == null) return;
+        if(connection == null) 
+        	return;
         try {
             connection.close();
-            logger.info("{} released",connection);
+            logger.trace("{} released",connection);
         } catch (Exception e) {
             logger.error("Can't close connection", e);
         }
     }
 
     protected void close(Statement statement) {
-        if(statement == null) return;
+        if(statement == null) 
+        	return;
         try {
             statement.close();
         } catch (Exception e) {
@@ -133,7 +136,7 @@ public abstract class AbstractDAO<T> implements DAO<T>{
                     result.resultSet.close();
                 if(result.connection != null)
                     result.connection.close();
-                logger.info("Connection {} has been released",result.connection);
+                logger.trace("Connection {} has been released",result.connection);
             } catch (SQLException e) {
                 logger.error("Can't close result");
             }

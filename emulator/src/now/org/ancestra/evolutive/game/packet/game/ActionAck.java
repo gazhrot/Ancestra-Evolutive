@@ -58,7 +58,7 @@ public class ActionAck implements PacketParser {
 						Case targetCell = client.getPlayer().getMap().getCases().get(CryptManager.cellCode_To_ID(GA.getPacket().substring(GA.getPacket().length()-2)));
 						
 						//On d�finie la case et on ajoute le personnage sur la case
-						client.getPlayer().setCell(nextCell);
+						client.getPlayer().setPosition(nextCell);
 						client.getPlayer().setOrientation(CryptManager.getIntByHashedValue(path.charAt(path.length()-3)));
 						if(!client.getPlayer().isGhosts()) client.getPlayer().setAway(false);
 						
@@ -91,7 +91,7 @@ public class ActionAck implements PacketParser {
 					
 					String path = GA.getArgs();
 					client.getPlayer().getCell().removeCreature(client.getPlayer());
-					client.getPlayer().setCell(client.getPlayer().getMap().getCases().get(newCellID));
+					client.getPlayer().setPosition(client.getPlayer().getMap().getCases().get(newCellID));
 					client.getPlayer().setOrientation(CryptManager.getIntByHashedValue(path.charAt(path.length()-3)));
 					SocketManager.GAME_SEND_BN(client);
                     client.getActions().clear();
@@ -113,7 +113,7 @@ public class ActionAck implements PacketParser {
 
                     String path = GA.getArgs();
                     client.getPlayer().getCell().removeCreature(client.getPlayer());
-                    client.getPlayer().setCell(client.getPlayer().getMap().getCases().get(newCellID));
+                    client.getPlayer().setPosition(client.getPlayer().getMap().getCases().get(newCellID));
                     client.getPlayer().setOrientation(CryptManager.getIntByHashedValue(path.charAt(path.length()-3)));
                     SocketManager.GAME_SEND_BN(client);
                     client.getActions().clear();

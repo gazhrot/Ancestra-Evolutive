@@ -52,7 +52,6 @@ public class GameClient implements Client {
     @Override
 	public void send(String message) {
         this.session.write(message);
-
     }
 
 	public void setAccount(Account account) {

@@ -75,7 +75,7 @@ public class Fighter extends Creature {
 
 	public Fighter(Fight f, MobGrade mob){
 		super(mob.getId(), Integer.toString(mob.getTemplate().getId()), f.getMap(), 	mob.getCell());
-	
+
 		_fight = f;
 		type = FighterType.CREATURE;
 		_mob = mob;
@@ -86,6 +86,7 @@ public class Fighter extends Creature {
 	
 	public Fighter(Fight f, Player perso){
 		super(perso.getId(),perso.getName(),f.getMap(),perso.getCell());
+        perso.removeOnMap();
 		_fight = f;
 		if(perso.isClone()){
 			type = FighterType.CLONE;
@@ -114,8 +115,8 @@ public class Fighter extends Creature {
     //region Refactored
     //region Getter and Setters
     @Override
-    public void setCell(Case cell){
-        //super.setCell(cell);
+    public void setPosition(Case cell){
+        //super.setPosition(cell);
         this.cell = cell;
         if(!this.isHide())
             this.fakeCell = cell;
@@ -300,7 +301,7 @@ public class Fighter extends Creature {
 
     public void set_fightCell(Case cell)
 	{
-		setCell(cell);
+		setPosition(cell);
 	}
 	public boolean isHide()
 	{

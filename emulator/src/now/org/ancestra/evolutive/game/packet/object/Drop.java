@@ -25,7 +25,7 @@ public class Drop implements PacketParser {
 			return;
 		
 		Object obj = World.data.getObject(guid);
-		client.getPlayer().setCell(client.getPlayer().getCell());
+		client.getPlayer().setPosition(client.getPlayer().getCell());
 		int cellPosition = Constants.getNearCellidUnused(client.getPlayer());
 		
 		if(cellPosition < 0) {

@@ -553,7 +553,7 @@ public class Admin {
 		
 		commands.put("KICK", command);
 		
-		command = new Command<Admin>("ADD", "Ajout de différents types.", "HONOR|JOB|JOBXP|CAPITAL|KAMAS|ITEM|SPELL|SPELLPOINT", 2) {
+		command = new Command<Admin>("ADD", "Ajout de différents types.", "EMOTE|HONOR|JOB|JOBXP|CAPITAL|KAMAS|ITEM|SPELL|SPELLPOINT", 2) {
 			
 			@Override
 			public void action(Admin t, String[] args) {
@@ -562,6 +562,40 @@ public class Admin {
 			
 		};
 		
+		command.addParameter(new Parameter <Admin>("EMOTE", "Ajoute l'�motte en question au joueur.", "ID,PLAYER*", 2) {
+
+			@Override
+			public void action(Admin t, String[] args) {
+				int id = 0;
+				try {
+					System.out.println(args[0]);
+					System.out.println(args[1]);
+				} catch(Exception e) {}
+				try {
+					id = Integer.parseInt(args[0]);
+				} catch(Exception e) {}
+				
+				if(id == 0) {
+					t.sendText("Paramètre incorrecte, merci d'y mettre un nombre entier.");
+					return;
+				}
+				
+				Player player = t.getPlayer();
+				
+				if(args.length > 1) {
+					player = World.data.getPlayerByName(args[1]);
+					if(player == null) {
+						t.sendText("Le joueur en question n'existe pas.");
+						return;
+					}
+				}
+				
+				player.getEmote().add(id);
+				t.sendText("Le joueur " + player.getName() + " � re�u l'�motte d'id " + id + " avec succ�s.");
+			}
+
+		});
+		
 		command.addParameter(new Parameter <Admin>("HONOR", "Attribut des points d'honneurs au joueur ciblé.", "HONOR,PLAYER*", 2) {
 
 			@Override
@@ -569,7 +603,7 @@ public class Admin {
 				int honor = 0;
 				
 				try {
-					honor = Integer.parseInt(args[1]);
+					honor = Integer.parseInt(args[0]);
 				} catch(Exception e) {
 					t.sendText("Paramètre incorrecte, merci d'y mettre un nombre entier.");
 					return;
@@ -578,7 +612,7 @@ public class Admin {
 				Player player = t.getPlayer();
 				
 				if(args.length > 1) {
-					player = World.data.getPlayerByName(args[2]);
+					player = World.data.getPlayerByName(args[1]);
 					if(player == null) {
 						t.sendText("Le joueur en question n'existe pas.");
 						return;
@@ -1477,28 +1511,25 @@ public class Admin {
 
 			@Override
 			public void action(Admin t, String[] args) {
-				int id = 0;
-				
+				int templateId;
 				try	{
-					id = Integer.parseInt(args[0]);
+					templateId = Integer.parseInt(args[0]);
 				} catch(Exception e) {
 					t.sendText("Paramètre incorrecte, veuillez rentrer un nombre entier.");
 					return;
 				}
-				
-				if(id == 0 || World.data.getNpcTemplate(id) == null) {
+                NpcTemplate template = World.data.getNpcTemplate(templateId);
+				if(templateId == 0 || template == null) {
 					t.sendText("Le pnj en question n'existe pas.");
 					return;
 				}
-				
-				Npc npc = t.getPlayer().getMap().addNpc(id, t.getPlayer().getCell().getId(), t.getPlayer().getOrientation());
-				SocketManager.GAME_SEND_ADD_NPC_TO_MAP(t.getPlayer().getMap(), npc);
+                new Npc(template,t.getPlayer().getMap(),t.getPlayer().getCell(),(byte)t.getPlayer().getOrientation());
 				
 				String str = "Le pnj a été ajouté avec succès.";
 				if(t.getPlayer().getOrientation() == 0 || t.getPlayer().getOrientation() == 2 || t.getPlayer().getOrientation() == 4 || t.getPlayer().getOrientation() == 6)
 							str = "Le pnj a été ajouté avec succès mais est invisible (orientation diagonale invalide).";
 				
-				if(World.database.getNpcData().create(t.getPlayer().getMap().getId(), id, t.getPlayer().getCell().getId(), t.getPlayer().getOrientation()))
+				if(World.database.getNpcData().create(t.getPlayer().getMap().getId(), templateId, t.getPlayer().getCell().getId(), t.getPlayer().getOrientation()))
 					t.sendText(str);
 				else
 					t.sendText("Le pnj n'a pas pu être ajouté dû à un problème d'exportation en base de donnée.");
@@ -1561,7 +1592,7 @@ public class Admin {
 
 				SocketManager.GAME_SEND_ERASE_ON_MAP_TO_MAP(t.getPlayer().getMap(), id);
 
-				npc.setCell(t.getPlayer().getCell());
+				npc.setPosition(t.getPlayer().getCell());
 				npc.setOrientation(t.getPlayer().getOrientation());
 	
 				SocketManager.GAME_SEND_ADD_NPC_TO_MAP(t.getPlayer().getMap(), npc);

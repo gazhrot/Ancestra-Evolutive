@@ -11,9 +11,6 @@ public class AutorisedCommand implements PacketParser {
 
 	@Override
 	public void parse(GameClient client, String packet) {
-		/*if(client.getCommand() == null) 
-			client.setCommand(new Admin(client.getPlayer()));
-		client.getCommand().consoleCommand(packet);*/
 		CommandParser.parse(packet.substring(2), new Admin(client.getPlayer()));
 	}
 }

@@ -4,6 +4,7 @@ import ch.qos.logback.classic.Logger;
 import com.zaxxer.hikari.HikariDataSource;
 import org.ancestra.evolutive.client.Account;
 import org.ancestra.evolutive.client.Player;
+import org.ancestra.evolutive.client.other.Emote;
 import org.ancestra.evolutive.common.Constants;
 import org.ancestra.evolutive.core.World;
 import org.ancestra.evolutive.database.AbstractDAO;
@@ -104,7 +105,7 @@ public class CharacterData extends AbstractDAO<Player>{
 							"`seeAlign`= ?,`seeSeller`= ?,`canaux`= ?,`map`= ?,"+
 							"`cell`= ?,`pdvper`= ?,`spells`= ?,`objets`= ?,`storeObjets`= ?,"+
 							"`savepos`= ?,`zaaps`= ?,`jobs`= ?,`mountxpgive`= ?,`mount`= ?,"+
-							"`title`= ?,`wife`= ?"+
+							"`title`= ?,`wife`= ?, `emotes`= ?"+
 							" WHERE `personnages`.`guid` = ? LIMIT 1 ;";
 			
 			PreparedStatement statement = getPreparedStatement(baseQuery);
@@ -145,7 +146,8 @@ public class CharacterData extends AbstractDAO<Player>{
 			statement.setInt(34, (obj.getMount()!=null?obj.getMount().getId():-1));
 			statement.setByte(35,(obj.getTitle()));
 			statement.setInt(36,obj.getWife());
-			statement.setInt(37,obj.getId());
+			statement.setString(37, obj.getEmote().parseToSave());
+			statement.setInt(38,obj.getId());
 			
 			execute(statement);
 			
@@ -307,7 +309,8 @@ public class CharacterData extends AbstractDAO<Player>{
                     resultSet.getInt("alvl"),
                     resultSet.getString("zaaps"),
                     resultSet.getByte("title"),
-                    resultSet.getInt("wife")
+                    resultSet.getInt("wife"),
+                    Emote.convertStringToArray(resultSet.getString("emotes"))
             );
             //V�rifications pr�-connexion
             player.VerifAndChangeItemPlace();

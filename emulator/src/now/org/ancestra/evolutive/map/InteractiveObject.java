@@ -210,27 +210,27 @@ public class InteractiveObject {
 						SocketManager.GAME_SEND_Im_PACKET(player, "14");
 						
 					break;
-					/*case 2037://Emote Faire signe
-						player.addStaticEmote(2);
+					case 2037://Emote Faire signe
+						player.getEmote().add(2);
 					break;
 					case 2025://Emote Applaudir
-						player.addStaticEmote(3);
+						player.getEmote().add(3);
 					break;
 					case 2039://Emote Se mettre en Col�re
-						player.addStaticEmote(4);
+						player.getEmote().add(4);
 					break;
 					case 2047://Emote Peur
-						player.addStaticEmote(5);
+						player.getEmote().add(5);
 					break;
 					case 8254://Emote Montrer son Arme
-						player.addStaticEmote(6);
+						player.getEmote().add(6);
 					break;
 					case 2099://Emote Saluer
-						player.addStaticEmote(9);
+						player.getEmote().add(9);
 					break;
 					case 8539://Emote Croiser les bras
-						player.addStaticEmote(14);
-					break;*/
+						player.getEmote().add(14);
+					break;
 				}
 			break;
 			

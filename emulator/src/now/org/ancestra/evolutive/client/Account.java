@@ -573,9 +573,8 @@ public class Account {
      * Envoie un message au player utilise par le compte
      * @param message message a faire parvenir
      */
-    public void send(String message){
-        if(gameClient != null){
+    public void send(String message) {
+        if(gameClient != null)
             gameClient.send(message);
-        }
     }
 }

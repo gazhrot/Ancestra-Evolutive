@@ -36,13 +36,13 @@ public class MobGroup extends Creature {
 		this(id,map,cell,"", alignement,false,false);
         int groupSize = (maxSize == -1)?defaultMaxGroup:random.nextInt(maxSize)+1;
         possibles = getPossibleMob(alignement,possibles);
-		if(!possibles.isEmpty()){
+        if(!possibles.isEmpty()){
             for(int a = 0; a < groupSize; a++) {
                 MobGrade Mob = possibles.get(random.nextInt(possibles.size())).getCopy();
                 this.mobs.put(-(mobs.size()), Mob);
             }
+            this.aggroDistance = generateAggroDistance(possibles);
         }
-        this.aggroDistance = generateAggroDistance(possibles);
 	}
 
     public MobGroup(int id,Maps map,Case cell,String group,boolean fix){
@@ -82,6 +82,17 @@ public class MobGroup extends Creature {
         }
         this.aggroDistance = generateAggroDistance(mobs.values());
 	}
+
+    private MobGroup(int id,Maps map,Case cell,String condition,Alignement alignement,boolean timer,boolean fix){
+        super(id,"Group id " + id + " on map "+ map.getId(), map,cell,random.nextInt(7));
+        this.isFix = fix;
+        this.condition = condition;
+        this.alignement = alignement;
+        if(timer){
+            startTimer();
+        }
+        helper = new MobGroupHelper(this);
+    }
 
     public Alignement getAlignement() {
 		return alignement;
@@ -125,21 +136,11 @@ public class MobGroup extends Creature {
         if (pathStr != null) {
             newCell.getMap().send("GA0;1;" + this.getId() +";"+ pathStr);
         }
-
         return true;
     }
 
 
-    private MobGroup(int id,Maps map,Case cell,String condition,Alignement alignement,boolean timer,boolean fix){
-        super(id,"Group id " + id + " on map "+ map.getId(), map,cell,random.nextInt(7));
-        this.isFix = fix;
-        this.condition = condition;
-        this.alignement = alignement;
-        if(timer){
-            startTimer();
-        }
-        helper = new MobGroupHelper(this);
-    }
+
 
     /**
      * Retourne une liste de mob ou seuls ceux avec le bon alignement on ete choisi

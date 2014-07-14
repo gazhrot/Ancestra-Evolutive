@@ -243,13 +243,11 @@ public class Server {
 						return;
 					}
 					player.warpToSavePos();
+					player.sendText("Vous avez bien ete teleporte a votre derniere position sauvegardee");
 				}
 				
 			};
 		
-			
-			//ajout message de succes
-			command.addSuccessMessage("Vous avez bien ete teleporte a votre derniere position sauvegardee");
 			//ajout aux commmandes
 			playerCommands.put(name, command);
 		}
@@ -264,6 +262,7 @@ public class Server {
 				@Override
 				public void action(Player player, String[] args) {
 					player.save();
+					player.sendText("Votre personnage a ete sauvegarde avec succes.");
 				}
 				
 			};
@@ -273,9 +272,6 @@ public class Server {
 					new TimeRestricter(RestrictLevel.ACCOUNT, 1, 1, TimeUnit.HOURS, 5, TimeUnit.MINUTES);
 			command.attachRestricter(restricter).activeErrorMessage(); //indique le temps restant avant relance
 			
-			
-			//ajout message de succes
-			command.addSuccessMessage("Votre personnage a ete sauvegarde avec succes.");
 			//ajout aux commmandes
 			playerCommands.put(name, command);
 		}

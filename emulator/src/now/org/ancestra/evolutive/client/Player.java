@@ -36,6 +36,7 @@ import org.ancestra.evolutive.object.Object;
 import org.ancestra.evolutive.object.ObjectType;
 import org.ancestra.evolutive.tool.time.waiter.Waiter;
 import org.ancestra.evolutive.util.exchange.PlayerExchange;
+import org.ancestra.evolutive.client.other.Emote;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -119,7 +120,7 @@ public class Player extends Creature {
 	private boolean showFriendConnection;
 	private boolean canAggro = true;
 	private boolean seeSeller = false;
-	private String emotes = "7667711";
+	private Emote emote;
 	private String canaux;
 	private String savePos;
 	private int emoteActive = 0;
@@ -142,7 +143,7 @@ public class Player extends Creature {
 	public Player(int UUID, String name, int sex, int classe, int color1, int color2, int color3,long kamas, int spellPoints,
 		int capital, int energy, int level, long experience, int size, int gfx, byte align, int account, Map<Integer,Integer> stats,
 		byte showFriendConnection, byte showWings, byte seeSeller, String canaux, int curMap, int curCell, String stuff, String store,
-		int pdvPer, String spells, String savePos, String jobs, int mountXp, int mount, int honor, int deshonor, int aLvl, String zaaps, byte title, int wife)
+		int pdvPer, String spells, String savePos, String jobs, int mountXp, int mount, int honor, int deshonor, int aLvl, String zaaps, byte title, int wife, ArrayList<Integer> emotes)
 	{
         super(UUID,name,curMap,curCell);
 		this.sex = sex;
@@ -170,7 +171,8 @@ public class Player extends Creature {
 		this.setStore(store);
 		this.maxPdv = (this.level - 1) * 5 + Constants.getBasePdv(this.classe.getId()) + getTotalStats().getEffect(Constants.STATS_ADD_VITA);
 		this.pdv = (this.maxPdv * pdvPer) / 100;
-        if(!Server.regenLifeWhenOffline){
+		
+        if(!Server.regenLifeWhenOffline) {
             regenTime = System.currentTimeMillis();
         } else {
             if(regenTime == -1) {
@@ -186,21 +188,24 @@ public class Player extends Creature {
 		this.honor = honor;
 		this.deshonor = deshonor;
 		this.aLvl = aLvl;
-		for(String id: zaaps.split(",")) {
+		
+		for(String id: zaaps.split("\\,")) {
 			try	{
 				this.zaaps.add(Integer.parseInt(id));
 			} catch(Exception e) {}
 		}
+		
 		this.title = title;
 		this.wife = wife; 
-			if(this.energy == 0) 
+		this.emote = new Emote(this, emotes);
+		
+		if(this.energy == 0) 
 			this.setGhosts();
 
         helper = new PlayerHelper(this);
-
 	}
 	
-	public Player(Player player,int id) {
+	public Player(Player player, int id) {
         super(id, player.getName(), player.getMap(), player.getCell());
 		this.sex = player.getSex();
 		this.classe = player.getClasse();
@@ -208,7 +213,6 @@ public class Player extends Creature {
 		this.color2 = player.getColor2();
 		this.color3 = player.getColor3();
 		this.level = player.getLevel();
-		
 		this.size = player.getSize();
 		this.gfx = player.getGfx();
 		this.stats = player.getStats();
@@ -268,7 +272,8 @@ public class Player extends Creature {
 				0,
 				zaaps,
 				(byte)0,
-				0
+				0,
+				new ArrayList<Integer>()
 				);
 		player.spells = Constants.getStartSorts(classeId);
 		
@@ -733,13 +738,9 @@ public class Player extends Creature {
 	public void setSeeSeller(boolean seeSeller) {
 		this.seeSeller = seeSeller;
 	}
-
-	public String getEmotes() {
-		return emotes;
-	}
-
-	public void setEmotes(String emotes) {
-		this.emotes = emotes;
+	
+	public Emote getEmote() {
+		return emote;
 	}
 
 	public String getCanaux() {
@@ -1221,7 +1222,7 @@ public class Player extends Creature {
 		
 		SocketManager.GAME_SEND_ZONE_ALLIGN_STATUT(out);
 		SocketManager.GAME_SEND_SPELL_LIST(this);
-		SocketManager.GAME_SEND_EMOTE_LIST(this, this.emotes, "0");
+		this.getEmote().send();
 		SocketManager.GAME_SEND_RESTRICTIONS(out);
 		SocketManager.GAME_SEND_Ow_PACKET(this);
 		SocketManager.GAME_SEND_SEE_FRIEND_CONNEXION(out, this.isShowFriendConnection());
@@ -3273,6 +3274,11 @@ public class Player extends Creature {
                     SocketManager.GAME_SEND_FLAG_PACKET(player, this);
                 else
                     this.followers.remove(player.getId());
+        return true;
+    }
+
+    @Override
+    public boolean onMoveCell(Case oldCell,Case newCell){
         return true;
     }
 }

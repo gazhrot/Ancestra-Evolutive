@@ -26,6 +26,7 @@ public class Information implements PacketParser {
 		//Maisons
 		House.load(client.getPlayer(), client.getPlayer().getMap().getId());
 		//Objets sur la carte
+
 		SocketManager.GAME_SEND_MAP_GMS_PACKETS(client.getPlayer().getMap(), client.getPlayer());
 		SocketManager.GAME_SEND_MAP_MOBS_GMS_PACKETS(client.getPlayer().getAccount().getGameClient(), client.getPlayer().getMap());
 		SocketManager.GAME_SEND_MAP_NPCS_GMS_PACKETS(client, client.getPlayer().getMap());
@@ -38,5 +39,6 @@ public class Information implements PacketParser {
 		Fight.FightStateAddFlag(client.getPlayer().getMap(), client.getPlayer());
 		//items au sol
 		client.getPlayer().getMap().sendFloorItems(client.getPlayer());
+
 	}
 }

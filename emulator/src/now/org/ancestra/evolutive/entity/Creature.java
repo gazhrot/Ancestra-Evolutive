@@ -86,11 +86,7 @@ public class Creature extends Entity {
      * @param cell Identifiant de la nouvelle cellule
      */
     public void setPosition(Maps newMap,Case cell) {
-        Maps oldMap = this.map;
-        this.map = newMap;
-        Case oldCell = this.getCell();
-        this.cell = cell;
-        this.onPositionChange(oldCell,cell);
+        onPositionChange(this.cell,cell);
     }
 
     /**
@@ -105,10 +101,8 @@ public class Creature extends Entity {
      * Change la position de la creature
      * @param cell cellule finale de la creature
      */
-    public void setCell(Case cell) {
-        Case oldCell = this.cell;
-        this.cell = cell;
-        this.onPositionChange(oldCell,cell);
+    public void setPosition(Case cell) {
+        this.onPositionChange(this.cell,cell);
     }
 
     /**
@@ -152,6 +146,10 @@ public class Creature extends Entity {
     }
 
 
+    public void removeOnMap(){
+        this.map.removeEntity(this);
+        this.cell.removeCreature(this);
+    }
 
     /**
      * Effectue le changement de position
@@ -161,14 +159,17 @@ public class Creature extends Entity {
      * false sinon
      */
     protected boolean onPositionChange(Case oldCell, Case newCell) {
-        if(newCell == null || newCell.getMap() == null) {
+        if(newCell == null || newCell.getMap() == null || oldCell == newCell) {
             return false;
         }
         if(newCell.getMap() == oldCell.getMap()) {
+            this.cell = newCell;
             return onMoveCell(oldCell,newCell);
         } else {
             oldCell.getMap().removeEntity(this);
             oldCell.removeCreature(this);
+            this.cell = newCell;
+            this.map = newCell.getMap();
             newCell.getMap().addEntity(this);
             newCell.addCreature(this);
             return onMapChange(oldCell, newCell);

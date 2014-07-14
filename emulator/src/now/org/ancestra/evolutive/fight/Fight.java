@@ -113,7 +113,7 @@ public class Fight {
         logger = (Logger) LoggerFactory.getLogger(init1.getName() + " vs " + init2.getName());
         this.type = type; //0: D?fie (4: Pvm) 1:PVP (5:Perco)
 		this.id = id;
-		this.map = map.getMapCopy();
+		this.map = map.copy();
 		setOldMap(map);
 		_init0 = new Fighter(Fight.this,init1);
 		_init1 = new Fighter(Fight.this,init2);
@@ -202,7 +202,7 @@ public class Fight {
 		_mobGroup = group;
 		type = Constants.FIGHT_TYPE_PVM; //(0: D?fie) 4: Pvm (1:PVP) (5:Perco)
 		this.id = id;
-		this.map = map.getMapCopy();
+		this.map = map.copy();
 		setOldMap(map);
 		_init0 = new Fighter(Fight.this,init1);
 		
@@ -289,7 +289,7 @@ public class Fight {
 		_mobGroup = group;
 		this.type = type; //(0: D?fie) 4: Pvm (1:PVP) (5:Perco)
 		this.id = id;
-		this.map = map.getMapCopy();
+		this.map = map.copy();
 		setOldMap(map);
 		_init0 = new Fighter(this,perso);
 		team0.put(perso.getId(), _init0);
@@ -333,13 +333,13 @@ public class Fight {
 
             SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(this, 3, 950, f.getId()+"", f.getId()+","+Constants.ETAT_PORTE+",0");
             SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(this, 3, 950, f.getId()+"", f.getId()+","+Constants.ETAT_PORTEUR+",0");
-            f.setCell(cell);
+            f.setPosition(cell);
             f.getCell().addFighter(f);
             _init0.getPersonnage().send(f.getGmPacket('+'));
             f.setTeam(1);
             f.fullPDV();
         }
-        _init0.setCell(getRandomCell(_start0));
+        _init0.setPosition(getRandomCell(_start0));
 
         _init0.getPersonnage().getCell().removeCreature(_init0.getPersonnage());
 
@@ -362,7 +362,7 @@ public class Fight {
 		
 		type = Constants.FIGHT_TYPE_PVT; //(0: D?fie) (4: Pvm) (1:PVP) 5:Perco
 		this.id = id;
-		this.map = map.getMapCopy();
+		this.map = map.copy();
 		setOldMap(map);
 		_init0 = new Fighter(Fight.this,perso);
 		_perco = perco;
@@ -632,7 +632,7 @@ public class Fight {
 				 alignement = team1.get(team1.keySet().toArray()[0]).getMob().getTemplate().getAlignement();
 			}
             //Si groupe non fixe
-			if(!_mobGroup.isFix())World.data.getMap(map.getId()).spawnGroup(alignement, 1, true, _mobGroup.getCell().getId());//Respawn d'un groupe
+			if(!_mobGroup.isFix())World.data.getMap(map.getId()).spawnGroup(alignement, _mobGroup.getCell().getId());//Respawn d'un groupe
 
 		}
 		SocketManager.GAME_SEND_GIC_PACKETS_TO_FIGHT(Fight.this, 7);
@@ -2139,7 +2139,7 @@ public class Fight {
 							}
 							F._Perco.set_inFight((byte)0);
 							F._Perco.set_inFightID((byte)-1);
-							for(Player z : World.data.getMap(F._Perco.getMap().getId()).getPlayers()){
+                            for(Player z : World.data.getMap(F._Perco.getMap().getId()).getPlayers()){
 								if(z == null) continue;
 								SocketManager.GAME_SEND_MAP_PERCO_GMS_PACKETS(z.getAccount().getGameClient(), z.getMap());
 							}
@@ -2152,7 +2152,7 @@ public class Fight {
 						if(type != Constants.FIGHT_TYPE_CHALLENGE){
 							if(F.getPDV() <= 0){
 								F.getPersonnage().setPdv(1);
-							}
+                            }
 						}
 						F.getPersonnage().setNeedEndFightAction(true);
 					/**	F.getPersonnage().getWaiter().addNext(new Runnable() {
@@ -2472,6 +2472,14 @@ public class Fight {
 	public Fighter getFighterByPerso(Player perso)
 	{
 		Fighter fighter = null;
+        for(Fighter f : team0.values()){
+            if(f.getPersonnage() != null && f.getPersonnage() == perso)
+                return f;
+        }
+        for(Fighter f : team1.values()){
+            if(f.getPersonnage() != null && f.getPersonnage() == perso)
+                return f;
+        }
 		if(team0.get(perso.getId()) != null)
 			fighter = team0.get(perso.getId());
 		if(team1.get(perso.getId()) != null)
@@ -2791,7 +2799,7 @@ public class Fight {
 										 alignement = team1.get(team1.keySet().toArray()[0]).getMob().getTemplate().getAlignement();
 									}
                                     //Si groupe non fixe
-									if(!_mobGroup.isFix())World.data.getMap(map.getId()).spawnGroup(alignement, 1, true,_mobGroup.getCell().getId());//Respawn d'un groupe
+									if(!_mobGroup.isFix())World.data.getMap(map.getId()).spawnGroup(alignement, _mobGroup.getCell().getId());//Respawn d'un groupe
 
 								}
 								map = null;
