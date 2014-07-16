@@ -52,7 +52,7 @@ public class GuildMemberData extends AbstractDAO<GuildMember>{
 			statement.setLong(7, obj.getXpGave());
 			statement.setInt(8, obj.getXpGive());
 			statement.setInt(9, obj.getRight());
-			statement.setInt(10, obj.getPlayer().getAlign().getId());
+			statement.setInt(10, obj.getPlayer().getAlignement().getId());
 			statement.setString(11, obj.getPlayer().getAccount().getLastConnection());
 
 			execute(statement);

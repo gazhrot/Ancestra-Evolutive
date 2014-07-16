@@ -405,7 +405,7 @@ public class Fighter extends Creature {
 				str.append(_perso.getGfx()).append("^").append(_perso.getSize()).append(";");
 				str.append(_perso.getSex()).append(";");
 				str.append(_perso.getLevel()).append(";");
-				str.append(_perso.getAlign().getId()).append(",");
+				str.append(_perso.getAlignement().getId()).append(",");
 				str.append("0").append(",");//TODO
 				str.append((_perso.isShowWings()?_perso.getGrade():"0")).append(",");
 				str.append(_perso.getLevel()+_perso.getId());
@@ -457,7 +457,7 @@ public class Fighter extends Creature {
 				str.append(_double.getGfx()).append("^").append(_double.getSize()).append(";");
 				str.append(_double.getSex()).append(";");
 				str.append(_double.getLevel()).append(";");
-				str.append(_double.getAlign()).append(",");
+				str.append(_double.getAlignement().getId()).append(",");
 				str.append("0,");//TODO
 				str.append((_double.isShowWings()?_double.getGrade():"0")).append(",");
 				str.append(_double.getId()).append(";");

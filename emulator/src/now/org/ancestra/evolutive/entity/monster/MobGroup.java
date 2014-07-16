@@ -32,10 +32,10 @@ public class MobGroup extends Creature {
      * @param cell cell actuelle
      * @param maxSize taille maximale
      */
-	public MobGroup(int id,Alignement alignement, ArrayList<MobGrade> possibles, Maps map, Case cell, int maxSize) {
-		this(id,map,cell,"", alignement,false,false);
-        int groupSize = (maxSize == -1)?defaultMaxGroup:random.nextInt(maxSize)+1;
-        possibles = getPossibleMob(alignement,possibles);
+	public MobGroup(int id, Alignement alignement, ArrayList<MobGrade> possibles, Maps map, Case cell, int maxSize) {
+		this(id, map, cell, "", alignement, false, false);
+        int groupSize = (maxSize == -1) ? defaultMaxGroup:random.nextInt(maxSize) + 1;
+        possibles = getPossibleMob(alignement, possibles);
         if(!possibles.isEmpty()){
             for(int a = 0; a < groupSize; a++) {
                 MobGrade Mob = possibles.get(random.nextInt(possibles.size())).getCopy();
@@ -45,20 +45,21 @@ public class MobGroup extends Creature {
         }
 	}
 
-    public MobGroup(int id,Maps map,Case cell,String group,boolean fix){
-        this(id,map,cell,group,"",fix);
+    public MobGroup(int id, Maps map, Case cell, String group, boolean fix) {
+        this(id, map, cell, group, "", fix);
     }
 
-    public MobGroup(int id,Maps map,Case cell,String group){
-        this(id,map,cell,group,"",false);
+    public MobGroup(int id, Maps map, Case cell, String group) {
+        this(id, map, cell, group, "", false);
     }
 
-    public MobGroup(int id,Maps map,Case cell,String group,String condition){
-        this(id,map,cell,group,condition,false);
+    public MobGroup(int id, Maps map, Case cell, String group, String condition) {
+        this(id, map, cell, group, condition, false);
     }
 
-	public MobGroup(int id,Maps map,Case cell, String group,String condition,boolean fix) {
-        this(id, map, cell, condition,NEUTRE, false, fix);
+	public MobGroup(int id, Maps map, Case cell, String group, String condition, boolean fix) {
+        this(id, map, cell, condition, NEUTRE, false, fix);
+        
         for(String data : group.split("\\;")) {
             String[] infos = data.split("\\,");
             try	{
@@ -83,14 +84,13 @@ public class MobGroup extends Creature {
         this.aggroDistance = generateAggroDistance(mobs.values());
 	}
 
-    private MobGroup(int id,Maps map,Case cell,String condition,Alignement alignement,boolean timer,boolean fix){
-        super(id,"Group id " + id + " on map "+ map.getId(), map,cell,random.nextInt(7));
+    private MobGroup(int id, Maps map, Case cell, String condition, Alignement alignement, boolean timer, boolean fix) {
+        super(id,"Group id " + id + " on map "+ map.getId(), map, cell, random.nextInt(7));
         this.isFix = fix;
         this.condition = condition;
         this.alignement = alignement;
-        if(timer){
+        if(timer)
             startTimer();
-        }
         helper = new MobGroupHelper(this);
     }
 
@@ -125,22 +125,19 @@ public class MobGroup extends Creature {
 	}
 
     @Override
-    protected boolean onMoveCell(Case oldCell,Case newCell) {
+    protected boolean onMoveCell(Case oldCell, Case newCell) {
         if(isFix) return true;
-        for(MobGrade mob : mobs.values()){
+        for(MobGrade mob : mobs.values()) {
             if(cell != null) {
                 mob.setCell(newCell);
             }
         }
         String pathStr = Pathfinding.getShortestStringPathBetween(oldCell.getMap(), oldCell.getId(), newCell.getId(), 0);
-        if (pathStr != null) {
+        if(pathStr != null) {
             newCell.getMap().send("GA0;1;" + this.getId() +";"+ pathStr);
         }
         return true;
     }
-
-
-
 
     /**
      * Retourne une liste de mob ou seuls ceux avec le bon alignement on ete choisi
@@ -148,10 +145,10 @@ public class MobGroup extends Creature {
      * @param mobs mobs initiaux
      * @return mobs purges de ceux d un mauvaise alignement
      */
-    private ArrayList<MobGrade> getPossibleMob(Alignement alignement,ArrayList<MobGrade> mobs){
+    private ArrayList<MobGrade> getPossibleMob(Alignement alignement, ArrayList<MobGrade> mobs){
         ArrayList<MobGrade> cleanMobs = new ArrayList<>();
-        for(MobGrade mob : mobs){
-            if(mob.getTemplate().getAlignement() == alignement){
+        for(MobGrade mob : mobs) {
+            if(mob.getTemplate().getAlignement() == alignement) {
                 cleanMobs.add(mob);
             }
         }
@@ -166,11 +163,11 @@ public class MobGroup extends Creature {
     private int generateAggroDistance(Collection<MobGrade> mobs){
         if(this.alignement != NEUTRE) return 15;
         int maxLevel = 0;
-        for(MobGrade mob : mobs){
-            if(mob.getLevel() > maxLevel){
+        for(MobGrade mob : mobs) {
+            if(mob.getLevel() > maxLevel) {
                 maxLevel = mob.getLevel();
             }
         }
-        return maxLevel>500?3:maxLevel/50;
+        return maxLevel > 500 ? 3 : maxLevel / 50;
     }
 }

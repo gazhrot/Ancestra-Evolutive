@@ -163,7 +163,7 @@ public class Player extends Creature {
 		this.account = World.data.getCompte(account);
 		this.stats = new Stats(stats, true, this);
 		this.showFriendConnection = showFriendConnection==1;
-		this.showWings = (this.getAlign() != Alignement.NEUTRE ? showWings==1 : false);
+		this.showWings = (this.getAlignement() != Alignement.NEUTRE ? showWings==1 : false);
 		/** FIXME: SeeSeller **/
 		this.canaux = canaux;
 		this.setMapAndCell(curMap, curCell);
@@ -222,7 +222,7 @@ public class Player extends Creature {
 		this.showWings = player.isShowWings();
 		this.mount = player.getMount();
 		this.aLvl = player.getaLvl();
-		this.align = player.getAlign();
+		this.align = player.getAlignement();
         this.account = player.getAccount();
         helper = new PlayerHelper(this);
     }
@@ -482,11 +482,11 @@ public class Player extends Creature {
 		this.curExchange = curExchange;
 	}
 
-	public Alignement getAlign() {
+	public Alignement getAlignement() {
 		return align;
 	}
 
-	public void setAlign(Alignement align) {
+	public void setAlignement(Alignement align) {
 		this.align = align;
 	}
 
@@ -1329,7 +1329,7 @@ public class Player extends Creature {
 		StringBuilder ASData = new StringBuilder();
 		ASData.append("As").append(this.getXpToString(",")).append("|");
 		ASData.append(this.getKamas()).append("|").append(this.getCapital()).append("|").append(this.getSpellPoints()).append("|");
-		ASData.append(this.getAlign().getId()).append("~").append(this.getAlign().getId()).append(",").append(this.getaLvl()).append(",").append(this.getGrade()).append(",").append(this.getHonor()).append(",").append(this.getDeshonor()+",").append((this.isShowWings() ? "1" : "0")).append("|");
+		ASData.append(this.getAlignement().getId()).append("~").append(this.getAlignement().getId()).append(",").append(this.getaLvl()).append(",").append(this.getGrade()).append(",").append(this.getHonor()).append(",").append(this.getDeshonor()+",").append((this.isShowWings() ? "1" : "0")).append("|");
 
 
         int pdv = getPdv(),pdvMax = getMaxPdv();
@@ -1392,7 +1392,7 @@ public class Player extends Creature {
 	}
 	
 	public int getGrade() {
-		if(this.getAlign() == Alignement.NEUTRE)
+		if(this.getAlignement() == Alignement.NEUTRE)
 			return 0;
 		if(this.getHonor() >= 17500)
 			return 10;
@@ -2385,7 +2385,7 @@ public class Player extends Creature {
 		if(this.getAccount().isFriendWith(guid))
 		{
 			str.append(this.getLevel()).append(";");
-			str.append(this.getAlign()).append(";");
+			str.append(this.getAlignement().getId()).append(";");
 		}else
 		{
 			str.append("?;");
@@ -2406,7 +2406,7 @@ public class Player extends Creature {
 		if(this.getAccount().isFriendWith(guid))
 		{
 			str.append(this.getLevel()).append(";");
-			str.append(this.getAlign()).append(";");
+			str.append(this.getAlignement().getId()).append(";");
 		}else
 		{
 			str.append("?;");
@@ -2493,7 +2493,7 @@ public class Player extends Creature {
 	{
 		this.setHonor(0);
 		this.setDeshonor(0);
-		this.setAlign(Alignement.getAlignement(a));
+		this.setAlignement(Alignement.getAlignement(a));
 		this.setaLvl(1);
 		//envoies des packets
 		//Im022;10~42 ?
@@ -2504,7 +2504,7 @@ public class Player extends Creature {
 
 	public void toggleWings(char c)
 	{
-		if(this.getAlign() == Alignement.NEUTRE)
+		if(this.getAlignement() == Alignement.NEUTRE)
 			return;
 		
 		int hloose = this.getHonor() * 5 / 100;//FIXME: perte de X% honneur
@@ -2689,7 +2689,7 @@ public class Player extends Creature {
 		if (map.getSubArea().getArea().getId() == 7 || map.getSubArea().getArea().getId() == 11)
 		{
 		int price = 20;
-		if (this.getAlign() == Alignement.BONTARIEN || this.getAlign() == Alignement.BRAKMARIEN)
+		if (this.getAlignement() == Alignement.BONTARIEN || this.getAlignement() == Alignement.BRAKMARIEN)
 		price = 10;
 		this.kamas -= price;
 		SocketManager.GAME_SEND_STATS_PACKET(this);

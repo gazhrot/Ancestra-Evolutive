@@ -290,7 +290,7 @@ public class Guild {
 			str.append(GM.getXpGive()).append(";");
 			str.append(GM.getRight()).append(";");
 			str.append(online).append(";");
-			str.append(GM.getPlayer().getAlign()).append(";");
+			str.append(GM.getPlayer().getAlignement().getId()).append(";");
 			str.append(GM.getLastConnection());
 		}
 		return str.toString();

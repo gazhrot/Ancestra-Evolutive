@@ -3,7 +3,7 @@ package org.ancestra.evolutive.enums;
 import org.ancestra.evolutive.core.Server;
 
 public enum EmulatorInfos {
-	DEVELOPER("John-r & Locos & Erfive"),
+	DEVELOPER("John-r, Locos & Erfive"),
 	RELEASE(0.7),
 	CLIENT_RELEASE("1.29.1"),
 	SOFT_NAME("Ancestra Evolutive v"+RELEASE.value),

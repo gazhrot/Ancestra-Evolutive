@@ -29,7 +29,7 @@ public class CommandParser {
 			Console.instance.print("Erreur de syntaxe.", t);
 			return; 
 		}
-
+		
 		if(t instanceof Player) {
             Command<Player> command = World.data.getPlayerCommands().get(name);
 
@@ -37,7 +37,7 @@ public class CommandParser {
 		}
         else if (t instanceof Console) {
             Command<Console> command = World.data.getConsoleCommands().get(name);
-
+    
             CommandParser.launch((Console) t, command, parameters);
         }
         else if(t instanceof Admin) {
@@ -46,7 +46,7 @@ public class CommandParser {
 
             Command<Admin> command = World.data.getAdminCommands().get(name);
 
-			if(command != null && (((Admin) t).getGmLvl() < command.getGmLvl())) {
+            if(command != null && (((Admin) t).getGmLvl() < command.getGmLvl())) {
 				Console.instance.print("Vous ne disposez pas du rang de modération neccesaire.", t);
 				return;
 			}

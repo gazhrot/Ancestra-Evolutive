@@ -106,7 +106,7 @@ public class SendMessage implements PacketParser {
 			case '!'://Alignement
 				if(!client.getPlayer().getCanaux().contains(packet.charAt(2)+""))
 					return;
-				if(client.getPlayer().getAlign() == Alignement.NEUTRE) 
+				if(client.getPlayer().getAlignement() == Alignement.NEUTRE) 
 					return;
 				if(client.getPlayer().getDeshonor() >= 1) {
 					SocketManager.GAME_SEND_Im_PACKET(client.getPlayer(), "183");

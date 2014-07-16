@@ -1143,7 +1143,7 @@ public class SocketManager {
 		String packet = "cMK"+suffix+"|"+guid+"|"+name+"|"+msg;
 		for(Player perso : World.data.getOnlinePersos())
 		{
-			if(perso.getAlign() == _perso.getAlign())
+			if(perso.getAlignement() == _perso.getAlignement())
 			{
 				send(perso,packet);
 			}

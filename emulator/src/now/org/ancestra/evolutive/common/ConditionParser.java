@@ -42,7 +42,7 @@ public class ConditionParser {
 			 	jep.addVariable("Cw", perso.getStats().getEffect(Constants.STATS_ADD_SAGE));
 			 	jep.addVariable("Cc", perso.getStats().getEffect(Constants.STATS_ADD_CHAN));
 			 	//Autre
-			 	jep.addVariable("Ps", perso.getAlign().getId());
+			 	jep.addVariable("Ps", perso.getAlignement().getId());
 			 	jep.addVariable("Pa", perso.getaLvl());
 			 	jep.addVariable("PP", perso.getGrade());
 			 	jep.addVariable("PL", perso.getLevel());

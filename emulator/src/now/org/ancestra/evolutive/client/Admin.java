@@ -491,13 +491,16 @@ public class Admin {
 					time = Integer.parseInt(args[1]);
 				} catch(Exception e) {}
 				
-				if(name != null) {
-					player = World.data.getPlayerByName(name);
-					return;
-				} 
+				if(name != null)
+					player = World.data.getPlayerByName(name); 
 								
 				if(player == null) {
 					t.sendText("Le joueur en question n'existe pas.");
+					return;
+				}
+				
+				if(player.getAccount() == null) {
+					t.sendText("Le compte du joueur " + player.getName() + " est inexistant.");
 					return;
 				}
 				
@@ -505,12 +508,7 @@ public class Admin {
 					player.getAccount().mute(false, 0);
 					t.sendText("Vous avez démute " + player.getName() + ".");
 					return;
-				}
-
-				if(player.getAccount() == null) {
-					t.sendText("Le compte du joueur " + player.getName() + " est inexistant.");
-					return;
-				}
+				}				
 				
 				player.getAccount().mute(true, time);
 				t.sendText("Le joueur " + player.getName() + " a été mute " + time + " secondes.");
@@ -620,7 +618,7 @@ public class Admin {
 				}
 				
 				
-				if(player.getAlign() == Alignement.NEUTRE) {
+				if(player.getAlignement() == Alignement.NEUTRE) {
 					t.sendText("Le joueur " + player.getName() + " est neutre, impossible de lui ajouté des points d'honneur.");
 					return;
 				}
@@ -787,18 +785,15 @@ public class Admin {
 			}
 		});
 		
-		Parameter<Admin> parameter = new Parameter <Admin>("ITEM", "Permet d'obtenir l'équipement spécifié.", "ITEM,QUANTITY,PLAYER*", 2) {
+		Parameter<Admin> parameter = new Parameter<Admin>("ITEM", "Permet d'obtenir l'équipement spécifié.", "ITEM,QUANTITY,PLAYER*", 2) {
 
 			@Override
 			public void action(Admin t, String[] args) {	
 				int id = 0;
 				
 				try {
-					id = Integer.parseInt(args[1]);
-				} catch(Exception e) {
-					t.sendText("Paramètre incorrecte, veuillez rentrer un nombre entier.");
-					return;
-				}
+					id = Integer.parseInt(args[0]);
+				} catch(Exception e) {}
 				
 				if(id == 0) {
 					t.sendText("Paramètre incorrecte, veuillez rentrer un nombre entier.");
@@ -815,7 +810,7 @@ public class Admin {
 				int qua = 1;
 				Player player = t.getPlayer();
 				
-				if(args.length == 2) {
+				if(args.length >= 2) {
 					try {
 						qua = Integer.parseInt(args[1]);
 					} catch(Exception e) {}
@@ -960,6 +955,75 @@ public class Admin {
 		
 		commands.put("ADD", command);
 		
+		command = new Command<Admin>("!GETITEM", null, null, 3) {
+
+			@Override
+			public void action(Admin t, String[] args) {
+				int id = 0;
+				
+				try {
+					id = Integer.parseInt(args[0]);
+				} catch(Exception e) {
+					t.sendText("Paramètre incorrecte, veuillez rentrer un nombre entier.");
+					return;
+				}
+				
+				if(id == 0) {
+					t.sendText("Paramètre incorrecte, veuillez rentrer un nombre entier.");
+					return;
+				}
+				
+				ObjectTemplate template = World.data.getObjectTemplate(id);
+				
+				if(template == null) {
+					t.sendText("Paramètre incorrecte, l'objet n'existe pas.");
+					return;
+				}
+				
+				int qua = 1;
+				Player player = t.getPlayer();
+				
+				if(args.length == 2) {
+					try {
+						qua = Integer.parseInt(args[1]);
+					} catch(Exception e) {}
+				}
+				
+				boolean useMax = false;
+				if(args.length == 3) {
+					if(args[2].equalsIgnoreCase("MAX")) {
+						useMax = true;
+					} else {
+						player = World.data.getPlayerByName(args[2]);
+						if(player == null) {
+							t.sendText("Le joueur en question n'existe pas.");
+							return;
+						}
+					}
+				} else if(args.length > 3) {
+					player = World.data.getPlayerByName(args[3]);
+					if(player == null) {
+						t.sendText("Le joueur en question n'existe pas.");
+						return;
+					}
+				}
+				
+				if(qua < 1)
+					qua = 1;
+				
+				Object object = template.createNewItem(qua, useMax);
+				
+				if(t.getPlayer().addObject(object, true))
+					World.data.addObject(object, true);
+				
+				t.sendText("Le joueur " + player.getName() + " vient de recevoir l'objet '" + template.getName() + "'" + (useMax ? " avec des stats maximum." : "."));
+				SocketManager.GAME_SEND_Ow_PACKET(t.getPlayer());
+			}
+			
+		};
+		
+		commands.put("!GETITEM", command);
+		
 		command = new Command<Admin>("SET", null, "ALIGN|SIZE|MORPH|LEVEL|LIFE|TITLE", 2) {
 			
 			public void action(Admin t, String[] args) {
@@ -1027,7 +1091,7 @@ public class Admin {
 				}
 				
 				player.modifAlignement(align);
-				t.sendText("Le joueur " + player.getName() + " vient de passer " + player.getAlign().toString().toLowerCase() + ".");
+				t.sendText("Le joueur " + player.getName() + " vient de passer " + player.getAlignement().toString().toLowerCase() + ".");
 			}
 		});
 		

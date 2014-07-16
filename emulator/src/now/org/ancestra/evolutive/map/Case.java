@@ -226,15 +226,15 @@ public class Case {
 				int count = 0;
 				int price = 20;
 				
-				if (perso.getMap().getSubArea().getArea().getId() == 7 && (perso.getAlign() == Alignement.BONTARIEN || perso.getAlign() == Alignement.NEUTRE || perso.getAlign() == Alignement.MERCENAIRE))//Ange, Neutre ou S�rianne
+				if (perso.getMap().getSubArea().getArea().getId() == 7 && (perso.getAlignement() == Alignement.BONTARIEN || perso.getAlignement() == Alignement.NEUTRE || perso.getAlignement() == Alignement.MERCENAIRE))//Ange, Neutre ou S�rianne
 				{
 					Zaapis = Constants.ZAAPI.get(Alignement.BONTARIEN).split(",");
-					if (perso.getAlign() == Alignement.BONTARIEN) price = 10;
+					if (perso.getAlignement() == Alignement.BONTARIEN) price = 10;
 				}
-				else if (perso.getMap().getSubArea().getArea().getId() == 11 && (perso.getAlign() == Alignement.BRAKMARIEN || perso.getAlign() == Alignement.NEUTRE || perso.getAlign() == Alignement.MERCENAIRE))//D�mons, Neutre ou S�rianne
+				else if (perso.getMap().getSubArea().getArea().getId() == 11 && (perso.getAlignement() == Alignement.BRAKMARIEN || perso.getAlignement() == Alignement.NEUTRE || perso.getAlignement() == Alignement.MERCENAIRE))//D�mons, Neutre ou S�rianne
 				{
 					Zaapis = Constants.ZAAPI.get(Alignement.BRAKMARIEN).split(",");
-					if (perso.getAlign() == Alignement.BRAKMARIEN) price = 10;
+					if (perso.getAlignement() == Alignement.BRAKMARIEN) price = 10;
 				}
 				else
 				{

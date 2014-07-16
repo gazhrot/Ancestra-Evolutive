@@ -184,7 +184,7 @@ public class Fight {
 		SocketManager.GAME_SEND_ERASE_ON_MAP_TO_MAP(_init1.getPersonnage().getMap(), _init1.getId());
 		if(this.type == 1)
 		{
-			SocketManager.GAME_SEND_GAME_ADDFLAG_PACKET_TO_MAP(_init0.getPersonnage().getMap(),0,_init0.getId(),_init1.getId(),_init0.getPersonnage().getCell().getId(),"0;"+_init0.getPersonnage().getAlign(), _init1.getPersonnage().getCell().getId(), "0;"+_init1.getPersonnage().getAlign());
+			SocketManager.GAME_SEND_GAME_ADDFLAG_PACKET_TO_MAP(_init0.getPersonnage().getMap(),0,_init0.getId(),_init1.getId(),_init0.getPersonnage().getCell().getId(),"0;"+_init0.getPersonnage().getAlignement().getId(), _init1.getPersonnage().getCell().getId(), "0;"+_init1.getPersonnage().getAlignement().getId());
 		}else
 		{
 			SocketManager.GAME_SEND_GAME_ADDFLAG_PACKET_TO_MAP(_init0.getPersonnage().getMap(),0,_init0.getId(),_init1.getId(),_init0.getPersonnage().getCell().getId(),"0;-1", _init1.getPersonnage().getCell().getId(), "0;-1");
@@ -967,12 +967,12 @@ public class Fight {
 			}
 			if(type == Constants.FIGHT_TYPE_AGRESSION)
 			{
-				if(perso.getAlign() == Alignement.NEUTRE)
+				if(perso.getAlignement() == Alignement.NEUTRE)
 				{
 					SocketManager.GAME_SEND_GA903_ERROR_PACKET(perso.getAccount().getGameClient(),'f',guid);
 					return;
 				}
-				if(_init0.getPersonnage().getAlign() != perso.getAlign())
+				if(_init0.getPersonnage().getAlignement() != perso.getAlignement())
 				{
 					SocketManager.GAME_SEND_GA903_ERROR_PACKET(perso.getAccount().getGameClient(),'f',guid);
 					return;
@@ -1031,12 +1031,12 @@ public class Fight {
 			}
 			if(type == Constants.FIGHT_TYPE_AGRESSION)
 			{
-				if(perso.getAlign() == Alignement.NEUTRE)
+				if(perso.getAlignement() == Alignement.NEUTRE)
 				{
 					SocketManager.GAME_SEND_GA903_ERROR_PACKET(perso.getAccount().getGameClient(),'f',guid);
 					return;
 				}
-				if(_init1.getPersonnage().getAlign() != perso.getAlign())
+				if(_init1.getPersonnage().getAlignement() != perso.getAlignement())
 				{
 					SocketManager.GAME_SEND_GA903_ERROR_PACKET(perso.getAccount().getGameClient(),'f',guid);
 					return;
@@ -1873,7 +1873,7 @@ public class Fight {
         		int winD = 0;
         		if(type == Constants.FIGHT_TYPE_AGRESSION)
         		{
-	        		if(_init1.getPersonnage().getAlign() != Alignement.NEUTRE && _init0.getPersonnage().getAlign() != Alignement.NEUTRE)
+	        		if(_init1.getPersonnage().getAlignement() != Alignement.NEUTRE && _init0.getPersonnage().getAlignement() != Alignement.NEUTRE)
 	    			{
 	        			if(_init1.getPersonnage().getAccount().getCurIp().compareTo(_init0.getPersonnage().getAccount().getCurIp()) != 0 || Server.config.isMulePvp())
 	        			{
@@ -1887,11 +1887,11 @@ public class Fight {
         		P.addHonor(winH);
         		P.setDeshonor(P.getDeshonor()+winD);
         		Packet.append("2;").append(i.getId()).append(";").append(i.getPacketsName()).append(";").append(i.get_lvl()).append(";").append((i.isDead() ?  "1" : "0" )).append(";");
-        		Packet.append((P.getAlign()!=Alignement.NEUTRE?World.data.getExpLevel(P.getGrade()).pvp:0)).append(";");
+        		Packet.append((P.getAlignement()!=Alignement.NEUTRE?World.data.getExpLevel(P.getGrade()).pvp:0)).append(";");
         		Packet.append(P.getHonor()).append(";");
         		int maxHonor = World.data.getExpLevel(P.getGrade()+1).pvp;
         		if(maxHonor == -1)maxHonor = World.data.getExpLevel(P.getGrade()).pvp;
-        		Packet.append((P.getAlign()!=Alignement.NEUTRE?maxHonor:0)).append(";");
+        		Packet.append((P.getAlignement()!=Alignement.NEUTRE?maxHonor:0)).append(";");
         		Packet.append(winH).append(";");
         		Packet.append(P.getGrade()).append(";");
         		Packet.append(P.getDeshonor()).append(";");
@@ -1947,7 +1947,7 @@ public class Fight {
         		// Si c'est un neutre, on ne gagne pas de points
         		int winH = 0;
         		int winD = 0;
-        		if(_init1.getPersonnage().getAlign() != Alignement.NEUTRE && _init0.getPersonnage().getAlign() != Alignement.NEUTRE)
+        		if(_init1.getPersonnage().getAlignement() != Alignement.NEUTRE && _init0.getPersonnage().getAlignement() != Alignement.NEUTRE)
     			{
         			if(_init1.getPersonnage().getAccount().getCurIp().compareTo(_init0.getPersonnage().getAccount().getCurIp()) != 0 || Server.config.isMulePvp())
             		{
@@ -1961,11 +1961,11 @@ public class Fight {
         		if(P.getDeshonor()-winD<0) winD = 0;
         		P.setDeshonor(P.getDeshonor()-winD);
         		Packet.append("0;").append(i.getId()).append(";").append(i.getPacketsName()).append(";").append(i.get_lvl()).append(";").append((i.isDead() ?  "1" : "0" )).append(";");
-        		Packet.append((P.getAlign()!=Alignement.NEUTRE?World.data.getExpLevel(P.getGrade()).pvp:0)).append(";");
+        		Packet.append((P.getAlignement()!=Alignement.NEUTRE?World.data.getExpLevel(P.getGrade()).pvp:0)).append(";");
         		Packet.append(P.getHonor()).append(";");
         		int maxHonor = World.data.getExpLevel(P.getGrade()+1).pvp;
         		if(maxHonor == -1)maxHonor = World.data.getExpLevel(P.getGrade()).pvp;
-        		Packet.append((P.getAlign()!=Alignement.NEUTRE?maxHonor:0)).append(";");
+        		Packet.append((P.getAlignement()!=Alignement.NEUTRE?maxHonor:0)).append(";");
         		Packet.append(winH).append(";");
         		Packet.append(P.getGrade()).append(";");
         		Packet.append(P.getDeshonor()).append(";");
@@ -2940,11 +2940,11 @@ public class Fight {
 			break;
 			
 			case Constants.FIGHT_TYPE_AGRESSION:
-				infos.append(_init0.getPersonnage().getAlign()).append(",");
+				infos.append(_init0.getPersonnage().getAlignement().getId()).append(",");
 				infos.append(team0.size()).append(";");
 				//Team2
 				infos.append("0,");
-				infos.append(_init1.getPersonnage().getAlign()).append(",");
+				infos.append(_init1.getPersonnage().getAlignement().getId()).append(",");
 				infos.append(team1.size()).append(";");
 			break;
 			
@@ -3142,7 +3142,7 @@ public class Fight {
 					}
 				}else if(fight.getValue().type == Constants.FIGHT_TYPE_AGRESSION)
 				{
-					SocketManager.GAME_SEND_GAME_ADDFLAG_PACKET_TO_PLAYER(P, fight.getValue()._init0.getPersonnage().getMap(),0,fight.getValue()._init0.getId(),fight.getValue()._init1.getId(),fight.getValue()._init0.getPersonnage().getCell().getId(),"0;"+fight.getValue()._init0.getPersonnage().getAlign(), fight.getValue()._init1.getPersonnage().getCell().getId(), "0;"+fight.getValue()._init1.getPersonnage().getAlign());
+					SocketManager.GAME_SEND_GAME_ADDFLAG_PACKET_TO_PLAYER(P, fight.getValue()._init0.getPersonnage().getMap(),0,fight.getValue()._init0.getId(),fight.getValue()._init1.getId(),fight.getValue()._init0.getPersonnage().getCell().getId(),"0;"+fight.getValue()._init0.getPersonnage().getAlignement().getId(), fight.getValue()._init1.getPersonnage().getCell().getId(), "0;"+fight.getValue()._init1.getPersonnage().getAlignement().getId());
 					for(Entry<Integer, Fighter> F : fight.getValue().team0.entrySet())
 					{
 						if(Server.config.isDebug()) Console.instance.println(F.getValue().getPersonnage().getName());

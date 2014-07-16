@@ -161,7 +161,7 @@ public class SendActions implements PacketParser {
 				Player target = World.data.getPlayer(id);
 				if(target == null || !target.isOnline() || target.getFight() != null
 					|| target.getMap().getId() != client.getPlayer().getMap().getId()
-					|| target.getAlign() == client.getPlayer().getAlign()
+					|| target.getAlignement() == client.getPlayer().getAlignement()
 					|| client.getPlayer().getMap().getPlaces().equalsIgnoreCase("|")
 					|| !target.isCanAggro())
 					return;
@@ -169,7 +169,7 @@ public class SendActions implements PacketParser {
 				client.getPlayer().toggleWings('+');
 				SocketManager.GAME_SEND_GA_PACKET_TO_MAP(client.getPlayer().getMap(),"", 906, client.getPlayer().getId()+"", id+"");
 				
-				if(target.getAlign() == Alignement.NEUTRE) {
+				if(target.getAlignement() == Alignement.NEUTRE) {
 					client.getPlayer().setDeshonor(client.getPlayer().getDeshonor()+1);
 					SocketManager.GAME_SEND_Im_PACKET(client.getPlayer(), "084;1");
 					client.getPlayer().getMap().newFight(client.getPlayer(), target, Constants.FIGHT_TYPE_AGRESSION, true);

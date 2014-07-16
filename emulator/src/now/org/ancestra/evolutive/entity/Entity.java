@@ -6,7 +6,7 @@ import org.slf4j.LoggerFactory;
 public class Entity {
     private final int id;
     private final String name;
-    protected Helper helper;
+    protected Helper<?> helper;
     protected final Logger logger;
 
     public Entity(int id, String name) {
@@ -36,7 +36,7 @@ public class Entity {
      * Retourne le helper de l entitee
      * @return helper
      */
-    public Helper getHelper(){
+    public Helper<?> getHelper(){
         return this.helper;
     }
 

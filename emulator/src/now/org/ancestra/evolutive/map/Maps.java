@@ -522,7 +522,7 @@ public class Maps {
 		
 		for(MobGroup group : this.getMobGroups().values()) {
 			if(Pathfinding.getDistanceBetween(this, cell,group.getCell().getId()) <= group.getAggroDistance()) {
-				if((group.getAlignement() == Alignement.NEUTRE || ((player.getAlign() == Alignement.BONTARIEN || player.getAlign() == Alignement.BRAKMARIEN) && (player.getAlign() != group.getAlignement()))) && ConditionParser.validConditions(player, group.getCondition())) {
+				if((group.getAlignement() == Alignement.NEUTRE || ((player.getAlignement() == Alignement.BONTARIEN || player.getAlignement() == Alignement.BRAKMARIEN) && (player.getAlignement() != group.getAlignement()))) && ConditionParser.validConditions(player, group.getCondition())) {
 					Log.addToLog(" > Le joueur " + player.getName() + " rentre en combat contre un groupe de monstre (" + group.getId() + ") !");
 					startFigthVersusMonstres(player,group);
 					return;
@@ -668,8 +668,8 @@ public class Maps {
      * Envoie un message a tout les player sur la map n etant pas en combat
      * @param str message a envoyer
      */
-    public void send(String str){
-        for(Entity entity : this.entities.values()){
+    public void send(String str) {
+        for(Entity entity : this.entities.values()) {
             entity.send(str);
         }
     }

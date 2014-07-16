@@ -12,7 +12,6 @@ public enum IdType {
     FENCE(-9),
     PRISM(-10);
 
-
     /**
      * Id du type
      */
@@ -29,10 +28,10 @@ public enum IdType {
      * /!\ Ce sont des id negatifs il faudra donc monter
      */
     public final int MINIMAL_ID;
-    private IdType(int id){
+    
+    private IdType(int id) {
         this.id = id;
         MAXIMAL_ID = id*100000000;
         MINIMAL_ID =((id-1)*100000000)+1;
-
     }
 }
