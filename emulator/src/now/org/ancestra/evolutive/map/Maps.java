@@ -5,16 +5,19 @@ import org.ancestra.evolutive.area.SubArea;
 import org.ancestra.evolutive.client.Player;
 import org.ancestra.evolutive.common.*;
 import org.ancestra.evolutive.core.Log;
+import org.ancestra.evolutive.core.Server;
 import org.ancestra.evolutive.core.World;
 import org.ancestra.evolutive.entity.Entity;
-import org.ancestra.evolutive.entity.collector.Collector;
 import org.ancestra.evolutive.entity.monster.MobGrade;
 import org.ancestra.evolutive.entity.monster.MobGroup;
 import org.ancestra.evolutive.entity.npc.Npc;
 import org.ancestra.evolutive.enums.Alignement;
 import org.ancestra.evolutive.enums.IdType;
-import org.ancestra.evolutive.fight.Fight;
+import org.ancestra.evolutive.fight.fight.Fight;
 import org.ancestra.evolutive.fight.Fighter;
+import org.ancestra.evolutive.fight.fight.PVMFight;
+import org.ancestra.evolutive.fight.team.Team;
+import org.ancestra.evolutive.map.flags.Flag;
 import org.ancestra.evolutive.object.Object;
 import org.ancestra.evolutive.other.Action;
 import org.slf4j.LoggerFactory;
@@ -23,18 +26,21 @@ import java.util.*;
 import java.util.Map.Entry;
 
 public class Maps {
+    private static Random random = new Random();
     //region Move mobs
-    private static Timer timer = new Timer();
-    static class moveMobs extends TimerTask{
+    private static class MapTimer extends ScheduledAction{
         private static int i = 0;
+        public MapTimer(int timeDelay) {
+            super(timeDelay);
+        }
         @Override
-        public void run() {
+        public void applyAction() {
             for(Maps map : World.data.getMaps().values()) {
                 ArrayList<MobGroup> mobs = new ArrayList<>(map.getMobGroups().values());
-               
+
                 if(mobs.size() == 0)
-                	continue;
-                
+                    continue;
+
                 MobGroup mob = mobs.get(i%mobs.size());
                 mob.setPosition(map, map.getRandomNearFreeCell(mob.getCell(), 5, 25));
                 i++;
@@ -43,12 +49,13 @@ public class Maps {
         }
     }
     static {
-        timer.scheduleAtFixedRate(new moveMobs(), 50000, 50000);
+        GlobalThread.registerAction(new MapTimer(Server.moveMobDelay));
     }
     //endregion
 
     private final String loadingMapMessage;
     private final String descriptionMapMessage;
+    private String GDFPacket = "";
 
 	private final int id;
 	private final String date;
@@ -61,17 +68,17 @@ public class Maps {
     private byte y;
 	private byte maxGroup = 3;
 	private byte maxSize;
-	private int nextFreeId = -1;
 	private SubArea subArea;
 	private MountPark mountPark;
+    private ArrayList<Integer> temporaryId = new ArrayList<>();
+    private final HashMap<Fight, Couple<Flag,Flag>> flags = new HashMap<>();
+    private final java.lang.Object flagLocker = new java.lang.Object();
 
 
 
     private Map<Integer, Entity> entities = new HashMap<>();
-	private Map<Integer, Npc> npcs = new TreeMap<>();
 	private Map<Integer, Case> cases = new TreeMap<>();
-	private Map<Integer, Fight> fights = new TreeMap<>();
-	private Map<Integer, MobGroup> mobGroups = new TreeMap<>();
+	private Map<Integer, Fight> fights;
 	private Map<Integer, MobGroup> fixMobGroups = new TreeMap<>();
 	private Map<Integer, ArrayList<Action>> endFightAction = new TreeMap<>();
 	private ArrayList<MobGrade> mobPossibles = new ArrayList<>();
@@ -118,7 +125,6 @@ public class Maps {
 
 		if(this.cases.isEmpty())
 			return;
-
 		refreshSpawns();
 	}
 
@@ -135,6 +141,7 @@ public class Maps {
     public Maps(int id, String date, byte width, byte height, String key, String places,Map<Integer,Case> cases) {
         this(id,date,width,height,key,places);
         this.cases = cases;
+        this.GDFPacket = generateGDFPacket();
     }
 
     /**
@@ -222,10 +229,6 @@ public class Maps {
 		return maxSize;
 	}
 
-	public int getNextObject() {
-		return nextFreeId;
-	}
-
 	public SubArea getSubArea() {
 		return subArea;
 	}
@@ -239,7 +242,7 @@ public class Maps {
 	}
 
 	public Map<Integer, Npc> getNpcs() {
-		return npcs;
+		return getMap(Npc.class, IdType.PNJ);
 	}
 
 	public Map<Integer, Case> getCases() {
@@ -251,7 +254,7 @@ public class Maps {
 	}
 
 	public Map<Integer, MobGroup> getMobGroups() {
-		return mobGroups;
+		return getMap(MobGroup.class,IdType.MONSTER_GROUP);
 	}
 
 	public Map<Integer, MobGroup> getFixMobGroups() {
@@ -274,10 +277,14 @@ public class Maps {
 	public void addEntity(Entity entity) {
         entity.send(generateLoadingMessage());
         send(loadCharacterMessage(entity));
+        registerOnMap(entity);
+        entity.send(mapDescriptionMessage());
+    }
+
+    public void registerOnMap(Entity entity){
         if(!entities.containsKey(entity.getId())){
             entities.put(entity.getId(), entity);
         }
-        entity.send(mapDescriptionMessage());
     }
 
     /**
@@ -306,11 +313,20 @@ public class Maps {
 	}
 
     /**
-     * Retourne une liste des pnj sur la map
-     * @return liste des pnj sur la map
+     * Retourne la liste des entitees du type voulu sur la map
+     * @param expectedClasse classe attendue
+     * @param idType type d id de l entitee
+     * @param <T> classe attendue
+     * @return une liste de l ensemble des entitee du type attendu
      */
-    private ArrayList<Npc> getNpc(){
-        return get(Npc.class,IdType.PNJ);
+    public <T extends Entity> ArrayList<T> get(Class<T> expectedClasse,IdType idType){
+        ArrayList<T> list = new ArrayList<>();
+        for(Entry<Integer,Entity> entry : entities.entrySet()){
+            if(entry.getKey()>=idType.MINIMAL_ID && entry.getKey()<=idType.MAXIMAL_ID){
+                list.add((T)entry.getValue());
+            }
+        }
+        return list;
     }
 
     /**
@@ -320,11 +336,11 @@ public class Maps {
      * @param <T> classe attendue
      * @return une liste de l ensemble des entitee du type attendu
      */
-    public <T> ArrayList<T> get(Class<T> expectedClasse,IdType idType){
-        ArrayList<T> list = new ArrayList<>();
+    public <T extends Entity> HashMap<Integer,T> getMap(Class<T> expectedClasse,IdType idType){
+        HashMap<Integer,T> list = new HashMap<>();
         for(Entry<Integer,Entity> entry : entities.entrySet()){
             if(entry.getKey()>=idType.MINIMAL_ID && entry.getKey()<=idType.MAXIMAL_ID){
-                list.add((T)entry.getValue());
+                list.put(entry.getKey(),(T)entry.getValue());
             }
         }
         return list;
@@ -340,6 +356,23 @@ public class Maps {
         for(int i = startIndex ; i > startIndex-1000 && i >= type.MINIMAL_ID ;i--){
             if(!entities.containsKey(i))
                 return i;
+        }
+        return 0;
+    }
+
+    /**
+     * Retourne un id temporaire
+     * Faire tres attention a bien libere les id apres usage!
+     * @return id temporaire
+     * 0 si aucun id n est libre
+     */
+    public int getNextFreeId(){
+        int startIndex = IdType.TEMPORARY_OBJECT.MAXIMAL_ID-this.id*1000;
+        for(int i = startIndex ; i > startIndex-1000 && i >= IdType.TEMPORARY_OBJECT.MINIMAL_ID ;i--){
+            if(!temporaryId.contains((Integer)i)) {
+                temporaryId.add((Integer) i);
+                return i;
+            }
         }
         return 0;
     }
@@ -368,137 +401,111 @@ public class Maps {
 			this.getEndFightAction().get(type1).remove(A);
 	}
 
+    public void refreshSpawns() {
+        for(int id : this.getMobGroups().keySet())
+            send("GM|-" + id);
+
+        this.getMobGroups().clear();
+        this.getMobGroups().putAll(this.getFixMobGroups());
+
+        for(MobGroup mg : this.getFixMobGroups().values())
+            SocketManager.GAME_SEND_MAP_MOBS_GM_PACKET(this, mg);
+
+        this.spawnGroup(Alignement.BRAKMARIEN,1,-1);
+        this.spawnGroup(Alignement.BONTARIEN, 1, -1);
+        this.spawnGroup(Alignement.NEUTRE, -1);
+    }
+
     public void spawnGroup(Alignement alignement,int cell){
-        spawnGroup(alignement,this.getMaxGroup()-get(MobGroup.class,IdType.MONSTER_GROUP).size(),cell);
+        spawnGroup(alignement, this.getMaxGroup() - get(MobGroup.class, IdType.MONSTER_GROUP).size() + 1, cell);
     }
 
 	public void spawnGroup(Alignement alignement,int quantity, int cell) {
 		for(int i = 0; i < quantity; i++) {
             int nextId = getNextFreeId(IdType.MONSTER_GROUP);
             MobGroup mobGroup = new MobGroup(nextId, alignement, this.getMobPossibles(), this, cases.get(cell), this.getMaxSize());
-            if (!mobGroup.getMobs().isEmpty()) {
+            if (!mobGroup.getMobsGrade().isEmpty()) {
                 addEntity(mobGroup);
-                mobGroups.put(mobGroup.getId(), mobGroup);
             }
         }
 	}
-	
+
 	public void spawnNewGroup(boolean timer, Case cell, String data, String condition) {
-		MobGroup group = new MobGroup(this.getNextObject(),this,cell, data,condition,false);
-		
-		if(group.getMobs().isEmpty())
+        int nextFreeId = getNextFreeId(IdType.MONSTER_GROUP);
+		MobGroup group = new MobGroup(nextFreeId,this,cell, data,condition,false);
+		if(group.getMobsGrade().isEmpty())
 			return;
-		
-		this.getMobGroups().put(this.getNextObject(), group);
-		SocketManager.GAME_SEND_MAP_MOBS_GM_PACKET(this, group);
-		this.nextFreeId--;
-		
+		addEntity(group);
 		if(timer)
 			group.startTimer();
 	}
-	
+
 	public void spawnGroupOnCommand(int cell, String data) {
-		MobGroup group = new MobGroup(this.getNextObject(),this,cases.get(cell),data,false);
-		
-		if(group.getMobs().isEmpty())
+        int nextFreeId = getNextFreeId(IdType.MONSTER_GROUP);
+		MobGroup group = new MobGroup(nextFreeId,this,cases.get(cell),data,false);
+		if(group.getMobsGrade().isEmpty())
 			return;
-		
-		this.getMobGroups().put(this.getNextObject(), group);
-		SocketManager.GAME_SEND_MAP_MOBS_GM_PACKET(this, group);
-		this.nextFreeId--;
+		group.startTimer();
+        addEntity(group);
 	}
-	
+
 	public void addStaticGroup(int cell, String data) {
-		MobGroup group = new MobGroup(this.getNextObject(), this,cases.get(cell), data);
-		
-		if(group.getMobs().isEmpty())
+        int nextFreeId = getNextFreeId(IdType.MONSTER_GROUP);
+		MobGroup group = new MobGroup(nextFreeId, this,cases.get(cell), data);
+		if(group.getMobsGrade().isEmpty())
 			return;
-		
-		this.getMobGroups().put(this.getNextObject(), group);
-		this.nextFreeId--;
-		this.getFixMobGroups().put(-1000 + this.getNextObject(), group);
-		SocketManager.GAME_SEND_MAP_MOBS_GM_PACKET(this, group);
+		addEntity(group);
 	}
-	
-	public Fight newFight(Player init1, Player init2, int type, boolean protect) {
-		int id = 1;
-		
-		if(!this.getFights().isEmpty())
-			id = ((Integer) (this.getFights().keySet().toArray()[this.getFights().size() - 1])) + 1;
-		
-		Fight fight = new Fight(type, id, this, init1, init2, protect);
-		this.getFights().put(id, fight);
-		SocketManager.GAME_SEND_MAP_FIGHT_COUNT_TO_MAP(this);
-		return fight;
-	}
-	
-	public void startFightVersusProtectors(Player player, MobGroup group) {
+
+    /**public Fight newFight(Player init1, Player init2, int type, boolean protect) {
+     int id = 1;
+
+     if(!this.getFights().isEmpty())
+     id = ((Integer) (this.getFights().keySet().toArray()[this.getFights().size() - 1])) + 1;
+     ArrayList<Fightable> initiateur1 = new ArrayList<>();
+     ArrayList<Fightable> initiateur2 = new ArrayList<>();
+     initiateur1.add(init1);
+     initiateur2.add(init2);
+     Fight fight = new Fight(type, id, this,initiateur1,initiateur2);
+     this.getFights().put(id, fight);
+     SocketManager.GAME_SEND_MAP_FIGHT_COUNT_TO_MAP(this);
+     return fight;
+     }*/
+
+	/**public void startFightVersusProtectors(Player player, MobGroup group) {
 		if(!player.isCanAggro())
 			return;
-		
+
 		int id = 1;
-		
+
 		if(!this.getFights().isEmpty())
 			id = ((Integer) (this.getFights().keySet().toArray()[this.getFights().size() - 1])) + 1;
-		
-		this.getFights().put(id, new Fight(id, this, player, group, Constants.FIGHT_TYPE_PVM));
+
+        ArrayList<Fightable> initiateur1 = new ArrayList<>();
+        ArrayList<Fightable> initiateur2 = new ArrayList<>();
+        initiateur1.add(player);
+        int count = IdType.MONSTER.MAXIMAL_ID;
+        for(MobGrade mobGrade : group.getMobsGrade().values()){
+            initiateur2.add(new Mob(count,cases.get(getRandomFreeCell()),mobGrade));
+            count--;
+        }
+
+        this.getFights().put(id, new Fight(4,id, this, initiateur1, initiateur2));
 		SocketManager.GAME_SEND_MAP_FIGHT_COUNT_TO_MAP(this);
-	}
-	
+	}*/
+
 	public int getRandomFreeCell() {
-		ArrayList<Integer> cases = new ArrayList<>();
-		
-		for(Entry<Integer, Case> entry : this.getCases().entrySet()) {
-			if(!entry.getValue().isWalkable(true))
-				continue;
-
-			boolean ok = true;
-			
-			for(Entry<Integer,MobGroup> mgEntry : this.getMobGroups().entrySet())
-				if(mgEntry.getValue().getCell().getId() == entry.getValue().getId())
-					ok = false;
-		
-			if(!ok)
-				continue;
-
-			ok = true;
-			for(Entry<Integer, Npc> npc : this.getNpcs().entrySet())
-				if(npc.getValue().getCell().getId() == entry.getValue().getId())
-					ok = false;
-			
-			if(!ok)
-				continue;
-
-            if(entry != null)
-                if(!entry.getValue().getPlayers().isEmpty())
-				    continue;
-
-			cases.add(entry.getValue().getId());
-		}
-		
-		if(cases.isEmpty())	{
-			Log.addToLog(" > Aucune cellule libre trouv� sur la map " + this.getId() + " !");
-			return -1;
-		}
-
-		return cases.get(Formulas.getRandomValue(0, cases.size() - 1));
+        ArrayList<Case> cells = new ArrayList<>(this.getCases().values());
+		Case freecell;
+        int security=0;
+        do {
+            freecell = cells.get((int)random.nextInt(cells.size()));
+            security++;
+            if(security==100)break;
+        } while (freecell != null || !freecell.isFree() || freecell.isWalkable(true) );
+		return freecell.getId();
 	}
-	
-	public void refreshSpawns() {
-        for(int id : this.getMobGroups().keySet())
-			send("GM|-" + id);
 
-		this.getMobGroups().clear();
-		this.getMobGroups().putAll(this.getFixMobGroups());
-		
-		for(MobGroup mg : this.getFixMobGroups().values())
-			SocketManager.GAME_SEND_MAP_MOBS_GM_PACKET(this, mg);
-
-        this.spawnGroup(Alignement.BRAKMARIEN,1,-1);
-        this.spawnGroup(Alignement.BONTARIEN,1,-1);
-        this.spawnGroup(Alignement.NEUTRE,-1);
-	}
-	
 	public void onPlayerArriveOnCell(Player player, int cell) {
 		if(this.getCases().get(cell) == null)
 			return;
@@ -532,29 +539,33 @@ public class Maps {
 	}
 	
 	public void startFigthVersusMonstres(Player player, MobGroup group) {
-		int id = 1;
-		
-		if(!this.getFights().isEmpty())
-			id = ((Integer) (this.getFights().keySet().toArray()[this.getFights().size() - 1])) + 1;
-		
+        int id = getNextFreeId();
 		if(!group.isFix())
-			this.getMobGroups().remove(group.getId());
-		else 
-			SocketManager.GAME_SEND_MAP_MOBS_GMS_PACKETS_TO_MAP(this);
-		
-		this.getFights().put(id, new Fight(id, this, player, group));
-		SocketManager.GAME_SEND_MAP_FIGHT_COUNT_TO_MAP(this);
+            removeEntity(group);
+        removeEntity(player);
+        Fight fight = new PVMFight(id, this, player, group);
+        Couple<Team,Team> teams = fight.getTeams();
+        Couple<Flag,Flag> teamFlags = new Couple<>(teams.getKey().getFlag(),teams.getValue().getFlag());
+        synchronized (flagLocker){
+            addFight(fight);
+            this.flags.put(fight,teamFlags);
+        }
+        this.send("Gc+" + id + ";" + Fight.FightType.PVM.id + "|"
+                + teamFlags.getKey().getGc() + "|" + teamFlags.getValue().getGc());
 	}
 	
-	public void startFigthVersusPercepteur(Player player, Collector collector) {
+	/*public void startFigthVersusPercepteur(Player player, Collector collector) {
 		int id = 1;
 		
 		if(!this.getFights().isEmpty())
 			id = ((Integer)(this.getFights().keySet().toArray()[this.getFights().size() - 1])) + 1;
-
-		this.getFights().put(id, new Fight(id, this, player, collector));
+        ArrayList<Fightable> initiateur1 = new ArrayList<>();
+        ArrayList<Fightable> initiateur2 = new ArrayList<>();
+        initiateur1.add(player);
+        initiateur2.add(collector);
+		this.getFights().put(id, new Fight(5,id, this, initiateur1, initiateur2));
 		SocketManager.GAME_SEND_MAP_FIGHT_COUNT_TO_MAP(this);
-	}
+	}*/
 
 	public InteractiveObject getMountParkDoor() {
 		for(Case cell: this.getCases().values()) 
@@ -611,7 +622,7 @@ public class Maps {
 	
 	public String getNpcsGMsPackets() {
 		StringBuilder str = new StringBuilder("GM");
-        for(Npc npc : get(Npc.class,IdType.PNJ)){
+        for(Npc npc : get(Npc.class, IdType.PNJ)){
             str.append("|+").append(npc.getHelper().getGmPacket());
         }
         if(str.toString().equals("GM"))
@@ -637,6 +648,23 @@ public class Maps {
 		return toreturn.toString();
 	}
 
+    public void onFightStart(Fight fight){
+        removeFlags(fight);
+        addFight(fight);
+        refreshFightOnMap();
+        GlobalThread.registerAction(new ExecuteOnceAction(Server.mobRespawnDelay) {
+            @Override
+            public void applyAction() {
+                spawnGroup(Alignement.NEUTRE,getRandomFreeCell());
+            }
+        });
+    }
+
+    public void onFightEnd(Fight fight){
+        removeFight(fight);
+        refreshFightOnMap();
+    }
+
     /**
      * Renvoie les cellules libres les plus proches
      * @param cell cellucle centrale
@@ -656,7 +684,7 @@ public class Maps {
      */
     public Case getRandomNearFreeCell(Case cell,int minDistance,int maxDistance){
         for(int i=0; i <= maxDistance;i++){
-            Case cell1 = cases.get(cell.getId() + minDistance + i);
+            Case cell1 = cases.get(cell.getId()+minDistance + i);
             Case cell2 = cases.get(cell.getId()-minDistance-i);
             if(cell1.isFree()) return cell1;
             if(cell2.isFree()) return cell2;
@@ -671,6 +699,37 @@ public class Maps {
     public void send(String str) {
         for(Entity entity : this.entities.values()) {
             entity.send(str);
+        }
+    }
+
+    private void refreshFightOnMap(){
+        this.send(getFightCountPacket());
+    }
+
+    private void addFight(Fight f){
+        if(this.fights == null){
+            this.fights = new HashMap<>();
+        }
+        this.fights.put(f.getId(),f);
+    }
+
+    private void removeFlags(Fight f){
+        this.send("Gc-" + f.getId());
+        Couple<Flag,Flag> flagPair = this.flags.get(f);
+        flagPair.getKey().setWorking(false);
+        this.temporaryId.remove((Integer)flagPair.getKey().getId());
+        flagPair.getValue().setWorking(false);
+        this.temporaryId.remove((Integer)flagPair.getValue().getId());
+        synchronized (flagLocker){
+            this.flags.remove(f);
+        }
+    }
+
+    private void removeFight(Fight f){
+        if(this.fights != null && this.fights.containsKey(f.getId())){
+            this.fights.remove(f.getId());
+            if(this.fights.isEmpty())
+                this.fights = null;
         }
     }
 
@@ -750,14 +809,39 @@ public class Maps {
      * @return packet gm
      */
     public String getGmMessage(){
-        StringBuilder str = new StringBuilder("GM");
+        StringBuilder str = new StringBuilder();
         for(Entity entity : entities.values()){
             String gm = entity.getHelper().getGmPacket();
             if(!gm.isEmpty()) {
-                str.append("|+").append(gm);
+                str.append("GM|+").append(gm).append((char)0x00);
             }
         }
         return str.toString();
+    }
+
+    public String getFlagsPackets(){
+        StringBuilder gc = new StringBuilder();
+        StringBuilder gt = new StringBuilder();
+        synchronized (flagLocker){
+            for(Entry<Fight,Couple<Flag,Flag>> entry : flags.entrySet()){
+                gc.append("Gc+").append(entry.getKey().getId())
+                        .append(";").append(entry.getKey().getFightType().id).append("|")
+                        .append(entry.getValue().getKey().getGc()).append("|")
+                        .append(entry.getValue().getValue().getGc()).append("|");
+                gt.append(entry.getValue().getKey().getGt()).append((char)0x00)
+                        .append(entry.getValue().getValue().getGt()).append((char)0x00);
+            }
+            return gc.toString() + (char)0x00 + gt.toString();
+        }
+    }
+
+    public String getFightCountPacket(){
+        if(this.fights == null) return "fC0";
+        else return "fC" + fights.size();
+    }
+
+    public String getGDFPacket(){
+        return this.GDFPacket;
     }
 
     /**
@@ -794,6 +878,16 @@ public class Maps {
      */
     private String loadCharacterMessage(Entity entity){
         return "GM|+" + entity.getHelper().getGmPacket();
+    }
+
+    private String generateGDFPacket(){
+        StringBuilder packet = new StringBuilder("GDF|");
+        for(Case cell : this.cases.values()){
+            packet.append(cell.getId()).append(";")
+                    .append(Constants.IOBJECT_STATE_EMPTY2).append(";")//FIXME
+                    .append(1).append("|");//FIXME
+        }
+        return packet.toString();
     }
     //endregion
 }

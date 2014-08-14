@@ -1,6 +1,7 @@
 package org.ancestra.evolutive.entity;
 
 import org.ancestra.evolutive.core.World;
+import org.ancestra.evolutive.fight.fight.Fight;
 import org.ancestra.evolutive.map.Case;
 import org.ancestra.evolutive.map.Maps;
 
@@ -11,8 +12,10 @@ public class Creature extends Entity {
 
     protected Maps map;
     protected Case cell;
+    protected Fight fight;
     private State state;
     private int orientation;
+
 
 
     /**
@@ -35,6 +38,16 @@ public class Creature extends Entity {
      */
     public Creature(int id, String name, int mapId, int cellId) {
         this(id, name, World.data.getMap(mapId), World.data.getMap(mapId).getCases().get(cellId), 0);
+    }
+
+    /**
+     * Creer une creature sur la Map donnee
+     * @param id id de la creature
+     * @param name nom de la creature
+     * @param cell cellule de la creature
+     */
+    public Creature(int id, String name,Case cell) {
+        this(id, name, cell.getMap(), cell, 0);
     }
 
     /**
@@ -103,6 +116,22 @@ public class Creature extends Entity {
      */
     public void setPosition(Case cell) {
         this.onPositionChange(this.cell,cell);
+    }
+
+    /**
+     * Retourne la fight actuelle
+     * @return
+     */
+    public Fight getFight() {
+        return fight;
+    }
+
+    /**
+     * Fight actuelle
+     * @param fight
+     */
+    public void setFight(Fight fight) {
+        this.fight = fight;
     }
 
     /**

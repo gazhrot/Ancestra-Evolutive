@@ -2120,7 +2120,7 @@ public class Constants {
 	
 	
 	public static int getProtectorLevelByAttacker(Fighter fighter) {
-		int level = fighter.get_lvl();
+		int level = fighter.getLvl();
 		int value;
 		
 		if(level <= 50)

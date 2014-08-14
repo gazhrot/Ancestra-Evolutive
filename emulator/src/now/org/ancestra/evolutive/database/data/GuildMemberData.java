@@ -47,7 +47,7 @@ public class GuildMemberData extends AbstractDAO<GuildMember>{
 			statement.setInt(2, obj.getGuild().getId());
 			statement.setString(3, obj.getPlayer().getName());
 			statement.setInt(4, obj.getPlayer().getLevel());
-			statement.setInt(5, obj.getPlayer().getGfx());
+			statement.setInt(5, obj.getPlayer().getGFX());
 			statement.setInt(6, obj.getRank());
 			statement.setLong(7, obj.getXpGave());
 			statement.setInt(8, obj.getXpGive());

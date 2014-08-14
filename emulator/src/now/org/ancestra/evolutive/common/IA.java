@@ -4,7 +4,7 @@ import org.ancestra.evolutive.core.Console;
 import org.ancestra.evolutive.core.Log;
 import org.ancestra.evolutive.core.Server;
 import org.ancestra.evolutive.core.World;
-import org.ancestra.evolutive.fight.Fight;
+import org.ancestra.evolutive.fight.fight.Fight;
 import org.ancestra.evolutive.fight.Fighter;
 import org.ancestra.evolutive.fight.spell.LaunchedSpell;
 import org.ancestra.evolutive.fight.spell.SpellEffect;
@@ -29,23 +29,8 @@ public class IA implements Runnable {
 	
 	@Override
 	public void run() {
-		if(fighter.getMob() == null) {
-            if(fighter.isDouble())    {
-            	apply_type5(fighter,fight);
-            } else if(fighter.isPerco()){
-				apply_typePerco(fighter,fight);
-			} else {
-				fight.endTurn();
-				return;
-			}
-		} else if(fighter.getMob().getTemplate() == null
-				|| fighter.isDead()) {
-			return;
-		} else {
-			switch(fighter.getMob().getTemplate().getIa()) {
-				case 0://Ne rien faire
-					fight.endTurn();
-					return;
+        if(!fighter.isDead())
+        switch(fighter.getIa()) {
 				case 1://Attaque, Buff sois m�me, Buff Alli�s, Avancer vers ennemis. Si PDV < 15% Auto-Soins, Attaque, soin alli�, buff alli�, fuite
 					apply_type1(fighter,fight);
 				break;
@@ -64,7 +49,6 @@ public class IA implements Runnable {
 				case 6://IA type invocations
 					apply_type6(fighter,fight);
 				break;
-			}
 		}
 		if(!fight.get_curAction().isEmpty())
 			while(!fight.get_curAction().isEmpty()) {}
@@ -484,8 +468,7 @@ public class IA implements Runnable {
 	
 	private SpellStats getInvocSpell(Fight fight,Fighter fighter,int nearestCell)
 	{
-		if(fighter.getMob() == null)return null;
-		for(Entry<Integer, SpellStats> SS : fighter.getMob().getSpells().entrySet())
+		for(Entry<Integer, SpellStats> SS : fighter.getSpells().entrySet())
 		{
 			if(!fight.CanCastSpell(fighter, SS.getValue(), fight.getMap().getCases().get(nearestCell), -1))
 				continue;
@@ -523,7 +506,7 @@ public class IA implements Runnable {
 					if( PDVPER < PDVPERmin && PDVPER < 95)
 					{
 						int infl = 0;
-						for(Entry<Integer, SpellStats> ss : f.getMob().getSpells().entrySet())
+						for(Entry<Integer, SpellStats> ss : f.getSpells().entrySet())
 						{
 							if(infl < calculInfluenceHeal(ss.getValue()) && calculInfluenceHeal(ss.getValue()) != 0 && fight.CanCastSpell(f, ss.getValue(), F.get_fightCell(true), -1))//Si le sort est plus interessant
 							{
@@ -627,7 +610,7 @@ public class IA implements Runnable {
 	{
 		int infl = 0;	
 		SpellStats ss = null;
-		for(Entry<Integer, SpellStats> SS : F.getMob().getSpells().entrySet())
+		for(Entry<Integer, SpellStats> SS : F.getSpells().entrySet())
 		{
 			if(infl < calculInfluence(SS.getValue(),F,T) && calculInfluence(SS.getValue(),F,T) > 0 && fight.CanCastSpell(F, SS.getValue(), T.get_fightCell(true), -1))//Si le sort est plus interessant
 			{
@@ -658,7 +641,7 @@ public class IA implements Runnable {
 	{
 		int infl = 0;	
 		SpellStats ss = null;
-		for(Entry<Integer, SpellStats> SS : F.getMob().getSpells().entrySet())
+		for(Entry<Integer, SpellStats> SS : F.getSpells().entrySet())
 		{
 			if(infl < calculInfluenceHeal(SS.getValue()) && calculInfluenceHeal(SS.getValue()) != 0 && fight.CanCastSpell(F, SS.getValue(), T.get_fightCell(true), -1))//Si le sort est plus interessant
 			{
@@ -676,7 +659,7 @@ public class IA implements Runnable {
 		if(Pathfinding.isNextTo(F.get_fightCell(true).getId(), T.get_fightCell(true).getId()))
 			return false;
 		
-		if(Server.config.isDebug()) Log.addToLog("Tentative d'approche par "+F.getPacketsName()+" de "+T.getPacketsName());
+		if(Server.config.isDebug()) Log.addToLog("Tentative d'approche par "+F.getName()+" de "+T.getName());
 		
 		int cellID = Pathfinding.getNearestCellAround(fight.getMap(),T.get_fightCell(true).getId(),F.get_fightCell(true).getId(),null);
 		//On demande le chemin plus court
@@ -747,7 +730,7 @@ public class IA implements Runnable {
 		{
 			if(f.isDead())continue;
 			if(f == fighter)continue;
-			if(f.getTeam2() == fighter.getTeam2())//Si c'est un ami
+			if(f.getTeam() == fighter.getTeam())//Si c'est un ami
 			{
 				int d = Pathfinding.getDistanceBetween(fight.getMap(), fighter.get_fightCell(true).getId(), f.get_fightCell(true).getId());
 				if( d < dist)
@@ -767,7 +750,7 @@ public class IA implements Runnable {
 		for(Fighter f : fight.getFighters(3))
 		{
 			if(f.isDead())continue;
-			if(f.getTeam2() != fighter.getTeam2())//Si c'est un ennemis
+			if(f.getTeam() != fighter.getTeam())//Si c'est un ennemis
 			{
 				int d = Pathfinding.getDistanceBetween(fight.getMap(), fighter.get_fightCell(true).getId(), f.get_fightCell(true).getId());
 				if( d < dist)
@@ -788,7 +771,7 @@ public class IA implements Runnable {
 		{
 			if(f.isDead())continue;
 			if(f == fighter)continue;
-			if(f.getTeam2() != fighter.getTeam2())
+			if(f.getTeam() != fighter.getTeam())
 			{
 				ennemy.put(f.getPDV(), f);
 			}
@@ -829,7 +812,7 @@ public class IA implements Runnable {
 		}
 		int curTarget = 0,cell = 0;
 		SpellStats SS2 = null;
-		for(Entry<Integer, SpellStats> S : fighter.getMob().getSpells().entrySet())
+		for(Entry<Integer, SpellStats> S : fighter.getSpells().entrySet())
 		{
 			int targetVal = getBestTargetZone(fight,fighter,S.getValue(),fighter.get_fightCell(true).getId());
 			if(targetVal == -1 || targetVal == 0)
@@ -995,9 +978,7 @@ public class IA implements Runnable {
 	private ArrayList <SpellStats> getLaunchableSort(Fighter fighter,Fight fight,int distMin)
 	{
 		ArrayList <SpellStats> sorts = new ArrayList <SpellStats>();
-		if(fighter.getMob() == null)
-			return null;
-		for(Entry<Integer, SpellStats> S : fighter.getMob().getSpells().entrySet())
+		for(Entry<Integer, SpellStats> S : fighter.getSpells().entrySet())
 		{
 			if(S.getValue().getPACost() > fighter.getCurPA(fight))//si PA insuffisant
 				continue;
@@ -1078,10 +1059,10 @@ public class IA implements Runnable {
 	{
 		int inflMax = 0;
 		SpellStats ss = null;
-		for(Entry<Integer, SpellStats> SS : F.getMob().getSpells().entrySet())
+		for(Entry<Integer, SpellStats> SS : F.getSpells().entrySet())
 		{
 			int curInfl = 0, Infl1 = 0, Infl2 = 0;
-			int PA = F.getMob().getPa();
+			int PA = F.getPA();
 			int usedPA[] = {0,0};
 			if(!fight.CanCastSpell(F, SS.getValue(), T.get_fightCell(true), -1))continue;
 			curInfl = calculInfluence(SS.getValue(),F,T);
@@ -1094,7 +1075,7 @@ public class IA implements Runnable {
 				inflMax = Infl1;
 			}
 			
-			for(Entry<Integer, SpellStats> SS2 : F.getMob().getSpells().entrySet())
+			for(Entry<Integer, SpellStats> SS2 : F.getSpells().entrySet())
 			{
 				if( (PA - usedPA[0]) < SS2.getValue().getPACost())continue;
 				if(!fight.CanCastSpell(F, SS2.getValue(), T.get_fightCell(true), -1))continue;
@@ -1107,7 +1088,7 @@ public class IA implements Runnable {
 					Infl2 = curInfl;
 					inflMax = Infl1 + Infl2;
 				}
-				for(Entry<Integer, SpellStats> SS3 : F.getMob().getSpells().entrySet())
+				for(Entry<Integer, SpellStats> SS3 : F.getSpells().entrySet())
 				{
 					if( (PA - usedPA[0] - usedPA[1]) < SS3.getValue().getPACost())continue;
 					if(!fight.CanCastSpell(F, SS3.getValue(), T.get_fightCell(true), -1))continue;
@@ -1240,7 +1221,7 @@ public class IA implements Runnable {
 						{
 							if(c.getFirstFighter() == null)
 								continue;
-							if(c.getFirstFighter().getTeam2() != fighter.getTeam2())
+							if(c.getFirstFighter().getTeam() != fighter.getTeam())
 								curTarget++;
 						}
 					}catch(Exception e){};

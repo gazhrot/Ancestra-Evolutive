@@ -3,7 +3,9 @@ package org.ancestra.evolutive.fight.trap;
 import org.ancestra.evolutive.common.Constants;
 import org.ancestra.evolutive.common.Pathfinding;
 import org.ancestra.evolutive.common.SocketManager;
-import org.ancestra.evolutive.fight.Fight;
+import org.ancestra.evolutive.entity.monster.Mob;
+import org.ancestra.evolutive.enums.IdType;
+import org.ancestra.evolutive.fight.fight.Fight;
 import org.ancestra.evolutive.fight.Fighter;
 import org.ancestra.evolutive.fight.spell.SpellStats;
 import org.ancestra.evolutive.map.Case;
@@ -48,7 +50,7 @@ public class Piege
 	public void set_isunHide(Fighter f)
 	{
 		_isunHide = true;
-		_teamUnHide = f.getTeam();
+		_teamUnHide = f.getTeam().getId();
 	}
 	
 	public boolean get_isunHide()
@@ -63,7 +65,7 @@ public class Piege
 		StringBuilder str3 = new StringBuilder();
 		StringBuilder str4 = new StringBuilder();
 		
-		int team = _caster.getTeam()+1;
+		int team = _caster.getTeam().getId()+1;
 		str.append("GDZ-").append(_cell.getId()).append(";").append(_size).append(";").append(_color);
 		SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(_fight, team, 999, _caster.getId()+"", str.toString());
 		str2.append("GDC"+_cell.getId());
@@ -83,7 +85,7 @@ public class Piege
 		StringBuilder str = new StringBuilder();
 		StringBuilder str2 = new StringBuilder();
 		
-		int team = f.getTeam()+1;
+		int team = f.getTeam().getId()+1;
 		str.append("GDZ+").append(_cell.getId()).append(";").append(_size).append(";").append(_color);
 		SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(_fight, team, 999, _caster.getId()+"", str.toString());
 		str2.append("GDC").append(_cell.getId()).append(";Haaaaaaaaz3005;");
@@ -93,7 +95,7 @@ public class Piege
 	public void onTraped(Fighter target)
 	{
 		if(target.isDead())return;
-		_fight.get_traps().remove(this);
+		_fight.getTraps().remove(this);
 		//On efface le pieges
 		desappear();
 		//On d�clenche ses effets
@@ -122,13 +124,16 @@ public class Piege
 			}
 		}
 		Fighter fakeCaster;
-		if(_caster.getPersonnage() == null)
-				fakeCaster = new Fighter(_fight,_caster.getMob());
-		else 	fakeCaster = new Fighter(_fight,_caster.getPersonnage());
+		if(_caster.getPersonnage() == null){
+            Mob mob = new Mob(_fight.getMap().getNextFreeId(IdType.CREATURE),_caster.getMap().getCases().get(_cell),_caster.getMob().getGrade());
+            fakeCaster = new Fighter(_fight,mob,_caster.getTeam());
 
-		fakeCaster.set_fightCell(_cell);
+        }
+		else 	fakeCaster = new Fighter(_fight,_caster.getPersonnage(),_caster.getTeam());
+
+		fakeCaster.setFightCell(_cell);
 		_trapSpell.applySpellEffectToFight(_fight,fakeCaster,target.get_fightCell(false),cells,false);
-		_fight.verifIfTeamAllDead();
+		_fight.verifIfFightEnded();
 	}
 	
 	public int get_color()

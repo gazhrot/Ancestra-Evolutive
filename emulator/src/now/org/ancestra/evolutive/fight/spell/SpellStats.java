@@ -1,12 +1,11 @@
 package org.ancestra.evolutive.fight.spell;
 
-import org.ancestra.evolutive.common.Constants;
 import org.ancestra.evolutive.common.Formulas;
 import org.ancestra.evolutive.common.Pathfinding;
 import org.ancestra.evolutive.core.Console;
 import org.ancestra.evolutive.core.Log;
 import org.ancestra.evolutive.core.World;
-import org.ancestra.evolutive.fight.Fight;
+import org.ancestra.evolutive.fight.fight.Fight;
 import org.ancestra.evolutive.fight.Fighter;
 import org.ancestra.evolutive.map.Case;
 
@@ -212,7 +211,7 @@ public class SpellStats {
 		int num = 0;
 		for(SpellEffect SE : effets)
 		{
-			if(fight.get_state()>=Constants.FIGHT_STATE_FINISHED)return;
+			if(fight.getState()!= Fight.FightState.ACTIVE)return;
 			if(SE.getChance() != 0 && SE.getChance() != 100)//Si pas 100% lancement
 			{
 				if(jetChance <= curMin || jetChance >= (SE.getChance() + curMin))

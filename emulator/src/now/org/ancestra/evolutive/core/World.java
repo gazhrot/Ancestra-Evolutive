@@ -524,7 +524,7 @@ public class World {
 			boolean ok = true;
 			for (Couple<Integer, Integer> c : craft) {
 				// si ingredient non pr?sent ou mauvaise quantit?
-				if (ingredients.get(c.first) != c.second)
+				if (ingredients.get(c.getKey()) != c.getValue())
 					ok = false;
 			}
 			if (ok)

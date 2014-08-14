@@ -2,7 +2,7 @@ package org.ancestra.evolutive.fight.trap;
 
 import org.ancestra.evolutive.common.Constants;
 import org.ancestra.evolutive.common.SocketManager;
-import org.ancestra.evolutive.fight.Fight;
+import org.ancestra.evolutive.fight.fight.Fight;
 import org.ancestra.evolutive.fight.Fighter;
 import org.ancestra.evolutive.fight.spell.SpellStats;
 import org.ancestra.evolutive.map.Case;
@@ -57,7 +57,7 @@ public class Glyphe
 		String str = getSpell()+","+_cell.getId()+",0,1,1,"+_caster.getId();
 		SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(_fight, 7, 307, target.getId()+"", str);
 		_trapSpell.applySpellEffectToFight(_fight,_caster,target.get_fightCell(false),false);
-		_fight.verifIfTeamAllDead();
+		_fight.verifIfFightEnded();
 	}
 
 	public void desapear()

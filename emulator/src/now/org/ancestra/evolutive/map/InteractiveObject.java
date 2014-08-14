@@ -113,7 +113,7 @@ public class InteractiveObject {
 			
 			case 684://Portillon donjon squelette.
 				if(!player.hasItemTemplate(1570, 1)) {
-					player.sendText("Vous ne possèdez pas la clef necéssaire.");
+					player.sendText("Vous ne possï¿½dez pas la clef necï¿½ssaire.");
 				} else {
 					player.removeByTemplateID(1570, 1);
 					SocketManager.GAME_SEND_Im_PACKET(player, "022;" + 1 + "~" + 1570);
@@ -137,7 +137,7 @@ public class InteractiveObject {
 					kwakere = 271; 
 					break;
 				}	
-				player.getMap().startFightVersusProtectors(player, new MobGroup(player.getMap().getNextObject(),player.getMap(), cell, kwakere+","+40+","+40));
+				//player.getMap().startFightVersusProtectors(player, new MobGroup(player.getMap().getNextObject(),player.getMap(), cell, kwakere+","+40+","+40));
 			break;
 			
 			case 1679:

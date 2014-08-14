@@ -7,12 +7,12 @@ import org.ancestra.evolutive.common.Constants;
 import org.ancestra.evolutive.common.Formulas;
 import org.ancestra.evolutive.common.SocketManager;
 import org.ancestra.evolutive.core.*;
-import org.ancestra.evolutive.entity.Creature;
+import org.ancestra.evolutive.entity.Fightable;
 import org.ancestra.evolutive.entity.Mount;
 import org.ancestra.evolutive.enums.Alignement;
 import org.ancestra.evolutive.enums.Classe;
 import org.ancestra.evolutive.event.player.PlayerJoinEvent;
-import org.ancestra.evolutive.fight.Fight;
+import org.ancestra.evolutive.fight.fight.Fight;
 import org.ancestra.evolutive.fight.Fighter;
 import org.ancestra.evolutive.fight.spell.SpellEffect;
 import org.ancestra.evolutive.fight.spell.SpellStats;
@@ -43,7 +43,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.Map.Entry;
 
-public class Player extends Creature {
+public class Player extends Fightable {
 
 	private int sex;
 	private Classe classe;
@@ -58,7 +58,7 @@ public class Player extends Creature {
 	private long experience;
 	private int size;
 	private int gfx;
-	
+
 	private Account account;
 	private Maps curMap;
 	private Case curCell;
@@ -104,7 +104,7 @@ public class Player extends Creature {
 	private boolean isZaaping = false;
 	private boolean isClone = false;
 	private boolean isGhosts = false;
-	private boolean isReady = false;
+	private boolean ready = false;
 	private boolean isOnMount = false;
 	
 	private int isTradingWith = 0;
@@ -163,7 +163,7 @@ public class Player extends Creature {
 		this.account = World.data.getCompte(account);
 		this.stats = new Stats(stats, true, this);
 		this.showFriendConnection = showFriendConnection==1;
-		this.showWings = (this.getAlignement() != Alignement.NEUTRE ? showWings==1 : false);
+		this.showWings = (this.getAlignement() != Alignement.NEUTRE && showWings == 1);
 		/** FIXME: SeeSeller **/
 		this.canaux = canaux;
 		this.setMapAndCell(curMap, curCell);
@@ -206,7 +206,7 @@ public class Player extends Creature {
 	}
 	
 	public Player(Player player, int id) {
-        super(id, player.getName(), player.getMap(), player.getCell());
+        super(id, player.getName(),player.getCell());
 		this.sex = player.getSex();
 		this.classe = player.getClasse();
 		this.color1 = player.getColor1();
@@ -214,7 +214,7 @@ public class Player extends Creature {
 		this.color3 = player.getColor3();
 		this.level = player.getLevel();
 		this.size = player.getSize();
-		this.gfx = player.getGfx();
+		this.gfx = player.getGFX();
 		this.stats = player.getStats();
 		this.setStuff(player.getStuffStats().parseToItemSetStats());
 		this.maxPdv = player.getMaxPdv();
@@ -301,6 +301,11 @@ public class Player extends Creature {
 		World.database.getCharacterData().updateSex(this);
 	}
 
+    @Override
+    public int getIa(){
+        return 0;
+    }
+
 	public Classe getClasse() {
 		return classe;
 	}
@@ -373,10 +378,6 @@ public class Player extends Creature {
 		this.size = size;
 	}
 
-	public int getGfx() {
-		return gfx;
-	}
-
 	public void setGfx(int gfx) {
 		this.gfx = gfx;
 	}
@@ -404,6 +405,8 @@ public class Player extends Creature {
 	public void setFight(Fight fight) {
         refreshLife();
         this.fight = fight;
+        this.ready = false;
+        this.getAccount().getGameClient().removeAction();
     }
 
 	public Group getGroup() {
@@ -522,11 +525,19 @@ public class Player extends Creature {
 		this.aLvl = aLvl;
 	}
 
+    @Override
 	public Map<Integer, SpellStats> getSpells() {
 		return spells;
 	}
 
-	public void setSpells(Map<Integer, SpellStats> spells) {
+    @Override
+    public void onStartTurn(Fighter fighter) {
+        this.ready = false;
+        if(fighter == this.getFighter())
+            this.send(getAsPacket());
+    }
+
+    public void setSpells(Map<Integer, SpellStats> spells) {
 		this.spells = spells;
 	}
 
@@ -559,13 +570,23 @@ public class Player extends Creature {
 		return pdv;
 	}
 
-	public void setPdv(int pdv) {
+    public void setPdv(int pdv) {
 		this.pdv = pdv<getMaxPdv()?pdv:maxPdv;
 		if(this.getGroup() != null)
 			SocketManager.GAME_SEND_PM_MOD_PACKET_TO_GROUP(this.getGroup(), this);
 	}
 
-	public int getMaxPdv() {
+    @Override
+    public Fighter.FighterType getFighterType() {
+        return Fighter.FighterType.PLAYER;
+    }
+
+    @Override
+    public int getGFX() {
+        return this.classe.getId()*10 + sex;
+    }
+
+    public int getMaxPdv() {
 		return maxPdv;
 	}
 
@@ -652,11 +673,14 @@ public class Player extends Creature {
 	}
 
 	public boolean isReady() {
-		return isReady;
+		return ready;
 	}
 
 	public void setReady(boolean isReady) {
-		this.isReady = isReady;
+		this.ready = isReady;
+        if(this.getFight() != null && this.getFight().getState() == Fight.FightState.PLACEMENT){
+            this.getFight().send("GR" + (isReady?"1":"0") + this.getId());
+        }
 	}
 
 	public boolean isOnMount() {
@@ -1263,9 +1287,9 @@ public class Player extends Creature {
 		SocketManager.GAME_SEND_STATS_PACKET(this);
 
 		if(this.getFight() != null) {		
-			if(this.getFight().getFighterByPerso(this) == null) 
+			if(this.getFighter() == null)
 				return;	
-			if(this.getFight().getFighterByPerso(this).getTurnRemaining() == -1)
+			if(this.getFighter().getTurnRemainingBeforeExpulsion() == -1)
 				return;
 			
 			SocketManager.GAME_SEND_MAPDATA(client, curMap.getId(), curMap.getDate(), curMap.getKey());			
@@ -1273,8 +1297,6 @@ public class Player extends Creature {
 			if(this.getFight().playerReconnect(this))
 				return;	
 		}
-		
-		SocketManager.GAME_SEND_MAP_FIGHT_COUNT(client, this.getMap());
 		this.getMap().addEntity(this);
 	}
 	
@@ -1291,7 +1313,7 @@ public class Player extends Creature {
     	str.append(this.getId()).append(";");
     	str.append(this.getName()).append(";");
     	str.append("-5").append(";");//Merchant identifier
-    	str.append(this.getGfx()).append("^").append(this.getSize()).append(";");
+    	str.append(this.getGFX()).append("^").append(this.getSize()).append(";");
 		str.append((this.getColor1()==-1?"-1":Integer.toHexString(this.getColor1()))).append(";");
 		str.append((this.getColor2()==-1?"-1":Integer.toHexString(this.getColor2()))).append(";");
 		str.append((this.getColor3()==-1?"-1":Integer.toHexString(this.getColor3()))).append(";");
@@ -1321,8 +1343,7 @@ public class Player extends Creature {
 		return str.toString();
 	}
 
-	public String getAsPacket()
-	{
+	public String getAsPacket() {
 		refreshStats();
         refreshLife();
 
@@ -1334,7 +1355,7 @@ public class Player extends Creature {
 
         int pdv = getPdv(),pdvMax = getMaxPdv();
         if(this.getFight() != null) {
-            Fighter f = this.getFight().getFighterByPerso(this);
+            Fighter f = this.getFighter();
             if(f != null) {
                 pdv = f.getPDV();
                 pdvMax = f.getPDVMAX();
@@ -1459,6 +1480,7 @@ public class Player extends Creature {
 		return total;
 	}
 
+    @Override
 	public int getInitiative() {
 		int fact = 4;
 		int pvmax = this.getMaxPdv() - Constants.getBasePdv(this.getClasse().getId());
@@ -1529,15 +1551,12 @@ public class Player extends Creature {
      */
 	public void emoticone(int emoteId) {
         String activeEmote = "cS" + this.getId() + "|" + emoteId;
-        if(this.getFight() == null){
-            this.getMap().send(activeEmote);
-        } else {
-            this.getFight().send(activeEmote);
-        }
+        this.getMap().send(activeEmote);
 	}
 
 	public void refreshMapAfterFight() {
-		this.getMap().addEntity(this);
+		this.getMap().registerOnMap(this);
+        this.getCell().addCreature(this);
         SocketManager.GAME_SEND_STATS_PACKET(this);
         SocketManager.GAME_SEND_ILS_PACKET(this, 2000);
         this.regenRate=2000;
@@ -1916,7 +1935,7 @@ public class Player extends Creature {
 		StringBuilder str = new StringBuilder();
 		str.append(this.getId()).append(";");
 		str.append(this.getName()).append(";");
-		str.append(this.getGfx()).append(";");
+		str.append(this.getGFX()).append(";");
 		str.append(this.getColor1()).append(";");
 		str.append(this.getColor2()).append(";");
 		str.append(this.getColor3()).append(";");
@@ -2393,7 +2412,7 @@ public class Player extends Creature {
 		}
 		str.append(this.getClasse().getId()).append(";");
 		str.append(this.getSex()).append(";");
-		str.append(this.getGfx());
+		str.append(this.getGFX());
 		return str.toString();
 	}
 	
@@ -2414,7 +2433,7 @@ public class Player extends Creature {
 		}
 		str.append(this.getClasse()).append(";");
 		str.append(this.getSex()).append(";");
-		str.append(this.getGfx());
+		str.append(this.getGFX());
 		return str.toString();
 	}
 
@@ -2436,10 +2455,10 @@ public class Player extends Creature {
 			SocketManager.GAME_SEND_OBJET_MOVE_PACKET(this, obj);
 		}
 
-		if(this.getFight() != null && this.getFight().get_state() == 2) 
-			SocketManager.GAME_SEND_ALTER_FIGHTER_MOUNT(this.getFight(), this.getFight().getFighterByPerso(this), this.getId(), this.getFight().getTeamID(this.getId()), this.getFight().getOtherTeamID(this.getId()));
+		if(this.getFight() != null && this.getFight().getState() == Fight.FightState.PLACEMENT)
+			this.getFight().send("GM|~" + this.getHelper().getGmPacket());
 		else
-			SocketManager.GAME_SEND_ALTER_GM_PACKET(this.getMap(), this);
+			this.map.send("GM|~" + this.getHelper().getGmPacket());
 		
 		SocketManager.GAME_SEND_Re_PACKET(this, "+", this.getMount());
 		SocketManager.GAME_SEND_Rr_PACKET(this, this.isOnMount() ? "+" : "-");
@@ -2453,7 +2472,7 @@ public class Player extends Creature {
 		this.isAway = false;
 		setEmoteActive(0);
 		this.fight = null;
-		this.isReady = false;
+		this.ready = false;
 		this.curExchange = null;
 		this.group = null;
 		this.isInBank = false;
@@ -3031,6 +3050,7 @@ public class Player extends Creature {
 		this.setAway(true);
 		this.setSpeed(-40);
 		this.setPosition((short) 8534, 297);
+        this.regenRate = 0;
 		//Le teleporter aux zone de mort la plus proche
 		/*for(Carte map : ) FIXME
 		{

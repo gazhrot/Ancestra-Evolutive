@@ -232,7 +232,7 @@ public class ObjectTemplate {
 			for(int a : Constants.ARMES_EFFECT_IDS)//Si c'est un Effet Actif
 				if(a == statID)
 					follow = false;
-			if(!follow)//Si c'était un effet Actif d'arme
+			if(!follow)//Si c'ï¿½tait un effet Actif d'arme
 				continue;
 			boolean isStatsInvalid = false;
 			switch(statID) {
@@ -280,26 +280,26 @@ public class ObjectTemplate {
 					follow = false;
 			
 			if(!follow)
-				continue;//Si c'était un effet Actif d'arme
+				continue;//Si c'ï¿½tait un effet Actif d'arme
 			
 			String jet = "";
-			int value  = 1;
+			int id  = 1;
 			try	{
 				jet = stats[4];
-				value = Formulas.getRandomJet(jet);
+				id = Formulas.getRandomJet(jet);
 				if(useMax) {
 					try {
 						//on prend le jet max
 						int min = Integer.parseInt(stats[1],16);
 						int max = Integer.parseInt(stats[2],16);
-						value = min;
-						if(max != 0)value = max;
+						id = min;
+						if(max != 0)id = max;
 					} catch(Exception e) {
-						value = Formulas.getRandomJet(jet);
+						id = Formulas.getRandomJet(jet);
 					}	
 				}
 			} catch(Exception e) {}
-			itemStats.addOneStat(statID, value);
+			itemStats.addOneStat(statID, id);
 		}
 		return itemStats;*/
 	}

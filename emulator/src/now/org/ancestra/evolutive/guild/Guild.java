@@ -24,7 +24,7 @@ public class Guild {
 	private int nbrCollector = 0;
 	private Map<Integer, SpellStats> spells = new TreeMap<>();	//<ID, Level>
 	private Map<Integer, Integer> stats = new TreeMap<>();
-	private Map<Integer, Integer> statsFight = new TreeMap<>();
+	private Stats statsFight = new Stats();
 	private Map<Integer, org.ancestra.evolutive.guild.GuildMember> members = new TreeMap<Integer,GuildMember>();
 	
 	public Guild(String name, String emblem) {
@@ -48,19 +48,21 @@ public class Guild {
 		this.nbrCollector = nbrCollector;
 		this.decompileSpells(spells);
 		this.decompileStats(stats);
-		this.statsFight.clear();
-		this.statsFight.put(Constants.STATS_ADD_FORC, this.getLevel());
-		this.statsFight.put(Constants.STATS_ADD_SAGE, this.getStat(Constants.STATS_ADD_SAGE));
-		this.statsFight.put(Constants.STATS_ADD_INTE, this.getLevel());
-		this.statsFight.put(Constants.STATS_ADD_CHAN, this.getLevel());
-		this.statsFight.put(Constants.STATS_ADD_AGIL, this.getLevel());
-		this.statsFight.put(Constants.STATS_ADD_RP_NEU, (int) Math.floor(this.getLevel() / 2));
-		this.statsFight.put(Constants.STATS_ADD_RP_FEU, (int) Math.floor(this.getLevel() / 2));
-		this.statsFight.put(Constants.STATS_ADD_RP_EAU, (int) Math.floor(this.getLevel() / 2));
-		this.statsFight.put(Constants.STATS_ADD_RP_AIR, (int) Math.floor(this.getLevel() / 2));
-		this.statsFight.put(Constants.STATS_ADD_RP_TER, (int) Math.floor(this.getLevel() / 2));
-		this.statsFight.put(Constants.STATS_ADD_AFLEE, (int) Math.floor(this.getLevel() / 2));
-		this.statsFight.put(Constants.STATS_ADD_MFLEE, (int) Math.floor(this.getLevel() / 2));
+		this.statsFight.addOneStat(Constants.STATS_ADD_FORC, this.getLevel());
+        this.statsFight.addOneStat(Constants.STATS_ADD_PA, 6);
+        this.statsFight.addOneStat(Constants.STATS_ADD_PM, 5);
+        this.statsFight.addOneStat(Constants.STATS_ADD_SAGE, this.getLevel());
+        this.statsFight.addOneStat(Constants.STATS_ADD_INTE, this.getLevel());
+        this.statsFight.addOneStat(Constants.STATS_ADD_CHAN, this.getLevel());
+        this.statsFight.addOneStat(Constants.STATS_ADD_AGIL, this.getLevel());
+        this.statsFight.addOneStat(Constants.STATS_ADD_INIT, this.getLevel());
+		this.statsFight.addOneStat(Constants.STATS_ADD_RP_NEU, (int) Math.floor(this.getLevel() / 2));
+		this.statsFight.addOneStat(Constants.STATS_ADD_RP_FEU, (int) Math.floor(this.getLevel() / 2));
+		this.statsFight.addOneStat(Constants.STATS_ADD_RP_EAU, (int) Math.floor(this.getLevel() / 2));
+		this.statsFight.addOneStat(Constants.STATS_ADD_RP_AIR, (int) Math.floor(this.getLevel() / 2));
+		this.statsFight.addOneStat(Constants.STATS_ADD_RP_TER, (int) Math.floor(this.getLevel() / 2));
+		this.statsFight.addOneStat(Constants.STATS_ADD_AFLEE, (int) Math.floor(this.getLevel() / 2));
+		this.statsFight.addOneStat(Constants.STATS_ADD_MFLEE, (int) Math.floor(this.getLevel() / 2));
 	}
 
 	public int getId() {
@@ -241,7 +243,7 @@ public class Guild {
 	}
 
 	public Stats getStatsFight() {
-		return new Stats(statsFight);
+		return statsFight;
 	}
 
 	public void addXp(long experience) {
@@ -284,7 +286,7 @@ public class Guild {
 			str.append(GM.getUUID()).append(";");
 			str.append(GM.getPlayer().getName()).append(";");
 			str.append(GM.getPlayer().getLevel()).append(";");
-			str.append(GM.getPlayer().getGfx()).append(";");
+			str.append(GM.getPlayer().getGFX()).append(";");
 			str.append(GM.getRank()).append(";");
 			str.append(GM.getXpGave()).append(";");
 			str.append(GM.getXpGive()).append(";");

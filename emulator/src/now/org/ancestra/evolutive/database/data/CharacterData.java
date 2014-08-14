@@ -51,7 +51,7 @@ public class CharacterData extends AbstractDAO<Player>{
 			statement.setInt(12,obj.getLevel());
 			statement.setLong(13,obj.getExperience());
 			statement.setInt(14,obj.getSize());
-			statement.setInt(15,obj.getGfx());
+			statement.setInt(15,obj.getGFX());
 			statement.setInt(16,obj.getAccount().getUUID());
 			statement.setInt(17,obj.getCell().getId());
 			statement.setInt(18,obj.getMap().getId());
@@ -117,7 +117,7 @@ public class CharacterData extends AbstractDAO<Player>{
 			statement.setInt(5,obj.getLevel());
 			statement.setLong(6,obj.getExperience());
 			statement.setInt(7,obj.getSize());
-			statement.setInt(8,obj.getGfx());
+			statement.setInt(8,obj.getGFX());
 			statement.setInt(9,obj.getAlignement().getId());
 			statement.setInt(10,obj.getHonor());
 			statement.setInt(11,obj.getDeshonor());

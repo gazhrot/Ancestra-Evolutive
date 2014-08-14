@@ -1,11 +1,14 @@
 package org.ancestra.evolutive.entity.collector;
 
 import org.ancestra.evolutive.client.Player;
+import org.ancestra.evolutive.client.other.Stats;
+import org.ancestra.evolutive.common.Constants;
 import org.ancestra.evolutive.common.SocketManager;
 import org.ancestra.evolutive.core.World;
-import org.ancestra.evolutive.entity.Creature;
-import org.ancestra.evolutive.fight.Fight;
+import org.ancestra.evolutive.entity.Fightable;
+import org.ancestra.evolutive.fight.fight.Fight;
 import org.ancestra.evolutive.fight.Fighter;
+import org.ancestra.evolutive.fight.spell.SpellStats;
 import org.ancestra.evolutive.guild.Guild;
 import org.ancestra.evolutive.map.Maps;
 import org.ancestra.evolutive.object.Object;
@@ -14,9 +17,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
-public class Collector extends Creature {
-	private int _GuildID = 0;
-
+public class Collector extends Fightable{
     private final Guild guild;
 	private final short firstNameId;
 	private final short lastNameId;
@@ -35,9 +36,8 @@ public class Collector extends Creature {
 	public Collector(int id, int map, int cellID, byte orientation, int GuildID,
 			short N1, short N2, String items, long kamas, long xp) {
 		super(id,Short.toString(N1) +","+ Short.toString(N2),map,cellID);
-		_GuildID = GuildID;
         helper = new CollectorHelper(this);
-        guild = World.data.getGuild(_GuildID);
+        guild = World.data.getGuild(GuildID);
 		firstNameId = N1;
 		lastNameId = N2;
 		//Mise en place de son inventaire
@@ -54,7 +54,12 @@ public class Collector extends Creature {
 		_xp = xp;
 		_kamas = kamas;
 	}
-	
+
+    @Override
+    public int getIa(){
+        return 5;
+    }
+
 	public long getKamas() 
 	{
 		return _kamas;
@@ -106,7 +111,7 @@ public class Collector extends Creature {
 	}
 	
 	public int get_guildID() {
-		return _GuildID;
+		return this.getGuild().getId();
 	}
 	
 	public void DelPerco(int percoGuid){
@@ -137,7 +142,6 @@ public class Collector extends Creature {
 		return _inFightID;
 	}
 
-	
 	public static String parsetoGuild(int GuildID)
 	{
 		StringBuilder packet = new StringBuilder();
@@ -250,7 +254,7 @@ public class Collector extends Creature {
 						str.append("|");
 						str.append(Integer.toString(f.getPersonnage().getId(), 36)).append(";");
 						str.append(f.getPersonnage().getName()).append(";");
-						str.append(f.getPersonnage().getGfx()).append(";");
+						str.append(f.getPersonnage().getGFX()).append(";");
 						str.append(f.getPersonnage().getLevel()).append(";");
 						str.append(Integer.toString(f.getPersonnage().getColor1(), 36)).append(";");
 						str.append(Integer.toString(f.getPersonnage().getColor2(), 36)).append(";");
@@ -446,6 +450,56 @@ public class Collector extends Creature {
     public int getLastNameId()
     {
         return lastNameId;
+    }
+
+    @Override
+    public Fighter.FighterType getFighterType() {
+        return Fighter.FighterType.COLLECTOR;
+    }
+
+    @Override
+    public int getGFX() {
+        return 6000;
+    }
+
+    @Override
+    public int getMaxPdv() {
+        return getGuild().getLevel()*100;
+    }
+
+    @Override
+    public int getPdv() {
+        return getMaxPdv();
+    }
+
+    @Override
+    public void setPdv(int pdv) {
+        return;
+    }
+
+    @Override
+    public Stats getStats() {
+        return getGuild().getStatsFight();
+    }
+
+    @Override
+    public int getInitiative(){
+        return getGuild().getStatsFight().getEffect(Constants.STATS_ADD_INIT);
+    }
+
+    @Override
+    public Map<Integer, SpellStats> getSpells(){
+        return this.getGuild().getSpells();
+    }
+
+    @Override
+    public void onStartTurn(Fighter fighter) {
+
+    }
+
+    @Override
+    public int getLevel() {
+        return this.getGuild().getLevel();
     }
     //</editor-fold>
 }

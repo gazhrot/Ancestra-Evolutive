@@ -6,7 +6,7 @@ import org.ancestra.evolutive.core.Server;
 import org.ancestra.evolutive.core.World;
 import org.ancestra.evolutive.entity.collector.Collector;
 import org.ancestra.evolutive.enums.Classe;
-import org.ancestra.evolutive.fight.Fight;
+import org.ancestra.evolutive.fight.fight.Fight;
 import org.ancestra.evolutive.fight.Fighter;
 import org.ancestra.evolutive.fight.spell.SpellEffect;
 import org.ancestra.evolutive.guild.Guild;
@@ -16,6 +16,7 @@ import org.ancestra.evolutive.object.Object;
 import org.ancestra.evolutive.object.ObjectPosition;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -87,13 +88,12 @@ public class Formulas {
 		float num = 0;
 		float statC = 0, domC = 0, perdomC = 0, resfT = 0, respT = 0;
 		int multiplier = 0;
-		if(!isHeal)
-		{
+		if(!isHeal) {
 			domC = caster.getTotalStats().getEffect(Constants.STATS_ADD_DOMA);
 			perdomC = caster.getTotalStats().getEffect(Constants.STATS_ADD_PERDOM);
 			multiplier = caster.getTotalStats().getEffect(Constants.STATS_MULTIPLY_DOMMAGE);
-		}else
-		{
+		}
+        else {
 			domC = caster.getTotalStats().getEffect(Constants.STATS_ADD_SOIN);
 		}
 		
@@ -109,65 +109,45 @@ public class Formulas {
 				statC = caster.getTotalStats().getEffect(Constants.STATS_ADD_FORC);
 				resfT = target.getTotalStats().getEffect(Constants.STATS_ADD_R_NEU);
 				respT = target.getTotalStats().getEffect(Constants.STATS_ADD_RP_NEU);
-				if(caster.getPersonnage() != null)//Si c'est un joueur
-				{
-					respT += target.getTotalStats().getEffect(Constants.STATS_ADD_RP_PVP_NEU);
-					resfT += target.getTotalStats().getEffect(Constants.STATS_ADD_R_PVP_NEU);
-				}
+                respT += target.getTotalStats().getEffect(Constants.STATS_ADD_RP_PVP_NEU);
+                resfT += target.getTotalStats().getEffect(Constants.STATS_ADD_R_PVP_NEU);
 				//on ajoute les dom Physique
 				domC += caster.getTotalStats().getEffect(142);
-				//Ajout de la resist Physique
-				resfT = target.getTotalStats().getEffect(184);
+				resfT += target.getTotalStats().getEffect(184);
 			break;
 			case Constants.ELEMENT_TERRE://force
 				statC = caster.getTotalStats().getEffect(Constants.STATS_ADD_FORC);
 				resfT = target.getTotalStats().getEffect(Constants.STATS_ADD_R_TER);
 				respT = target.getTotalStats().getEffect(Constants.STATS_ADD_RP_TER);
-				if(caster.getPersonnage() != null)//Si c'est un joueur
-				{
-					respT += target.getTotalStats().getEffect(Constants.STATS_ADD_RP_PVP_TER);
-					resfT += target.getTotalStats().getEffect(Constants.STATS_ADD_R_PVP_TER);
-				}
+                respT += target.getTotalStats().getEffect(Constants.STATS_ADD_RP_PVP_TER);
+                resfT += target.getTotalStats().getEffect(Constants.STATS_ADD_R_PVP_TER);
 				//on ajout les dom Physique
 				domC += caster.getTotalStats().getEffect(142);
-				//Ajout de la resist Physique
-				resfT = target.getTotalStats().getEffect(184);
+				resfT += target.getTotalStats().getEffect(184);
 			break;
 			case Constants.ELEMENT_EAU://chance
 				statC = caster.getTotalStats().getEffect(Constants.STATS_ADD_CHAN);
 				resfT = target.getTotalStats().getEffect(Constants.STATS_ADD_R_EAU);
 				respT = target.getTotalStats().getEffect(Constants.STATS_ADD_RP_EAU);
-				if(caster.getPersonnage() != null)//Si c'est un joueur
-				{
-					respT += target.getTotalStats().getEffect(Constants.STATS_ADD_RP_PVP_EAU);
-					resfT += target.getTotalStats().getEffect(Constants.STATS_ADD_R_PVP_EAU);
-				}
-				//Ajout de la resist Magique
-				resfT = target.getTotalStats().getEffect(183);
+                respT += target.getTotalStats().getEffect(Constants.STATS_ADD_RP_PVP_EAU);
+                resfT += target.getTotalStats().getEffect(Constants.STATS_ADD_R_PVP_EAU);
+				resfT += target.getTotalStats().getEffect(183);
 			break;
 			case Constants.ELEMENT_FEU://intell
 				statC = caster.getTotalStats().getEffect(Constants.STATS_ADD_INTE);
 				resfT = target.getTotalStats().getEffect(Constants.STATS_ADD_R_FEU);
 				respT = target.getTotalStats().getEffect(Constants.STATS_ADD_RP_FEU);
-				if(caster.getPersonnage() != null)//Si c'est un joueur
-				{
-					respT += target.getTotalStats().getEffect(Constants.STATS_ADD_RP_PVP_FEU);
-					resfT += target.getTotalStats().getEffect(Constants.STATS_ADD_R_PVP_FEU);
-				}
-				//Ajout de la resist Magique
-				resfT = target.getTotalStats().getEffect(183);
+                respT += target.getTotalStats().getEffect(Constants.STATS_ADD_RP_PVP_FEU);
+                resfT += target.getTotalStats().getEffect(Constants.STATS_ADD_R_PVP_FEU);
+				resfT += target.getTotalStats().getEffect(183);
 			break;
 			case Constants.ELEMENT_AIR://agilit�
 				statC = caster.getTotalStats().getEffect(Constants.STATS_ADD_AGIL);
 				resfT = target.getTotalStats().getEffect(Constants.STATS_ADD_R_AIR);
 				respT = target.getTotalStats().getEffect(Constants.STATS_ADD_RP_AIR);
-				if(caster.getPersonnage() != null)//Si c'est un joueur
-				{
-					respT += target.getTotalStats().getEffect(Constants.STATS_ADD_RP_PVP_AIR);
-					resfT += target.getTotalStats().getEffect(Constants.STATS_ADD_R_PVP_AIR);
-				}
-				//Ajout de la resist Magique
-				resfT = target.getTotalStats().getEffect(183);
+                respT += target.getTotalStats().getEffect(Constants.STATS_ADD_RP_PVP_AIR);
+                resfT += target.getTotalStats().getEffect(Constants.STATS_ADD_R_PVP_AIR);
+				resfT += target.getTotalStats().getEffect(183);
 			break;
 		}
 		//On bride la resistance a 50% si c'est un joueur 
@@ -179,35 +159,34 @@ public class Formulas {
 
 			int ArmeType = caster.getPersonnage().getObjectByPos(ObjectPosition.ARME).getTemplate().getType().getValue();
 
-            if((caster.getSpellValueBool(392) == true) && ArmeType == 2)//ARC
-			{
+            if((caster.getSpellValueBool(392)) && (ArmeType == 2)){//ARC
 				i = caster.getMaitriseDmg(392);
 			}
-			if((caster.getSpellValueBool(390) == true) && ArmeType == 4)//BATON
+			if((caster.getSpellValueBool(390)) && (ArmeType == 4))//BATON
 			{
 				i = caster.getMaitriseDmg(390);
 			}
-			if((caster.getSpellValueBool(391) == true) && ArmeType == 6)//EPEE
+			if((caster.getSpellValueBool(391)) && (ArmeType == 6))//EPEE
 			{
 				i = caster.getMaitriseDmg(391);
 			}
-			if((caster.getSpellValueBool(393) == true) && ArmeType == 7)//MARTEAUX
+			if((caster.getSpellValueBool(393)) && (ArmeType == 7))//MARTEAUX
 			{
 				i = caster.getMaitriseDmg(393);
 			}
-			if((caster.getSpellValueBool(394) == true) && ArmeType == 3)//BAGUETTE
+			if((caster.getSpellValueBool(394)) && (ArmeType == 3))//BAGUETTE
 			{
 				i = caster.getMaitriseDmg(394);
 			}
-			if((caster.getSpellValueBool(395) == true) && ArmeType == 5)//DAGUES
+			if((caster.getSpellValueBool(395)) && (ArmeType == 5))//DAGUES
 			{
 				i = caster.getMaitriseDmg(395);
 			}
-			if((caster.getSpellValueBool(396) == true) && ArmeType == 8)//PELLE
+			if((caster.getSpellValueBool(396)) && (ArmeType == 8))//PELLE
 			{
 				i = caster.getMaitriseDmg(396);
 			}
-			if((caster.getSpellValueBool(397) == true) && ArmeType == 19)//HACHE
+			if((caster.getSpellValueBool(397)) && (ArmeType == 19))//HACHE
 			{
 				i = caster.getMaitriseDmg(397);
 			}
@@ -230,13 +209,11 @@ public class Formulas {
 				case 66 : 
 				statC = caster.getTotalStats().getEffect(Constants.STATS_ADD_AGIL);
 				num = (jet * ((100 + statC + perdomC + (multiplier*100)) / 100 ))+ domC;
-				if(target.hasBuff(105))
-				{
+				if(target.hasBuff(105)){
 					SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, 105, caster.getId()+"", target.getId()+","+target.getBuff(105).getValue());
 					return 0;
 				}
-				if(target.hasBuff(184))
-				{
+				if(target.hasBuff(184)){
 					SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, 105, caster.getId()+"", target.getId()+","+target.getBuff(184).getValue());
 					return 0;
 				}
@@ -302,12 +279,12 @@ public class Formulas {
 		// D�but Formule pour les MOBs
 		if(caster.getPersonnage() == null && !caster.isPerco())
 		{
-			if(caster.getMob().getTemplate().getId() == 116)//Sacrifi� Dommage = PDV*2
+			if(caster.getGfx() == 116 )//Sacrifi� Dommage = PDV*2
 			{
 				return (int)((num/25)*caster.getPDVMAX());
 			}else
 			{
-			int niveauMob = caster.get_lvl();
+			int niveauMob = caster.getLvl();
 			double CalculCoef = ((niveauMob*0.5)/100);
 			int Multiplicateur = (int) Math.ceil(CalculCoef);
 			return (int)num*Multiplicateur;
@@ -320,10 +297,10 @@ public class Formulas {
 		}
 	}
 
-	public static int calculZaapCost(Maps map1,Maps map2)
-	{
+	public static int calculZaapCost(Maps map1,Maps map2){
 		return (10*(Math.abs(map2.getX()-map1.getX())+Math.abs(map2.getY()-map1.getY())-1));
 	}
+
 	private static int getArmorResist(Fighter target, int statID)
 	{
 		int armor = 0;
@@ -423,7 +400,7 @@ public class Formulas {
 		{
 			if(ptsMax == 0 && target.getMob() != null)
 			{
-				ptsMax= z=='a'?target.getMob().getPa():target.getMob().getPm();
+				ptsMax= z=='a'?target.getPA():target.getPM();
 			}
 			
 			float pts = z =='a'?target.getPA():target.getPM();
@@ -456,7 +433,7 @@ public class Formulas {
 		return retrait;
 	}
 	
-	public static long getXpWinPerco(Collector perco, ArrayList<Fighter> winners,ArrayList<Fighter> loosers,long groupXP)
+	public static long getXpWinPerco(Collector perco, Collection<Fighter> winners,Collection<Fighter> loosers,long groupXP)
 	{
 			Guild G = perco.getGuild();
 			float sag = G.getStat(Constants.STATS_ADD_SAGE);
@@ -466,13 +443,13 @@ public class Formulas {
 			int lvlmax = 0;
 			for(Fighter entry : winners)
 			{
-				if(entry.get_lvl() > lvlmax)
-					lvlmax = entry.get_lvl();
+				if(entry.getLvl() > lvlmax)
+					lvlmax = entry.getLvl();
 			}
 			int nbbonus = 0;
 			for(Fighter entry : winners)
 			{
-				if(entry.get_lvl() > (lvlmax / 3))
+				if(entry.getLvl() > (lvlmax / 3))
 					nbbonus += 1;				
 			}
 			
@@ -494,10 +471,10 @@ public class Formulas {
 			
 			int lvlLoosers = 0;
 			for(Fighter entry : loosers)
-				lvlLoosers += entry.get_lvl();
+				lvlLoosers += entry.getLvl();
 			int lvlWinners = 0;
 			for(Fighter entry : winners)
-				lvlWinners += entry.get_lvl();
+				lvlWinners += entry.getLvl();
 			double rapport = 1+((double)lvlLoosers/(double)lvlWinners);
 			if (rapport <= 1.3)
 				rapport = 1.3;
@@ -524,7 +501,7 @@ public class Formulas {
 			return xpWin;	
 	}
 	
-	public static long getXpWinPvm2(Fighter perso, ArrayList<Fighter> winners,ArrayList<Fighter> loosers,long groupXP)
+	public static long getXpWinPvm2(Fighter perso, Collection<Fighter> winners,Collection<Fighter> loosers,long groupXP)
 	{
 		if(perso.getPersonnage()== null)return 0;
 		if(winners.contains(perso))//Si winner
@@ -536,13 +513,13 @@ public class Formulas {
 			int lvlmax = 0;
 			for(Fighter entry : winners)
 			{
-				if(entry.get_lvl() > lvlmax)
-					lvlmax = entry.get_lvl();
+				if(entry.getLvl() > lvlmax)
+					lvlmax = entry.getLvl();
 			}
 			int nbbonus = 0;
 			for(Fighter entry : winners)
 			{
-				if(entry.get_lvl() > (lvlmax / 3))
+				if(entry.getLvl() > (lvlmax / 3))
 					nbbonus += 1;				
 			}
 			
@@ -564,10 +541,10 @@ public class Formulas {
 			
 			int lvlLoosers = 0;
 			for(Fighter entry : loosers)
-				lvlLoosers += entry.get_lvl();
+				lvlLoosers += entry.getLvl();
 			int lvlWinners = 0;
 			for(Fighter entry : winners)
-				lvlWinners += entry.get_lvl();
+				lvlWinners += entry.getLvl();
 			double rapport = 1+((double)lvlLoosers/(double)lvlWinners);
 			if (rapport <= 1.3)
 				rapport = 1.3;
@@ -575,22 +552,10 @@ public class Formulas {
 			if (rapport > 5)
 				rapport = 5;
 			//*/
-			int lvl = perso.get_lvl();
+			int lvl = perso.getLvl();
 			double rapport2 = 1 + ((double)lvl / (double)lvlWinners);
 
 			xpWin = (long) (groupXP * rapport * bonus * taux *coef * rapport2);
-			
-			/*/ DEBUG XP
-			Console.instance.println("=========");
-			Console.instance.println("groupXP: "+groupXP);
-			Console.instance.println("rapport1: "+rapport);
-			Console.instance.println("bonus: "+bonus);
-			Console.instance.println("taux: "+taux);
-			Console.instance.println("coef: "+coef);
-			Console.instance.println("rapport2: "+rapport2);
-			Console.instance.println("xpWin: "+xpWin);
-			Console.instance.println("=========");
-			//*/
 			return xpWin;	
 		}
 		return 0;
@@ -599,15 +564,15 @@ public class Formulas {
 	public static long getXpWinPvm(Fighter perso, ArrayList<Fighter> team,ArrayList<Fighter> loose, long groupXP)
 	{
 		int lvllos = 0;
-		for(Fighter entry : loose)lvllos += entry.get_lvl();
+		for(Fighter entry : loose)lvllos += entry.getLvl();
 		float bonusSage = (perso.getTotalStats().getEffect(Constants.STATS_ADD_SAGE)+100)/100;
 		/* Formule 1
-		float taux = perso.get_lvl()/lvlwin;
-		long xp = (long)(groupXP * taux * bonusSage * perso.get_lvl());
+		float taux = perso.getLvl()/lvlwin;
+		long xp = (long)(groupXP * taux * bonusSage * perso.getLvl());
 		//*/
 		//* Formule 2
 		long sXp = groupXP*lvllos;
-		long gXp = 2 * groupXP * perso.get_lvl();
+		long gXp = 2 * groupXP * perso.getLvl();
         long xp = (long)((sXp + gXp)*bonusSage);
 		//*/
 		return xp*Server.config.getRateXpPvm();
@@ -619,11 +584,11 @@ public class Formulas {
 		{
 			int lvlLoosers = 0;
 			for(Fighter entry : looser)
-				lvlLoosers += entry.get_lvl();
+				lvlLoosers += entry.getLvl();
 		
 			int lvlWinners = 0;
 			for(Fighter entry : winners)
-				lvlWinners += entry.get_lvl();
+				lvlWinners += entry.getLvl();
 			int taux = Server.config.getRateXpPvp();
 			float rapport = (float)lvlLoosers/(float)lvlWinners;
 			long xpWin = (long)(
@@ -662,7 +627,7 @@ public class Formulas {
 
 		GuildMember gm = perso.getPersonnage().getGuildMember();
 		
-		double xp = xpWin.get(), Lvl = perso.get_lvl(),LvlGuild = perso.getPersonnage().getGuild().getLevel(),pXpGive = (double)gm.getXpGive()/100;
+		double xp = xpWin.get(), Lvl = perso.getLvl(),LvlGuild = perso.getPersonnage().getGuild().getLevel(),pXpGive = (double)gm.getXpGive()/100;
 		
 		double maxP = xp * pXpGive * 0.10;	//Le maximum donn� � la guilde est 10% du montant pr�lev� sur l'xp du combat
 		double diff = Math.abs(Lvl - LvlGuild);	//Calcul l'�cart entre le niveau du personnage et le niveau de la guilde
@@ -693,7 +658,7 @@ public class Formulas {
 		if(perso.getPersonnage().getMount() == null)return 0;
 		
 
-		int diff = Math.abs(perso.get_lvl() - perso.getPersonnage().getMount().getLevel());
+		int diff = Math.abs(perso.getLvl() - perso.getPersonnage().getMount().getLevel());
 		
 		double coeff = 0;
 		double xp = xpWin.get();
@@ -722,8 +687,7 @@ public class Formulas {
 		return Math.round(xp * pToMount * coeff);
 	}
 
-	public static int getKamasWin(Fighter i, ArrayList<Fighter> winners, int maxk, int mink)
-	{
+	public static int getKamasWin(Fighter i, Collection<Fighter> winners, int maxk, int mink){
 		maxk++;
 		int rkamas = (int)(Math.random() * (maxk-mink)) + mink;
 		return rkamas*Server.config.getRateKamas();
@@ -745,7 +709,7 @@ public class Formulas {
 		return ((lvlM*100)/(K + lvlA));
 	}
 
-	public static int calculHonorWin(ArrayList<Fighter> winners,ArrayList<Fighter> loosers,Fighter F)
+	public static int calculHonorWin(Collection<Fighter> winners,Collection<Fighter> loosers,Fighter F)
 	{
 		float totalGradeWin = 0;
 		float totalLevelWin = 0;
@@ -754,14 +718,14 @@ public class Formulas {
 		for(Fighter f : winners)
 		{
 			if(f.getPersonnage() == null )continue;
-			totalLevelWin += f.get_lvl();
+			totalLevelWin += f.getLvl();
 			totalGradeWin += f.getPersonnage().getGrade();
 
 		}
 		for(Fighter f : loosers)
 		{
 			if(f.getPersonnage() == null)continue;
-			totalLevelLoose += f.get_lvl();
+			totalLevelLoose += f.getLvl();
 			totalGradeLoose += f.getPersonnage().getGrade();
 
 		}

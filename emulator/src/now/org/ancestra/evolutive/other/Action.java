@@ -504,8 +504,8 @@ public class Action {
 						ValidMobGroup += monsterID+","+monsterLevel+","+monsterLevel+";";
 					}
 					if(ValidMobGroup.isEmpty()) return;
-					MobGroup group  = new MobGroup(perso.getMap().getNextObject(),perso.getMap(),perso.getCell(), ValidMobGroup);
-					perso.getMap().startFigthVersusMonstres(perso, group);
+					MobGroup group  = new MobGroup(-1,perso.getMap(),perso.getCell(), ValidMobGroup);
+					perso.getMap().startFigthVersusMonstres(perso,group );
 		        }catch(Exception e){Log.addToLog(e.getMessage());};
 			break;
 			case 50://Traque
@@ -553,7 +553,7 @@ public class Action {
 					Object newObj = T.createNewItem(20, false);
 					//On ajoute le nom du type � recherch�
 					/*
-					newObj.addTxtStat(962, Integer.toString(tempP.get_lvl()));
+					newObj.addTxtStat(962, Integer.toString(tempP.getLvl()));
 					newObj.addTxtStat(961, Integer.toString(tempP.getGrade()));
 					
 					int alignid = tempP.get_align();

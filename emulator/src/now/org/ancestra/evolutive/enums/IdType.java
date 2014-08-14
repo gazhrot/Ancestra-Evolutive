@@ -10,7 +10,8 @@ public enum IdType {
     NON_PLAYER_MUTANT(-7),
     PLAYER_MUTANT(-8),
     FENCE(-9),
-    PRISM(-10);
+    PRISM(-10),
+    TEMPORARY_OBJECT(-11);
 
     /**
      * Id du type

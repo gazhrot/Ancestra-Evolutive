@@ -40,4 +40,9 @@ public enum Alignement {
                 return NEUTRE;
         }
     }
+
+    @Override
+    public String toString(){
+        return Integer.toString(this.id);
+    }
 }

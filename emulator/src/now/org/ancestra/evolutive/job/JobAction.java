@@ -195,9 +195,9 @@ public class JobAction {
 			SocketManager.GAME_SEND_IQ_PACKET(P,P.getId(),qua);
 			SocketManager.GAME_SEND_Ow_PACKET(P);
 			/* 
-			int maxPercent = 20+(P.getMetierBySkill(this.id).get_lvl()-20);
-			System.out.println("Level : "+P.getMetierBySkill(this.id).get_lvl()+" | Max : "+ maxPercent+" | "+Formulas.getRandomValue(1, maxPercent));
-			if(P.getMetierBySkill(this.id).get_lvl() >= 20 && Formulas.getRandomValue(1, maxPercent) == maxPercent)*/
+			int maxPercent = 20+(P.getMetierBySkill(this.id).getLvl()-20);
+			System.out.println("Level : "+P.getMetierBySkill(this.id).getLvl()+" | Max : "+ maxPercent+" | "+Formulas.getRandomValue(1, maxPercent));
+			if(P.getMetierBySkill(this.id).getLvl() >= 20 && Formulas.getRandomValue(1, maxPercent) == maxPercent)*/
 			if(P.getMetierBySkill(this.id).get_lvl() >= 20 && Formulas.getRandomValue(1, 100) > 89)
 			{
                 int[][] protectors = JobConstant.JOB_PROTECTORS;
@@ -207,7 +207,7 @@ public class JobAction {
                    	{
                   		int monsterId = protectors[i][0];
                      	int monsterLvl = JobConstant.getProtectorLvl(P.getLevel());            
-                      	P.getMap().startFightVersusProtectors(P, new MobGroup(P.getMap().getNextObject(),P.getMap(), cell, monsterId+","+monsterLvl+","+monsterLvl));
+                      	//P.getMap().startFightVersusProtectors(P, new MobGroup(P.getMap().getNextObject(),P.getMap(), cell, monsterId+","+monsterLvl+","+monsterLvl));
                         break;
                  	}
                 }

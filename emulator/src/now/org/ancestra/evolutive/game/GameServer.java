@@ -3,6 +3,8 @@ package org.ancestra.evolutive.game;
 import ch.qos.logback.classic.Logger;
 import org.ancestra.evolutive.client.Account;
 import org.ancestra.evolutive.client.Player;
+import org.ancestra.evolutive.common.GlobalThread;
+import org.ancestra.evolutive.common.ScheduledAction;
 import org.ancestra.evolutive.common.SocketManager;
 import org.ancestra.evolutive.core.Log;
 import org.ancestra.evolutive.core.Server;
@@ -83,28 +85,22 @@ public class GameServer {
 	}
 	
 	public void scheduleActions() {
-		ScheduledExecutorService scheduler = World.data.getScheduler();
-		
-		scheduler.scheduleWithFixedDelay(new Runnable() {
-			@Override
-			public void run() {
-				if(!Server.config.isSaving())
-					World.data.saveData(-1);
-			}
-		}, Server.config.getSaveTime(), Server.config.getSaveTime(), TimeUnit.MILLISECONDS);
-		
-		scheduler.scheduleWithFixedDelay(new Runnable() {
-			@Override
-			public void run() {
-				World.database.getOtherData().reloadLiveActions();
-				Log.addToLog("Les live actions ont ete appliquees");
-			}
-		}, Server.config.getLoadDelay(), Server.config.getLoadDelay(), TimeUnit.MILLISECONDS);
-		
-		scheduler.scheduleWithFixedDelay(new Runnable() {
-			@Override
-			public void run() {
-				for(Player player: World.data.getOnlinePersos()) {
+        GlobalThread.registerAction(new ScheduledAction(Server.config.getSaveTime()) {
+            @Override
+            public void applyAction() {
+                World.data.saveData(-1);
+            }
+        });
+        GlobalThread.registerAction(new ScheduledAction(Server.config.getLoadDelay()) {
+            @Override
+            public void applyAction() {
+                World.database.getOtherData().reloadLiveActions();
+            }
+        });
+        GlobalThread.registerAction(new ScheduledAction(60*1000) {
+            @Override
+            public void applyAction() {
+                for(Player player: World.data.getOnlinePersos()) {
                     if(player.getLastPacketTime() + 600000 < System.currentTimeMillis()) {
                         if(player != null && player.getAccount().getGameClient() != null && player.isOnline()) {
                             SocketManager.REALM_SEND_MESSAGE(player.getAccount().getGameClient(), "01|");
@@ -112,10 +108,8 @@ public class GameServer {
                         }
                     }
                 }
-			}
-		}, 60, 60, TimeUnit.SECONDS);
-		
-		
+            }
+        });
 	}
 	
 	public Map<Long, GameClient> getClients() {

@@ -103,6 +103,11 @@ public class GameClient implements Client {
 		logger.trace("Delete action id : "+GA.getId());
 		this.getActions().remove(GA.getId());
 	}
+
+    public void removeAction() {
+        logger.trace("Delete all action");
+        this.getActions().clear();
+    }
 	
 	@SuppressWarnings("deprecation")
 	public void parsePacket(String packet) throws Exception { 

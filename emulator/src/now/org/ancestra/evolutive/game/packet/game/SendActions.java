@@ -1,7 +1,6 @@
 package org.ancestra.evolutive.game.packet.game;
 
 import org.ancestra.evolutive.client.Player;
-import org.ancestra.evolutive.common.Constants;
 import org.ancestra.evolutive.common.CryptManager;
 import org.ancestra.evolutive.common.Pathfinding;
 import org.ancestra.evolutive.common.SocketManager;
@@ -9,8 +8,9 @@ import org.ancestra.evolutive.core.Log;
 import org.ancestra.evolutive.core.World;
 import org.ancestra.evolutive.entity.collector.Collector;
 import org.ancestra.evolutive.enums.Alignement;
-import org.ancestra.evolutive.fight.Fight;
+import org.ancestra.evolutive.fight.fight.Fight;
 import org.ancestra.evolutive.fight.Fighter;
+import org.ancestra.evolutive.fight.fight.PVPFight;
 import org.ancestra.evolutive.fight.spell.SpellStats;
 import org.ancestra.evolutive.game.GameAction;
 import org.ancestra.evolutive.game.GameClient;
@@ -148,34 +148,34 @@ public class SendActions implements PacketParser {
 					return;
 				}
 				SocketManager.GAME_SEND_GA_PACKET_TO_MAP(client.getPlayer().getMap(),"", 909, client.getPlayer().getId()+"", id+"");
-				client.getPlayer().getMap().startFigthVersusPercepteur(client.getPlayer(), target);
+				//client.getPlayer().getMap().startFigthVersusPercepteur(client.getPlayer(), target);
 			}catch(Exception e){};
 		}
 		
 		public static void game_aggro(GameClient client, String packet) {
 			locker.lock();
 			try {
-				if(client.getPlayer() == null)return;
-				if(client.getPlayer().getFight() != null)return;
-				int id = Integer.parseInt(packet.substring(5));
-				Player target = World.data.getPlayer(id);
-				if(target == null || !target.isOnline() || target.getFight() != null
-					|| target.getMap().getId() != client.getPlayer().getMap().getId()
-					|| target.getAlignement() == client.getPlayer().getAlignement()
-					|| client.getPlayer().getMap().getPlaces().equalsIgnoreCase("|")
-					|| !target.isCanAggro())
-					return;
-				
-				client.getPlayer().toggleWings('+');
-				SocketManager.GAME_SEND_GA_PACKET_TO_MAP(client.getPlayer().getMap(),"", 906, client.getPlayer().getId()+"", id+"");
-				
-				if(target.getAlignement() == Alignement.NEUTRE) {
-					client.getPlayer().setDeshonor(client.getPlayer().getDeshonor()+1);
-					SocketManager.GAME_SEND_Im_PACKET(client.getPlayer(), "084;1");
-					client.getPlayer().getMap().newFight(client.getPlayer(), target, Constants.FIGHT_TYPE_AGRESSION, true);
-				} else 
-					client.getPlayer().getMap().newFight(client.getPlayer(), target, Constants.FIGHT_TYPE_AGRESSION, false);
-				
+                if (client.getPlayer() == null) return;
+                if (client.getPlayer().getFight() != null) return;
+                int id = Integer.parseInt(packet.substring(5));
+                Player target = World.data.getPlayer(id);
+                if (target == null || !target.isOnline() || target.getFight() != null
+                        || target.getMap().getId() != client.getPlayer().getMap().getId()
+                        || target.getAlignement() == client.getPlayer().getAlignement()
+                        || client.getPlayer().getMap().getPlaces().equalsIgnoreCase("|")
+                        || !target.isCanAggro())
+                    return;
+
+                client.getPlayer().toggleWings('+');
+                SocketManager.GAME_SEND_GA_PACKET_TO_MAP(client.getPlayer().getMap(), "", 906, client.getPlayer().getId() + "", id + "");
+
+                if (target.getAlignement() == Alignement.NEUTRE) {
+                    client.getPlayer().setDeshonor(client.getPlayer().getDeshonor() + 1);
+                    SocketManager.GAME_SEND_Im_PACKET(client.getPlayer(), "084;1");
+                    //client.getPlayer().getMap().newFight(client.getPlayer(), target, Constants.FIGHT_TYPE_AGRESSION, true);
+                } else
+                //client.getPlayer().getMap().newFight(client.getPlayer(), target, Constants.FIGHT_TYPE_AGRESSION, false);
+            ;
 			}catch(Exception e){
 				
 			} finally {
@@ -229,46 +229,45 @@ public class SendActions implements PacketParser {
 				{
 					SpellStats SS = client.getPlayer().getSortStatBySortIfHas(spellID);
 					if(SS == null)return;
-					client.getPlayer().getFight().tryCastSpell(client.getPlayer().getFight().getFighterByPerso(client.getPlayer()),SS,caseID);
+					client.getPlayer().getFight().tryCastSpell(client.getPlayer().getFighter(),SS,caseID);
+
 				}
 			}catch(NumberFormatException e){return;};
 		}
 	
-		public static void game_join_fight(GameClient client, String packet)
-		{
+		public static void game_join_fight(GameClient client, String packet){
 			String[] infos = packet.substring(5).split(";");
-			if(infos.length == 1)
-			{
-				try
-				{
-					Fight F = client.getPlayer().getMap().getFights().get(Integer.parseInt(infos[0]));
-					F.joinAsSpect(client.getPlayer());
-				}catch(Exception e){return;};
-			}else
-			{
-				try
-				{
-					int guid = Integer.parseInt(infos[1]);
-					if(client.getPlayer().isAway())
-					{
-						SocketManager.GAME_SEND_GA903_ERROR_PACKET(client,'o',guid);
+            if(infos.length == 1) {
+				try{
+                    client.getPlayer().getMap().getFights().get(Integer.parseInt(infos[0])).joinAsSpect(client.getPlayer());
+				}catch(Exception e){e.printStackTrace();};
+			}
+            else {
+				try {
+                    int fightId = Integer.parseInt(infos[0]);
+                    Fight f = client.getPlayer().getMap().getFights().get(fightId);
+                    if(f == null && client.getPlayer().getGuild() != null)
+                        return;
+
+                    if(client.getPlayer().isAway()){
+						SocketManager.GAME_SEND_GA903_ERROR_PACKET(client,'o',fightId);
 						return;
 					}
-					if(World.data.getPlayer(guid) == null)return;
-					World.data.getPlayer(guid).getFight().joinFight(client.getPlayer(),guid);
-				}catch(Exception e){return;};
+                    f.joinFight(client.getPlayer(),f.getTeamByFlagId(Integer.parseInt(infos[1])));
+				}catch(Exception e){e.printStackTrace();};
 			}
 		}
 	
-		public static void game_accept_duel(GameClient client, String packet)
-		{
-			int guid = -1;
-			try{guid = Integer.parseInt(packet.substring(5));}catch(NumberFormatException e){return;};
-			if(client.getPlayer().getDuel() != guid || client.getPlayer().getDuel() == -1)return;
-			SocketManager.GAME_SEND_MAP_START_DUEL_TO_MAP(client.getPlayer().getMap(),client.getPlayer().getDuel(),client.getPlayer().getId());
-			Fight fight = client.getPlayer().getMap().newFight(World.data.getPlayer(client.getPlayer().getDuel()),client.getPlayer(),Constants.FIGHT_TYPE_CHALLENGE, false);
-			client.getPlayer().setFight(fight);
-			World.data.getPlayer(client.getPlayer().getDuel()).setFight(fight);
+		public static void game_accept_duel(GameClient client, String packet){
+			int guid;
+			try{
+                guid = Integer.parseInt(packet.substring(5));
+            }catch(NumberFormatException e){return;};
+            new PVPFight(client.getPlayer().getMap().getNextFreeId(),client.getPlayer().getMap(),client.getPlayer(),World.database.getCharacterData().load(guid));
+			//SocketManager.GAME_SEND_MAP_START_DUEL_TO_MAP(client.getPlayer().getMap(),client.getPlayer().getDuel(),client.getPlayer().getId());
+			//Fight fight = client.getPlayer().getMap().newFight(World.data.getPlayer(client.getPlayer().getDuel()),client.getPlayer(),Constants.FIGHT_TYPE_CHALLENGE, false);
+			//client.getPlayer().setFight(fight);
+			//World.data.getPlayer(client.getPlayer().getDuel()).setFight(fight);
 		}
 	
 		public static void game_cancel_duel(GameClient client, String packet)
@@ -284,15 +283,12 @@ public class SendActions implements PacketParser {
 			}catch(NumberFormatException e){return;};
 		}
 	
-		public static void game_ask_duel(GameClient client, String packet)
-		{
-			if(client.getPlayer().getMap().getPlaces().equalsIgnoreCase("|"))
-			{
+		public static void game_ask_duel(GameClient client, String packet){
+			if(client.getPlayer().getMap().getPlaces().equalsIgnoreCase("|")){
 				SocketManager.GAME_SEND_DUEL_Y_AWAY(client, client.getPlayer().getId());
 				return;
 			}
-			try
-			{
+			try {
 				int guid = Integer.parseInt(packet.substring(5));
 				if(client.getPlayer().isAway() || client.getPlayer().getFight() != null) {
 					SocketManager.GAME_SEND_DUEL_Y_AWAY(client, client.getPlayer().getId());
@@ -372,8 +368,7 @@ public class SendActions implements PacketParser {
 				client.getPlayer().setAway(true);
 			}else
 			{
-				Fighter F = client.getPlayer().getFight().getFighterByPerso(client.getPlayer());
-				if(F == null)return;
+				Fighter F = client.getPlayer().getFighter();
 				GA.setArgs(path);
 				client.getPlayer().getFight().fighterDeplace(F,GA);
 			}

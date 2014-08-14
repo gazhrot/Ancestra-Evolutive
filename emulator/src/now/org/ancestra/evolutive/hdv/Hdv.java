@@ -103,8 +103,8 @@ public class Hdv {
 
 	public HdvLine getLigne(int line) {
 		try	{
-			int categ = this.getPath().get(line).first;
-			int template = this.getPath().get(line).second;
+			int categ = this.getPath().get(line).getKey();
+			int template = this.getPath().get(line).getValue();
 			return this.getCategorys().get(categ).getTemplate(template).getLine(line);
 		}catch(NullPointerException e) {
 			return null;

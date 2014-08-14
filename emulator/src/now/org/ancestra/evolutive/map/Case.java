@@ -132,6 +132,12 @@ public class Case {
             this.creatures.add(creature);
         }
 	}
+
+    public ArrayList<Creature> getCreature(){
+        if(this.creatures == null)
+            return new ArrayList<Creature>();
+        return this.creatures;
+    }
 	
 	public void removeCreature(Creature creature) {
 		if(this.creatures == null || !this.creatures.contains(creature))
@@ -161,7 +167,8 @@ public class Case {
     }
 
 	public void removeFighter(Fighter fighter) {
-		this.fighters.remove(fighter.getId());
+        if(this.fighters != null && this.fighters.containsKey(fighter.getId()))
+		    this.fighters.remove(fighter.getId());
 	}
 	
 	public Fighter getFirstFighter() {

@@ -55,7 +55,7 @@ public abstract class Exchange {
 	
 	public synchronized Couple<Integer, Integer> getCoupleInList(ArrayList<Couple<Integer, Integer>> objects, int guid) {
 		for(Couple<Integer, Integer> couple : objects)
-			if(couple.first == guid)
+			if(couple.getKey() == guid)
 				return couple;
 		return null;
 	}
@@ -69,8 +69,8 @@ public abstract class Exchange {
 			objects = exchanger2.getObjects();
 		
 		for(Couple<Integer, Integer> couple : objects)
-			if(couple.first == idObject)
-				return couple.second;		
+			if(couple.getKey() == idObject)
+				return couple.getValue();		
 		return 0;
 	}
 	

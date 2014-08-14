@@ -11,7 +11,7 @@ public class GetCharacters implements PacketParser {
 	@Override
 	public void parse(GameClient client, String packet) {
 		for(Player player : client.getAccount().getPlayers().values()) {
-			if(player.getFight() != null && player.getFight().getFighterByPerso(player) != null)	{	
+			if(player.getFight() != null && player.getFighter() != null)	{
 				client.getAccount().setCurPlayer(player);
 				client.setPlayer(player);
 				if(player != null) {

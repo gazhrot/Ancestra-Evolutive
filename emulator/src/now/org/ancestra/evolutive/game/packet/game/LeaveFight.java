@@ -27,9 +27,9 @@ public class LeaveFight implements PacketParser {
 			if(target == null || target.getFight() == null || target.getFight().getTeamID(target.getId()) != client.getPlayer().getFight().getTeamID(client.getPlayer().getId()))
 				return;
 			
-			client.getPlayer().getFight().leftFight(client.getPlayer(), target);
+			client.getPlayer().getFight().leftFight(client.getPlayer());
 		}else {
-			client.getPlayer().getFight().leftFight(client.getPlayer(), null);
+			client.getPlayer().getFight().leftFight(client.getPlayer());
 		}
 	}
 }

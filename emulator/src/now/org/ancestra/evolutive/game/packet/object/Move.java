@@ -4,6 +4,7 @@ import org.ancestra.evolutive.common.ConditionParser;
 import org.ancestra.evolutive.common.Constants;
 import org.ancestra.evolutive.common.SocketManager;
 import org.ancestra.evolutive.core.World;
+import org.ancestra.evolutive.fight.fight.Fight;
 import org.ancestra.evolutive.game.GameClient;
 import org.ancestra.evolutive.job.JobStat;
 import org.ancestra.evolutive.object.Object;
@@ -34,10 +35,8 @@ public class Move implements PacketParser {
 			if(!client.getPlayer().hasItemGuid(guid) || obj == null)
 				return;
 			
-			if(client.getPlayer().getFight() != null)
-			{
-				if(client.getPlayer().getFight().get_state() > 2)
-				{
+			if(client.getPlayer().getFight() != null){
+				if(client.getPlayer().getFight().getState() != Fight.FightState.ACTIVE){
 					return;
 				}
 			}
@@ -147,7 +146,7 @@ public class Move implements PacketParser {
 			if(obj.getTemplate().getSet() > 0)
 				SocketManager.GAME_SEND_OS_PACKET(client.getPlayer(),obj.getTemplate().getSet());
 			if(client.getPlayer().getFight() != null)
-				SocketManager.GAME_SEND_ON_EQUIP_ITEM_FIGHT(client.getPlayer(), client.getPlayer().getFight().getFighterByPerso(client.getPlayer()), client.getPlayer().getFight());
+				client.getPlayer().getFight().send(client.getPlayer().parseToOa());
 		}catch(Exception e)	{
 			e.printStackTrace();
 			SocketManager.GAME_SEND_DELETE_OBJECT_FAILED_PACKET(client);

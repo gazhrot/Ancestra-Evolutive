@@ -51,7 +51,7 @@ public class ActionAck implements PacketParser {
 					if(client.getPlayer().getFight() == null) {
                         client.getPlayer().setEmoteActive(0);
 						client.getPlayer().getCell().removeCreature(client.getPlayer());
-						SocketManager.GAME_SEND_BN(client);
+						client.send("BN");
 						String path = GA.getArgs();
 						//On prend la case cibl�e
 						Case nextCell = client.getPlayer().getMap().getCases().get(CryptManager.cellCode_To_ID(path.substring(path.length()-2)));
@@ -119,7 +119,7 @@ public class ActionAck implements PacketParser {
                     client.getActions().clear();
                 }
 			break;
-		}
+        }
 
 	}
 }

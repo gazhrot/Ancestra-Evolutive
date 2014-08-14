@@ -19,11 +19,11 @@ public class MobGroupHelper extends Helper<MobGroup> {
 
         boolean isFirst = true;
 
-        if(getCreature().getMobs().isEmpty()){
+        if(getCreature().getMobsGrade().isEmpty()){
             return "";
         }
 
-        for(Map.Entry<Integer, MobGrade> entry : getCreature().getMobs().entrySet()) {
+        for(Map.Entry<Integer, MobGrade> entry : getCreature().getMobsGrade().entrySet()) {
             if(!isFirst) {
                 id.append(",");
                 gfx.append(",");

@@ -127,7 +127,7 @@ public class Object {
 				int max = Integer.parseInt(infos[1],16)+ (boost?template.getBonusCC():0);
 				String jet = "1d"+(max-min+1)+"+"+(min-1);
 				//exCode: String newArgs = Integer.toHexString(min)+";"+Integer.toHexString(max)+";-1;-1;0;"+jet;
-				//osef du minMax, vu qu'on se sert du jet pour calculer les dégats
+				//osef du minMax, vu qu'on se sert du jet pour calculer les dï¿½gats
 				String newArgs = "0;0;0;-1;0;"+jet;
 				effets.add(new SpellEffect(SE.getEffectID(),newArgs,0,-1));
 			} catch(Exception e) {
@@ -172,7 +172,7 @@ public class Object {
 			for(int a : Constants.ARMES_EFFECT_IDS)//Si c'est un Effet Actif
 				if(a == statID)
 					follow = false;
-			if(!follow)continue;//Si c'était un effet Actif d'arme
+			if(!follow)continue;//Si c'ï¿½tait un effet Actif d'arme
 			
 			String jet = "";
 			int value  = 1;
@@ -197,7 +197,7 @@ public class Object {
 		return itemStats;
 	}
 	/***********FM SYSTEM***********/
-	/**   Rien a été changé ici   **/
+	/**   Rien a ï¿½tï¿½ changï¿½ ici   **/
 	public static int getPoidOfActualItem(String statsTemplate)//Donne le poid de l'item actuel
 	{
 		int poid = 0;
@@ -212,7 +212,7 @@ public class Object {
 			for(int a : Constants.ARMES_EFFECT_IDS)//Si c'est un Effet Actif
 				if(a == statID)
 					follow = false;
-			if(!follow)continue;//Si c'était un effet Actif d'arme
+			if(!follow)continue;//Si c'ï¿½tait un effet Actif d'arme
 			
 			String jet = "";
 			int value  = 1;
@@ -235,7 +235,7 @@ public class Object {
 			{
 				multi = 1;
 			}
-			else if(statID == 138 || statID == 666 || statID == 226 || statID == 220)//Domages %,Domage renvoyé,Piège %
+			else if(statID == 138 || statID == 666 || statID == 226 || statID == 220)//Domages %,Domage renvoyï¿½,Piï¿½ge %
 			{
 				multi = 2;
 			}	
@@ -243,15 +243,15 @@ public class Object {
 			{
 				multi = 3;
 			}
-			else if(statID == 240 || statID == 241 || statID == 242 || statID == 243 || statID == 244)//Ré Feu, Air, Eau, Terre, Neutre
+			else if(statID == 240 || statID == 241 || statID == 242 || statID == 243 || statID == 244)//Rï¿½ Feu, Air, Eau, Terre, Neutre
 			{
 				multi = 4;
 			}
-			else if(statID == 210 || statID == 211 || statID == 212 || statID == 213 || statID == 214)//Ré % Feu, Air, Eau, Terre, Neutre
+			else if(statID == 210 || statID == 211 || statID == 212 || statID == 213 || statID == 214)//Rï¿½ % Feu, Air, Eau, Terre, Neutre
 			{
 				multi = 5;
 			}
-			else if(statID == 225)//Piège
+			else if(statID == 225)//Piï¿½ge
 			{
 				multi = 15;
 			}
@@ -298,7 +298,7 @@ public class Object {
 			for(int a : Constants.ARMES_EFFECT_IDS)//Si c'est un Effet Actif
 				if(a == statID)
 					follow = false;
-			if(!follow)continue;//Si c'était un effet Actif d'arme
+			if(!follow)continue;//Si c'ï¿½tait un effet Actif d'arme
 			
 			String jet = "";
 			int value  = 1;
@@ -321,7 +321,7 @@ public class Object {
 			{
 				multi = 1;
 			}
-			else if(statID == 138 || statID == 666 || statID == 226 || statID == 220)//Domages %,Domage renvoyé,Piège %
+			else if(statID == 138 || statID == 666 || statID == 226 || statID == 220)//Domages %,Domage renvoyï¿½,Piï¿½ge %
 			{
 				multi = 2;
 			}	
@@ -329,15 +329,15 @@ public class Object {
 			{
 				multi = 3;
 			}
-			else if(statID == 240 || statID == 241 || statID == 242 || statID == 243 || statID == 244)//Ré Feu, Air, Eau, Terre, Neutre
+			else if(statID == 240 || statID == 241 || statID == 242 || statID == 243 || statID == 244)//Rï¿½ Feu, Air, Eau, Terre, Neutre
 			{
 				multi = 4;
 			}
-			else if(statID == 210 || statID == 211 || statID == 212 || statID == 213 || statID == 214)//Ré % Feu, Air, Eau, Terre, Neutre
+			else if(statID == 210 || statID == 211 || statID == 212 || statID == 213 || statID == 214)//Rï¿½ % Feu, Air, Eau, Terre, Neutre
 			{
 				multi = 5;
 			}
-			else if(statID == 225)//Piège
+			else if(statID == 225)//Piï¿½ge
 			{
 				multi = 15;
 			}
@@ -448,7 +448,7 @@ public class Object {
 		
 		for(Entry<Integer,Integer> entry : obj.getStats().getEffects().entrySet())
 		{
-				//En cas d'echec les stats négatives Chance,Agi,Intel,Force,Portee,Vita augmentes
+				//En cas d'echec les stats nï¿½gatives Chance,Agi,Intel,Force,Portee,Vita augmentes
 				int newstats = 0;
 				
 				if(entry.getKey() == 152 ||
@@ -462,14 +462,14 @@ public class Object {
 					if(a < 1) a = 1;
 					float chute = (float)(entry.getValue()+a);
 					newstats = (int)Math.floor(chute);
-					//On limite la chute du négatif a sont maximum
+					//On limite la chute du nï¿½gatif a sont maximum
 					if(newstats > Job.getBaseMaxJet(obj.getTemplate().getId(), Integer.toHexString(entry.getKey())))
 					{
 						newstats = Job.getBaseMaxJet(obj.getTemplate().getId(), Integer.toHexString(entry.getKey()));
 					}
 				}else
 				{
-				if(entry.getKey() == 127 || entry.getKey() == 101) continue;//PM, pas de négatif ainsi que PA
+				if(entry.getKey() == 127 || entry.getKey() == 101) continue;//PM, pas de nï¿½gatif ainsi que PA
 				
 					float chute = (float)(entry.getValue()-((entry.getValue()*poid)/100));
 					newstats = (int)Math.floor(chute);
@@ -549,7 +549,7 @@ public class Object {
 	}
 	
 	public String parseStatsString() {
-		if(getTemplate().getType() == ObjectType.PIERRE_AME)	//Si c'est une pierre d'âme vide
+		if(getTemplate().getType() == ObjectType.PIERRE_AME)	//Si c'est une pierre d'ï¿½me vide
 			return getTemplate().getStrStats();
 		
 		StringBuilder stats = new StringBuilder();
@@ -636,7 +636,7 @@ public class Object {
 					}
 				}
 				if(!follow2)
-					continue;//Si c'était un effet Actif d'arme ou une signature
+					continue;//Si c'ï¿½tait un effet Actif d'arme ou une signature
 				this.stats.addOneStat(id, Integer.parseInt(stats[1], 16));
 			} catch(Exception e) {
 				continue;
@@ -649,7 +649,7 @@ public class Object {
 				String[] stats = s.split("\\#");
 				int statID = Integer.parseInt(stats[0], 16);
 				
-				//Stats spécials
+				//Stats spï¿½cials
 				if(statID == 997 || statID == 996) {
 					txtStats.put(statID, stats[4]);
 					continue;
@@ -674,10 +674,10 @@ public class Object {
 				}
 				
 				if(!follow)
-					continue;//Si c'était un effet Actif d'arme ou une signature
+					continue;//Si c'ï¿½tait un effet Actif d'arme ou une signature
 				
-				int value = Integer.parseInt(stats[1],16);
-				this.getStats().addOneStat(statID, value);
+				int id = Integer.parseInt(stats[1],16);
+				this.getStats().addOneStat(statID, id);
 			} catch(Exception e) { 
 				continue;
 			}

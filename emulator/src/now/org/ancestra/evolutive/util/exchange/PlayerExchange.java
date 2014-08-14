@@ -40,52 +40,52 @@ public class PlayerExchange extends Exchange {
 		this.player2.addKamas((- this.exchanger2.getKamas() + this.exchanger1.getKamas()));
 		
 		for(Couple<Integer, Integer> couple : this.exchanger1.getObjects())	{
-			if(couple.second == 0)
+			if(couple.getValue() == 0)
 				continue;
 			
-			if(!this.player1.hasItemGuid(couple.first)) {//Si le perso n'a pas l'item (Ne devrait pas arriver)
-				couple.second = 0;//On met la quantite a 0 pour eviter les problemes
+			if(!this.player1.hasItemGuid(couple.getKey())) {//Si le perso n'a pas l'item (Ne devrait pas arriver)
+				couple.setValue(0);//On met la quantite a 0 pour eviter les problemes
 				continue;
 			}	
 			
-			Object object = World.data.getObject(couple.first);
+			Object object = World.data.getObject(couple.getKey());
 			
-			if((object.getQuantity() - couple.second) < 1) {//S'il ne reste plus d'item apres l'�change
-				this.player1.removeItem(couple.first);
-				couple.second = object.getQuantity();
-				SocketManager.GAME_SEND_REMOVE_ITEM_PACKET(this.player1, couple.first);
+			if((object.getQuantity() - couple.getValue()) < 1) {//S'il ne reste plus d'item apres l'�change
+				this.player1.removeItem(couple.getKey());
+				couple.setValue(object.getQuantity());
+				SocketManager.GAME_SEND_REMOVE_ITEM_PACKET(this.player1, couple.getKey());
 				if(!this.player2.addObject(object, true))//Si le joueur avait un item similaire
-					World.data.removeObject(couple.first);//On supprime l'item inutile
+					World.data.removeObject(couple.getKey());//On supprime l'item inutile
 			} else {
-				object.setQuantity(object.getQuantity() - couple.second);
+				object.setQuantity(object.getQuantity() - couple.getValue());
 				SocketManager.GAME_SEND_OBJECT_QUANTITY_PACKET(this.player1, object);
-				Object newObject = Object.getClone(object, couple.second);
+				Object newObject = Object.getClone(object, couple.getValue());
 				if(this.player2.addObject(newObject, true))//Si le joueur n'avait pas d'item similaire
 					World.data.addObject(newObject, true);//On ajoute l'item au World
 			}
 		}
 		
 		for(Couple<Integer, Integer> couple : this.exchanger2.getObjects())	{
-			if(couple.second == 0)
+			if(couple.getValue() == 0)
 				continue;
 			
-			if(!this.player2.hasItemGuid(couple.first)) {//Si le perso n'a pas l'item (Ne devrait pas arriver)
-				couple.second = 0;//On met la quantite a 0 pour eviter les problemes
+			if(!this.player2.hasItemGuid(couple.getKey())) {//Si le perso n'a pas l'item (Ne devrait pas arriver)
+				couple.setValue(0);//On met la quantite a 0 pour eviter les problemes
 				continue;
 			}	
 			
-			Object object = World.data.getObject(couple.first);
+			Object object = World.data.getObject(couple.getKey());
 			
-			if((object.getQuantity() - couple.second) < 1) {//S'il ne reste plus d'item apres l'�change
-				this.player2.removeItem(couple.first);
-				couple.second = object.getQuantity();
-				SocketManager.GAME_SEND_REMOVE_ITEM_PACKET(this.player2, couple.first);
+			if((object.getQuantity() - couple.getValue()) < 1) {//S'il ne reste plus d'item apres l'�change
+				this.player2.removeItem(couple.getKey());
+				couple.setValue(object.getQuantity());
+				SocketManager.GAME_SEND_REMOVE_ITEM_PACKET(this.player2, couple.getKey());
 				if(!this.player1.addObject(object, true))//Si le joueur avait un item similaire
-					World.data.removeObject(couple.first);//On supprime l'item inutile
+					World.data.removeObject(couple.getKey());//On supprime l'item inutile
 			} else {
-				object.setQuantity(object.getQuantity() - couple.second);
+				object.setQuantity(object.getQuantity() - couple.getValue());
 				SocketManager.GAME_SEND_OBJECT_QUANTITY_PACKET(this.player2, object);
-				Object newObject = Object.getClone(object, couple.second);
+				Object newObject = Object.getClone(object, couple.getValue());
 				if(this.player1.addObject(newObject, true))//Si le joueur n'avait pas d'item similaire
 					World.data.addObject(newObject, true);//On ajoute l'item au World
 			}
@@ -127,8 +127,8 @@ public class PlayerExchange extends Exchange {
 			Couple<Integer, Integer> couple = getCoupleInList(this.exchanger1.getObjects(), idObject);
 			
 			if(couple != null) {
-				couple.second += quantity;
-				this.sendMoveOk(this.player1, this.player2, 'O', "+", idObject + "|" + couple.second, add);
+				couple.setValue(couple.getValue() + quantity);
+				this.sendMoveOk(this.player1, this.player2, 'O', "+", idObject + "|" + couple.getValue(), add);
 				return;
 			}
 			this.sendMoveOk(this.player1, this.player2, 'O', "+", str, add);
@@ -137,8 +137,8 @@ public class PlayerExchange extends Exchange {
 			Couple<Integer, Integer> couple = getCoupleInList(this.exchanger2.getObjects(), idObject);
 			
 			if(couple != null) {
-				couple.second += quantity;
-				this.sendMoveOk(this.player2, this.player1, 'O', "+", idObject + "|" + couple.second, add);
+				couple.setValue(couple.getValue() + quantity);
+				this.sendMoveOk(this.player2, this.player1, 'O', "+", idObject + "|" + couple.getValue(), add);
 				return;
 			}
 			
@@ -164,24 +164,24 @@ public class PlayerExchange extends Exchange {
 		
 		if(this.player1.getId() == idPlayer) {
 			Couple<Integer,Integer> couple = getCoupleInList(this.exchanger1.getObjects(), idObject);
-			int newQua = couple.second - quantity;
+			int newQua = couple.getValue() - quantity;
 			
 			if(newQua < 1) {
 				this.exchanger1.getObjects().remove(couple);
 				this.sendMoveOk(this.player1, this.player2, 'O', "-", String.valueOf(idObject), "");
 			} else {
-				couple.second = newQua;
+				couple.setValue(newQua);
 				this.sendMoveOk(this.player1, this.player2, 'O', "+", idObject + "|" + newQua, add);
 			}
 		} else if(this.player2.getId() == idPlayer) {
 			Couple<Integer,Integer> couple = getCoupleInList(this.exchanger2.getObjects(), idObject);
-			int newQua = couple.second - quantity;
+			int newQua = couple.getValue() - quantity;
 			
 			if(newQua <1) {
 				this.exchanger2.getObjects().remove(couple);
 				this.sendMoveOk(this.player2, this.player1, 'O', "-", String.valueOf(idObject), "");
 			} else {
-				couple.second = newQua;
+				couple.setValue(newQua);
 				this.sendMoveOk(this.player2, this.player1, 'O', "+", idObject + "|" + newQua, add);
 			}
 		}

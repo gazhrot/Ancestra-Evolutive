@@ -146,7 +146,7 @@ public class Admin {
 				t.sendText("Liste des groupes de monstres :\n");
 				
 				for(Entry<Integer, MobGroup> entry : map.getMobGroups().entrySet())
-					t.sendText("Id: " + entry.getKey() + " | Cell : " + entry.getValue().getCell().getId() + " | " + entry.getValue().getAlignement() + " | Taille : " + entry.getValue().getMobs().size());
+					t.sendText("Id: " + entry.getKey() + " | Cell : " + entry.getValue().getCell().getId() + " | " + entry.getValue().getAlignement() + " | Taille : " + entry.getValue().getMobsGrade().size());
 			}
 		};
 		
@@ -560,7 +560,7 @@ public class Admin {
 			
 		};
 		
-		command.addParameter(new Parameter <Admin>("EMOTE", "Ajoute l'émotte en question au joueur.", "ID,PLAYER*", 2) {
+		command.addParameter(new Parameter <Admin>("EMOTE", "Ajoute l'ï¿½motte en question au joueur.", "ID,PLAYER*", 2) {
 
 			@Override
 			public void action(Admin t, String[] args) {
@@ -589,7 +589,7 @@ public class Admin {
 				}
 				
 				player.getEmote().add(id);
-				t.sendText("Le joueur " + player.getName() + " à reçu l'émotte d'id " + id + " avec succès.");
+				t.sendText("Le joueur " + player.getName() + " ï¿½ reï¿½u l'ï¿½motte d'id " + id + " avec succï¿½s.");
 			}
 
 		});

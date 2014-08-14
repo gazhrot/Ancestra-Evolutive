@@ -1,10 +1,10 @@
 package org.ancestra.evolutive.entity.monster;
 
-import org.ancestra.evolutive.common.Pathfinding;
 import org.ancestra.evolutive.core.Server;
 import org.ancestra.evolutive.core.World;
 import org.ancestra.evolutive.entity.Creature;
 import org.ancestra.evolutive.enums.Alignement;
+import org.ancestra.evolutive.enums.IdType;
 import org.ancestra.evolutive.map.Case;
 import org.ancestra.evolutive.map.Maps;
 
@@ -34,7 +34,7 @@ public class MobGroup extends Creature {
      */
 	public MobGroup(int id, Alignement alignement, ArrayList<MobGrade> possibles, Maps map, Case cell, int maxSize) {
 		this(id, map, cell, "", alignement, false, false);
-        int groupSize = (maxSize == -1) ? defaultMaxGroup:random.nextInt(maxSize) + 1;
+        int groupSize = (maxSize <= 0) ? defaultMaxGroup:random.nextInt(maxSize) + 1;
         possibles = getPossibleMob(alignement, possibles);
         if(!possibles.isEmpty()){
             for(int a = 0; a < groupSize; a++) {
@@ -84,7 +84,7 @@ public class MobGroup extends Creature {
         this.aggroDistance = generateAggroDistance(mobs.values());
 	}
 
-    private MobGroup(int id, Maps map, Case cell, String condition, Alignement alignement, boolean timer, boolean fix) {
+    public MobGroup(int id, Maps map, Case cell, String condition, Alignement alignement, boolean timer, boolean fix) {
         super(id,"Group id " + id + " on map "+ map.getId(), map, cell, random.nextInt(7));
         this.isFix = fix;
         this.condition = condition;
@@ -110,9 +110,25 @@ public class MobGroup extends Creature {
 		return condition;
 	}
 
-	public Map<Integer, MobGrade> getMobs() {
+	public Map<Integer, MobGrade> getMobsGrade() {
 		return mobs;
 	}
+
+    /**
+     * Retourne l ensemble des mobs d un group
+     * @return ensembe des mobs avec l id correspondant
+     */
+    public ArrayList<Mob> getMobs() {
+        ArrayList<Mob> stock = new ArrayList<>();
+        int count = IdType.MONSTER.MAXIMAL_ID;
+        for(MobGrade mobGrade : this.getMobsGrade().values()){
+            stock.add(new Mob(count,this.getMap().getCases().get(this.getMap().getRandomFreeCell()),mobGrade));
+            count--;
+        }
+        return stock;
+    }
+
+
 
 	public void startTimer() {
 		this.timer = new Timer();
@@ -127,15 +143,7 @@ public class MobGroup extends Creature {
     @Override
     protected boolean onMoveCell(Case oldCell, Case newCell) {
         if(isFix) return true;
-        for(MobGrade mob : mobs.values()) {
-            if(cell != null) {
-                mob.setCell(newCell);
-            }
-        }
-        String pathStr = Pathfinding.getShortestStringPathBetween(oldCell.getMap(), oldCell.getId(), newCell.getId(), 0);
-        if(pathStr != null) {
-            newCell.getMap().send("GA0;1;" + this.getId() +";"+ pathStr);
-        }
+        super.onMoveCell(oldCell,newCell);
         return true;
     }
 

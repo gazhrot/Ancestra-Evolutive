@@ -16,7 +16,7 @@ public class Stats {
 	
 	public Stats(Map<Integer, Integer> stats) {
 		this.effects = stats;
-	}
+    }
 	
 	public Stats(boolean addBases, Player player) {
 		this.effects = new HashMap<>();

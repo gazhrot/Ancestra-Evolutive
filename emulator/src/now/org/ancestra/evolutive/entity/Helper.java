@@ -1,7 +1,7 @@
 package org.ancestra.evolutive.entity;
 
 
-public abstract class Helper<T> {
+public abstract class Helper<T extends Creature> {
     private final T creature;
 
     public Helper(T creature){

@@ -15,6 +15,6 @@ public class SetPlayerPosition implements PacketParser {
 		try {
 			int cell = Integer.parseInt(packet.substring(2));
 			client.getPlayer().getFight().changePlace(client.getPlayer(), cell);
-		} catch(NumberFormatException e) {return;}
+		} catch(NumberFormatException ignored) {}
 	}
 }

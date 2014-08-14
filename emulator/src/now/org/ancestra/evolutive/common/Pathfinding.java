@@ -1,7 +1,7 @@
 package org.ancestra.evolutive.common;
 
 import org.ancestra.evolutive.core.Log;
-import org.ancestra.evolutive.fight.Fight;
+import org.ancestra.evolutive.fight.fight.Fight;
 import org.ancestra.evolutive.fight.Fighter;
 import org.ancestra.evolutive.fight.trap.Piege;
 import org.ancestra.evolutive.map.Case;
@@ -39,7 +39,7 @@ public class Pathfinding {
 	        	//Si en combat, et pas au d�but du path
 	    		if(fight != null && i != 0)
 	    		{
-	    			for(Piege p : fight.get_traps())
+	    			for(Piege p : fight.getTraps())
 	    			{
 	    				int dist = getDistanceBetween(map,p.get_cell().getId(),newPos);
 	    				if(dist <= p.get_size())
@@ -138,7 +138,7 @@ public class Pathfinding {
             {
 	            if(getEnemyFighterArround(lastPos, map, fight) != null)//Si ennemie proche
 	            	return "stop:"+lastPos;
-    			for(Piege p : fight.get_traps()) {
+    			for(Piege p : fight.getTraps()) {
     				int dist = getDistanceBetween(map,p.get_cell().getId(),lastPos);
     				if(dist <= p.get_size()) {//on arrete le d�placement sur la 1ere case du piege
     					return "stop:"+lastPos;
@@ -844,7 +844,7 @@ public class Pathfinding {
 			if (map.getCases().get(nextCase) != null && map.getCases().get(nextCase).isWalkable(true)
 					&& map.getCases().get(nextCase).getFighters().isEmpty()) {
 				id = nextCase;
-				for(Piege p : fight.get_traps()) {
+				for(Piege p : fight.getTraps()) {
 					int dist = Pathfinding.getDistanceBetween(fight.getMap(), p.get_cell().getId(), id);
 					if (dist <= p.get_size()) {
 						p.onTraped(target);

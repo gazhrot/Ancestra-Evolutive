@@ -3,6 +3,9 @@ package org.ancestra.evolutive.tool.plugin;
 import java.io.*;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 public class PluginLoader {
@@ -26,9 +29,16 @@ public class PluginLoader {
 		this.file = file;
 
 		String nameClass;
-		try {
-			nameClass = this.main = readEntry(jarFile.getInputStream(jarFile.getEntry("plugin")));
-		} catch(IOException e) {
+        try {
+            ArrayList<JarEntry> entries = Collections.list(jarFile.entries());
+            for(JarEntry jar : entries)
+                System.out.println(jar);
+
+
+            InputStream in = jarFile.getInputStream(jarFile.getEntry("plugins"));
+			nameClass = this.main = readEntry(in);
+		} catch(Exception e) {
+            e.printStackTrace();
 			throw new Exception("cannot read the plugin file.");
 		}	
 		
@@ -43,6 +53,7 @@ public class PluginLoader {
 		try {
 			mainClass = Class.forName(nameClass, true, classLoader);
 		} catch(ClassNotFoundException e) {
+            e.printStackTrace();
 			throw new Exception("cannot find the main class.");
 		}
 

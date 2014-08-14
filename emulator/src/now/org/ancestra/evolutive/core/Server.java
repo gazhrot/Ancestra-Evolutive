@@ -84,6 +84,8 @@ public class Server {
 	private boolean customStartMap;
 	private boolean auraSystem;
 	private int maxIdleTime;
+    public static final int mobRespawnDelay = configFile.getInt("server.reloadMobDelay");
+    public static final int moveMobDelay = configFile.getInt("server.moveMobDelay");
 	
 	//server
 	private int saveTime;
@@ -200,6 +202,7 @@ public class Server {
 				this.initializePlugins();
 			} catch(Exception e) { 
 				System.out.println(" <> Erreur lors de l'initialisation des plugins : "+e.getMessage());
+                e.printStackTrace();
 				System.exit(1);
 			}
 		} catch(Exception e) {
@@ -234,7 +237,7 @@ public class Server {
 			String name = configFile.getString("commands.players.teleport.savePos.name").toUpperCase();
 			
 			//creation de la commande
-			Command<Player> command = new Command<Player>(name, "Téléporte votre joueur à votre dernière position sauvegarder.", null) {
+			Command<Player> command = new Command<Player>(name, "Tï¿½lï¿½porte votre joueur ï¿½ votre derniï¿½re position sauvegarder.", null) {
 				
 				@Override
 				public void action(Player player, String[] args) {
@@ -379,10 +382,10 @@ public class Server {
 		Command<Console> command = new Command<Console>("PLUGIN", null, "ADD|SHOW") {
 			@Override
 			public void action(Console t, String[] args) {
-				Console.instance.println("Paramètre non indiqué : ADD, SHOW");
+				Console.instance.println("Paramï¿½tre non indiquï¿½ : ADD, SHOW");
 			}
 		};		
-		command.addParameter(new Parameter<Console>("SHOW", "Affiche les différents plug-ins actuellement actif.", null) {
+		command.addParameter(new Parameter<Console>("SHOW", "Affiche les diffï¿½rents plug-ins actuellement actif.", null) {
 
 			@Override
 			public void action(Console t, String[] args) {
@@ -399,12 +402,12 @@ public class Server {
 			
 		});
 
-		command.addParameter(new Parameter<Console>("ADD", "Permet d'ajouté un plug-in au server.", null) {
+		command.addParameter(new Parameter<Console>("ADD", "Permet d'ajoutï¿½ un plug-in au server.", null) {
 
 			@Override
 			public void action(Console console, String[] args) {
 				if(args == null) {
-					Console.instance.writeln("Aucun argument défini. Merci d'indiquer le nom du fichier compilé.d");
+					Console.instance.writeln("Aucun argument dï¿½fini. Merci d'indiquer le nom du fichier compilï¿½.d");
 					return;
 				}	
 				
@@ -427,6 +430,7 @@ public class Server {
 								.put(file.getName(), new PluginLoader(file));
 							} catch(Exception e) {
 								Console.instance.writeln("Erreur lors de l'execution du fichier en question.");
+                                e.printStackTrace();
 							}
 						}
 					}
@@ -497,6 +501,7 @@ public class Server {
 					World.data.getOtherPlugins()
 						.put(file.getName(), new PluginLoader(file));
 					} catch(Exception e) {
+                        e.printStackTrace();
 						throw new Exception(file.getName() + " : " + e.getMessage());
 					}
 				}
@@ -547,7 +552,7 @@ public class Server {
 
 		while(enumeration.hasMoreElements()) {
 			JarEntry jarEntry = enumeration.nextElement();
-			if(jarEntry.getName().endsWith(".class")) {
+			if(jarEntry.getName().endsWith(".class") && jarEntry.getName().startsWith("org/ancestra")) {
 				Class<?> localClass = loader.loadClass(jarEntry.getName()
 						.replaceAll(".class", "").replaceAll("/", "."));
 				Annotation annotation = localClass.getAnnotation(Packet.class); 

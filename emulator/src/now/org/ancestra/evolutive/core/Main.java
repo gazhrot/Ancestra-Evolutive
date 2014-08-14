@@ -65,14 +65,19 @@ public class Main {
 	public static void closeServers() {
         Console.instance.writeln(" <> Fermeture du jeu <>");
         Server.config.setRunning(false);
-        if(Server.config.getRealmServer() != null)Server.config.getRealmServer().close();
-        if(Server.config.getGameServer() != null)Server.config.getGameServer().close();
+        
+        if(Server.config.getRealmServer() != null)
+        	Server.config.getRealmServer().close();
+        if(Server.config.getGameServer() != null)
+        	Server.config.getGameServer().close();
+        
         World.data.saveData(-1);
+        
         if(World.database.getAccountData() != null)
             World.database.getAccountData().updateState(false);
         for(PluginLoader pl: World.data.getOtherPlugins().values())
             pl.disable();
+        
         Console.instance.writeln(" <> Redemmarage <>");
-
 	}
 }

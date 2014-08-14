@@ -9,20 +9,28 @@ import org.ancestra.evolutive.core.Log;
 import org.ancestra.evolutive.core.Server;
 import org.ancestra.evolutive.core.World;
 import org.ancestra.evolutive.entity.Creature;
+import org.ancestra.evolutive.entity.Fightable;
+import org.ancestra.evolutive.entity.Helper;
 import org.ancestra.evolutive.entity.collector.Collector;
-import org.ancestra.evolutive.entity.monster.MobGrade;
+import org.ancestra.evolutive.entity.monster.Mob;
+
+import org.ancestra.evolutive.fight.fight.Fight;
+
 import org.ancestra.evolutive.fight.spell.LaunchedSpell;
 import org.ancestra.evolutive.fight.spell.SpellEffect;
 import org.ancestra.evolutive.fight.spell.SpellStats;
-import org.ancestra.evolutive.guild.Guild;
+import org.ancestra.evolutive.fight.team.Team;
 import org.ancestra.evolutive.map.Case;
 
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
-public class Fighter extends Creature {
+public class Fighter extends Creature{
+
+
     public enum FighterType {
         PLAYER(1),
         CREATURE(2),
@@ -34,8 +42,7 @@ public class Fighter extends Creature {
         }
     }
 
-    private final FighterType type;
-
+    private final Fightable fightable;
     private int PA;
     private int PM;
     private int maxHealthPoint;
@@ -43,28 +50,21 @@ public class Fighter extends Creature {
 
 
     private boolean _canPlay = false;
-    private Fight _fight;
-	private MobGrade _mob = null;
-	private Player _perso = null;
-	Collector _Perco = null;
-	Player _double = null;
-	private int _team = -2;
 	private Case fakeCell; //cell before spell cast (hide mode)
-	private ArrayList<SpellEffect> _fightBuffs = new ArrayList<SpellEffect>();
+	private CopyOnWriteArrayList<SpellEffect> fightBuffs = new CopyOnWriteArrayList<>();
 	private Map<Integer,Integer> _chatiValue = new TreeMap<Integer,Integer>();
     private Fighter _invocator;
 	public int _nbInvoc = 0;
 	private int _PDVMAX;
-	private int _PDV;
-	private boolean _isDead;
-	private boolean _hasLeft;
-	private int _gfxID;
+	private int pdv;
+	private boolean hasLeft;
 	private Map<Integer,Integer> _state = new TreeMap<Integer,Integer>();
 	private Fighter _isHolding;
 	private Fighter _holdedBy;
-	private ArrayList<LaunchedSpell> _launchedSort = new ArrayList<LaunchedSpell>();
+	private CopyOnWriteArrayList<LaunchedSpell> launchedSpells = new CopyOnWriteArrayList<>();
 	private Fighter _oldCible = null;
 	private int turnRemaining = -1;
+    private final Team team;
 	
 	public Fighter get_oldCible() {
 		return _oldCible;
@@ -73,209 +73,111 @@ public class Fighter extends Creature {
 		_oldCible = cible;
 	}
 
-	public Fighter(Fight f, MobGrade mob){
-		super(mob.getId(), Integer.toString(mob.getTemplate().getId()), f.getMap(), 	mob.getCell());
-
-		_fight = f;
-		type = FighterType.CREATURE;
-		_mob = mob;
-		_PDVMAX = mob.getMaxPdv();
-		_PDV = mob.getPdv();
-		_gfxID = getDefaultGfx();
+    public Fighter(Fight f,Fightable fightable,Case cell,Team team){
+        super(fightable.getId(), fightable.getName(),cell.getMap(),cell);
+        this.fightable = fightable;
+        this.fight = f;
+        fightable.setFight(f);
+        this._PDVMAX = fightable.getMaxPdv();
+        this.pdv = fightable.getPdv();
+        fightable.removeOnMap();
+        setFightCell(cell);
+        fightable.setFighter(this);
+        this.team = team;
     }
-	
-	public Fighter(Fight f, Player perso){
-		super(perso.getId(),perso.getName(),f.getMap(),perso.getCell());
-        perso.removeOnMap();
-		_fight = f;
-		if(perso.isClone()){
-			type = FighterType.CLONE;
-			_double = perso;
-        }else {
-			type = FighterType.PLAYER;
-			_perso = perso;
-		}
-		_PDVMAX = perso.getMaxPdv();
-		_PDV = perso.getPdv();
-		_gfxID = getDefaultGfx();
-        
-	}
 
-	public Fighter(Fight f, Collector collector) {
-		super(-1,collector.getGuild().getName(),collector.getMap(),collector.getCell());
-		_fight = f;
-		type = FighterType.COLLECTOR;
-		_Perco = collector;
-		_PDVMAX = (World.data.getGuild(collector.get_guildID()).getLevel()*100);
-		_PDV = (World.data.getGuild(collector.get_guildID()).getLevel()*100);
-		_gfxID = 6000;
-       
-	}
+    public Fighter(Fight f,Fightable fightable,Team team){
+        this(f, fightable, fightable.getCell(),team);
+    }
+
 
     //region Refactored
     //region Getter and Setters
     @Override
     public void setPosition(Case cell){
-        //super.setPosition(cell);
+        this.cell.removeCreature(this);
+        this.cell.removeFighter(this);
         this.cell = cell;
+        cell.addCreature(this);
+        cell.addFighter(this);
         if(!this.isHide())
             this.fakeCell = cell;
     }
 
-    public Case getFakeCell() {
+    @Override
+    public void send(String message){
+        fightable.send(message);
+    }
+
+    @Override
+    public Helper<?> getHelper(){
+        return fightable.getHelper();
+    }
+
+    public int getInitiative(){
+        return fightable.getInitiative();
+    }
+
+    public Map<Integer, SpellStats> getSpells(){
+        return fightable.getSpells();
+    }
+
+    public boolean isReady(){
+        return fightable.isReady();
+    }
+
+    public FighterType getFighterType(){
+        return fightable.getFighterType();
+    }
+
+    public int getIa(){
+        return fightable.getIa();
+    }
+
+    public void onStartTurn(Fighter fighter1){
+        fightable.onStartTurn(fighter1);
+        if(fighter1 == this){
+            this._canPlay = true;
+        }
+        if(this.hasLeft){
+            if(this.turnRemaining == 0){
+
+            }
+            this.turnRemaining--;
+        }
+    }
+
+    public int getGfx() {
+        return fightable.getGFX();
+    }
+
+    public Fightable getFightable(){
+        return fightable;
+    }
+
+    public Case getVisibleCell(){
         return fakeCell;
     }
 
-    public void setFakeCell(Case fakeCell){
-        this.fakeCell = fakeCell;
-    }
-
-    /**
-     * Change le nombre de PA et met à 0 si nécéssaire
-     * @param PA nombre de PA final
-     */
-    public void setPA(int PA){
-        this.PA = PA;
-    }
-
-    /**
-     * Retire un certain nombre de PA
-     * @param withdraw nombre de PA a retirer
-     */
-    public void withdrawPA(int withdraw){
-        this.PA -= withdraw;
-    }
-
-    /**
-     * Ajoute un certain nombre de PA
-     * @param add nombre de PA a ajouter
-     */
-    public void addPA(int add){
-        this.PA += add;
-    }
-
-    /**
-     * Change le nombre de PM
-     * @param PM nombre de PM final
-     */
-    public void setPM(int PM){
-        this.PM = PM;
-    }
-
-    /**
-     * Retire un certain nombre de PM
-     * @param withdraw nombre de PM a retirer
-     */
-    public void withdrawPM(int withdraw){
-        this.PM -= withdraw;
-    }
-
-    /**
-     * Ajoute un certain nombre de PM
-     * @param add nombre de PM a ajouter
-     */
-    public void addPM(int add){
-        this.PM += add;
-    }
-
-    /**
-     * Change le nombre de maxHealthPoint et met à 0 si nécéssaire
-     * @param maxHealthPoint nombre de maxHealthPoint final
-     */
-    public void setMaxHealthPoint(int maxHealthPoint){
-        this.maxHealthPoint = maxHealthPoint;
-    }
-
-    /**
-     * @return  nombre maximal de point de vie
-     */
-    public int getMaxHealthPoint(){
-        return maxHealthPoint;
-    }
-
-    /**
-     * Retire un certain nombre de maxHealthPoint
-     * @param withdraw nombre de maxHealthPoint a retirer
-     */
-    public void withdrawMaxHealthPoint(int withdraw){
-        this.maxHealthPoint -= withdraw;
-    }
-
-    /**
-     * Ajoute un certain nombre de maxHealthPoint
-     * @param add nombre de maxHealthPoint a ajouter
-     */
-    public void addMaxHealthPoint(int add){
-        this.maxHealthPoint += add;
-    }
-
-    /**
-     * Retire un certain nombre de currentHealthPoint
-     * @param withdraw nombre de currentHealthPoint a retirer
-     */
-    public void withdrawCurrentHealthPoint(int withdraw){
-        setCurrentHealthPoint(this.currentHealthPoint-withdraw);
-    }
-
-    /**
-     * Ajoute un certain nombre de currentHealthPoint
-     * @param add nombre de currentHealthPoint a ajouter
-     */
-    public void addCurrentHealthPoint(int add){
-        setCurrentHealthPoint(this.currentHealthPoint+add);
-    }
-
-    /**
-     * Change le nombre de currentHealthPoint et met à 0 si nécéssaire
-     * @param currentHealthPoint nombre de currentHealthPoint final
-     */
-    public void setCurrentHealthPoint(int currentHealthPoint){
-        if(currentHealthPoint > this.getMaxHealthPoint()) {
-            this.currentHealthPoint = this.getMaxHealthPoint();
-            return;
-        }
-        if(currentHealthPoint <= 0){
-            this.currentHealthPoint = 0;
-            onFighterDie();
-        }
-    }
-
-    /*public boolean isDead(){
-        return this.currentHealthPoint <= 0;
-    }*/
-    //endregion
-
-    public void onFighterDie(){
-        return;
-    }
-    //endregion
-
-	public ArrayList<LaunchedSpell> getLaunchedSorts()
-	{
-		return _launchedSort;
+	public CopyOnWriteArrayList<LaunchedSpell> getLaunchedSorts(){
+		return launchedSpells;
 	}
+
+    public Team getTeam() {
+        return team;
+    }
 	
-	public void ActualiseLaunchedSort()
-	{
-		ArrayList<LaunchedSpell> copie = new ArrayList<LaunchedSpell>();
-		copie.addAll(_launchedSort);
-		int i = 0;
-		for(LaunchedSpell S : copie)
-		{
+	public void actualiseLaunchedSort(){
+		for(LaunchedSpell S : launchedSpells){
 			S.refreshCooldown();
-			if(S.getCooldown() <= 0)
-			{
-				_launchedSort.remove(i);
-				i--;
+			if(S.getCooldown() <= 0){
+				launchedSpells.remove(S);
 			}
-			i++;
 		}
 	}
 	
-	public void addLaunchedSort(Fighter target,SpellStats sort)
-	{
-		LaunchedSpell launched = new LaunchedSpell(target,sort);
-		_launchedSort.add(launched);
+	public void addLaunchedSort(Fighter target,SpellStats sort){
+		launchedSpells.add(new LaunchedSpell(target,sort));
 	}
 
 	public Fighter get_isHolding() {
@@ -294,51 +196,47 @@ public class Fighter extends Creature {
 		_holdedBy = holdedBy;
 	}
 
-	public ArrayList<SpellEffect> get_fightBuff()
-	{
-		return _fightBuffs;
+	public CopyOnWriteArrayList<SpellEffect> getFightBuff(){
+		return fightBuffs;
 	}
 
-    public void set_fightCell(Case cell)
+    public void setFightCell(Case cell)
 	{
 		setPosition(cell);
 	}
-	public boolean isHide()
-	{
+
+    public Case get_fightCell(boolean beforeLaunchedSpell) {
+        if(isHide() && beforeLaunchedSpell && fakeCell != null)
+            return this.fakeCell;
+        return this.cell;
+    }
+
+    public boolean isHide(){
 		return hasBuff(150);
 	}
-	public Case get_fightCell(boolean beforeLaunchedSpell) {
-		if(isHide() && beforeLaunchedSpell && fakeCell != null)
-			return this.fakeCell;
-		return this.cell;
-	}
-	public void setTeam(int i)
-	{
-		_team = i;
-	}
+
 	public boolean isDead() {
-		return _isDead;
+		return this.pdv <= 0 || hasLeft;
 	}
 
 	public boolean hasLeft() {
-		return _hasLeft;
+		return hasLeft;
 	}
 
 	public void setLeft(boolean hasLeft) {
-		_hasLeft = hasLeft;
+		this.hasLeft = hasLeft;
 	}
 
-	public Player getPersonnage()
-	{
-		if(type == FighterType.PLAYER)
-			return _perso;
+	public Player getPersonnage(){
+		if(fightable.getFighterType() == FighterType.PLAYER)
+			return (Player) fightable;
 		return null;
 	}
 	
 	public Collector getPerco()
 	{
-		if(type == FighterType.COLLECTOR)
-			return _Perco;
+		if(fightable.getFighterType() == FighterType.COLLECTOR)
+			return (Collector) fightable;
 		return null;
 	}
 	public boolean testIfCC(int tauxCC)
@@ -355,25 +253,16 @@ public class Fighter extends Creature {
 	
 	public Stats getTotalStats()
 	{
-		Stats stats = new Stats(new TreeMap<Integer,Integer>());
-		if(type == FighterType.PLAYER)
-			stats = _perso.getTotalStats();
-		if(type == FighterType.CREATURE)
-			stats =_mob.getStats();
-		if(type == FighterType.COLLECTOR)
-			stats = World.data.getGuild(_Perco.get_guildID()).getStatsFight();
-		if(type == FighterType.CLONE)
-			stats = _double.getTotalStats();
-		
+		Stats stats = fightable.getStats();
 		stats = Stats.cumulStat(stats,getFightBuffStats());
 		return stats;
 	}
 	
 	
 	public void initBuffStats(){
-		if(type == FighterType.PLAYER){
-			for(Map.Entry<Integer, SpellEffect> entry : _perso.getBuffs().entrySet()){
-				_fightBuffs.add(entry.getValue());
+		if(fightable.getFighterType() == FighterType.PLAYER){
+			for(Map.Entry<Integer, SpellEffect> entry : ((Player) fightable).getBuffs().entrySet()){
+				fightBuffs.add(entry.getValue());
 			}
 		}
 	}
@@ -381,7 +270,7 @@ public class Fighter extends Creature {
 	private Stats getFightBuffStats()
 	{
 		Stats stats = new Stats();
-		for(SpellEffect entry : _fightBuffs)
+		for(SpellEffect entry : fightBuffs)
 		{
 			stats.addOneStat(entry.getEffectID(), entry.getValue());
 		}
@@ -392,95 +281,7 @@ public class Fighter extends Creature {
 	{
 		StringBuilder str = new StringBuilder();
 		str.append("GM|").append(c);
-		str.append(getCell().getId()).append(";");
-        str.append(1).append(";");
-		str.append("0;");
-		str.append(getId()).append(";");
-		str.append(getPacketsName()).append(";");
-
-		switch(type)
-		{
-            case PLAYER ://Perso
-				str.append(_perso.getClasse().getId()).append(";");
-				str.append(_perso.getGfx()).append("^").append(_perso.getSize()).append(";");
-				str.append(_perso.getSex()).append(";");
-				str.append(_perso.getLevel()).append(";");
-				str.append(_perso.getAlignement().getId()).append(",");
-				str.append("0").append(",");//TODO
-				str.append((_perso.isShowWings()?_perso.getGrade():"0")).append(",");
-				str.append(_perso.getLevel()+_perso.getId());
-				if(_perso.isShowWings() && _perso.getDeshonor()>0)
-					str.append(",").append(_perso.getDeshonor()>0?1:0).append(';');
-				else
-					str.append(";");
-				str.append((_perso.getColor1()==-1?"-1":Integer.toHexString(_perso.getColor1()))).append(";");
-				str.append((_perso.getColor2()==-1?"-1":Integer.toHexString(_perso.getColor2()))).append(";");
-				str.append((_perso.getColor3()==-1?"-1":Integer.toHexString(_perso.getColor3()))).append(";");
-				str.append(_perso.getGMStuffString()).append(";");
-				str.append(getPDV()).append(";");
-				str.append(getTotalStats().getEffect(Constants.STATS_ADD_PA)).append(";");
-				str.append(getTotalStats().getEffect(Constants.STATS_ADD_PM)).append(";");
-				str.append(getTotalStats().getEffect(Constants.STATS_ADD_RP_NEU)).append(";");
-				str.append(getTotalStats().getEffect(Constants.STATS_ADD_RP_TER)).append(";");
-				str.append(getTotalStats().getEffect(Constants.STATS_ADD_RP_FEU)).append(";");
-				str.append(getTotalStats().getEffect(Constants.STATS_ADD_RP_EAU)).append(";");	
-				str.append(getTotalStats().getEffect(Constants.STATS_ADD_RP_AIR)).append(";");
-				str.append(getTotalStats().getEffect(Constants.STATS_ADD_AFLEE)).append(";");
-				str.append(getTotalStats().getEffect(Constants.STATS_ADD_MFLEE)).append(";");
-				str.append(_team).append(";");
-				if(_perso.isOnMount() && _perso.getMount() != null)str.append(_perso.getMount().getColor());
-				str.append(";");
-			break;
-			case CREATURE://Mob
-				str.append("-2;");
-				str.append(_mob.getTemplate().getGfx()).append("^100;");
-				str.append(_mob.getGrade()).append(";");
-				str.append(_mob.getTemplate().getColors().replace(",", ";")).append(";");
-				str.append("0,0,0,0;");
-				str.append(this.getPDVMAX()).append(";");
-				str.append(_mob.getPa()).append(";");
-				str.append(_mob.getPm()).append(";");
-				str.append(_team);
-			break;
-			case COLLECTOR://Perco
-				str.append("-6;");//Perco
-				str.append("6000^100;");//GFXID^Size
-				Guild G = World.data.getCollector(_fight.getOldMap()).getGuild();
-				str.append(G.getLevel()).append(";");
-				str.append("1;");//FIXME
-				str.append("2;4;");//FIXME
-				str.append((int)Math.floor(G.getLevel()/2)).append(";").append((int)Math.floor(G.getLevel()/2)).append(";").append((int)Math.floor(G.getLevel()/2)).append(";").append((int)Math.floor(G.getLevel()/2)).append(";").append((int)Math.floor(G.getLevel()/2)).append(";").append((int)Math.floor(G.getLevel()/2)).append(";").append((int)Math.floor(G.getLevel()/2)).append(";");//R�sistances
-				str.append(_team);
-			break;
-			case CLONE://Double
-				str.append(_double.getClasse().getId()).append(";");
-				str.append(_double.getGfx()).append("^").append(_double.getSize()).append(";");
-				str.append(_double.getSex()).append(";");
-				str.append(_double.getLevel()).append(";");
-				str.append(_double.getAlignement().getId()).append(",");
-				str.append("0,");//TODO
-				str.append((_double.isShowWings()?_double.getGrade():"0")).append(",");
-				str.append(_double.getId()).append(";");
-				str.append((_double.getColor1()==-1?"-1":Integer.toHexString(_double.getColor1()))).append(";");
-				str.append((_double.getColor2()==-1?"-1":Integer.toHexString(_double.getColor2()))).append(";");
-				str.append((_double.getColor3()==-1?"-1":Integer.toHexString(_double.getColor3()))).append(";");
-				str.append(_double.getGMStuffString()).append(";");
-				str.append(getPDV()).append(";");
-				str.append(getTotalStats().getEffect(Constants.STATS_ADD_PA)).append(";");
-				str.append(getTotalStats().getEffect(Constants.STATS_ADD_PM)).append(";");
-				str.append(getTotalStats().getEffect(Constants.STATS_ADD_RP_NEU)).append(";");
-				str.append(getTotalStats().getEffect(Constants.STATS_ADD_RP_TER)).append(";");
-				str.append(getTotalStats().getEffect(Constants.STATS_ADD_RP_FEU)).append(";");
-				str.append(getTotalStats().getEffect(Constants.STATS_ADD_RP_EAU)).append(";");	
-				str.append(getTotalStats().getEffect(Constants.STATS_ADD_RP_AIR)).append(";");
-				str.append(getTotalStats().getEffect(Constants.STATS_ADD_AFLEE)).append(";");
-				str.append(getTotalStats().getEffect(Constants.STATS_ADD_MFLEE)).append(";");
-				str.append(_team).append(";");
-				if(_double.isOnMount() && _double.getMount() != null)str.append(_double.getMount().getColor());
-				str.append(";");
-			break;
-		}
-		
+		str.append(fightable.getHelper().getGmPacket());
 		return str.toString();
 	}
 	
@@ -517,7 +318,7 @@ public class Fighter extends Creature {
 			if(nVal == 0)//ne pas mettre plus petit, -1 = infinie
 			{
 				//on envoie au client la desactivation de l'�tat
-				SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(_fight, 7, 950, getId()+"", getId()+","+e.getKey()+",0");
+				SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, 950, getId()+"", getId()+","+e.getKey()+",0");
 				continue;
 			}
 			//Sinon on remet avec la nouvelle valeur
@@ -526,43 +327,36 @@ public class Fighter extends Creature {
 	}
 	
 	public int getPDV() {
-		int pdv = _PDV + getBuffValue(Constants.STATS_ADD_VITA);
+		int pdv = this.pdv + getBuffValue(Constants.STATS_ADD_VITA);
 		return pdv;
 	}
 	
-	public void removePDV(int pdv){
-        if(this.type == FighterType.PLAYER){
-            this.getPersonnage().setPdv(this.getPersonnage().getPdv() - pdv);
-            _PDV = this.getPersonnage().getPdv();
-        } else {
-            _PDV -= pdv;
+	public void removePDV(int withdraw){
+        this.pdv -= withdraw;
+        if(this.pdv <= 0){
+            this.pdv = 0;
+            this.cell.removeCreature(this);
+            this.cell.removeFighter(this);
+            this.fight.onFighterDie(this);
         }
 	}
 	
-	public void applyBeginningTurnBuff(Fight fight)
-	{
-		synchronized(_fightBuffs)
-		{
-			for(int effectID : Constants.BEGIN_TURN_BUFF)
-			{
-				//On �vite les modifications concurrentes
-				ArrayList<SpellEffect> buffs = new ArrayList<SpellEffect>();
-				buffs.addAll(_fightBuffs);
-				for(SpellEffect entry : buffs)
-				{
-					if(entry.getEffectID() == effectID)
-					{
-						if(Server.config.isDebug()) Log.addToLog("Effet de debut de tour : "+ effectID);
-						entry.applyBeginingBuff(fight, this);
-					}
-				}
-			}
-		}
+	public void applyBeginningTurnBuff(Fight fight) {
+        for(int effectID : Constants.BEGIN_TURN_BUFF){
+            ArrayList<SpellEffect> buffs = new ArrayList<>();
+            buffs.addAll(fightBuffs);
+            for(SpellEffect entry : buffs){
+                if(entry.getEffectID() == effectID){
+                    logger.trace("Effet de debut de tour : " + effectID);
+                    entry.applyBeginingBuff(fight, this);
+                }
+            }
+        }
 	}
 
 	public SpellEffect getBuff(int id)
 	{
-		for(SpellEffect entry : _fightBuffs)
+		for(SpellEffect entry : fightBuffs)
 		{
 			if(entry.getEffectID() == id && entry.getDuration() >0)
 			{
@@ -574,7 +368,7 @@ public class Fighter extends Creature {
 	
 	public boolean hasBuff(int id)
 	{
-		for(SpellEffect entry : _fightBuffs)
+		for(SpellEffect entry : fightBuffs)
 		{
 			if(entry.getEffectID() == id && entry.getDuration() >0)
 			{
@@ -587,7 +381,7 @@ public class Fighter extends Creature {
 	public int getBuffValue(int id)
 	{
 		int value = 0;
-		for(SpellEffect entry : _fightBuffs)
+		for(SpellEffect entry : fightBuffs)
 		{
 			if(entry.getEffectID() == id)
 				value += entry.getValue();
@@ -598,7 +392,7 @@ public class Fighter extends Creature {
 	public int getMaitriseDmg(int id)
 	{
 		int value = 0;
-		for(SpellEffect entry : _fightBuffs)
+		for(SpellEffect entry : fightBuffs)
 		{
 			if(entry.getSpell() == id)
 				value += entry.getValue();
@@ -609,7 +403,7 @@ public class Fighter extends Creature {
 	
 	public boolean getSpellValueBool(int id)
 	{
-		for(SpellEffect entry : _fightBuffs)
+		for(SpellEffect entry : fightBuffs)
 		{
 			if(entry.getSpell() == id)
 				return true;
@@ -621,7 +415,7 @@ public class Fighter extends Creature {
 	{
 		//Copie pour contrer les modifications Concurentes
 		ArrayList<SpellEffect> b = new ArrayList<SpellEffect>();
-		for(SpellEffect entry : _fightBuffs)
+		for(SpellEffect entry : fightBuffs)
 		{
 			if(entry.decrementDuration() != 0)//Si pas fin du buff
 			{
@@ -639,18 +433,18 @@ public class Fighter extends Creature {
 							
 							//Baisse des pdvs actuel
 							int pdv = 0;
-							if(_PDV-entry.getValue() <= 0){
+							if(this.pdv -entry.getValue() <= 0){
 								pdv = 0;
-								_fight.onFighterDie(this);
-								_fight.verifIfTeamAllDead();
+								fight.onFighterDie(this);
+								fight.verifIfFightEnded();
 							}
-							else pdv = (_PDV-entry.getValue());
-							_PDV = pdv;
+							else pdv = (this.pdv -entry.getValue());
+							this.pdv = pdv;
 						}
 					break;
 				
 					case 150://Invisibilit�
-						SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(_fight, 7, 150, entry.getCaster().getId()+"", getId()+",0");
+						SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, 150, entry.getCaster().getId()+"", getId()+",0");
 					break;
 					
 					case 950:
@@ -662,13 +456,13 @@ public class Fighter extends Creature {
 						}catch(Exception e){}
 						if(id == -1)return;
 						setState(id,0);
-						SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(_fight, 7, 950, entry.getCaster().getId() + "", entry.getCaster().getId() + "," + id + ",0");
+						SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, 950, entry.getCaster().getId() + "", entry.getCaster().getId() + "," + id + ",0");
 					break;
 				}
 			}
 		}
-		_fightBuffs.clear();
-		_fightBuffs.addAll(b);
+		fightBuffs.clear();
+		fightBuffs.addAll(b);
 	}
 	
 	public void addBuff(int id,int val,int duration,int turns,boolean debuff,int spellID,String args,Fighter caster)
@@ -712,28 +506,28 @@ public class Fighter extends Creature {
 			debuff = true;
 		}
 		//Si c'est le jouer actif qui s'autoBuff, on ajoute 1 a la dur�e
-		_fightBuffs.add(new SpellEffect(id,val,(_canPlay?duration+1:duration),turns,debuff,caster,args,spellID));
+		fightBuffs.add(new SpellEffect(id, val, (_canPlay ? duration + 1 : duration), turns, debuff, caster, args, spellID));
 		if(Server.config.isDebug()) Log.addToLog("Ajout du Buff "+id+" sur le personnage Fighter ID = "+this.getId()+" val : "+val+" duration : "+duration+" turns : "+turns+" debuff : "+debuff+" spellid : "+spellID+" args : "+args);
 		
 			
 		switch(id)
 		{
 			case 6://Renvoie de sort
-				SocketManager.GAME_SEND_FIGHT_GIE_TO_FIGHT(_fight, 7, id, getId(), -1, val+"", "10", "", duration, spellID);
+				SocketManager.GAME_SEND_FIGHT_GIE_TO_FIGHT(fight, 7, id, getId(), -1, val+"", "10", "", duration, spellID);
 			break;
 			
 			case 79://Chance �ca
 				val = Integer.parseInt(args.split(";")[0]);
 				String valMax = args.split(";")[1];
 				String chance = args.split(";")[2];
-				SocketManager.GAME_SEND_FIGHT_GIE_TO_FIGHT(_fight, 7, id, getId(), val, valMax, chance, "", duration, spellID);
+				SocketManager.GAME_SEND_FIGHT_GIE_TO_FIGHT(fight, 7, id, getId(), val, valMax, chance, "", duration, spellID);
 			break;
 			
 			case 788://Fait apparaitre message le temps de buff sacri Chatiment de X sur Y tours
 				val = Integer.parseInt(args.split(";")[1]);
 				String valMax2 = args.split(";")[2];
 				if(Integer.parseInt(args.split(";")[0]) == 108)return;
-				SocketManager.GAME_SEND_FIGHT_GIE_TO_FIGHT(_fight, 7, id, getId(), val, ""+val, ""+valMax2, "", duration, spellID);
+				SocketManager.GAME_SEND_FIGHT_GIE_TO_FIGHT(fight, 7, id, getId(), val, ""+val, ""+valMax2, "", duration, spellID);
 				
 			break;
 
@@ -746,90 +540,44 @@ public class Fighter extends Creature {
 				String valMax1 = args.split(";")[1];
 				if(valMax1.compareTo("-1") == 0 || spellID == 82 || spellID == 94)
 				{
-				SocketManager.GAME_SEND_FIGHT_GIE_TO_FIGHT(_fight, 7, id, getId(), val, "", "", "", duration, spellID);
+				SocketManager.GAME_SEND_FIGHT_GIE_TO_FIGHT(fight, 7, id, getId(), val, "", "", "", duration, spellID);
 				}else if(valMax1.compareTo("-1") != 0)
 				{
-				SocketManager.GAME_SEND_FIGHT_GIE_TO_FIGHT(_fight, 7, id, getId(), val, valMax1, "", "", duration, spellID);
+				SocketManager.GAME_SEND_FIGHT_GIE_TO_FIGHT(fight, 7, id, getId(), val, valMax1, "", "", duration, spellID);
 				}
 				break;
 
 			default:
-				SocketManager.GAME_SEND_FIGHT_GIE_TO_FIGHT(_fight, 7, id, getId(), val, "", "", "", duration, spellID);
+				SocketManager.GAME_SEND_FIGHT_GIE_TO_FIGHT(fight, 7, id, getId(), val, "", "", "", duration, spellID);
 			break;
 		}
 	}
-	
-	public int getInitiative()
-	{
-		if(type == FighterType.PLAYER)
-			return _perso.getInitiative();
-		if(type == FighterType.CREATURE)
-			return _mob.getInitiative();
-		if(type == FighterType.COLLECTOR)
-			return World.data.getGuild(_Perco.get_guildID()).getLevel();
-		if(type == FighterType.CLONE)
-			return _double.getInitiative();
-		
-		return 0;
-	}
+
 	public int getPDVMAX()
 	{
 		return _PDVMAX + getBuffValue(Constants.STATS_ADD_VITA);
 	}
 	
-	public int get_lvl() {
-		if(type == FighterType.PLAYER)
-			return _perso.getLevel();
-		if(type == FighterType.CREATURE)
-			return _mob.getLevel();
-		if(type == FighterType.COLLECTOR)
-			return World.data.getGuild(_Perco.get_guildID()).getLevel();
-		if(type == FighterType.CLONE)
-			return _double.getLevel();
-
-		return 0;
+	public int getLvl() {
+		return fightable.getLevel();
 	}
-	public String xpString(String str)
-	{
-		if(_perso != null)
-		{
-			int max = _perso.getLevel()+1;
+	public String xpString(String str){
+		if(fightable.getFighterType() == FighterType.PLAYER){
+			int max = fightable.getLevel()+1;
 			if(max>World.data.getExpLevelSize())max = World.data.getExpLevelSize();
-			return World.data.getExpLevel(_perso.getLevel()).perso+str+_perso.getExperience()+str+World.data.getExpLevel(max).perso;		
+			return World.data.getExpLevel(fightable.getLevel()).perso+str+((Player) fightable).getExperience()+str+World.data.getExpLevel(max).perso;
 		}
 		return "0"+str+"0"+str+"0";
 	}
 
-	public String getPacketsName(){
-		if(type == FighterType.PLAYER)
-			return _perso.getName();
-		if(type == FighterType.CREATURE)
-			return _mob.getTemplate().getId()+"";
-		if(type == FighterType.COLLECTOR)
-			return (_Perco.getFirstNameId()+","+_Perco.getLastNameId());
-		if(type == FighterType.CLONE)
-			return _double.getName();
-		
-		return "";
-	}
-	public MobGrade getMob(){
-		if(type == FighterType.CREATURE)
-			return _mob;
+	public Mob getMob(){
+		if(fightable.getFighterType() == FighterType.CREATURE)
+			return (Mob) fightable;
 		
 		return null;
 	}
-	public int getTeam()
-	{
-		return _team;
-	}
-	public int getTeam2()
-	{
-		return _fight.getTeamID(this.getId());
-	}
-	public int getOtherTeam()
-	{
-		return _fight.getOtherTeamID(this.getId());
-	}
+
+
 	public boolean canPlay()
 	{
 		return _canPlay;
@@ -840,8 +588,8 @@ public class Fighter extends Creature {
 	}
 	public ArrayList<SpellEffect> getBuffsByEffectID(int effectID)
 	{
-		ArrayList<SpellEffect> buffs = new ArrayList<SpellEffect>();
-		for(SpellEffect buff : _fightBuffs)
+		ArrayList<SpellEffect> buffs = new ArrayList<>();
+		for(SpellEffect buff : fightBuffs)
 		{
 			if(buff.getEffectID() == effectID)
 				buffs.add(buff);
@@ -850,43 +598,16 @@ public class Fighter extends Creature {
 	}
 	public Stats getTotalStatsLessBuff()
 	{
-		Stats stats = new Stats(new TreeMap<Integer,Integer>());
-		if(type == FighterType.PLAYER)
-			stats = _perso.getTotalStats();
-		if(type == FighterType.CREATURE)
-			stats =_mob.getStats();
-		if(type == FighterType.COLLECTOR)
-			stats = World.data.getGuild(_Perco.get_guildID()).getStatsFight();
-		if(type == FighterType.CLONE)
-			stats = _double.getTotalStats();
-		
-		return stats;
+
+		return fightable.getStats();
 	}
 	public int getPA()
 	{
-		if(type == FighterType.PLAYER)
-			return getTotalStats().getEffect(Constants.STATS_ADD_PA);
-		if(type == FighterType.CREATURE)
-			return getTotalStats().getEffect(Constants.STATS_ADD_PA) + _mob.getPa();
-		if(type == FighterType.COLLECTOR)
-			return getTotalStats().getEffect(Constants.STATS_ADD_PM) + 6;
-		if(type == FighterType.CLONE)
-			return getTotalStats().getEffect(Constants.STATS_ADD_PA);
-		
-		return 0;
+		return fightable.getStats().getEffect(Constants.STATS_ADD_PA) + getBuffValue(Constants.STATS_ADD_PA) - getBuffValue(Constants.STATS_REM_PA);
 	}
 	public int getPM()
 	{
-		if(type == FighterType.PLAYER)
-			return getTotalStats().getEffect(Constants.STATS_ADD_PM);
-		if(type == FighterType.CREATURE)
-			return getTotalStats().getEffect(Constants.STATS_ADD_PM) + _mob.getPm();
-		if(type == FighterType.COLLECTOR)
-			return getTotalStats().getEffect(Constants.STATS_ADD_PM) + 3;
-		if(type == FighterType.CLONE)
-			return getTotalStats().getEffect(Constants.STATS_ADD_PM);
-		
-		return 0;
+		return fightable.getStats().getEffect(Constants.STATS_ADD_PM) + getBuffValue(Constants.STATS_ADD_PM) -  getBuffValue(Constants.STATS_REM_PM);
 	}
 	public int getCurPA(Fight fight)
 	{
@@ -898,8 +619,7 @@ public class Fighter extends Creature {
 		return fight.get_curFighterPM();
 	}
 	
-	public void setCurPM(Fight fight, int pm)
-	{
+	public void setCurPM(Fight fight, int pm){
 		fight.set_curFighterPM(pm);
 	}
 	
@@ -925,19 +645,19 @@ public class Fighter extends Creature {
 	
 	public boolean isPerco()
 	{
-		return (_Perco!=null);
+		return (fightable.getFighterType()==FighterType.COLLECTOR);
 	}
 
     public boolean isDouble()
 	{
-		return (_double!=null);
+		return (fightable.getFighterType() == FighterType.CLONE);
 	}
 
 	public void debuff()
 	{
 		ArrayList<SpellEffect> newBuffs = new ArrayList<SpellEffect>();
 		//on v�rifie chaque buff en cours, si pas d�buffable, on l'ajout a la nouvelle liste
-		for(SpellEffect SE : _fightBuffs)
+		for(SpellEffect SE : fightBuffs)
 		{
 			if(!SE.isDebuffabe())newBuffs.add(SE);
 			//On envoie les Packets si besoin
@@ -945,29 +665,24 @@ public class Fighter extends Creature {
 			{
 				case Constants.STATS_ADD_PA:
 				case Constants.STATS_ADD_PA2:
-					SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(_fight, 7, 101, getId()+"", getId()+",-"+SE.getValue());
+					SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, 101, getId()+"", getId()+",-"+SE.getValue());
 				break;
 				
 				case Constants.STATS_ADD_PM:
 				case Constants.STATS_ADD_PM2:
-					SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(_fight, 7, 127, getId()+"", getId()+",-"+SE.getValue());
+					SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, 127, getId()+"", getId()+",-"+SE.getValue());
 				break;
 			}
 		}
-		_fightBuffs.clear();
-		_fightBuffs.addAll(newBuffs);
-		if(_perso != null && !_hasLeft)
-			SocketManager.GAME_SEND_STATS_PACKET(_perso);
+		fightBuffs.clear();
+		fightBuffs.addAll(newBuffs);
+		if(fightable.getFighterType() == FighterType.PLAYER && !hasLeft)
+			SocketManager.GAME_SEND_STATS_PACKET((Player) fightable);
 	}
 
 	public void fullPDV()
 	{
-		_PDV = _PDVMAX;
-	}
-
-	public void setIsDead(boolean b)
-	{
-		_isDead = b;
+		pdv = _PDVMAX;
 	}
 
 	public void unHide(int spellid)
@@ -988,62 +703,38 @@ public class Fighter extends Creature {
 			}
 		}
 		ArrayList<SpellEffect> buffs = new ArrayList<SpellEffect>();
-		buffs.addAll(get_fightBuff());
+		buffs.addAll(getFightBuff());
 		for(SpellEffect SE : buffs)
 		{
 			if(SE.getEffectID() == 150)
-				get_fightBuff().remove(SE);
+				getFightBuff().remove(SE);
 		}
-		SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(_fight, 7, 150, getId()+"", getId()+",0");
+		SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, 150, getId()+"", getId()+",0");
 		//On actualise la position
-		SocketManager.GAME_SEND_GIC_PACKET_TO_FIGHT(_fight, 7,this);
-	}
-
-	public int getPdvMaxOutFight()
-	{
-		if(_perso != null)return _perso.getMaxPdv();
-		if(_mob != null)return _mob.getMaxPdv();
-		return 0;
+		SocketManager.GAME_SEND_GIC_PACKET_TO_FIGHT(fight, 7,this);
 	}
 
 	public Map<Integer, Integer> get_chatiValue() {
 		return _chatiValue;
 	}
 
-	public int getDefaultGfx()
-	{
-		if(_perso != null)return _perso.getGfx();
-		if(_mob != null)return _mob.getTemplate().getGfx();
-		return 0;
-	}
-
-	public long getXpGive()
-	{
-		if(_mob != null)return _mob.getXp();
-		return 0;
-	}
 	public void addPDV(int max) {
 		_PDVMAX = (_PDVMAX+max);
-		_PDV = (_PDV+max);
+		pdv = (pdv +max);
 	}
-
-
-
-    public FighterType getType(){
-        return this.type;
-    }
     
-	public int getTurnRemaining() {
+	public int getTurnRemainingBeforeExpulsion() {
 		return turnRemaining;
 	}
 	
-	public void checkTurnRemaining() {
+	public void decreaseTurnRemaining() {
 		this.turnRemaining--;
 	}
 	
 	public void setTurnRemaining(int turnRemaining) {
 		this.turnRemaining = turnRemaining;
 	}
+
 
 
 }

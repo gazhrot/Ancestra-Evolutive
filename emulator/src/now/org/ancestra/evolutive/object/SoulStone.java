@@ -38,7 +38,7 @@ public class SoulStone extends Object {
 				stats.append(",");
 			
 			try	{
-				stats.append("26f#0#0#").append(Integer.toHexString(coupl.first));
+				stats.append("26f#0#0#").append(Integer.toHexString(coupl.getKey()));
 			} catch(Exception e) {
 				e.printStackTrace();
 				continue;
@@ -57,7 +57,7 @@ public class SoulStone extends Object {
 			if(!isFirst)
 				toReturn.append(";");
 			
-			toReturn.append(curMob.first).append(",").append(curMob.second).append(",").append(curMob.second);
+			toReturn.append(curMob.getKey()).append(",").append(curMob.getValue()).append(",").append(curMob.getValue());
 			
 			isFirst = false;
 		}
@@ -70,7 +70,7 @@ public class SoulStone extends Object {
 		for(Couple<Integer, Integer> curMob : this.monsters) {
 			if(!isFirst)
 				toReturn.append("|");
-			toReturn.append(curMob.first).append(",").append(curMob.second);
+			toReturn.append(curMob.getKey()).append(",").append(curMob.getValue());
 			isFirst = false;
 		}
 		return toReturn.toString();
