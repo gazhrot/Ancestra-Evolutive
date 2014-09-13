@@ -35,7 +35,7 @@ public class PluginLoader {
                 System.out.println(jar);
 
 
-            InputStream in = jarFile.getInputStream(jarFile.getEntry("plugins"));
+            InputStream in = jarFile.getInputStream(jarFile.getEntry("plugin"));
 			nameClass = this.main = readEntry(in);
 		} catch(Exception e) {
             e.printStackTrace();
