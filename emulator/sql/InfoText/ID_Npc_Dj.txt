@@ -1,6 +1,0 @@
-Donjon Ensablé :
-Entré : 3281(195) (2576;4598) > 3282(296) > 3283(2812) > 3284 > 3285 > 3286 > 3287 > 3288 > 3289 (2576)
-IDmapsDJ,CellID,IDclef,IDmapNPC
-
-Dnjon Incarnam :
-10360,379,8545,10352
